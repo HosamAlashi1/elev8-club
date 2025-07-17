@@ -1,0 +1,115 @@
+<div class="header">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <h2 class="header-title">
+            <i class="far fa-clipboard me-2"></i>
+            <span class="text-muted fw-normal fs-3">Meals of: </span>
+            <span class="fs-2 ms-1">{{ restaurantName }} </span>
+            <small>({{ totalCount }})</small>
+          </h2>
+
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-sm btn-custom rounded-pill px-3" (click)="add()">
+            <i class="fe fe-plus me-2"></i>
+            <span>Add Meal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center input-group-merge input-group-flush input-group position-relative w-50">
+        <i class="fe fe-search text-muted position-absolute mb-1 me-3"></i>
+        <input [(ngModel)]="searchText" class="form-control m-0 ps-4" placeholder="Type to search..."
+          (ngModelChange)="onSearchChange()" />
+      </div>
+
+      <button class="btn btn-sm btn-danger d-flex align-items-center gap-2" (click)="reset()">
+        <i class="fe fe-rotate-ccw"></i>
+        <span>Reset</span>
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-nowrap card-table table-hover">
+        <thead>
+          <tr>
+            <th class="w-10">#NO</th>
+            <th class="w-10">Image</th>
+            <th class="w-20">Name</th>
+            <th class="w-20">Category</th>
+            <th class="w-15">Price</th>
+            <th class="w-15">Status</th>
+            <th class="w-10">Actions</th>
+          </tr>
+        </thead>
+
+        <!-- Skeleton loader -->
+        <tbody *ngIf="isLoading$ | async">
+          <tr *ngFor="let number of [].constructor(size)">
+            <td *ngFor="let i of [].constructor(7)">
+              <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                [theme]="{ width: '100%', height: '33px', 'border-radius': '3px', margin: '0' }">
+              </ngx-skeleton-loader>
+            </td>
+          </tr>
+        </tbody>
+
+        <!-- Real data -->
+        <tbody *ngIf="!(isLoading$ | async)">
+          <tr *ngFor="let meal of meals; let i = index">
+            <td>#{{ (page - 1) * size + i + 1 }}</td>
+            <td>
+              <img [src]="meal.image || 'assets/img/blank.png'" alt="Meal image"
+                class="avatar-img avatar rounded-circle cursor-pointer"
+                (click)="openImageModal(meal.image || 'assets/img/blank.png')" />
+            </td>
+            <td>{{ meal.name }}</td>
+            <td>{{ meal.category }}</td>
+            <td>{{ meal.price | currency }}</td>
+            <td>
+              <div class="form-check form-switch custom-switch-pink">
+                <input type="checkbox" class="form-check-input" [checked]="meal.status === 'Active'"
+                  (change)="toggleStatus(meal)" />
+              </div>
+            </td>
+            <td>
+              <div class="btn-group dropstart">
+                <span data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fe fe-more-vertical black-menu fs-2"></i>
+                </span>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" (click)="edit(meal)">
+                      <i class="fe fe-edit me-2"></i>Edit
+                    </a>
+                  </li>
+                  <li>
+                    <hr class="m-2" />
+                  </li>
+                  <li>
+                    <a class="dropdown-item" (click)="delete(meal)">
+                      <i class="fe fe-trash-2 text-danger me-2"></i>
+                      <span class="text-danger">Delete</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <app-no-results [isLoading$]="isLoading$" [totalRecords]="totalCount"></app-no-results>
+    <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size" (pageChange)="list($event)">
+    </app-pagination>
+  </div>
+</div>

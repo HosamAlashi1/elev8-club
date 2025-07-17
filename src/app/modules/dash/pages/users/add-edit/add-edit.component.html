@@ -1,0 +1,83 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ user ? 'Edit' : 'Add New' }} User</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Name -->
+      <div class="col-md-6">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="name" placeholder="Enter name"
+          [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['name'].invalid">
+          Name is required
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="col-md-6">
+        <label class="form-label">Email <span class="text-danger">*</span></label>
+        <input type="email" class="form-control" formControlName="email" placeholder="Enter email"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].invalid, 'is-valid': submitted && f['email'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['email'].invalid">
+          <div *ngIf="f['email'].errors?.['required']">Email is required</div>
+          <div *ngIf="f['email'].errors?.['email']">Please enter a valid email</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <!-- Phone -->
+      <div class="col-md-6">
+        <label class="form-label">Phone <span class="text-danger">*</span></label>
+        <input type="tel" class="form-control" formControlName="phone" placeholder="Enter phone number"
+          [ngClass]="{ 'is-invalid': submitted && f['phone'].invalid, 'is-valid': submitted && f['phone'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['phone'].invalid">
+          Phone is required
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="col-md-6">
+        <label class="form-label">Password 
+          <span class="text-danger" *ngIf="!user">*</span>
+          <small class="text-muted" *ngIf="user">(Leave empty to keep current password)</small>
+        </label>
+        <input type="password" class="form-control" formControlName="password" placeholder="Enter password"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].invalid, 'is-valid': submitted && f['password'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['password'].invalid">
+          <div *ngIf="f['password'].errors?.['required']">Password is required</div>
+          <div *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <!-- Photo -->
+      <div class="col-md-12">
+        <label class="form-label">Upload Photo</label>
+        <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*"
+          [ngClass]="{ 'is-invalid': submitted && f['photo'].invalid, 'is-valid': submitted && f['photo'].valid }">
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i>Close
+    </button>
+
+    <button type="submit" class="btn btn-sm btn-primary" [disabled]="loading">
+      <ng-container *ngIf="loading">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!loading">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

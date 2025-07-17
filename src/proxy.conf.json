@@ -1,0 +1,8 @@
+{
+  "/admin-api": {
+    "target": "https://turboeat.nstechs.net",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

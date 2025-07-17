@@ -1,0 +1,60 @@
+<div class="p-3">
+    <!-- Global Header with Tabs -->
+    <div class="header mb-2">
+        <div class="container-fluid">
+            <div class="border-bottom">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-12 col-md-auto d-flex align-items-center">
+                        <h2 class="header-title mb-0">
+                            <i class="fe fe-settings"></i>
+                            Settings
+                        </h2>
+                    </div>
+                    <div class="col-12 col-md-auto mt-3 mt-md-0">
+                        <div class="tabs-scroll-container">
+                            <nav #tabsContainer class="settings-tabs d-flex position-relative">
+                                <button class="btn btn-link me-3 pb-2 pt-2 tab-btn border-0 text-decoration-none"
+                                    [ngClass]="{ 'active': activeTab === 'profile' }" 
+                                    (click)="switchTab('profile')" 
+                                    type="button">
+                                    <i class="fe fe-user me-2"></i>
+                                    <span class="tab-text">Profile Management</span>
+                                </button>
+                                <button class="btn btn-link me-3 pb-2 pt-2 tab-btn border-0 text-decoration-none"
+                                    [ngClass]="{ 'active': activeTab === 'roles' }" 
+                                    (click)="switchTab('roles')" 
+                                    type="button">
+                                    <i class="fe fe-lock me-2"></i>
+                                    <span class="tab-text">Roles & Permissions</span>
+                                </button>
+
+                                <!-- Dynamic animated sliding underline -->
+                                <div class="tab-underline-dynamic" 
+                                     [style.left]="underlineStyle.left"
+                                     [style.width]="underlineStyle.width">
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content with Animation -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <!-- Profile Management Tab Content -->
+                <div *ngIf="activeTab === 'profile'" [@tabSlide] class="mt-2">
+                    <app-profile></app-profile>
+                </div>
+
+                <!-- Roles & Permissions Tab Content -->
+                <div *ngIf="activeTab === 'roles'" [@tabSlide] class="tab-panel mt-2">
+                    <app-roles-and-permissions></app-roles-and-permissions>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

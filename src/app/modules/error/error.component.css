@@ -1,0 +1,28 @@
+.body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #fef6ff 0%, #fde7f4 50%, #fff 100%);
+  /* بديل ناعم للوردي الغامق */
+}
+
+ng-lottie,
+.lottie-container {
+  background: transparent !important;
+  mix-blend-mode: multiply; /* يعطي اندماج ناعم للشفافيات */
+}
+
+img, svg {
+  mix-blend-mode: multiply;
+  background: transparent !important;
+}
+
+
+.lottie-wrapper {
+  background: linear-gradient(to bottom right, #fff0f7, #fff);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}

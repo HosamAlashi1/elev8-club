@@ -1,0 +1,17 @@
+<div class="main-layout d-flex h-100">
+  <!-- Fullscreen Lottie Overlay -->
+  <app-lottie-overlay [visible]="lottieConfig.visible" [options]="lottieConfig.options"
+    [message]="lottieConfig.message || ''" [messageClass]="lottieConfig.messageClass || ''">
+  </app-lottie-overlay>
+
+  <app-side-bar></app-side-bar>
+
+  <div class="main-content-wrapper flex-grow-1 d-flex flex-column">
+    <div class="main-content flex-grow-1" [@routeAnimations]="prepareRoute(outlet)">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </div>
+    <footer class="main-footer text-center">
+      Copyright © {{ currentYear }} Turbo Eats. All Rights Reserved.
+    </footer>
+  </div>
+</div>

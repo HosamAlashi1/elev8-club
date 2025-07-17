@@ -1,0 +1,21 @@
+<div class="card shadow-sm equal-height-card">
+  <div class="card-header fw-bold d-flex align-items-center">
+    <h4>
+      <i class="fa fa-dollar-sign me-2"></i>
+      <span>Revenue (Monthly)</span>
+    </h4>
+  </div>
+  <div class="card-body">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [dataLabels]="chartOptions.dataLabels"
+      [stroke]="chartOptions.stroke"
+      [colors]="chartOptions.colors"
+      [tooltip]="chartOptions.tooltip"
+      [fill]="chartOptions.fill"
+      [legend]="chartOptions.legend">
+    </apx-chart>
+  </div>
+</div>

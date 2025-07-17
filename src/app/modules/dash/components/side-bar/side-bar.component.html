@@ -1,0 +1,53 @@
+<div class="mobile-overlay" *ngIf="isMobile && !isCollapsed" (click)="toggleSidebar()"></div>
+<nav [ngClass]="{ 'sidebar': true, 'collapsed': isCollapsed }">
+  <div class="sidebar-header d-flex align-items-center justify-content-between ps-2 mt-4 mb-4">
+    <a [routerLink]="'/dashboard'" *ngIf="!isCollapsed" class="">
+      <img src="assets/img/logo2.png" width="90" class="logo" />
+    </a>
+
+    <i class="toggle-icon" [ngClass]="isCollapsed ? 'fe fe-menu' : 'fe fe-chevron-left'" (click)="toggleSidebar()">
+    </i>
+  </div>
+
+  <ul class="nav flex-column">
+    <li *ngFor="let item of menu" class="nav-item mx-3 my-2"
+      [ngClass]="{ 'has-children': item.children, 'open': item.open }">
+      <a class="nav-link" [routerLink]="item.children ? null : item.route" routerLinkActive="active"
+        (click)="handleClick(item)" [ngClass]="{ 'toggleable': item.children }">
+        <div class="nav-content"> 
+          <lucide-icon [name]="item.icon"></lucide-icon>
+          <span *ngIf="!isCollapsed">{{ item.label }}</span>
+        </div>
+        <i *ngIf="item.children && !isCollapsed" class="fe chevron"
+          [ngClass]="{ 'fe-chevron-down': !item.open, 'fe-chevron-up': item.open }"></i>
+      </a>
+
+      <ul class="nav sub-menu" *ngIf="item.children">
+        <li *ngFor="let sub of item.children" class="nav-item">
+          <a class="nav-link" [routerLink]="sub.route" routerLinkActive="active" #rla="routerLinkActive"
+            [ngClass]="{ 'active': rla.isActive }">
+            {{ sub.label }}
+          </a>
+        </li>
+      </ul>
+
+    </li>
+  </ul>
+
+  <div class="sidebar-footer mt-2 text-center">
+    <a [routerLink]="'/settings/profile'" style="display: inline-block">
+      <img src="assets/img/avatar.png" alt="User" class="rounded-circle border" style="width: 45px; height: 45px;" />
+    </a>
+
+    <!-- إظهار الاسم فقط إذا لم يكن مضغوط -->
+    <span *ngIf="!isCollapsed" class="d-block mt-2">{{ user?.name }}</span>
+
+    <!-- زر تسجيل الخروج دائمًا ظاهر -->
+    <button class="logout-btn d-inline-flex align-items-center justify-content-center mt-2" (click)="logout()"
+      [ngClass]="{ 'w-100': !isCollapsed }">
+      <i class="fe fe-log-out" [ngClass]="{ 'me-1': !isCollapsed }"></i>
+      <span *ngIf="!isCollapsed">Logout</span>
+    </button>
+  </div>
+
+</nav>

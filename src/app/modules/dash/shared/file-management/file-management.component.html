@@ -1,0 +1,10 @@
+<div class="modal-header bg-white">
+    <h4 class="modal-title">{{ title }}</h4>
+    <div>
+        <i class="fe fe-x black-menu" (click)="activeModal.dismiss()" title="Close Modal"></i>
+    </div>
+</div>
+<div class="modal-body d-flex justify-content-center align-items-center" style="height: calc(100vh - 65px);"
+    (click)="activeModal.dismiss()">
+    <img [src]="path">
+</div>

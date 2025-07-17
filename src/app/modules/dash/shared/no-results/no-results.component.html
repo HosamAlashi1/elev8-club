@@ -1,0 +1,7 @@
+<div *ngIf="!(isLoading$ | async) && totalRecords === 0">
+    <div class="text-center card-body">
+        <i class="fe fe-alert-circle fs-1"></i>
+        <h2 class="m-2">There is no results.</h2>
+        <p class="text-muted m-0">Add some data to find out more about this project.</p>
+    </div>
+</div>

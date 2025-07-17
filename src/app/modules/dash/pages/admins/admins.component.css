@@ -1,0 +1,53 @@
+/* Custom styles for admin table */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25em 0.5em;
+}
+
+.badge.bg-primary {
+  background-color: #007bff !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+/* Status switch disabled state */
+.form-check-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Account type badge styling */
+.table td {
+  vertical-align: middle;
+}
+
+/* Role badges container */
+.table td .badge + .badge {
+  margin-left: 0.25rem;
+}
+
+/* Custom switch styling */
+.custom-switch-pink .form-check-input:checked {
+  background-color: #e91e63;
+  border-color: #e91e63;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.2em 0.4em;
+  }
+}

@@ -1,0 +1,57 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ category ? 'Edit' : 'Add New' }} Category</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Name -->
+      <div class="col-md-6">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="name" placeholder="Enter name"
+          [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['name'].invalid">
+          Name is required
+        </div>
+      </div>
+
+      <!-- Photo -->
+      <div class="col-md-6">
+        <label class="form-label">Upload Photo <span class="text-danger">*</span></label>
+        <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*"
+          [ngClass]="{ 'is-invalid': submitted && f['image'].invalid, 'is-valid': submitted && f['image'].valid }">
+        <div class="invalid-feedback" *ngIf="submitted && f['image'].invalid">
+          Image is required
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Preview -->
+    <div class="row mt-3" *ngIf="imageUrl && imageUrl !== 'assets/img/blank.png'">
+      <div class="col-12">
+        <label class="form-label">Preview</label>
+        <div class="text-center">
+          <img [src]="imageUrl" alt="Category Preview" 
+               class="rounded-circle border" width="80" height="80"
+               style="object-fit: cover;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i>Close
+    </button>
+
+    <button type="submit" class="btn btn-sm btn-primary" [disabled]="loading">
+      <ng-container *ngIf="loading">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!loading">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,15 @@
+<div class="card shadow-sm equal-height-card">
+    <div class="card-header fw-bold d-flex align-items-center">
+        <h4>
+            <i class="fa fa-chart-bar me-2"></i>
+            <span>Weekly Revenue</span>
+        </h4>
+    </div>
+    <div class="card-body" [style.height]="'calc(100dvh - 335px)'">
+        <apx-chart [series]="chartOptionsTopRestaurants.series" [chart]="chartOptionsTopRestaurants.chart"
+            [xaxis]="chartOptionsTopRestaurants.xaxis" [dataLabels]="chartOptionsTopRestaurants.dataLabels"
+            [plotOptions]="chartOptionsTopRestaurants.plotOptions" [colors]="chartOptionsTopRestaurants.colors"
+            [tooltip]="chartOptionsTopRestaurants.tooltip" [legend]="chartOptionsTopRestaurants.legend">
+        </apx-chart>
+    </div>
+</div>

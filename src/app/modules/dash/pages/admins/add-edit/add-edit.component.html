@@ -1,0 +1,99 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ user ? 'Edit' : 'Add New' }} Admin</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Name -->
+      <div class="col-md-6">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="name" placeholder="Enter name"
+          [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
+        <div *ngIf="submitted && f['name'].invalid" class="invalid-feedback">
+          Name is required.
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="col-md-6">
+        <label class="form-label">Username <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="username" placeholder="Enter username"
+          [ngClass]="{ 'is-invalid': submitted && f['username'].invalid, 'is-valid': submitted && f['username'].valid }" />
+        <div *ngIf="submitted && f['username'].invalid" class="invalid-feedback">
+          Username is required.
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="col-md-6 mt-3">
+        <label class="form-label">Email <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="email" placeholder="Enter email"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].invalid, 'is-valid': submitted && f['email'].valid }" />
+        <div *ngIf="submitted && f['email'].invalid" class="invalid-feedback">
+          <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
+          <div *ngIf="f['email'].errors?.['email']">Please enter a valid email.</div>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="col-md-6 mt-3">
+        <label class="form-label">Password <span class="text-danger" *ngIf="!user">*</span></label>
+        <input type="password" class="form-control" formControlName="password" placeholder="Enter password"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].invalid, 'is-valid': submitted && f['password'].valid }" />
+        <div *ngIf="submitted && f['password'].invalid" class="invalid-feedback">
+          <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
+          <div *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters.</div>
+        </div>
+        <small class="text-muted" *ngIf="user">Leave empty to keep current password</small>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="col-md-6 mt-3">
+        <label class="form-label">Confirm Password <span class="text-danger" *ngIf="!user">*</span></label>
+        <input type="password" class="form-control" formControlName="password_confirmation" placeholder="Confirm password"
+          [ngClass]="{ 'is-invalid': submitted && f['password_confirmation'].invalid, 'is-valid': submitted && f['password_confirmation'].valid }" />
+        <div *ngIf="submitted && f['password_confirmation'].invalid" class="invalid-feedback">
+          <div *ngIf="f['password_confirmation'].errors?.['required']">Password confirmation is required.</div>
+          <div *ngIf="f['password_confirmation'].errors?.['passwordMismatch']">Passwords do not match.</div>
+        </div>
+      </div>
+
+      <!-- Roles -->
+      <div class="col-md-6 mt-3">
+        <div [ngClass]="{'multi-select-loading': isLoadingRoles}">
+          <app-multi-select formControlName="roles" [label]="'Roles'" [options]="roles"
+            [uniqueId]="'adminRoles'" [required]="true">
+          </app-multi-select>
+        </div>
+        <div *ngIf="submitted && f['roles'].invalid" class="text-danger small mt-1">
+          At least one role is required.
+        </div>
+      </div>
+
+      <!-- Photo -->
+      <div class="col-md-12 mt-3">
+        <label class="form-label">Upload Photo</label>
+        <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*">
+        <small class="text-muted">Optional profile photo for the admin</small>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i>Close
+    </button>
+
+    <button type="submit" class="btn btn-sm btn-primary" [disabled]="(httpService.getLoading('addEditUser') | async)">
+      <ng-container *ngIf="(httpService.getLoading('addEditUser') | async)">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!(httpService.getLoading('addEditUser') | async)">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

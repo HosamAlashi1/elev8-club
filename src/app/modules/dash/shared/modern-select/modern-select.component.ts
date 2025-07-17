@@ -1,0 +1,220 @@
+import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+
+export interface SelectOption {
+  value: any;
+  label: string;
+  disabled?: boolean;
+}
+
+@Component({
+  selector: 'app-modern-select',
+  templateUrl: './modern-select.component.html',
+  styleUrls: ['./modern-select.component.css'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => ModernSelectComponent),
+      multi: true
+    }
+  ],
+  animations: [
+    trigger('dropdownAnimation', [
+      state('closed', style({
+        opacity: 0,
+        transform: 'translateY(-10px) scale(0.95)',
+        visibility: 'hidden'
+      })),
+      state('open', style({
+        opacity: 1,
+        transform: 'translateY(0) scale(1)',
+        visibility: 'visible'
+      })),
+      transition('closed => open', [
+        style({ visibility: 'visible' }),
+        animate('200ms cubic-bezier(0.25, 0.8, 0.25, 1)')
+      ]),
+      transition('open => closed', [
+        animate('150ms cubic-bezier(0.25, 0.8, 0.25, 1)'),
+        style({ visibility: 'hidden' })
+      ])
+    ]),
+    trigger('chevronAnimation', [
+      state('closed', style({
+        transform: 'rotate(0deg)'
+      })),
+      state('open', style({
+        transform: 'rotate(180deg)'
+      })),
+      transition('closed <=> open', [
+        animate('200ms cubic-bezier(0.25, 0.8, 0.25, 1)')
+      ])
+    ])
+  ]
+})
+export class ModernSelectComponent implements OnInit, ControlValueAccessor {
+  @Input() options: SelectOption[] = [];
+  @Input() placeholder2: string = 'Select an option';
+  @Input() icon?: string; // جعل الأيقونة اختيارية
+  @Input() size: 'sm' | 'md' | 'lg' = 'sm';
+  @Input() disabled: boolean = false;
+  @Input() clearable: boolean = false;
+  @Input() searchable: boolean = false;
+  @Input() minWidth: string = '160px';
+
+  @Output() selectionChange = new EventEmitter<any>();
+
+  isOpen = false;
+  selectedValue: any = null;
+  selectedOption: SelectOption | null = null;
+  searchTerm = '';
+  filteredOptions: SelectOption[] = [];
+
+  private onChange = (value: any) => {};
+  private onTouched = () => {};
+
+  ngOnInit() {
+    this.filteredOptions = [...this.options];
+  }
+
+  get dropdownState() {
+    return this.isOpen ? 'open' : 'closed';
+  }
+
+  get selectedLabel(): string {
+    return this.selectedOption?.label || this.placeholder2;
+  }
+
+  get hasSelection(): boolean {
+    return this.selectedValue !== null && 
+           this.selectedValue !== undefined && 
+           this.selectedValue !== '';
+  }
+
+  // دالة للتحقق من وجود قيمة حقيقية (ليس "All" أو أول خيار)
+  get hasRealValue(): boolean {
+    if (!this.hasSelection || !this.selectedOption?.label) {
+      return false;
+    }
+    
+    const label = this.selectedOption.label.toLowerCase();
+    // التحقق من أن الخيار ليس "الكل" أو "جميع" أو "All" أو القيمة الفارغة
+    return this.selectedValue !== '' && 
+           !label.includes('الكل') && 
+           !label.includes('جميع') && 
+           !label.startsWith('all') &&
+           !label.startsWith('كل');
+  }
+
+  // دالة للتحقق من وجود أيقونة
+  get hasIcon(): boolean {
+    return !!this.icon;
+  }
+
+  // دالة للتحقق من أن الخيار له قيمة حقيقية
+  isRealValueOption(option: SelectOption): boolean {
+    if (!option || option.value === '' || option.value === null || option.value === undefined) {
+      return false;
+    }
+    
+    const label = option.label.toLowerCase();
+    return !label.includes('الكل') && 
+           !label.includes('جميع') && 
+           !label.startsWith('all') &&
+           !label.startsWith('كل');
+  }
+
+  toggleDropdown(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    if (this.disabled) return;
+    
+    this.isOpen = !this.isOpen;
+    this.onTouched();
+    
+    if (this.isOpen) {
+      this.searchTerm = '';
+      this.filteredOptions = [...this.options];
+      
+      // Focus search input if searchable
+      setTimeout(() => {
+        if (this.searchable) {
+          const searchInput = document.querySelector('.modern-select-search') as HTMLInputElement;
+          if (searchInput) {
+            searchInput.focus();
+          }
+        }
+      }, 100);
+    }
+  }
+
+  selectOption(option: SelectOption, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    if (option.disabled) return;
+    
+    this.selectedValue = option.value;
+    this.selectedOption = option;
+    this.isOpen = false;
+    
+    this.onChange(this.selectedValue);
+    this.selectionChange.emit(this.selectedValue);
+  }
+
+  clearSelection(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    this.selectedValue = null;
+    this.selectedOption = null;
+    
+    this.onChange(null);
+    this.selectionChange.emit(null);
+  }
+
+  onSearchChange() {
+    if (!this.searchTerm.trim()) {
+      this.filteredOptions = [...this.options];
+    } else {
+      this.filteredOptions = this.options.filter(option =>
+        option.label.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
+
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    const selectElement = document.querySelector('.modern-select-container');
+    
+    if (selectElement && !selectElement.contains(target)) {
+      this.isOpen = false;
+    }
+  }
+
+  // ControlValueAccessor implementation
+  writeValue(value: any): void {
+    this.selectedValue = value;
+    this.selectedOption = this.options.find(option => option.value === value) || null;
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+}

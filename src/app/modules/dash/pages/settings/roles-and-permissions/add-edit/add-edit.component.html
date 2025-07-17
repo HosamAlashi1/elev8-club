@@ -1,0 +1,55 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ role ? 'Edit Role' : 'Add New Role' }}</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="mb-3">
+      <label class="form-label">Role Name</label>
+      <input class="form-control" formControlName="name" placeholder="Enter role name"
+             [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label d-flex justify-content-between">
+        Permissions
+        <a class="text-primary small" (click)="toggleSelectAll()">{{ allSelected ? 'Unselect All' : 'Select All' }}</a>
+      </label>
+
+      <div class="permissions-container border p-3 h-40 rounded" style="max-height: 400px; overflow-y: auto;">
+        <ng-container *ngFor="let group of groupedPermissions | keyvalue">
+          <div class="fw-bold mb-2 mt-3 text-uppercase small text-secondary border-bottom pb-1">
+            {{ group.key }}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-2" *ngFor="let p of castToArray(group.value)">
+              <div class="form-check form-switch custom-switch-pink">
+                <input type="checkbox" class="form-check-input"
+                       [checked]="form.value.permissions.includes(p.id)"
+                       (change)="togglePermission(p.id)" id="perm_{{ p.id }}" />
+                <label class="form-check-label text-capitalize" for="perm_{{ p.id }}">{{ p.title }}</label>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i> Close
+    </button>
+
+    <button type="submit" class="btn btn-sm btn-primary" [disabled]="httpService.getLoading('addEditRole') | async">
+      <ng-container *ngIf="httpService.getLoading('addEditRole') | async">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!(httpService.getLoading('addEditRole') | async)">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

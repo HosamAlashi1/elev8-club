@@ -1,0 +1,17 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ title }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  {{ message }}
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-sm rounded-1" [ngClass]="btnCancelClass" (click)="activeModal.close(false)">
+    <i class="fe fe-x me-2"></i>
+    <span>{{ btnCancelText }}</span>
+  </button>
+  <button type="button" class="btn btn-sm rounded-1" [ngClass]="btnOkClass" (click)="activeModal.close(true)">
+    <i class="me-2" [ngClass]="btnOkIcon"></i>
+    <span>{{ btnOkText }}</span>
+  </button>
+</div>

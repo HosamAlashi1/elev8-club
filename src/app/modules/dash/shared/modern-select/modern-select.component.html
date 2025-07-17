@@ -1,0 +1,77 @@
+<div class="modern-select-container" 
+     [class.modern-select-open]="isOpen"
+     [class.modern-select-disabled]="disabled"
+     [style.min-width]="minWidth"
+     (click)="toggleDropdown($event)"
+     (document:click)="onDocumentClick($event)">
+  
+  <!-- Main Select Button -->
+  <div class="modern-select-trigger" 
+       [class]="'modern-select-' + size"
+       [class.has-selection]="hasSelection"
+       [class.has-real-value]="hasRealValue"
+       [class.no-icon]="!hasIcon">
+    
+    <!-- Icon (اختيارية) -->
+    <span *ngIf="hasIcon" class="modern-select-icon">
+      <i [class]="icon"></i>
+    </span>
+    
+    <!-- Selected Text -->
+    <span class="modern-select-text" [class.placeholder2]="!hasSelection">
+      {{ selectedLabel }}
+    </span>
+    
+    <!-- Clear Button -->
+    <button *ngIf="clearable && hasRealValue && !disabled" 
+            type="button"
+            class="modern-select-clear"
+            (click)="clearSelection($event)"
+            title="مسح الاختيار">
+      <i class="fe fe-x"></i>
+    </button>
+    
+    <!-- Chevron -->
+    <span class="modern-select-chevron" [@chevronAnimation]="dropdownState">
+      <i class="fe fe-chevron-down"></i>
+    </span>
+  </div>
+  
+  <!-- Dropdown Menu -->
+  <div class="modern-select-dropdown" [@dropdownAnimation]="dropdownState">
+    <div class="modern-select-dropdown-content">
+      
+      <!-- Search Input -->
+      <div *ngIf="searchable" class="modern-select-search-container">
+        <input type="text" 
+               class="modern-select-search"
+               [(ngModel)]="searchTerm"
+               (input)="onSearchChange()"
+               (click)="$event.stopPropagation()"
+               placeholder="Search options...">
+        <i class="fe fe-search modern-select-search-icon"></i>
+      </div>
+      
+      <!-- Options List -->
+      <div class="modern-select-options">
+        <div *ngFor="let option of filteredOptions" 
+             class="modern-select-option"
+             [class.selected]="option.value === selectedValue"
+             [class.has-real-value]="option.value !== '' && option.value !== null && option.value !== undefined && !option.label.toLowerCase().startsWith('all')"
+             [class.disabled]="option.disabled"
+             (click)="selectOption(option, $event)">
+          <span class="option-text">{{ option.label }}</span>
+          <i *ngIf="option.value === selectedValue && option.value !== '' && option.value !== null && !option.label.toLowerCase().startsWith('all')" 
+             class="fe fe-check option-check"></i>
+        </div>
+        
+        <!-- No Results -->
+        <div *ngIf="searchable && filteredOptions.length === 0" 
+             class="modern-select-no-results">
+          <i class="fe fe-search"></i>
+          <span>No results found</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

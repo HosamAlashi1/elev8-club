@@ -1,0 +1,86 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ meal ? 'Edit' : 'Add New' }} Meal</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Name -->
+      <div class="col-md-6">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="name" placeholder="Enter meal name"
+          [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['name'].invalid">
+          Name is required
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="col-md-6">
+        <label class="form-label">Category <span class="text-danger">*</span></label>
+        <select class="form-control" formControlName="category"
+          [ngClass]="{ 'is-invalid': submitted && f['category'].invalid, 'is-valid': submitted && f['category'].valid }">
+          <option value="">Select Category</option>
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="submitted && f['category'].invalid">
+          Category is required
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <!-- Price -->
+      <div class="col-md-6">
+        <label class="form-label">Price <span class="text-danger">*</span></label>
+        <input type="number" class="form-control" formControlName="price" placeholder="Enter price" min="1" step="0.01"
+          [ngClass]="{ 'is-invalid': submitted && f['price'].invalid, 'is-valid': submitted && f['price'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['price'].invalid">
+          <div *ngIf="f['price'].errors?.['required']">Price is required</div>
+          <div *ngIf="f['price'].errors?.['min']">Price must be greater than 0</div>
+        </div>
+      </div>
+
+      <!-- Upload Photos -->
+      <div class="col-md-6">
+        <label class="form-label">Upload Photos <span class="text-danger">*</span></label>
+        <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*" multiple
+          [ngClass]="{ 'is-invalid': submitted && f['images'].invalid, 'is-valid': submitted && f['images'].valid }">
+        <div class="invalid-feedback" *ngIf="submitted && f['images'].invalid">
+          At least one image is required
+        </div>
+        
+        <!-- Image Preview -->
+        <div class="image-preview-container mt-3" *ngIf="imageUrls.length > 0">
+          <div class="row g-2">
+            <div class="col-4" *ngFor="let imageUrl of imageUrls; let i = index">
+              <div class="image-preview-item">
+                <img [src]="imageUrl" alt="Preview" class="img-thumbnail">
+                <button type="button" class="btn btn-sm btn-danger remove-btn" (click)="removeImage(i)">
+                  <i class="fe fe-x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i>Close
+    </button>
+
+    <button type="submit" class="btn btn-sm btn-primary" [disabled]="loading">
+      <ng-container *ngIf="loading">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!loading">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

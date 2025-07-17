@@ -1,0 +1,7 @@
+img {
+    max-height: calc(100vh - 150px);
+    max-width: 100%;
+    width: auto;
+    margin: auto;
+    border-radius: 10px;
+}

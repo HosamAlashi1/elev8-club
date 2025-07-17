@@ -1,0 +1,28 @@
+.lottie-overlay {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.336);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.lottie-container {
+  animation: popin 0.3s ease-in-out;
+  transform: translateY(-50px); 
+}
+
+
+@keyframes popin {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(-50px); 
+  }
+}

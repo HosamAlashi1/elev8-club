@@ -1,0 +1,123 @@
+<div class="header">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center">
+        <div class="col">
+          <h2 class="header-title">
+            <i class="fe fe-bell me-2"></i>
+            Notifications
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row g-3">
+    <!-- Left Side - Form -->
+    <div class="col-lg-5">
+      <div class="card p-4">
+        <form (ngSubmit)="sendNotification()" [formGroup]="form">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Send To</label>
+            <div class="send-to-toggle d-flex">
+              <input type="radio" class="btn-check" value="all" formControlName="type" id="sendAll">
+              <label class="toggle-btn" [class.active]="form.value.type === 'all'" for="sendAll">
+                <i class="fa fa-users me-1"></i> All Users
+              </label>
+
+              <input type="radio" class="btn-check" value="specific" formControlName="type" id="sendSpecific">
+              <label class="toggle-btn" [class.active]="form.value.type === 'specific'" for="sendSpecific">
+                <i class="fa fa-user-check me-1"></i> Specific Users
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Title <sup class="text-danger">*</sup></label>
+            <input type="text" class="form-control" formControlName="title" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Message <sup class="text-danger">*</sup></label>
+            <textarea class="form-control" rows="4" formControlName="body" required></textarea>
+          </div>
+
+          <div class="d-flex justify-content-between pt-3 border-top mt-4">
+            <button class="btn btn-custom ms-auto" [disabled]="loading || form.invalid">
+              <ng-container *ngIf="!loading">
+                <i class="fa fa-paper-plane me-2 animate-plane"></i>
+                Send Notification
+              </ng-container>
+              <ng-container *ngIf="loading">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                <span>Sending ...</span>
+              </ng-container>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Side - Users Table -->
+    <div class="col-lg-7">
+      <div class="card p-3">
+        <div class="d-flex align-items-center mb-3">
+          <div class="input-group input-group-merge input-group-flush w-50">
+            <i class="fe fe-search text-muted position-absolute mt-2"></i>
+            <input type="text" class="form-control ps-4" placeholder="Search users..." [(ngModel)]="searchText"
+              (ngModelChange)="onSearchChange()">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-nowrap table-hover"
+            [ngClass]="{'disabled-table': form.value.type === 'all'}">
+            <thead>
+              <tr>
+                <th class="w-5">
+                  <input type="checkbox" [disabled]="form.value.type === 'all'" (change)="toggleAll($event)" />
+                </th>
+                <th class="w-10">User ID</th>
+                <th class="w-15">Image</th>
+                <th class="w-20">Name</th>
+                <th class="w-25">Email</th>
+              </tr>
+            </thead>
+
+            <tbody *ngIf="isLoading$ | async">
+              <tr *ngFor="let i of [].constructor(size +1)">
+                <td *ngFor="let j of [].constructor(5)">
+                  <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                    [theme]="{ width: '50%', height: '23px' }"></ngx-skeleton-loader>
+                </td>
+              </tr>
+            </tbody>
+
+            <tbody *ngIf="!(isLoading$ | async)">
+              <tr *ngFor="let user of users">
+                <td>
+                  <input type="checkbox" [disabled]="form.value.type === 'all'" [(ngModel)]="user.checked"
+                    [ngModelOptions]="{standalone: true}" />
+                </td>
+                <td>#{{ user.id }}</td>
+                <td>
+                  <img [src]="user.image || 'assets/img/blank.png'" class="avatar-img rounded-circle" width="35"
+                    height="35" (click)="openImageModal(user.image && user.image.trim() !== '' ? user.image : 'assets/img/blank.png')">
+                </td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <app-no-results [isLoading$]="isLoading$" [totalRecords]="totalCount"></app-no-results>
+        <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size"
+          [disabled]="form.value?.type === 'all'" (pageChange)="list($event)">
+        </app-pagination>
+      </div>
+    </div>
+  </div>
+</div>
