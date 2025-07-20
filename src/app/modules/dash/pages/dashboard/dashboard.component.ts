@@ -51,6 +51,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStatistics();
+    console.log('Dashboard initialized');
+    
   }
 
   // Animate dashboard number counters
