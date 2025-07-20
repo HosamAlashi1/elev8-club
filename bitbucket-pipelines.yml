@@ -15,6 +15,5 @@ pipelines:
           - echo "📦 Installing lftp..."
           - apt-get update && apt-get install -y lftp
           - echo "🚀 Uploading files to FTP server..."
-          - lftp -c "set ftp:list-options -a;
-                     open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST;
-                     mirror -R -e -n dist $FTP_REMOTE_PATH"
+         - lftp -e "set ssl:verify-certificate no; mirror -R -e -n dist $FTP_REMOTE_PATH; bye" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST
+
