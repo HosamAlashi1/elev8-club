@@ -87,7 +87,7 @@
       <i class="fe fe-x me-2"></i>Close
     </button>
 
-    <button type="submit" class="btn btn-sm btn-primary" [disabled]="(httpService.getLoading('addEditUser') | async)">
+    <button type="submit" class="btn btn-sm btn-custom" [disabled]="(httpService.getLoading('addEditUser') | async)">
       <ng-container *ngIf="(httpService.getLoading('addEditUser') | async)">
         <span class="spinner-border spinner-border-sm me-2"></span> Saving...
       </ng-container>

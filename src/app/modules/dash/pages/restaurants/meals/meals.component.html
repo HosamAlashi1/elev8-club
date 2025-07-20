@@ -5,8 +5,8 @@
         <div class="col">
           <h2 class="header-title">
             <i class="far fa-clipboard me-2"></i>
-            <span class="text-muted fw-normal fs-3">Meals of: </span>
-            <span class="fs-2 ms-1">{{ restaurantName }} </span>
+            <span class="fw-normal">Meals of : </span>
+            <span class="ms-1">{{ restaurantName }} </span>
             <small>({{ totalCount }})</small>
           </h2>
 
@@ -25,28 +25,64 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center input-group-merge input-group-flush input-group position-relative w-50">
+      <div class="d-flex align-items-center input-group-merge input-group-flush input-group position-relative w-40">
         <i class="fe fe-search text-muted position-absolute mb-1 me-3"></i>
         <input [(ngModel)]="searchText" class="form-control m-0 ps-4" placeholder="Type to search..."
           (ngModelChange)="onSearchChange()" />
       </div>
 
-      <button class="btn btn-sm btn-danger d-flex align-items-center gap-2" (click)="reset()">
-        <i class="fe fe-rotate-ccw"></i>
-        <span>Reset</span>
-      </button>
+      <div class="d-flex align-items-center gap-2">
+        <app-modern-select 
+          [options]="categoryOptions"
+          [(ngModel)]="categoryFilter"
+          (selectionChange)="onFilterChange()"
+          placeholder="All Categories"
+          [icon]="'fe fe-layers'"
+          [clearable]="true"
+          size="sm"
+          minWidth="140px">
+        </app-modern-select>
+
+        <app-modern-select 
+          [options]="isPopularOptions"
+          [(ngModel)]="isPopularFilter"
+          (selectionChange)="onFilterChange()"
+          placeholder="All"
+          [icon]="'fe fe-star'"
+          [clearable]="true"
+          size="sm"
+          minWidth="120px">
+        </app-modern-select>
+
+        <app-modern-select 
+          [options]="statusOptions"
+          [(ngModel)]="statusFilter"
+          (selectionChange)="onFilterChange()"
+          placeholder="All Status"
+          [icon]="'fe fe-filter'"
+          [clearable]="true"
+          size="sm"
+          minWidth="130px">
+        </app-modern-select>
+
+        <button class="btn btn-sm btn-danger d-flex align-items-center gap-2" (click)="reset()">
+          <i class="fe fe-rotate-ccw"></i>
+          <span>Reset</span>
+        </button>
+      </div>
     </div>
 
     <div class="table-responsive">
       <table class="table table-sm table-nowrap card-table table-hover">
         <thead>
           <tr>
-            <th class="w-10">#NO</th>
+            <th class="w-5">#NO</th>
             <th class="w-10">Image</th>
-            <th class="w-20">Name</th>
-            <th class="w-20">Category</th>
-            <th class="w-15">Price</th>
-            <th class="w-15">Status</th>
+            <th class="w-25">Name</th>
+            <th class="w-15">Category</th>
+            <th class="w-10">Price</th>
+            <th class="w-15">Popular</th>
+            <th class="w-10">Status</th>
             <th class="w-10">Actions</th>
           </tr>
         </thead>
@@ -54,9 +90,9 @@
         <!-- Skeleton loader -->
         <tbody *ngIf="isLoading$ | async">
           <tr *ngFor="let number of [].constructor(size)">
-            <td *ngFor="let i of [].constructor(7)">
+            <td *ngFor="let i of [].constructor(8)">
               <ngx-skeleton-loader appearance="line" animation="progress-dark"
-                [theme]="{ width: '100%', height: '33px', 'border-radius': '3px', margin: '0' }">
+                [theme]="{ width: '100%', height: '34px', 'border-radius': '3px', margin: '0' }">
               </ngx-skeleton-loader>
             </td>
           </tr>
@@ -71,9 +107,26 @@
                 class="avatar-img avatar rounded-circle cursor-pointer"
                 (click)="openImageModal(meal.image || 'assets/img/blank.png')" />
             </td>
-            <td>{{ meal.name }}</td>
-            <td>{{ meal.category }}</td>
+            <td>
+              <div class="d-flex flex-column">
+                <span class="fw-bold">{{ meal.name }}</span>
+                <small class="text-muted" *ngIf="meal.customizationsCount > 0">
+                  <i class="fe fe-plus-circle me-1"></i>{{ meal.customizationsCount }} customizations
+                </small>
+                <small class="text-muted" *ngIf="meal.preparationTime">
+                  <i class="fe fe-clock me-1"></i>{{ meal.preparationTime }} min
+                </small>
+              </div>
+            </td>
+            <td>
+              <span>{{ meal.category }}</span>
+            </td>
             <td>{{ meal.price | currency }}</td>
+            <td>
+              <span>
+                {{ meal.isPopular ? 'Popular' : 'Regular' }}
+              </span>
+            </td>
             <td>
               <div class="form-check form-switch custom-switch-pink">
                 <input type="checkbox" class="form-check-input" [checked]="meal.status === 'Active'"

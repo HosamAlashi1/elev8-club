@@ -28,11 +28,11 @@ export class RolesAndPermissionsComponent implements OnInit {
   searchChanged: Subject<string> = new Subject<string>();
 
   constructor(
-    private modalService: NgbModal,
-    private toastr: ToastrsService,
-    private publicService: PublicService,
-    private http: HttpService,
-    private api: ApiService
+      private modalService: NgbModal,
+      private toastr: ToastrsService,
+      private publicService: PublicService,
+      private http: HttpService,
+      private api: ApiService
   ) {
     this.size = this.publicService.getNumOfRows(420, 63.74);
   }

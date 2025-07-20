@@ -41,6 +41,9 @@ export class DeleteComponent {
       case 'category':
         url = this.api.category.delete(this.id);
         break;
+      case 'meal':
+        url = this.api.meal.delete(this.id);
+        break;
       case 'restaurant':
         url = this.api.restaurants.delete(this.id);
         break;

@@ -55,6 +55,7 @@
   min-height: 31px;
   font-size: 0.875rem;
   padding: 4px 12px;
+  width: 160px;
 }
 
 .modern-select-sm.no-icon {
@@ -170,7 +171,7 @@
 }
 
 .modern-select-dropdown-content {
-  max-height: 320px;
+  max-height: 235px;
   overflow-y: auto;
 }
 

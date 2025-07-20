@@ -6,38 +6,49 @@
 
   <div class="modal-body">
     <div class="row">
-      <!-- Name -->
+      <!-- English Title -->
       <div class="col-md-6">
-        <label class="form-label">Name <span class="text-danger">*</span></label>
-        <input class="form-control" formControlName="name" placeholder="Enter name"
-          [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
-        <div class="invalid-feedback" *ngIf="submitted && f['name'].invalid">
-          Name is required
+        <label class="form-label">English Title <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="titleEn" placeholder="Enter English title"
+          [ngClass]="{ 'is-invalid': submitted && f['titleEn'].invalid, 'is-valid': submitted && f['titleEn'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['titleEn'].invalid">
+          English title is required
+        </div>
+      </div>
+
+      <!-- Arabic Title -->
+      <div class="col-md-6">
+        <label class="form-label">Arabic Title <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="titleAr" placeholder="Enter Arabic title"
+          [ngClass]="{ 'is-invalid': submitted && f['titleAr'].invalid, 'is-valid': submitted && f['titleAr'].valid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f['titleAr'].invalid">
+          Arabic title is required
+        </div>
+      </div>
+
+      <!-- Type -->
+      <div class="col-md-6 mt-3">
+        <label class="form-label">Type <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="type"
+          [ngClass]="{ 'is-invalid': submitted && f['type'].invalid, 'is-valid': submitted && f['type'].valid }">
+          <option value="" disabled>Select type</option>
+          <option *ngFor="let option of typeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="submitted && f['type'].invalid">
+          Type is required
         </div>
       </div>
 
       <!-- Photo -->
-      <div class="col-md-6">
-        <label class="form-label">Upload Photo <span class="text-danger">*</span></label>
-        <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*"
-          [ngClass]="{ 'is-invalid': submitted && f['image'].invalid, 'is-valid': submitted && f['image'].valid }">
-        <div class="invalid-feedback" *ngIf="submitted && f['image'].invalid">
-          Image is required
-        </div>
+      <div class="col-md-6 mt-3">
+        <label class="form-label">Upload Photo</label>
+        <input type="file" class="form-control" (change)="onFileChange($event)" accept="image/*">
+        <small class="text-muted">Optional category image</small>
       </div>
     </div>
 
-    <!-- Image Preview -->
-    <div class="row mt-3" *ngIf="imageUrl && imageUrl !== 'assets/img/blank.png'">
-      <div class="col-12">
-        <label class="form-label">Preview</label>
-        <div class="text-center">
-          <img [src]="imageUrl" alt="Category Preview" 
-               class="rounded-circle border" width="80" height="80"
-               style="object-fit: cover;">
-        </div>
-      </div>
-    </div>
   </div>
 
   <div class="modal-footer">
@@ -45,11 +56,11 @@
       <i class="fe fe-x me-2"></i>Close
     </button>
 
-    <button type="submit" class="btn btn-sm btn-primary" [disabled]="loading">
-      <ng-container *ngIf="loading">
+    <button type="submit" class="btn btn-sm btn-custom" [disabled]="(httpService.getLoading('addEditCategory') | async)">
+      <ng-container *ngIf="(httpService.getLoading('addEditCategory') | async)">
         <span class="spinner-border spinner-border-sm me-2"></span> Saving...
       </ng-container>
-      <ng-container *ngIf="!loading">
+      <ng-container *ngIf="!(httpService.getLoading('addEditCategory') | async)">
         <i class="fe fe-check me-2"></i> Save
       </ng-container>
     </button>

@@ -43,6 +43,15 @@ export class ApiService {
 		delete: (id: number) => API_BASE_URL + 'categories/delete/' + id
 	};
 
+	// meals 
+	public meal = {
+		list: API_BASE_URL + 'meals/list', // POST
+		details: (id: number) => API_BASE_URL + 'meals/show/' + id, // GET
+		add: API_BASE_URL + 'meals/create', // POST
+		edit: (id: number) => API_BASE_URL + 'meals/update/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'meals/delete/' + id, // POST
+	};
+
 	// roles
 	public roles = {
 		list: API_BASE_URL + 'roles/list',

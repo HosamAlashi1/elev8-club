@@ -7,6 +7,8 @@ import { ToastrsService } from '../../../services/toater.service';
 import { AddEditComponent } from './add-edit/add-edit.component';
 import { DeleteComponent } from '../../../shared/delete/delete.component';
 import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../../../services/api.service';
+import { HttpService } from '../../../services/http.service';
 
 @Component({
   selector: 'app-meals',
@@ -16,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 export class MealsComponent implements OnInit {
   isLoading$ = new BehaviorSubject<boolean>(true);
   meals: any[] = [];
-  allMeals: any[] = [];
+  categories: any[] = [];
 
   page = 1;
   size = 10;
@@ -26,11 +28,31 @@ export class MealsComponent implements OnInit {
   restaurantName = '';
   restaurantId!: number;
 
+  // Filters
+  categoryFilter: string = '';
+  isPopularFilter: string = '';
+  statusFilter: string = '';
+
+  // Filter options
+  categoryOptions: any[] = [{ value: '', label: 'All Categories' }];
+  isPopularOptions = [
+    { value: '', label: 'All' },
+    { value: '1', label: 'Popular' },
+    { value: '0', label: 'Not Popular' }
+  ];
+  statusOptions = [
+    { value: '', label: 'All Status' },
+    { value: '1', label: 'Active' },
+    { value: '0', label: 'Inactive' }
+  ];
+
   constructor(
     private modalService: NgbModal,
     private publicService: PublicService,
     private toastr: ToastrsService,
     private route: ActivatedRoute,
+    private api: ApiService,
+    private httpService: HttpService
   ) {
     this.size = this.publicService.getNumOfRows(313, 73.24);
   }
@@ -38,75 +60,91 @@ export class MealsComponent implements OnInit {
   ngOnInit(): void {
     this.restaurantId = +this.route.snapshot.paramMap.get('restaurantId')!;
     this.restaurantName = history.state.restaurantName || 'Unknown Restaurant';
+    this.loadCategories();
     this.loadData();
+
     this.searchChanged.pipe(debounceTime(300)).subscribe(() => {
       this.page = 1;
       this.list(this.page);
     });
   }
 
+  loadCategories(): void {
+    const payload = {
+      perPage: 100,
+      page: 1,
+      type: 'meal'
+    };
+
+    this.httpService.list(this.api.category.list, payload, 'categoriesList').subscribe({
+      next: (res) => {
+        if (res?.status && res?.items?.data) {
+          const categories = res.items.data.map((c: any) => ({
+            value: c.id.toString(),
+            label: c.title
+          }));
+          this.categoryOptions = [{ value: '', label: 'All Categories' }, ...categories];
+        }
+      },
+      error: () => {
+        // Fallback categories if API fails
+        this.categoryOptions = [
+          { value: '', label: 'All Categories' },
+          { value: '1', label: 'Appetizers' },
+          { value: '2', label: 'Main Course' },
+          { value: '3', label: 'Desserts' }
+        ];
+      }
+    });
+  }
+
   loadData(): void {
-    this.allMeals = [
-      // 🍔 Restaurant 1: Fast Foodies
-      { id: 1, restaurant_id: 31, name: 'Cheeseburger', price: 25, category: 'Burgers', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 2, restaurant_id: 31, name: 'Shawarma Wrap', price: 18, category: 'Wraps', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 3, restaurant_id: 31, name: 'Zinger Sandwich', price: 23, category: 'Sandwiches', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 4, restaurant_id: 31, name: 'French Fries', price: 9, category: 'Sides', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 5, restaurant_id: 31, name: 'Hot Dog', price: 15, category: 'Sandwiches', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 6, restaurant_id: 31, name: 'Grilled Chicken Burger', price: 27, category: 'Burgers', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 7, restaurant_id: 31, name: 'Onion Rings', price: 11, category: 'Sides', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 8, restaurant_id: 31, name: 'Crispy Chicken Wrap', price: 20, category: 'Wraps', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 9, restaurant_id: 31, name: 'Beef Nuggets', price: 17, category: 'Sides', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 10, restaurant_id: 31, name: 'Spicy Wings', price: 22, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 11, restaurant_id: 31, name: 'Steak Sandwich', price: 30, category: 'Sandwiches', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 12, restaurant_id: 31, name: 'BBQ Burger', price: 26, category: 'Burgers', status: 'Inactive', image: 'assets/img/blank.png' },
-
-      // 🍕 Restaurant 2: Italiano Pizza
-      { id: 13, restaurant_id: 30, name: 'Margherita Pizza', price: 28, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 14, restaurant_id: 30, name: 'Pepperoni Pizza', price: 32, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 15, restaurant_id: 30, name: 'Four Cheese Pizza', price: 35, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 16, restaurant_id: 30, name: 'Vegetarian Pizza', price: 30, category: 'Pizza', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 17, restaurant_id: 30, name: 'Pizza Calzone', price: 33, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 18, restaurant_id: 30, name: 'Seafood Pizza', price: 36, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 19, restaurant_id: 30, name: 'Pizza Alfredo', price: 34, category: 'Pizza', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 20, restaurant_id: 30, name: 'Pizza Chicken Ranch', price: 31, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 21, restaurant_id: 30, name: 'Pizza Supreme', price: 37, category: 'Pizza', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 22, restaurant_id: 30, name: 'Cheesy Garlic Bread', price: 14, category: 'Sides', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 23, restaurant_id: 30, name: 'Spaghetti Bolognese', price: 29, category: 'Pasta', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 24, restaurant_id: 30, name: 'Lasagna', price: 30, category: 'Pasta', status: 'Inactive', image: 'assets/img/blank.png' },
-
-      // 🐔 Restaurant 3: Chicken House
-      { id: 25, restaurant_id: 29, name: 'Grilled Chicken', price: 33, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 26, restaurant_id: 29, name: 'Chicken Nuggets', price: 16, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 27, restaurant_id: 29, name: 'Fried Chicken Bucket', price: 40, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 28, restaurant_id: 29, name: 'BBQ Chicken Wings', price: 25, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 29, restaurant_id: 29, name: 'Spicy Chicken Fillet', price: 24, category: 'Chicken', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 30, restaurant_id: 29, name: 'Zinger Twister', price: 22, category: 'Wraps', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 31, restaurant_id: 29, name: 'Chicken Caesar Salad', price: 21, category: 'Salads', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 32, restaurant_id: 29, name: 'Chicken & Rice Box', price: 19, category: 'Meals', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 33, restaurant_id: 29, name: 'Hot Chicken Wings', price: 27, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 34, restaurant_id: 29, name: 'Mini Chicken Wraps', price: 18, category: 'Wraps', status: 'Inactive', image: 'assets/img/blank.png' },
-      { id: 35, restaurant_id: 29, name: 'Honey Glazed Chicken', price: 29, category: 'Chicken', status: 'Active', image: 'assets/img/blank.png' },
-      { id: 36, restaurant_id: 29, name: 'Crunchy Chicken Sandwich', price: 23, category: 'Sandwiches', status: 'Active', image: 'assets/img/blank.png' },
-    ];
     this.list(this.page);
   }
 
   list(page: number): void {
     this.page = page;
     this.isLoading$.next(true);
+    const payload = {
+      perPage: this.size,
+      page: this.page,
+      search: this.searchText.trim(),
+      restaurant_id: this.restaurantId,
+      category_id: this.categoryFilter || undefined,
+      is_popular: this.isPopularFilter || undefined,
+      status: this.statusFilter || undefined
+    };
 
-    setTimeout(() => {
-      const filtered = this.allMeals
-        .filter(meal =>
-          meal.restaurant_id === this.restaurantId &&
-          meal.name.toLowerCase().includes(this.searchText.trim().toLowerCase())
-        );
+    const url = `${this.api.meal.list}`;
+    this.httpService.list(url, payload, 'mealsList').subscribe({
+      next: (res) => {
+        if (res?.status && res?.items?.data) {
+          this.meals = res.items.data.map((meal: any) => ({
+            ...meal,
+            name: meal.name,
+            price: meal.cost,
+            category: meal.category?.title || 'No Category',
+            categoryId: meal.category?.id,
+            status: meal.status === 1 ? 'Active' : 'Inactive',
+            isPopular: meal.is_popular === 1,
+            isPickedYou: meal.is_picked_you === 1,
+            preparationTime: meal.preparation_time,
+            customizationsCount: meal.customizations?.length || 0
+          }));
+          this.totalCount = res.items.total_records;
+        }
+        this.isLoading$.next(false);
+      },
+      error: () => {
+        this.toastr.Showerror('Failed to load meals');
+        this.isLoading$.next(false);
+      }
+    });
+  }
 
-      this.totalCount = filtered.length;
-      this.meals = filtered.slice((page - 1) * this.size, page * this.size);
-      this.isLoading$.next(false);
-    }, 500);
+  onFilterChange(): void {
+    this.page = 1;
+    this.list(this.page);
   }
 
   onSearchChange(): void {
@@ -115,37 +153,59 @@ export class MealsComponent implements OnInit {
 
   reset(): void {
     this.searchText = '';
+    this.categoryFilter = '';
+    this.isPopularFilter = '';
+    this.statusFilter = '';
     this.page = 1;
     this.list(this.page);
   }
 
   toggleStatus(meal: any): void {
-    meal.status = meal.status === 'Active' ? 'Inactive' : 'Active';
-    this.toastr.Showsuccess(`Meal "${meal.name}" is now ${meal.status}`);
+    const newStatus = meal.status === 'Active' ? 0 : 1;
+    
+    // Prepare form data for the API
+    const formData = new FormData();
+    formData.append('cost', meal.price.toString());
+    formData.append('translations[en][name]', meal.name);
+    formData.append('translations[ar][name]', meal.name); // Assuming same for now
+    formData.append('preparation_time', meal.preparationTime.toString());
+    formData.append('is_popular', meal.isPopular ? '1' : '0');
+    formData.append('is_picked_you', meal.isPickedYou ? '1' : '0');
+    formData.append('is_active', newStatus.toString());
+    formData.append('restaurant_id', this.restaurantId.toString());
+    formData.append('category_id', meal.categoryId.toString());
+
+    const url = this.api.meal.edit(meal.id);
+    this.httpService.action(url, formData, 'toggleMealStatus').subscribe({
+      next: (res: any) => {
+        if (res.success || res.status) {
+          meal.status = newStatus === 1 ? 'Active' : 'Inactive';
+          this.toastr.Showsuccess(`Meal "${meal.name}" status updated to ${meal.status}`);
+        } else {
+          this.toastr.Showerror(res.msg || res.message || 'Failed to update status');
+        }
+      },
+      error: (error: any) => {
+        console.error('Error updating status:', error);
+        const errorMessage = error?.error?.message || error?.error?.msg || error?.message || 'Failed to update status';
+        this.toastr.Showerror(errorMessage);
+      }
+    });
   }
 
   add(): void {
     const modalRef = this.modalService.open(AddEditComponent, { size: 'lg', centered: true });
-    modalRef.result.then((result) => {
-      if (result) {
-        this.allMeals.push(result);
-        this.list(1);
-      }
-    }).catch(() => { });
+    modalRef.componentInstance.restaurantId = this.restaurantId;
+    modalRef.componentInstance.categories = this.categoryOptions.filter(c => c.value !== '');
+    modalRef.result.then(() => this.list(1));
   }
 
   edit(meal: any): void {
     const modalRef = this.modalService.open(AddEditComponent, { size: 'lg', centered: true });
     modalRef.componentInstance.meal = meal;
-    modalRef.result.then((result) => {
-      if (result) {
-        const index = this.allMeals.findIndex(m => m.id === result.id);
-        if (index !== -1) {
-          this.allMeals[index] = result;
-          this.list(this.page);
-        }
-      }
-    }).catch(() => { });
+    modalRef.componentInstance.restaurantId = this.restaurantId;
+    modalRef.componentInstance.categories = this.categoryOptions.filter(c => c.value !== '');
+    modalRef.result.then(() => this.list(this.page));
   }
 
   delete(meal: any): void {
@@ -153,10 +213,7 @@ export class MealsComponent implements OnInit {
     modalRef.componentInstance.id = meal.id;
     modalRef.componentInstance.type = 'meal';
     modalRef.componentInstance.message = `Do you want to delete "${meal.name}"?`;
-    modalRef.result.then(() => {
-      this.allMeals = this.allMeals.filter(m => m.id !== meal.id);
-      this.list(this.page);
-    }).catch(() => { });
+    modalRef.result.then(() => this.list(this.page));
   }
 
   openImageModal(image: string): void {
