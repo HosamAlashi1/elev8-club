@@ -1,0 +1,20 @@
+image: node:20
+
+pipelines:
+  default:
+    - step:
+        name: Build and Deploy Angular to cPanel via FTP
+        caches:
+          - node
+        script:
+          - echo "🛠️ Installing Angular CLI and dependencies..."
+          - npm install -g @angular/cli
+          - npm install
+          - echo "⚙️ Building project..."
+          - ng build --configuration=production
+          - echo "📦 Installing lftp..."
+          - apt-get update && apt-get install -y lftp
+          - echo "🚀 Uploading files to FTP server..."
+          - lftp -c "set ftp:list-options -a;
+                     open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST;
+                     mirror -R -e -n dist $FTP_REMOTE_PATH"
