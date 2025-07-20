@@ -11,7 +11,7 @@ pipelines:
           - npm install -g @angular/cli
           - npm install
           - echo "⚙️ Building project..."
-          - ng build --configuration=production
+          - ng build --configuration=live
           - echo "📦 Installing lftp..."
           - apt-get update && apt-get install -y lftp
           - echo "🚀 Uploading files to FTP server..."
