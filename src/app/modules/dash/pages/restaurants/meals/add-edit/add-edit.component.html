@@ -12,7 +12,7 @@
     <!-- Names Row -->
     <div class="row">
       <!-- English Name -->
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label class="form-label"
           >English Name <span class="text-danger">*</span></label
         >
@@ -31,7 +31,7 @@
       </div>
 
       <!-- Arabic Name -->
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label class="form-label"
           >Arabic Name <span class="text-danger">*</span></label
         >
@@ -47,6 +47,16 @@
         <div class="invalid-feedback" *ngIf="submitted && f['nameAr'].invalid">
           Arabic name is required
         </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Upload Photo</label>
+        <input
+          type="file"
+          class="form-control"
+          (change)="onFileChange($event)"
+          accept="image/*"
+        />
       </div>
     </div>
 
@@ -153,20 +163,6 @@
       </div>
     </div>
 
-    <!-- Upload Photo Row -->
-    <div class="row mt-3">
-      <div class="col-md-12">
-        <label class="form-label">Upload Photo</label>
-        <input
-          type="file"
-          class="form-control"
-          (change)="onFileChange($event)"
-          accept="image/*"
-        />
-        <small class="text-muted">Optional meal image</small>
-      </div>
-    </div>
-
     <!-- Customizations Section -->
     <div class="row mt-4">
       <div class="col-12">
@@ -254,6 +250,86 @@
             No customizations added yet. Click "Add Customization" to create
             meal add-ons.
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Images Section -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <label class="form-label">
+          Gallery Images
+          <span *ngIf="hasGalleryChanges" class="badge bg-warning text-dark ms-2">
+            <i class="fe fe-edit-2 me-1"></i>Modified
+          </span>
+        </label>
+
+        <!-- Single Unified Drag & Drop Zone with Click-to-Upload -->
+        <div
+          class="gallery-upload-zone border border-2 border-dashed rounded-3 p-4 text-center bg-light position-relative"
+          (drop)="onGalleryDrop($event)" 
+          (dragover)="onGalleryDragOver($event)"
+          (dragleave)="onGalleryDragLeave($event)" 
+          (click)="triggerFileInput()" 
+          [class.drag-over]="isDragOver"
+          style="min-height: 160px; cursor: pointer; transition: all 0.3s ease;"
+        >
+          <!-- Upload Prompt - Show when no images -->
+          <div class="upload-prompt" *ngIf="galleryPreviews.length === 0">
+            <i class="fe fe-upload fs-1 text-primary mb-3 d-block"></i>
+            <h5 class="text-muted mb-2">Click to upload or drag and drop images</h5>
+            <p class="text-muted small mb-0">Supports multiple images • JPG, PNG, GIF</p>
+          </div>
+
+          <!-- Gallery Preview Grid -->
+          <div class="row g-3" *ngIf="galleryPreviews.length > 0">
+            <!-- Existing Images -->
+            <div class="col-6 col-md-4 col-lg-3" *ngFor="let image of galleryPreviews; let i = index">
+              <div class="gallery-item card border-0 shadow-sm h-100 position-relative overflow-hidden">
+                <img [src]="image.preview" alt="Gallery Image" class="card-img-top rounded"
+                  style="height: 120px; object-fit: cover;" />
+
+                <!-- Delete Button -->
+                <button type="button"
+                  class="btn btn-danger btn-sm rounded-circle position-absolute gallery-delete-btn"
+                  style="top: 8px; right: 8px; width: 28px; height: 28px; font-size: 12px; z-index: 1000;"
+                  (click)="removeGalleryImage(i, $event)" title="Remove image"
+                  [attr.aria-label]="'Remove image ' + (i + 1)">
+                  <i class="fe fe-x" style="pointer-events: none;"></i>
+                </button>
+
+                <!-- Image Number Overlay -->
+                <div class="position-absolute bottom-0 start-0 m-2">
+                  <span class="badge bg-dark bg-opacity-75 text-white">{{ i + 1 }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add More Images Button -->
+            <div class="col-6 col-md-4 col-lg-3">
+              <div
+                class="add-more-card card border-2 border-dashed h-100 d-flex align-items-center justify-content-center text-muted"
+                style="height: 120px; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.9);"
+                (click)="triggerFileInput($event)">
+                <div class="text-center">
+                  <i class="fe fe-plus fs-3 mb-2 d-block text-primary"></i>
+                  <small class="fw-medium">Add More</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Helper Text for existing images -->
+          <div class="mt-3" *ngIf="galleryPreviews.length > 0">
+            <small class="text-muted">
+              <i class="fe fe-info me-1"></i>
+              {{ galleryPreviews.length }} image(s) selected • Click anywhere to add more
+            </small>
+          </div>
+
+          <!-- Hidden File Input -->
+          <input #galleryFileInput id="galleryFileInput" type="file" class="d-none" accept="image/*" multiple
+            (change)="onGalleryFilesChange($event)" />
         </div>
       </div>
     </div>

@@ -35,12 +35,13 @@
   </ul>
 
   <div class="sidebar-footer mt-2 text-center">
-    <a [routerLink]="'/settings/profile'" style="display: inline-block">
+    <a [routerLink]="'/settings'" [queryParams]="{ tab: 'profile' }" style="display: inline-block">
       <img src="assets/img/avatar.png" alt="User" class="rounded-circle border" style="width: 45px; height: 45px;" />
     </a>
 
     <!-- إظهار الاسم فقط إذا لم يكن مضغوط -->
-    <span *ngIf="!isCollapsed" class="d-block mt-2">{{ user?.name }}</span>
+    <a *ngIf="!isCollapsed" [routerLink]="'/settings'" [queryParams]="{ tab: 'profile' }" 
+       class="d-block mt-2 text-decoration-none text-white">{{ user?.name }}</a>
 
     <!-- زر تسجيل الخروج دائمًا ظاهر -->
     <button class="logout-btn d-inline-flex align-items-center justify-content-center mt-2" (click)="logout()"

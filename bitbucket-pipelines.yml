@@ -16,3 +16,11 @@ pipelines:
           - apt-get update && apt-get install -y lftp
           - echo "🚀 Uploading files to FTP server..."
           - lftp -e "set ssl:verify-certificate no; mirror -R -n dist $FTP_REMOTE_PATH; bye" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST
+
+
+# | Variable          | Example Value                     |
+# | ----------------- | --------------------------------- |
+# | `FTP_HOST`        | `ftp.ocean-it.net`                |
+# | `FTP_USERNAME`    | `your-user@yourdomain.com`        |
+# | `FTP_PASSWORD`    | `your-ftp-password`               |
+# | `FTP_REMOTE_PATH` | `/`                               | // لما يكون فاضي بياخد مسار الفولدر تبع الدومين ولما تضيف اشي بضيف على مسار الفولدر تبع الدومين

@@ -1,4 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, HostListener } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, transition, style, animate, query, group } from '@angular/animations';
 
 @Component({
@@ -26,9 +27,20 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     width: '0px'
   };
 
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
+
   ngOnInit(): void {
-    // Set default active tab
-    this.activeTab = 'profile';
+    // Check for tab query parameter
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.activeTab = params['tab'];
+      } else {
+        this.activeTab = 'profile'; // Default tab
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -36,6 +48,13 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.updateUnderlinePosition();
     }, 100);
+    
+    // Also update position when tab changes from query params
+    this.route.queryParams.subscribe(() => {
+      setTimeout(() => {
+        this.updateUnderlinePosition();
+      }, 150);
+    });
   }
 
   @HostListener('window:resize')
@@ -48,6 +67,14 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   switchTab(tab: string): void {
     if (this.activeTab !== tab) {
       this.activeTab = tab;
+      
+      // Update URL with query parameter
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { tab: tab },
+        queryParamsHandling: 'merge'
+      });
+      
       setTimeout(() => {
         this.updateUnderlinePosition();
       }, 10);

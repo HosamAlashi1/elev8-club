@@ -30,8 +30,14 @@
               <input type="radio" class="btn-check" value="specific" formControlName="type" id="sendSpecific">
               <label class="toggle-btn" [class.active]="form.value.type === 'specific'" for="sendSpecific">
                 <i class="fa fa-user-check me-1"></i> Specific Users
+                <span *ngIf="form.value.type === 'specific' && getSelectedUsersCount() > 0" 
+                      class="badge bg-primary ms-1">{{ getSelectedUsersCount() }}</span>
               </label>
             </div>
+            <small *ngIf="form.value.type === 'specific'" class="text-muted mt-1 d-block">
+              <i class="fa fa-info-circle me-1"></i>
+              Select users from the table on the right to send specific notifications
+            </small>
           </div>
 
           <div class="mb-3">
@@ -45,7 +51,8 @@
           </div>
 
           <div class="d-flex justify-content-between pt-3 border-top mt-4">
-            <button class="btn btn-custom ms-auto" [disabled]="loading || form.invalid">
+            <button class="btn btn-custom ms-auto" 
+                    [disabled]="loading || !isFormValidForSubmission()">
               <ng-container *ngIf="!loading">
                 <i class="fa fa-paper-plane me-2 animate-plane"></i>
                 Send Notification
@@ -63,12 +70,25 @@
     <!-- Right Side - Users Table -->
     <div class="col-lg-7">
       <div class="card p-3">
-        <div class="d-flex align-items-center mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-3">
           <div class="input-group input-group-merge input-group-flush w-50">
             <i class="fe fe-search text-muted position-absolute mt-2"></i>
             <input type="text" class="form-control ps-4" placeholder="Search users..." [(ngModel)]="searchText"
               (ngModelChange)="onSearchChange()">
           </div>
+          
+          <div *ngIf="form.value.type === 'specific'" class="text-end">
+            <small class="text-muted">
+              Selected: <span class="fw-bold text-primary">{{ getSelectedUsersCount() }}</span> / {{ totalCount }} users
+            </small>
+          </div>
+        </div>
+
+        <!-- Warning message for specific type with no selection -->
+        <div *ngIf="form.value.type === 'specific' && getSelectedUsersCount() === 0 && users.length > 0" 
+             class="alert alert-warning alert-sm mb-3">
+          <i class="fa fa-exclamation-triangle me-2"></i>
+          Please select at least one user to send the notification.
         </div>
 
         <div class="table-responsive">
@@ -82,13 +102,14 @@
                 <th class="w-10">User ID</th>
                 <th class="w-15">Image</th>
                 <th class="w-20">Name</th>
-                <th class="w-25">Email</th>
+                <th class="w-20">Email</th>
+                <th class="w-15">Phone</th>
               </tr>
             </thead>
 
             <tbody *ngIf="isLoading$ | async">
               <tr *ngFor="let i of [].constructor(size +1)">
-                <td *ngFor="let j of [].constructor(5)">
+                <td *ngFor="let j of [].constructor(6)">
                   <ngx-skeleton-loader appearance="line" animation="progress-dark"
                     [theme]="{ width: '50%', height: '23px' }"></ngx-skeleton-loader>
                 </td>
@@ -96,7 +117,7 @@
             </tbody>
 
             <tbody *ngIf="!(isLoading$ | async)">
-              <tr *ngFor="let user of users">
+              <tr *ngFor="let user of users" [class.table-active]="user.checked && form.value.type === 'specific'">
                 <td>
                   <input type="checkbox" [disabled]="form.value.type === 'all'" [(ngModel)]="user.checked"
                     [ngModelOptions]="{standalone: true}" />
@@ -104,10 +125,20 @@
                 <td>#{{ user.id }}</td>
                 <td>
                   <img [src]="user.image || 'assets/img/blank.png'" class="avatar-img rounded-circle" width="35"
-                    height="35" (click)="openImageModal(user.image && user.image.trim() !== '' ? user.image : 'assets/img/blank.png')">
+                    height="35" (click)="openImageModal(user.image && user.image.trim() !== '' ? user.image : 'assets/img/blank.png')"
+                    style="cursor: pointer;">
                 </td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
+                <td>{{ user.phone }}</td>
+              </tr>
+              
+              <!-- Empty state -->
+              <tr *ngIf="users.length === 0">
+                <td colspan="6" class="text-center text-muted py-4">
+                  <i class="fe fe-users me-2"></i>
+                  No users found
+                </td>
               </tr>
             </tbody>
           </table>

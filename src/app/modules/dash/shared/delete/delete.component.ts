@@ -50,6 +50,9 @@ export class DeleteComponent {
       case 'role':
         url = this.api.roles.delete(this.id);
         break;
+      case 'option':
+        url = this.api.options.delete(this.id);
+        break;
     }
 
     this.httpService.action(url, data, 'deleteAction').subscribe({

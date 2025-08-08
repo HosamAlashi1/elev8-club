@@ -15,7 +15,7 @@ import { SharedModule } from './shared/shared.module';
 import { LottieModule } from 'ngx-lottie';
 import player from 'lottie-web';
 import { LottieOverlayComponent } from './shared/lottie-overlay/lottie-overlay.component';
-import { LucideAngularModule, Home, Store, Layers, UserCheck, Users, ShoppingCart, BarChart2, Bell, Settings } from 'lucide-angular';
+import { LucideAngularModule, Home, Store, Layers, UserCheck, Users, ShoppingCart, BarChart2, Bell, Settings, Sliders } from 'lucide-angular';
 
 
 
@@ -52,7 +52,8 @@ export function playerFactory() {
       ShoppingCart,
       BarChart2,
       Bell,
-      Settings
+      Settings,
+      Sliders
     })
   ],
   providers: [

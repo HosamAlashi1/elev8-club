@@ -466,7 +466,12 @@
             </div>
             <!-- Gallery Images -->
             <div class="col-12 mb-4">
-              <label class="form-label">Gallery Images</label>
+              <label class="form-label">
+                Gallery Images
+                <span *ngIf="hasGalleryChanges" class="badge bg-warning text-dark ms-2">
+                  <i class="fe fe-edit-2 me-1"></i>Modified
+                </span>
+              </label>
 
               <!-- Single Unified Drag & Drop Zone with Click-to-Upload -->
               <div
@@ -532,6 +537,7 @@
                 <input #galleryFileInput id="galleryFileInput" type="file" class="d-none" accept="image/*" multiple
                   (change)="onGalleryFilesChange($event)" />
               </div>
+              
             </div>
 
           </div>

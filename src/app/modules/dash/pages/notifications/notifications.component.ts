@@ -68,48 +68,67 @@ export class NotificationsComponent implements OnInit {
   }
 
   list(page: number): void {
-  this.page = page;
-  this.isLoading$.next(true);
+    this.page = page;
+    this.isLoading$.next(true);
+    const payload = {
+      perPage: this.size,
+      page: this.page,
+      search: this.searchText.trim()
+    };
 
-  // بيانات ستاتيك لتجربة الشكل
-  const dummyUsers = [
-    { id: 1, name: 'Ali Hasan', email: 'ali@example.com', image: 'assets/img/blank.png' },
-    { id: 2, name: 'Sara Khaled', email: 'sara@example.com', image: 'assets/img/blank.png' },
-    { id: 3, name: 'Mohammed Zayed', email: 'mzayed@example.com', image: 'assets/img/blank.png' },
-    { id: 4, name: 'Lina Ameen', email: 'lina@example.com', image: 'assets/img/blank.png' },
-    { id: 5, name: 'Osama Noor', email: 'osama@example.com', image: 'assets/img/blank.png' },
-    { id: 6, name: 'Maya Alami', email: 'maya@example.com', image: 'assets/img/blank.png' },
-    { id: 7, name: 'Yousef Al-Fayez', email: 'yousef@example.com', image: 'assets/img/blank.png' },
-    { id: 8, name: 'Hana Adel', email: 'hana@example.com', image: 'assets/img/blank.png' },
-    { id: 9, name: 'Tariq Ahmad', email: 'tariq@example.com', image: 'assets/img/blank.png' },
-    { id: 10, name: 'Rania Said', email: 'rania@example.com', image: 'assets/img/blank.png' },
-    { id: 11, name: 'Khalid Fathi', email: 'khalid@example.com', image: 'assets/img/blank.png' },
-    { id: 12, name: 'Nour El Din', email: 'nour@example.com', image: 'assets/img/blank.png' }
-  ];
-
-  // تطبيق البحث
-  const filtered = dummyUsers.filter(u =>
-    u.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
-    u.email.toLowerCase().includes(this.searchText.toLowerCase())
-  );
-
-  // محاكاة تقطيع الصفحات (pagination)
-  const start = (this.page - 1) * this.size;
-  const end = start + this.size;
-  const paginated = filtered.slice(start, end);
-
-  // حفظ النتائج
-  this.users = paginated.map(u => ({ ...u, checked: false }));
-  this.totalCount = filtered.length;
-
-  // إنهاء اللودر
-  setTimeout(() => this.isLoading$.next(false), 500);
-}
+    const url = `${this.api.user.list}`;
+    this.http.list(url, payload, 'usersList').subscribe({
+      next: (res) => {
+        console.log('Users API Response:', res); // Debug log
+        
+        if (res?.status && res?.items?.data) {
+          this.users = res.items.data.map((u: any) => ({
+            ...u,
+            id: u.id,
+            name: u.name || 'N/A',
+            email: u.email || 'N/A',
+            phone: u.phone || 'N/A',
+            image: u.photo || 'assets/img/blank.png',
+            checked: false
+          }));
+          this.totalCount = res.items.total_records;
+        } else {
+          this.users = [];
+          this.totalCount = 0;
+        }
+        this.isLoading$.next(false);
+      },
+      error: (error) => {
+        console.error('Failed to load users:', error);
+        this.toastr.Showerror('Failed to load users');
+        this.users = [];
+        this.totalCount = 0;
+        this.isLoading$.next(false);
+      }
+    });
+  }
 
 
   toggleAll(event: any): void {
     const checked = event.target.checked;
     this.users.forEach(user => user.checked = checked);
+  }
+
+  // Get count of selected users
+  getSelectedUsersCount(): number {
+    return this.users.filter(u => u.checked).length;
+  }
+
+  // Check if form is valid for submission
+  isFormValidForSubmission(): boolean {
+    if (this.form.invalid) return false;
+    
+    const type = this.form.value.type;
+    if (type === 'specific') {
+      return this.getSelectedUsersCount() > 0;
+    }
+    
+    return true;
   }
 
   sendNotification(): void {
@@ -119,45 +138,76 @@ export class NotificationsComponent implements OnInit {
     const title = this.form.value.title;
     const body = this.form.value.body;
 
-    const selectedUserIds = this.users.filter(u => u.checked).map(u => u.id);
+    // Get selected users when type is 'specific'
+    const selectedUserIds = type === 'specific' 
+      ? this.users.filter(u => u.checked).map(u => u.id)
+      : [];
+
+    // Validate specific user selection
+    if (type === 'specific' && selectedUserIds.length === 0) {
+      this.toastr.Showerror('Please select at least one user for specific notification');
+      return;
+    }
 
     const payload = {
       type,
       title,
       body,
-      users: type === 'specific' ? selectedUserIds : []
+      users: selectedUserIds
     };
 
     this.loading = true;
     this.status = '';
 
-    // محاكاة API call
-    setTimeout(() => {
-      const success = Math.random() > 0.2;
-      this.loading = false;
+    // Use actual API endpoint for sending notifications
+    const url = this.api.notifications.send;
+    
+    this.http.action(url, payload, 'sendNotification').subscribe({
+      next: (res: any) => {
+        this.loading = false;
+        
+        if (res?.status) {
+          this.lottieService.show({
+            options: {
+              path: 'assets/json/send_successfully.json'
+            },
+            message: 'Notification sent successfully',
+            messageClass: 'text-dark',
+            autoCloseDelay: 2000,
+            visible: false
+          });
 
-      this.lottieService.show({
-        options: {
-          path: success
-            ? 'assets/json/send_successfully.json'
-            : 'assets/json/fatel_error.json'
-        },
-        message: success
-          ? 'Notification sent successfully'
-          : 'Notification failed to send',
-        messageClass: success ? 'text-dark' : 'text-danger',
-        autoCloseDelay: 2000,
-        visible: false
-      });
-
-      if (success) {
-        this.form.reset({ type: 'all' });
-        this.users.forEach(u => u.checked = false);
-        this.status = 'success';
-      } else {
-        this.status = 'error';
+          // Reset form and selections
+          this.form.reset({ type: 'all' });
+          this.users.forEach(u => u.checked = false);
+          this.status = 'success';
+          
+          // this.toastr.Showsuccess('Notification sent successfully');
+        } else {
+          this.handleNotificationError(res?.message || 'Failed to send notification');
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error('Notification send error:', error);
+        this.handleNotificationError('Failed to send notification');
       }
-    }, 2500);
+    });
+  }
+
+  private handleNotificationError(message: string): void {
+    this.lottieService.show({
+      options: {
+        path: 'assets/json/fatel_error.json'
+      },
+      message: message,
+      messageClass: 'text-danger',
+      autoCloseDelay: 2000,
+      visible: false
+    });
+
+    this.status = 'error';
+    // this.toastr.Showerror(message);
   }
 
   openImageModal(image: string) {

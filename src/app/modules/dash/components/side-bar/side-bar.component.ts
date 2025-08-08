@@ -19,6 +19,7 @@ export class SidebarComponent implements OnInit {
     { label: 'Home', icon: 'home', route: '/dashboard' },
     { label: 'Manage Restaurants', icon: 'store', route: '/restaurants' },
     { label: 'Categories', icon: 'layers', route: '/categories' },
+    { label: 'Options', icon: 'sliders', route: '/options' },
     { label: 'Admins', icon: 'user-check', route: '/admins' },
     { label: 'Users', icon: 'users', route: '/users' },
     { label: 'Orders', icon: 'shopping-cart', route: '/orders' },

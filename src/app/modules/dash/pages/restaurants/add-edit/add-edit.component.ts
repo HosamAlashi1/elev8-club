@@ -50,8 +50,13 @@ export class AddEditComponent implements OnInit {
   restaurantId: number | null = null;
   center = { lat: 32.8872, lng: 13.1913 };  // Image previews
   imagePreview: string | ArrayBuffer | null = null;
-  galleryPreviews: { file?: File; url?: string; preview: string | ArrayBuffer }[] = [];
+  galleryPreviews: { file?: File; url?: string; id?: number; preview: string | ArrayBuffer }[] = [];
   isDragOver = false;
+  
+  // Gallery tracking for edit mode
+  originalGalleryLength = 0; // Track original gallery count
+  originalGalleryUrls: string[] = []; // Track original gallery URLs
+  galleryChanged = false; // Flag to track if gallery was modified
 
   isSaving$ = new BehaviorSubject<boolean>(false);
   isLoadingLookups$ = new BehaviorSubject<boolean>(true);
@@ -416,6 +421,7 @@ export class AddEditComponent implements OnInit {
           file: file,
           preview: reader.result as string
         });
+        this.galleryChanged = true; // Mark as changed
         this.updateGalleryFormControl();
       };
       reader.readAsDataURL(file);
@@ -429,6 +435,7 @@ export class AddEditComponent implements OnInit {
 
     if (index >= 0 && index < this.galleryPreviews.length) {
       this.galleryPreviews.splice(index, 1);
+      this.galleryChanged = true; // Mark as changed
       this.updateGalleryFormControl();
     }
   }
@@ -436,6 +443,55 @@ export class AddEditComponent implements OnInit {
   private updateGalleryFormControl(): void {
     const galleryData = this.galleryPreviews.map(item => item.file || item.url);
     this.form.get('gallery_images')?.setValue(galleryData);
+    
+    // Check if gallery has changed in edit mode
+    if (this.mode === 'edit') {
+      this.checkGalleryChanges();
+    }
+  }
+
+  private checkGalleryChanges(): void {
+    // Check if count changed
+    if (this.galleryPreviews.length !== this.originalGalleryLength) {
+      this.galleryChanged = true;
+      console.log('Gallery changed: count changed', this.galleryPreviews.length, 'vs', this.originalGalleryLength);
+      return;
+    }
+    
+    // Check if any new files were added (has .file property)
+    const hasNewFiles = this.galleryPreviews.some(item => item.file instanceof File);
+    if (hasNewFiles) {
+      this.galleryChanged = true;
+      console.log('Gallery changed: new files added');
+      return;
+    }
+    
+    // Check if original images were removed by comparing URLs
+    if (this.originalGalleryUrls.length > 0) {
+      const currentUrls = this.galleryPreviews
+        .filter(item => item.url && !item.file)
+        .map(item => item.url!);
+      
+      // Check if any original URL is missing
+      const missingUrls = this.originalGalleryUrls.filter(originalUrl => 
+        !currentUrls.includes(originalUrl)
+      );
+      
+      if (missingUrls.length > 0) {
+        this.galleryChanged = true;
+        console.log('Gallery changed: original images were removed', missingUrls);
+        return;
+      }
+    }
+    
+    // If we reach here, no changes detected
+    this.galleryChanged = false;
+    console.log('Gallery unchanged');
+  }
+
+  // Helper method to check if gallery has changes (for UI indication)
+  get hasGalleryChanges(): boolean {
+    return this.mode === 'edit' && this.galleryChanged;
   }
 
   // Custom validator for category array
@@ -720,13 +776,51 @@ export class AddEditComponent implements OnInit {
       formData.append('image', formValue.image);
     }
 
-    // Gallery images array
-    if (this.galleryPreviews && this.galleryPreviews.length > 0) {
-      this.galleryPreviews.forEach((item, index) => {
+    // Gallery images array - Only send if changed in edit mode or if in add mode
+    console.log('=== Gallery Debug ===');
+    console.log('Mode:', this.mode);
+    console.log('Gallery Changed:', this.galleryChanged);
+    console.log('Gallery Previews:', this.galleryPreviews);
+    console.log('Original Gallery Length:', this.originalGalleryLength);
+    console.log('Original Gallery URLs:', this.originalGalleryUrls);
+    
+    if (this.mode === 'add') {
+      // In add mode, always send gallery images
+      if (this.galleryPreviews && this.galleryPreviews.length > 0) {
+        this.galleryPreviews.forEach((item, index) => {
+          if (item.file instanceof File) {
+            formData.append(`gallery_images[${index}]`, item.file);
+            console.log(`Added gallery_images[${index}]:`, item.file.name);
+          }
+        });
+      }
+    } else if (this.mode === 'edit' && this.galleryChanged) {
+      // In edit mode, only send if gallery was modified
+      console.log('Gallery changed, sending ALL current gallery images (existing + new)...');
+      
+      // Send ALL current images (both existing URLs and new files)
+      let allImageIndex = 0;
+      this.galleryPreviews.forEach((item) => {
         if (item.file instanceof File) {
-          formData.append(`gallery_images[${index}]`, item.file);
+          // New file uploaded
+          formData.append(`gallery_images[${allImageIndex}]`, item.file);
+          console.log(`Added gallery_images[${allImageIndex}]:`, item.file.name, '(NEW FILE)');
+          allImageIndex++;
+        } else if (item.id && item.url) {
+          // Existing image - send ID to keep it
+          formData.append(`existing_gallery_ids[${allImageIndex}]`, item.id.toString());
+          console.log(`Added existing_gallery_ids[${allImageIndex}]:`, item.id, '(EXISTING ID)');
+          allImageIndex++;
         }
       });
+      
+      // If gallery was changed but is now empty, send clear flag
+      if (allImageIndex === 0) {
+        formData.append('clear_gallery', '1');
+        console.log('Added clear_gallery flag');
+      }
+    } else {
+      console.log('Gallery not changed, not sending any gallery data');
     }
 
     // Printer settings
@@ -1385,16 +1479,28 @@ export class AddEditComponent implements OnInit {
     // Handle gallery images
     if (restaurant.galleries && Array.isArray(restaurant.galleries)) {
       this.galleryPreviews = restaurant.galleries.map((gallery: any) => ({
+        id: gallery.id,
         url: gallery.image,
         preview: gallery.image
       }));
+      this.originalGalleryLength = this.galleryPreviews.length; // Store original count
+      this.originalGalleryUrls = this.galleryPreviews.map(item => item.url!); // Store original URLs
+      this.galleryChanged = false; // Reset change flag
       this.updateGalleryFormControl();
     } else if (restaurant.gallery_images && Array.isArray(restaurant.gallery_images)) {
-      this.galleryPreviews = restaurant.gallery_images.map((imageUrl: string) => ({
+      this.galleryPreviews = restaurant.gallery_images.map((imageUrl: string, index: number) => ({
+        id: index + 1, // Fallback ID if no proper ID structure
         url: imageUrl,
         preview: imageUrl
       }));
+      this.originalGalleryLength = this.galleryPreviews.length; // Store original count
+      this.originalGalleryUrls = [...restaurant.gallery_images]; // Store original URLs
+      this.galleryChanged = false; // Reset change flag
       this.updateGalleryFormControl();
+    } else {
+      this.originalGalleryLength = 0;
+      this.originalGalleryUrls = [];
+      this.galleryChanged = false;
     }
 
     // Handle operating days/schedule_times

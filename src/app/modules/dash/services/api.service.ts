@@ -75,6 +75,15 @@ export class ApiService {
 		delete: (id: number) => API_BASE_URL + 'restaurants/delete/' + id
 	}
 
+	// options
+	public options = {
+		list: API_BASE_URL + 'options/list',
+		details: (id: number) => API_BASE_URL + 'options/show/' + id,
+		add: API_BASE_URL + 'options/create',
+		edit: (id: number) => API_BASE_URL + 'options/update/' + id,
+		delete: (id: number) => API_BASE_URL + 'options/delete/' + id
+	}
+
 	// orders
 	public orders = {
 		list:API_BASE_URL + 'orders/list',
@@ -88,5 +97,11 @@ export class ApiService {
 		topOrders: API_BASE_URL + 'reports/orders-meals-chart', // GET
 		orders: API_BASE_URL + 'reports/orders-chart', // GET
 		topRestaurants: API_BASE_URL + 'reports/top-restaurants', // GET
+	}
+
+	// notifications
+	public notifications = {
+		send: API_BASE_URL + 'notifications/send', // POST
+		list: API_BASE_URL + 'notifications/list', // GET
 	}
 }

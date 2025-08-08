@@ -64,6 +64,13 @@ const routes: Routes = [
         data: { animation: 'categoriesPage' }
       },
       {
+        path: 'options',
+        loadChildren: () =>
+          import('./pages/options/options.module').then((m) => m.OptionsModule),
+        title: 'Options | Turbo Eat',
+        data: { animation: 'optionsPage' }
+      },
+      {
         path: 'settings',
         loadChildren: () =>
           import('./pages/settings/settings.module').then((m) => m.SettingsModule),
