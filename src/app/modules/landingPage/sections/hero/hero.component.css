@@ -1,0 +1,58 @@
+.lp-hero {
+  background: 
+    url('/assets/img/background.png') no-repeat, 
+    linear-gradient(90deg, #F5F9FF 0%, #FFF0FE 100%);
+  
+  /* حجم أكبر حتى يختفي جزء من الصورة */
+  background-size: 550px auto, cover;
+
+  /* إزاحة الصورة لليمين وتحت علشان نصها يختفي */
+  background-position: calc(100% + 80px) calc(100% + 250px), center;
+
+  min-height: calc(100vh - var(--h));
+  overflow: hidden;
+}
+
+
+
+.highlight {
+  color: #A82EDE; /* اللون البنفسجي من التصميم */
+}
+
+.hero-img {
+  /* max-width: 90%; */
+  height: auto;
+  filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.1));
+}
+
+.store-btn {
+  height: 50px;
+  transition: transform 0.3s ease;
+}
+.store-btn:hover {
+  transform: translateY(-3px);
+}
+
+.learn-more-link {
+  color: #A82EDE;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.learn-more-link i {
+  color: #A82EDE;
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+.learn-more-link:hover i {
+  transform: translateX(4px);
+}
+
+
+/* تحسين النص */
+h1 {
+  font-size: var(--lp-h1-size);
+  line-height: var(--lp-h1-lh);
+}

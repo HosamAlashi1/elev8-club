@@ -1,0 +1,56 @@
+:host {
+    display: block;
+}
+
+.feature-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow:
+        0 4px 6px -4px rgba(0, 0, 0, 0.10),
+        0 10px 15px -3px rgba(0, 0, 0, 0.10);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+/* هوفر لطيف (اختياري) */
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 10px -5px rgba(0, 0, 0, 0.12),
+        0 14px 22px -4px rgba(0, 0, 0, 0.12);
+}
+
+
+/* الأيقونة */
+.feature-icon i {
+    font-size: 34px;
+    /* حجم الأيقونة */
+    color: #A82EDE;
+    /* اللون المطلوب */
+    line-height: 1;
+    display: inline-block;
+    filter: drop-shadow(0 4px 10px rgba(168, 46, 222, 0.15));
+    /* وهج خفي لطيف */
+}
+
+/* العنوان */
+.feature-title {
+    font-size: 1.2rem;
+    line-height: 1.35;
+}
+
+/* الوصف */
+.feature-desc {
+    line-height: 24px;
+    color: var(--lp-gray-600, #4B5563) !important;
+}
+
+/* مواءمة خفيفة للموبايل */
+@media (max-width: 575.98px) {
+    .feature-card {
+        padding: 1.25rem;
+    }
+
+    .feature-icon i {
+        font-size: 26px;
+    }
+}

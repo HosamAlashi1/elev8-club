@@ -1,0 +1,73 @@
+:host { display: block; }
+
+/* عنصر الميتريك */
+.metric-item { min-width: 140px; }
+
+/* الرقم الكبير */
+.metric-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  position: relative;
+  color: var(--lp-primary, #A82EDE);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 40px;
+  letter-spacing: .2px;
+
+  /* Pop-in أول ما يدخل السكشن */
+  opacity: 0;
+  transform: translateY(8px) scale(.985);
+  filter: blur(4px);
+  transition:
+    opacity .6s ease,
+    transform .6s cubic-bezier(.2,.8,.2,1),
+    filter .6s ease;
+}
+:host(.in-view) .metric-value {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* خانة الفليب لكل رقم */
+.flip-col {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  height: 1em;         /* ارتفاع خانة واحدة */
+  line-height: 1;      /* تضبيط الارتفاع */
+  will-change: transform;
+  min-width: .6em;     /* يمنع القفزات الأفقية مع أرقام ضيقة */
+}
+
+/* عمود الأرقام 0..9 مكدّس عموديًا */
+.digits {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(0);   /* يبدأ من 0 */
+}
+.digit {
+  line-height: 1;
+  height: 1em;
+}
+
+/* المحارف غير الرقمية (, . % + /) */
+.static-ch {
+  display: inline-block;
+  line-height: 1;
+  transform: translateY(0); /* مواءمة بسيطة */
+}
+
+/* العنوان تحت الرقم */
+.metric-label {
+  font-size: .95rem;
+  line-height: 1.4;
+  color: var(--lp-gray-600, #4B5563);
+}
+
+/* موبايل */
+@media (max-width: 575.98px) {
+  .metric-value { font-size: 28px; line-height: 34px; }
+  .metric-item  { min-width: 120px; }
+}

@@ -1,0 +1,59 @@
+:host { display: block; }
+
+/* صندوق كل خطوة */
+.process-step { max-width: 260px; }
+
+/* الدائرة البنفسجية مع تدرّج + وهج */
+.process-badge {
+  position: relative;
+  width: 56px;               /* زوّد لـ 60px لو بدكها أكبر */
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.125rem;
+  background: #A82EDE;
+
+}
+
+/* توهّج أنعم إضافي */
+.process-badge::after {
+  content: "";
+  position: absolute;
+  inset: -14px;              /* مساحة الهالة */
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(168,46,222,0.16), transparent 70%);
+  filter: blur(3px);
+  z-index: -1;
+}
+
+/* عنوان الخطوة */
+.process-title {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+/* وصف الخطوة (أضيق ومتمركز) */
+.process-desc {
+  color: var(--lp-gray-600, #4B5563) !important;
+  line-height: 1.55;
+  max-width: 240px;          /* يقلّل العرض ليصير سطرين غالباً */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* تحسينات صغيرة للموبايل */
+@media (max-width: 575.98px) {
+  .process-badge {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+    box-shadow:
+      0 8px 16px rgba(168, 46, 222, 0.22),
+      0 0 0 6px rgba(168, 46, 222, 0.06);
+  }
+  .process-desc { max-width: 200px; }
+}

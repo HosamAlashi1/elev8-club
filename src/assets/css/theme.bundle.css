@@ -16771,7 +16771,7 @@ tbody th {
     }
 
     .navbar-expand-sm .navbar-nav .nav-link.active:before {
-        border-bottom: 1px solid var(--bs-primary);
+        /* border-bottom: 1px solid var(--bs-primary); */
         border-left: 0;
         bottom: calc(var(--bs-navbar-padding-y)*-1 - var(--bs-border-width));
         left: var(--bs-navbar-nav-link-padding-x);
@@ -16868,7 +16868,7 @@ tbody th {
     }
 
     .navbar-expand-lg .navbar-nav .nav-link.active:before {
-        border-bottom: 1px solid var(--bs-primary);
+        /* border-bottom: 1px solid var(--bs-primary); */
         border-left: 0;
         bottom: calc(var(--bs-navbar-padding-y)*-1 - var(--bs-border-width));
         left: var(--bs-navbar-nav-link-padding-x);
@@ -16917,7 +16917,7 @@ tbody th {
     }
 
     .navbar-expand-xl .navbar-nav .nav-link.active:before {
-        border-bottom: 1px solid var(--bs-primary);
+        /* border-bottom: 1px solid var(--bs-primary); */
         border-left: 0;
         bottom: calc(var(--bs-navbar-padding-y)*-1 - var(--bs-border-width));
         left: var(--bs-navbar-nav-link-padding-x);
@@ -16966,7 +16966,7 @@ tbody th {
     }
 
     .navbar-expand-xxl .navbar-nav .nav-link.active:before {
-        border-bottom: 1px solid var(--bs-primary);
+        /* border-bottom: 1px solid var(--bs-primary); */
         border-left: 0;
         bottom: calc(var(--bs-navbar-padding-y)*-1 - var(--bs-border-width));
         left: var(--bs-navbar-nav-link-padding-x);

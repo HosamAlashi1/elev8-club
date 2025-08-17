@@ -1,0 +1,37 @@
+:host { display: block; }
+
+/* شِبّه أزرار المتاجر */
+.store-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  outline: none;
+}
+.store-badge {
+  height: 44px;                 /* مطابق تقريباً للصورة */
+  width: auto;
+  display: block;
+  border-radius: 10px;          /* تنعيم الحواف لو الـSVG بدون corner */
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.10));
+  transition: transform .2s ease, filter .2s ease;
+}
+.store-link:hover .store-badge,
+.store-link:focus .store-badge {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.14));
+}
+
+/* QR */
+.qr-img {
+  width: 110px;
+  height: auto;
+  display: inline-block;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.08));
+}
+
+/* موبايل */
+@media (max-width: 575.98px) {
+  .store-badge { height: 40px; }
+  .qr-img { width: 96px; }
+}

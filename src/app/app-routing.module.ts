@@ -1,22 +1,15 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from './modules/auth/guards/auth.guard';
 
 export const routes: Routes = [
-  {
-    path: 'auth',
-    loadChildren: () => import('./modules/auth/auth.module').then((m) => m.AuthModule),
-    data: { animation: 'auth' }
-  },
   {
     path: 'error',
     loadChildren: () => import('./modules/error/error.module').then((m) => m.ErrorModule),
   },
   {
     path: '',
-    canActivate: [AuthGuard],
-    loadChildren: () => import('./modules/dash/dash.module').then((m) => m.DashModule),
-    data: { animation: 'dash' }
+    loadChildren: () => import('./modules/landingPage/landingPage.module').then((m) => m.LandingPageModule),
+    data: { animation: 'landing' }
   },
   { path: '**', redirectTo: 'error/404' },
 ];

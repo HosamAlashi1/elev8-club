@@ -1,0 +1,67 @@
+@media (max-width: 991.98px) {
+  /* Mobile Slide Menu */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 320px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -4px 0 25px rgba(0,0,0,0.08);
+    padding: 2rem 1.2rem 1.5rem;
+    transition: right 0.35s ease, opacity 0.35s ease;
+    opacity: 0;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* عند الفتح */
+  .mobile-menu.open {
+    right: 0;
+    opacity: 1;
+  }
+
+  /* روابط القائمة */
+  .mobile-menu .nav-link {
+    font-size: 1.15rem;
+    font-weight: 500;
+    padding: 0.9rem 0;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #f2f2f2;
+    color: var(--lp-gray-700);
+    transition: color 0.25s ease, background-color 0.25s ease;
+  }
+
+  .mobile-menu .nav-link:hover {
+    background-color: var(--lp-primary-200);
+    color: var(--lp-primary);
+  }
+
+  .mobile-menu .nav-link.active {
+    color: var(--lp-primary);
+    background-color: rgba(168, 46, 222, 0.06);
+  }
+
+  /* زر إغلاق */
+  .mobile-menu .btn-close {
+    align-self: flex-end;
+    margin-bottom: 1.5rem;
+    filter: brightness(0) invert(0.4);
+  }
+
+  /* CTA */
+  .mobile-menu .lp-navbar-cta {
+    margin-top: auto;
+    width: 100%;
+    text-align: center;
+    padding: 0.8rem 1rem;
+  }
+}
+
+.border-bottom{
+   border-bottom: 1px solid #dee2e661 !important;
+}

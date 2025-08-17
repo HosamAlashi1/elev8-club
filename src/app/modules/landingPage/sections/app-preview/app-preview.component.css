@@ -1,0 +1,24 @@
+:host { display: block; }
+
+/* حجم ثابت لطيف للشاشات مع تجاوب */
+.screen-wrap {
+  width: 220px;               /* الأساس */
+}
+@media (min-width: 576px) { .screen-wrap { width: 240px; } }
+@media (min-width: 992px) { .screen-wrap { width: 260px; } }
+
+/* صورة الجهاز */
+svg {
+  border-radius: 28px;        /* لتعزيز الإحساس بالجهاز؛ الـ SVG غالبًا فيه حواف */
+  /* ظل ناعم مشابه للتصميم */
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.10))
+          drop-shadow(0 3px 6px rgba(0,0,0,0.06));
+  transition: transform .25s ease, filter .25s ease;
+}
+
+/* حركة خفيفة عند المرور */
+.screen-wrap:hover svg {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.12))
+          drop-shadow(0 6px 10px rgba(0,0,0,0.08));
+}

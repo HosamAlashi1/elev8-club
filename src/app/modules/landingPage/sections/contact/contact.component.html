@@ -1,0 +1,58 @@
+<div class="container py-5">
+
+  <!-- العنوان -->
+  <div class="text-center pt-2 mb-4" data-aos="fade-up" data-aos-duration="800">
+    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span class="dot"></span></h3>
+  </div>
+
+  <div class="row row-contacts align-items-start g-4 gx-lg-5 gx-xl-6 pb-4">
+    <!-- الفورم -->
+    <div class="col-lg-6" data-aos="fade-right" data-aos-duration="800">
+      <form #contactForm="ngForm" (ngSubmit)="submit(contactForm)" novalidate>
+
+        <div class="mb-3">
+          <label class="form-label small text-muted mb-1">Name</label>
+          <input type="text" class="form-control contact-input" name="name" [(ngModel)]="formModel.name" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small text-muted mb-1">Email</label>
+          <input type="email" class="form-control contact-input" name="email" [(ngModel)]="formModel.email" required email />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small text-muted mb-1">Message</label>
+          <textarea rows="5" class="form-control contact-input" name="message" [(ngModel)]="formModel.message" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 btn-send mt-2" >
+          {{ sending ? 'Sending…' : 'Send Message' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- معلومات التواصل + الخريطة -->
+    <div class="col-lg-6" data-aos="fade-left" data-aos-duration="800" data-aos-delay="120">
+
+      <div class="contact-info mb-3">
+        <div class="info-item d-flex align-items-start mb-3" *ngFor="let i of info">
+          <div class="info-icon me-1">
+            <i [class]="i.icon" class="fs-4" aria-hidden="true"></i>
+          </div>
+          <div>
+            <div class="fw-semibold small mb-1">{{ i.label }}</div>
+            <div class="text-muted small">
+              <a *ngIf="i.href; else plain" [href]="i.href" class="link-muted">{{ i.value }}</a>
+              <ng-template #plain>{{ i.value }}</ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- خريطة الشرق الأوسط بدون عنوان/ماركر -->
+      <div class="map-card">
+        <iframe class="map-iframe" [src]="safeMapUrl" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</div>

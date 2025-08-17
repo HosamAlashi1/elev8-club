@@ -1,0 +1,44 @@
+:host { display: block; }
+
+/* الكرت (ظل فيجما + نصف قطر 12px) */
+.testimonial-card {
+  border-radius: 12px;
+  box-shadow:
+    0 4px 6px -4px rgba(0, 0, 0, 0.10),
+    0 10px 15px -3px rgba(0, 0, 0, 0.10);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.testimonial-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 10px -5px rgba(0, 0, 0, 0.12),
+    0 14px 22px -4px rgba(0, 0, 0, 0.12);
+}
+
+/* الأفاتار */
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+/* النصوص */
+.name { font-size: .98rem; }
+.role { line-height: 1.2; }
+
+/* النجوم (Font Awesome) */
+.stars .fas,
+.stars .fa {
+  color: #f5b50a;          /* ذهبي لطيف */
+  margin-right: 2px;
+  font-size: .95rem;
+}
+
+/* موبايل */
+@media (max-width: 575.98px) {
+  .testimonial-card { padding: 1.25rem; }
+  .avatar { width: 40px; height: 40px; }
+}
