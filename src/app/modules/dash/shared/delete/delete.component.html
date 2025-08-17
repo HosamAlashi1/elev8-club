@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h4 class="modal-title">Delete Confirmation</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+    <ngb-alert *ngIf="alertMessage" [type]="messageType" (closed)="showMsg(false, '')">
+        {{ alertMessage }}
+    </ngb-alert>
+    {{ message }}
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+        <i class="fe fe-x me-2"></i>Close</button>
+    <button class="btn btn-sm btn-danger" [disabled]="(httpService.getLoading('deleteAction') | async)"
+        (click)="delete()">
+        <ng-container *ngIf="(httpService.getLoading('deleteAction') | async)">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span>Deleting ...</span>
+        </ng-container>
+        <ng-container *ngIf="!(httpService.getLoading('deleteAction') | async)">
+            <i class="fe fe-trash-2 me-2"></i>
+            <span>Delete</span>
+        </ng-container>
+    </button>
+</div>

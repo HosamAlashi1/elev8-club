@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { FileManagementComponent } from '../dash/shared/file-management/file-management.component';
+import { UserProfileComponent } from '../dash/shared/user-profile/user-profile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FileManagementComponent } from '../shared/file-management/file-management.component';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +24,7 @@ export class PublicService {
     }
 
     public getUserData() {
-        const data = localStorage.getItem('Turbo-eat-data');
+        const data = localStorage.getItem('EDKD-data');
         return data ? JSON.parse(data).user : null;
     }
 
@@ -36,6 +37,11 @@ export class PublicService {
         const modalRef = this.modalService.open(FileManagementComponent, { fullscreen: true, windowClass: 'modal-image' });
         modalRef.componentInstance.title = title;
         modalRef.componentInstance.path = path;
+    }
+
+    openProfile(userId: any) {
+        const modalRef = this.modalService.open(UserProfileComponent, { centered: true });
+        modalRef.componentInstance.userId = userId;
     }
 
 }

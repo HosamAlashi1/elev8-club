@@ -1,0 +1,50 @@
+<div class="p-3">
+    <!-- Header -->
+    <div class="header">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center">
+                    <div class="col d-flex">
+                        <h2 class="header-title">
+                            <i class="fe fe-home"></i>
+                            Admin Dashboard
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-xl-4" [ngClass]="{
+          'col-md-6': dashboardCards.length % 2 === 0 || i < dashboardCards.length - 1,
+          'col-md-12': dashboardCards.length % 2 === 1 && i === dashboardCards.length - 1
+        }" *ngFor="let item of dashboardCards; let i = index">
+                <div class="card" role="button" [routerLink]="item.route">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h5 class="text-uppercase mb-2">{{ item.label }}</h5>
+                                <h2 class="mb-0">{{ numbers[i] }}</h2>
+                            </div>
+                            <div class="col-auto">
+                                <span class="h3" [ngClass]="item.icon + ' rounded-circle'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Charts -->
+        <div class="row equal-height-row">
+
+            <!-- Line Chart -->
+            <div class="col-md-12 equal-height-col">
+                <app-line-chart [subscribersData]="contactMessagesData"></app-line-chart>
+            </div>
+        </div>
+    </div>
+</div>

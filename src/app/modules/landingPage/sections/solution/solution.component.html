@@ -2,25 +2,25 @@
 
   <!-- عنوان السكشن -->
   <div class="text-center mb-5" data-aos="fade-up" data-aos-duration="800">
-    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ solutionData.title  }} <span class="dot"></span></h3>
+    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span class="dot"></span></h3>
   </div>
 
   <div class="row align-items-center mt-2 pb-4 g-0"> <!-- أزلت الـ gutter -->
     
     <!-- الصورة -->
     <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right" data-aos-duration="800">
-      <img [src]="solutionData.image" alt="Testing" class="img-fluid rounded-3 shadow-sm w-100">
+      <img [src]="image" alt="Testing" class="img-fluid rounded-3 shadow-sm w-100">
     </div>
 
     <!-- النصوص -->
     <div class="col-lg-6 ps-lg-5" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
       <p class="text-muted mb-4 solution-text">
-        {{ solutionData.description }}
+        {{ description }}
       </p>
 
       <!-- القائمة -->
       <ul class="list-unstyled">
-        <li *ngFor="let feature of solutionData.features" class="d-flex align-items-center mb-3">
+        <li *ngFor="let feature of features" class="d-flex align-items-center mb-3">
           <span class="check-icon me-2">
             <i class="fas fa-check"></i>
           </span>

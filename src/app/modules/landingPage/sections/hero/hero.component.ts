@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, Input } from '@angular/core';
 
 @Component({
   selector: 'app-hero',
@@ -6,6 +6,11 @@ import { Component, OnInit, HostListener } from '@angular/core';
   styleUrls: ['./hero.component.css']
 })
 export class HeroComponent implements OnInit {
+  @Input() heroTitle: string = 'Early Detection Saves Lives';
+  @Input() heroDescription: string = 'Test for kidney disease easily from home with AI-powered results.';
+  @Input() heroLearnMoreLink: string = '#';
+  @Input() iosAppLink: string = '#';
+  @Input() androidAppLink: string = '#';
 
   isVisible: boolean = false; // لتفعيل الأنيميشن
 

@@ -1,0 +1,71 @@
+<!-- Multi-select dropdown styled nicely -->
+<div class="mb-3 position-relative dropdown dropdown-{{ uniqueId }}" (click)="handleDropdownClick($event)">
+  <!-- Label -->
+  <label class="form-label">
+    {{ label }}
+    <sup class="text-danger fs-5" *ngIf="required">*</sup>
+  </label>
+
+  <!-- Selected Items Box -->
+  <div
+    class="form-control p-2 px-2 d-flex flex-wrap align-items-center"
+    (click)="toggleDropdown()"
+    [class.border-primary]="isDropdownOpen"
+    style="min-height: 40px; cursor: pointer;"
+  >
+    <ng-container *ngIf="selectedItems.length > 0; else placeholderTemplate">
+      <div *ngFor="let item of selectedItems" class="badge bg-light text-dark me-2 ms-1 mb-1 d-flex align-items-center">
+        <span class="avatar avatar-xxs me-1" *ngIf="item?.image">
+          <img [src]="item?.image" alt="Img" class="avatar-img rounded-circle" />
+        </span>
+        <span class="me-1 mt-1">{{ item.name || item.full_name }}</span>
+        <button
+          type="button"
+          class="btn-close btn-close-sm"
+          (click)="$event.stopPropagation(); removeItem(item)"
+        ></button>
+      </div>
+    </ng-container>
+    <ng-template #placeholderTemplate>
+      <span class="text-muted">Select one or more...</span>
+    </ng-template>
+  </div>
+
+  <!-- Dropdown menu -->
+  <div
+    class="dropdown-menu shadow show w-100 mt-1 border rounded"
+    *ngIf="isDropdownOpen"
+    style="max-height: 300px; overflow-y: auto; z-index: 1000;"
+  >
+    <input
+      class="form-control form-control mb-2"
+      [(ngModel)]="searchQuery"
+      placeholder="Type to search..."
+    />
+
+    <div *ngIf="filterOptions().length > 0; else noUsersTemplate">
+      <div
+        *ngFor="let item of filterOptions()"
+        class="dropdown-item d-flex align-items-center"
+        (click)="toggleSelection(item)"
+        role="button"
+      >
+        <input
+          type="checkbox"
+          class="form-check-input me-2"
+          [checked]="isSelected(item.id)"
+          (click)="$event.stopPropagation()"
+          (change)="toggleSelection(item)"
+        />
+        <span class="avatar avatar-xs me-2" *ngIf="item?.image">
+          <img [src]="item?.image" alt="Image" class="avatar-img rounded-circle" />
+        </span>
+        <span>{{ item.name || item.full_name }}</span>
+      </div>
+    </div>
+
+    <ng-template #noUsersTemplate>
+      <div class="text-center text-muted py-2">No data found</div>
+    </ng-template>
+  </div>
+</div>

@@ -12,21 +12,67 @@
 
         <div class="mb-3">
           <label class="form-label small text-muted mb-1">Name</label>
-          <input type="text" class="form-control contact-input" name="name" [(ngModel)]="formModel.name" required />
+          <input 
+            type="text" 
+            class="form-control contact-input" 
+            [class.is-invalid]="nameField.invalid && formSubmitted"
+            name="name" 
+            #nameField="ngModel"
+            [(ngModel)]="formModel.name" 
+            required 
+            minlength="2"
+            maxlength="50" />
+          <div class="invalid-feedback" *ngIf="nameField.invalid && formSubmitted">
+            <small *ngIf="nameField.errors?.['required']">الاسم مطلوب</small>
+            <small *ngIf="nameField.errors?.['minlength']">الاسم يجب أن يكون أكثر من حرف واحد</small>
+            <small *ngIf="nameField.errors?.['maxlength']">الاسم طويل جداً</small>
+          </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label small text-muted mb-1">Email</label>
-          <input type="email" class="form-control contact-input" name="email" [(ngModel)]="formModel.email" required email />
+          <input 
+            type="email" 
+            class="form-control contact-input" 
+            [class.is-invalid]="emailField.invalid && formSubmitted"
+            name="email" 
+            #emailField="ngModel"
+            [(ngModel)]="formModel.email" 
+            required 
+            email 
+            maxlength="100" />
+          <div class="invalid-feedback" *ngIf="emailField.invalid && formSubmitted">
+            <small *ngIf="emailField.errors?.['required']">البريد الإلكتروني مطلوب</small>
+            <small *ngIf="emailField.errors?.['email']">صيغة البريد الإلكتروني غير صحيحة</small>
+            <small *ngIf="emailField.errors?.['maxlength']">البريد الإلكتروني طويل جداً</small>
+          </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label small text-muted mb-1">Message</label>
-          <textarea rows="5" class="form-control contact-input" name="message" [(ngModel)]="formModel.message" required></textarea>
+          <textarea 
+            rows="5" 
+            class="form-control contact-input" 
+            [class.is-invalid]="messageField.invalid && formSubmitted"
+            name="message" 
+            #messageField="ngModel"
+            [(ngModel)]="formModel.message" 
+            required
+            minlength="10"
+            maxlength="500"></textarea>
+          <div class="invalid-feedback" *ngIf="messageField.invalid && formSubmitted">
+            <small *ngIf="messageField.errors?.['required']">الرسالة مطلوبة</small>
+            <small *ngIf="messageField.errors?.['minlength']">الرسالة قصيرة جداً (الحد الأدنى 10 أحرف)</small>
+            <small *ngIf="messageField.errors?.['maxlength']">الرسالة طويلة جداً (الحد الأقصى 500 حرف)</small>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 btn-send mt-2" >
-          {{ sending ? 'Sending…' : 'Send Message' }}
+        <button 
+          type="submit" 
+          class="btn btn-primary w-100 btn-send mt-2"
+          [disabled]="sending || contactForm.invalid">
+          <span *ngIf="sending" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          {{ sending ? 'جاري الإرسال...' : 'إرسال الرسالة' }}
         </button>
       </form>
     </div>

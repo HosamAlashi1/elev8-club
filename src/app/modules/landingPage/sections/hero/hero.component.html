@@ -4,24 +4,22 @@
 
             <!-- النصوص -->
             <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up" data-aos-delay="100">
-                <h1 class="fw-bold mb-4">
-                    Early Detection <span class="highlight">Saves</span> Lives
+                <h1 class="fw-bold mb-4" [innerHTML]="heroTitle">
                 </h1>
                 <p class="text-muted mb-4" style="max-width: 520px;">
-                    Test for kidney disease easily from home with AI-powered results.
+                    {{ heroDescription }}
                 </p>
 
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                    <a href="#">
+                    <a *ngIf="iosAppLink && iosAppLink !== '#'" [href]="iosAppLink" target="_blank">
                         <img src="assets/img/apple-store.svg" alt="App Store" class="store-btn">
                     </a>
-                    <a href="#">
+                    <a *ngIf="androidAppLink && androidAppLink !== '#'" [href]="androidAppLink" target="_blank">
                         <img src="assets/img/google-store.svg" alt="Google Play" class="store-btn">
                     </a>
                 </div>
 
-
-                <a href="#" class="learn-more-link">
+                <a *ngIf="heroLearnMoreLink && heroLearnMoreLink !== '#'" [href]="heroLearnMoreLink" class="learn-more-link">
                     Learn More
                     <i class="fa-solid fa-arrow-right pt-1"></i>
                 </a>

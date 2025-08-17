@@ -24,7 +24,7 @@
   </div>
 
   <!-- QR Code -->
-  <div class="text-center pb-4 pt-2" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="500">
+  <div *ngIf="qrSrc && qrSrc !== 'assets/img/QR.svg' && qrSrc !== '#'" class="text-center pb-4 pt-2" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="500">
     <img [src]="qrSrc" alt="Scan the QR code to download" class="qr-img">
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, NgZone } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, NgZone, Input } from '@angular/core';
 
 declare const AOS: any;
 
@@ -20,13 +20,16 @@ type Token =
   styleUrls: ['./metrics.component.css']
 })
 export class MetricsComponent implements AfterViewInit {
+  @Input() testsCompleted: string = '10,000+';
+  @Input() medicalCenters: string = '500+';
+  @Input() accuracyRate: string = '99.9%';
+  @Input() customerSupport: string = '24/7';
 
-  metrics: MetricItem[] = [
-    { value: 10000, suffix: '+', label: 'Tests Completed' },
-    { value: 500,   suffix: '+', label: 'Medical Centers' },
-    { value: 99.9,  suffix: '%', label: 'Accuracy Rate', decimals: 1 },
-    { display: '24/7',           label: 'Customer Support' }
-  ];
+  metrics: MetricItem[] = [];
+
+  ngOnInit() {
+    this.parseMetrics();
+  }
 
   /** كل ميتريك يتحوّل لمصفوفة Tokens (أرقام منفصلة + أحرف مثل , . % + /) */
   tokens: Token[][] = this.metrics.map(m => this.formatToTokens(m));
@@ -76,6 +79,31 @@ export class MetricsComponent implements AfterViewInit {
         stack.style.transform = `translateY(${-target * h}px)`;
       });
     });
+  }
+
+  parseMetrics() {
+    this.metrics = [
+      this.parseMetricValue(this.testsCompleted, 'Tests Completed'),
+      this.parseMetricValue(this.medicalCenters, 'Medical Centers'),
+      this.parseMetricValue(this.accuracyRate, 'Accuracy Rate'),
+      { display: this.customerSupport, label: 'Customer Support' }
+    ];
+  }
+
+  parseMetricValue(value: string, label: string): MetricItem {
+    if (!value) return { display: '', label };
+    
+    // Check if it contains numeric value
+    const numMatch = value.match(/(\d+(?:\.\d+)?)/);
+    if (numMatch) {
+      const num = parseFloat(numMatch[1]);
+      const suffix = value.replace(numMatch[0], '');
+      const decimals = (numMatch[1].split('.')[1] || '').length;
+      return { value: num, suffix, label, decimals };
+    }
+    
+    // If no numeric value, treat as display text
+    return { display: value, label };
   }
 
   private formatToTokens(m: MetricItem): Token[] {

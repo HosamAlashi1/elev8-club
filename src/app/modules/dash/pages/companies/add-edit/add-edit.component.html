@@ -1,0 +1,57 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ preview ? 'Edit' : 'Add New' }} App Preview</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Image Upload -->
+      <div class="col-12">
+        <label class="form-label">Preview Image <span class="text-danger" *ngIf="!preview">*</span></label>
+        
+        <!-- Image Preview -->
+        <div class="image-preview-container mb-3" *ngIf="imagePreview">
+          <div class="image-preview">
+            <img [src]="imagePreview" alt="App Preview Image" class="preview-image">
+            <button type="button" class="btn btn-sm btn-danger remove-image-btn" (click)="removeImage()">
+              <i class="fe fe-x"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- File Input -->
+        <input 
+          type="file" 
+          class="form-control" 
+          (change)="onFileChange($event)" 
+          accept="image/*"
+          [ngClass]="{ 'is-invalid': submitted && f['image'].invalid && !imagePreview }"
+        >
+        
+        <small class="text-muted">
+          Supported formats: JPG, PNG, GIF, SVG. Max size: 5MB
+        </small>
+        
+        <div *ngIf="submitted && f['image'].invalid && !imagePreview" class="invalid-feedback">
+          Preview image is required.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i>Close
+    </button>
+
+    <button type="submit" class="btn btn-sm btn-custom" [disabled]="(httpService.getLoading('addEditPreview') | async)">
+      <ng-container *ngIf="(httpService.getLoading('addEditPreview') | async)">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!(httpService.getLoading('addEditPreview') | async)">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

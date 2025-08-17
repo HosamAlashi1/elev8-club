@@ -1,0 +1,11 @@
+img {
+    mix-blend-mode: multiply;
+}
+
+/* 🎨 خلفية الصفحة */
+.body {
+  height: 100vh;
+  background: linear-gradient(to right, #A82EF0, #E9A8F9, #CBA7F0 );
+
+}
+

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
@@ -6,10 +6,36 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  @Input() appDownloadLink: string = '#';
+  @Input() iosAppLink: string = '#';
+  @Input() androidAppLink: string = '#';
+  
   scrolled = false;
   isCollapsed = true; // افتراضياً مغلقة على الموبايل
   activeSection: 'about' | 'how-it-works' | 'features' | 'contact' | '' = '';
   private io?: IntersectionObserver;
+
+  get downloadLink(): string {
+    // تحديد الرابط المناسب بناءً على نوع الجهاز
+    if (this.appDownloadLink && this.appDownloadLink !== '#') {
+      return this.appDownloadLink;
+    }
+    
+    const userAgent = navigator.userAgent || navigator.vendor;
+    
+    // إذا كان الجهاز iOS
+    if (/iPad|iPhone|iPod/.test(userAgent)) {
+      return this.iosAppLink;
+    }
+    
+    // إذا كان الجهاز Android
+    if (/android/i.test(userAgent)) {
+      return this.androidAppLink;
+    }
+    
+    // افتراضياً، نرجع رابط iOS
+    return this.androidAppLink || this.iosAppLink || '#';
+  }
 
   ngOnInit(): void {
     this.onScroll();

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { animate, style, transition, trigger, query, group } from '@angular/animations';
-import { PublicService } from './modules/landingPage/services/public.service';
+import { PublicService } from './modules/services/public.service';
 import * as AOS from 'aos'; 
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -50,9 +51,40 @@ export class AppComponent implements OnInit {
         }
       }
     });
+
+    // ✅ تحميل CSS حسب الـ route
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        if (event.urlAfterRedirects.startsWith('/dashboard')) {
+          this.loadCSS('/assets/css/custom.css');
+          this.removeCSS('/assets/css/landingPage.css');
+        } else {
+          this.loadCSS('/assets/css/landingPage.css');
+          this.removeCSS('/assets/css/custom.css');
+          this.removeCSS('/assets/css/theme.bundle.css');
+        }
+      });
   }
 
   prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
+  }
+
+  // ✅ دوال لإضافة/إزالة CSS
+  private loadCSS(href: string) {
+    if (!document.querySelector(`link[href="${href}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  }
+
+  private removeCSS(href: string) {
+    const link = document.querySelector(`link[href="${href}"]`);
+    if (link) {
+      link.remove();
+    }
   }
 }

@@ -1,0 +1,55 @@
+<div class="content"
+    [ngClass]="{'d-flex justify-content-center align-items-center': (httpService.getLoading('profile') | async)}">
+    <div class="card rounded-4 m-0" *ngIf="!(httpService.getLoading('profile') | async)">
+        <div class="card-body">
+            <span class="avatar avatar-xl card-avatar"
+                (click)="publicService.openImage(userData?.name, userData?.image)" role="button">
+                <img class="avatar-img rounded-circle" [src]="userData?.image"
+                    style="box-shadow: 0px 0px 10px #00000050;">
+            </span>
+            <h2 class="text-center card-title">{{ userData?.name || '-' }}</h2>
+            <p class="small text-center text-muted mb-3">{{ userData?.company_email || '-' }}</p>
+            <p class="text-center mb-4">
+                <span class="badge bg-primary-soft">{{ userData?.job_description || '-' }}</span>
+                <span class="ms-1 badge bg-primary-soft">{{ userData?.contract_type || '-' }}</span>
+            </p>
+            <div class="g-0 border-top border-bottom row">
+                <div class="py-4 text-center col-6">
+                    <h6 class="text-uppercase text-muted">Phone</h6>
+                    <h3 class="mb-0">{{ userData?.phone || '-' }}</h3>
+                </div>
+                <div class="py-4 text-center border-start col-6">
+                    <h6 class="text-uppercase text-muted">Marital Status</h6>
+                    <h3 class="mb-0">{{ userData?.marital_status || '-' }}</h3>
+                </div>
+            </div>
+            <div class="list-group-flush list-group">
+                <div class="list-group-item">
+                    <div class="align-items-center row">
+                        <div class="col"><small>Branch</small></div>
+                        <div class="col-auto">
+                            <small class="text-muted">{{ userData?.branch || '-' }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="align-items-center row">
+                        <div class="col"><small>Role</small></div>
+                        <div class="col-auto">
+                            <small class="text-muted">{{ userData?.role || '-' }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="align-items-center row">
+                        <div class="col"><small>Manager</small></div>
+                        <div class="col-auto">
+                            <small class="text-muted">{{ userData?.manager?.name || '-' }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span class="loader" *ngIf="(httpService.getLoading('profile') | async)"></span>
+</div>

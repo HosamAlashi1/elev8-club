@@ -142,3 +142,36 @@
         border-radius: 8px;
     }
 }
+
+/* Validation Styles */
+.contact-input.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #dc3545;
+}
+
+.invalid-feedback small {
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+/* Loading spinner styles */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.125em;
+}
+
+/* Button disabled state */
+.btn-send:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    box-shadow: 0 4px 8px rgba(168, 46, 222, .10);
+}

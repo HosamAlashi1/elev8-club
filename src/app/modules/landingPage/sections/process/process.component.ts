@@ -1,12 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, Input } from '@angular/core';
+import { Process } from '../../../services/landing.service';
 
 declare const AOS: any; // إن كنت محمّل AOS عالمشروع بشكل عالمي
-
-interface ProcessStep {
-  id: number;         // رقم الخطوة (يُعرض داخل الدائرة)
-  title: string;      // عنوان الخطوة
-  description: string;// وصف مختصر
-}
 
 @Component({
   selector: 'app-process',
@@ -14,14 +9,12 @@ interface ProcessStep {
   styleUrls: ['./process.component.css']
 })
 export class ProcessComponent implements AfterViewInit {
-
-  sectionTitle = 'Simple 4-Step Process';
-
-  steps: ProcessStep[] = [
-    { id: 1, title: 'Order Testing Kit',     description: 'Purchase your home testing kit through our app' },
-    { id: 2, title: 'Follow Instructions',   description: 'Use the kit and capture images in the app' },
-    { id: 3, title: 'AI Analysis',           description: 'Our AI system analyzes your test results' },
-    { id: 4, title: 'Get Results',           description: 'Receive instant results and recommendations' }
+  @Input() title: string = 'Simple 4-Step Process';
+  @Input() processes: Process[] = [
+    { id: 1, step: '1', title: 'Order Testing Kit', description: 'Purchase your home testing kit through our app' },
+    { id: 2, step: '2', title: 'Follow Instructions', description: 'Use the kit and capture images in the app' },
+    { id: 3, step: '3', title: 'AI Analysis', description: 'Our AI system analyzes your test results' },
+    { id: 4, step: '4', title: 'Get Results', description: 'Receive instant results and recommendations' }
   ];
 
   // لتطبيق تأخير بسيط متدرّج في AOS لكل عنصر
@@ -40,7 +33,7 @@ export class ProcessComponent implements AfterViewInit {
     }
   }
 
-  trackById(_index: number, step: ProcessStep): number {
-    return step.id;
+  trackById(_index: number, process: Process): number {
+    return process.id;
   }
 }

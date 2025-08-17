@@ -4,14 +4,14 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LandingPageComponent } from './landingPage.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmationDialogService } from './components/confirmation-dialog/confirmation-dialog.service';
+// import { ConfirmationDialogService } from './components/confirmation-dialog/confirmation-dialog.service';
 import { InlineSVGModule } from 'ng-inline-svg-2';
-import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+// import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { SharedModule } from './shared/shared.module';
+// import { SharedModule } from './shared/shared.module';
 import { LottieModule } from 'ngx-lottie';
 import player from 'lottie-web';
-import { LottieOverlayComponent } from './shared/lottie-overlay/lottie-overlay.component';
+// import { LottieOverlayComponent } from './shared/lottie-overlay/lottie-overlay.component';
 import { FooterComponent } from './sections/footer/footer.component';
 import { NavbarComponent } from './sections/navbar/navbar.component';
 import { HeroComponent } from './sections/hero/hero.component';
@@ -35,8 +35,6 @@ export function playerFactory() {
 @NgModule({
   declarations: [
     LandingPageComponent,
-    ConfirmationDialogComponent,
-    LottieOverlayComponent,
     FooterComponent,
     NavbarComponent,
     HeroComponent,
@@ -57,12 +55,12 @@ export function playerFactory() {
     NgbModule,
     InlineSVGModule,
     NgxSkeletonLoaderModule,
-    SharedModule,
+    // SharedModule,
     LandingPageRoutingModule,
     LottieModule.forRoot({ player: playerFactory })
   ],
   providers: [
-    ConfirmationDialogService
+    // ConfirmationDialogService
   ]
 })
 export class LandingPageModule { }

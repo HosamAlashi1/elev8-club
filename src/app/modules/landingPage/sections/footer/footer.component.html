@@ -9,7 +9,7 @@
         <div class="footer-brand">
           <img src="assets/img/Logo footer.svg" alt="EKD Logo" class="footer-logo mb-2">
           <p class="footer-desc mb-0">
-            Making kidney disease detection accessible and convenient for everyone.
+            {{ description }}
           </p>
         </div>
       </div>
@@ -39,10 +39,10 @@
       <div class="col-12 col-md-12 col-lg-3">
         <h6 class="footer-title">Follow Us</h6>
         <ul class="socials list-unstyled d-flex align-items-center gap-2 mb-0">
-          <li><a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></li>
-          <li><a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a></li>
-          <li><a href="#" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
-          <li><a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
+          <li *ngIf="isValidLink(facebook)"><a [href]="facebook" class="social-link" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+          <li *ngIf="isValidLink(twitter)"><a [href]="twitter" class="social-link" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a></li>
+          <li *ngIf="isValidLink(linkedin)"><a [href]="linkedin" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+          <li *ngIf="isValidLink(instagram)"><a [href]="instagram" class="social-link" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
         </ul>
       </div>
 

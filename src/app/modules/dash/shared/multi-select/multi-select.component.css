@@ -1,0 +1,18 @@
+.dropdown-item {
+  padding: 0.55rem;
+}
+
+.selected-items-container {
+  background-color: #fff;
+  border-radius: 10px;
+  min-height: 58px;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.options-container {
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}

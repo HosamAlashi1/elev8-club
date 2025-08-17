@@ -53,7 +53,7 @@
 
     <!-- CTA Desktop -->
     <div class="d-none d-lg-flex">
-      <a class="btn lp-navbar-cta px-4" href="#" rel="nofollow noopener">Download App</a>
+      <a class="btn lp-navbar-cta px-4" [href]="downloadLink" rel="nofollow noopener" target="_blank">Download App</a>
     </div>
   </div>
 
@@ -76,6 +76,6 @@
         <a class="nav-link" [class.active]="activeSection==='contact'" (click)="scrollTo('contact', $event)">Contact</a>
       </li>
     </ul>
-    <a class="btn lp-navbar-cta mt-4 w-100" href="#">Download App</a>
+    <a class="btn lp-navbar-cta mt-4 w-100" [href]="downloadLink" target="_blank">Download App</a>
   </div>
 </nav>
