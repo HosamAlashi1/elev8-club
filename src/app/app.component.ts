@@ -56,8 +56,9 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        if (event.urlAfterRedirects.startsWith('/dashboard')) {
+        if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/auth') || event.urlAfterRedirects.startsWith('/error')) {
           this.loadCSS('/assets/css/custom.css');
+          this.loadCSS('/assets/css/theme.bundle.css');
           this.removeCSS('/assets/css/landingPage.css');
         } else {
           this.loadCSS('/assets/css/landingPage.css');

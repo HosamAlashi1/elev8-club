@@ -1,6 +1,7 @@
 /* انيميشنز هادئة وبسيطة */
 .content-container {
   transition: opacity 0.3s ease;
+  overflow-x: hidden;
 }
 
 .content-hidden {

@@ -1,8 +1,8 @@
 .lp-hero {
-  background: 
-    url('/assets/img/background.png') no-repeat, 
+  background:
+    url('/assets/img/background.png') no-repeat,
     linear-gradient(90deg, #F5F9FF 0%, #FFF0FE 100%);
-  
+
   /* حجم أكبر حتى يختفي جزء من الصورة */
   background-size: 550px auto, cover;
 
@@ -13,12 +13,14 @@
   overflow: hidden;
 }
 
+
 .text-muted {
   font-size: 24px;
 }
 
 .highlight {
-  color: #A82EDE; /* اللون البنفسجي من التصميم */
+  color: #A82EDE;
+  /* اللون البنفسجي من التصميم */
 }
 
 .hero-img {
@@ -31,6 +33,7 @@
   height: 50px;
   transition: transform 0.3s ease;
 }
+
 .store-btn:hover {
   transform: translateY(-3px);
 }
@@ -43,11 +46,13 @@
   gap: 6px;
   text-decoration: none;
 }
+
 .learn-more-link i {
   color: #A82EDE;
   transition: transform 0.3s ease;
   font-size: 14px;
 }
+
 .learn-more-link:hover i {
   transform: translateX(4px);
 }

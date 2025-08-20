@@ -6,7 +6,7 @@
     right: -100%;
     width: 80%;
     max-width: 320px;
-    height: 100%;
+    /* height: 100%; */
     background: #fff;
     box-shadow: -4px 0 25px rgba(0,0,0,0.08);
     padding: 2rem 1.2rem 1.5rem;
@@ -43,7 +43,7 @@
 
   .mobile-menu .nav-link.active {
     color: var(--lp-primary);
-    background-color: rgba(168, 46, 222, 0.06);
+    /* background-color: rgba(168, 46, 222, 0.06); */
   }
 
   /* زر إغلاق */
@@ -64,4 +64,8 @@
 
 .border-bottom{
    border-bottom: 1px solid #dee2e661 !important;
+}
+
+.nav-link{
+  background-color: #fff
 }

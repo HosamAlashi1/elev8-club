@@ -2,7 +2,8 @@
 
   <!-- العنوان -->
   <div class="text-center pt-2 mb-4" data-aos="fade-up" data-aos-duration="800">
-    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span class="dot"></span></h3>
+    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span
+        class="dot"></span></h3>
   </div>
 
   <div class="row row-contacts align-items-start g-4 gx-lg-5 gx-xl-6 pb-4">
@@ -10,69 +11,48 @@
     <div class="col-lg-6" data-aos="fade-right" data-aos-duration="800">
       <form #contactForm="ngForm" (ngSubmit)="submit(contactForm)" novalidate>
 
+        <!-- Name -->
         <div class="mb-3">
           <label class="form-label small text-muted mb-1">Name</label>
-          <input 
-            type="text" 
-            class="form-control contact-input" 
-            [class.is-invalid]="nameField.invalid && formSubmitted"
-            name="name" 
-            #nameField="ngModel"
-            [(ngModel)]="formModel.name" 
-            required 
-            minlength="2"
-            maxlength="50" />
+          <input type="text" class="form-control contact-input" [class.is-invalid]="nameField.invalid && formSubmitted"
+            name="name" #nameField="ngModel" [(ngModel)]="formModel.name" required minlength="2" maxlength="50" />
           <div class="invalid-feedback" *ngIf="nameField.invalid && formSubmitted">
-            <small *ngIf="nameField.errors?.['required']">الاسم مطلوب</small>
-            <small *ngIf="nameField.errors?.['minlength']">الاسم يجب أن يكون أكثر من حرف واحد</small>
-            <small *ngIf="nameField.errors?.['maxlength']">الاسم طويل جداً</small>
+            <small *ngIf="nameField.errors?.['required']">Name is required</small>
+            <small *ngIf="nameField.errors?.['minlength']">Name must be at least 2 characters</small>
+            <small *ngIf="nameField.errors?.['maxlength']">Name is too long</small>
           </div>
         </div>
 
+        <!-- Email -->
         <div class="mb-3">
           <label class="form-label small text-muted mb-1">Email</label>
-          <input 
-            type="email" 
-            class="form-control contact-input" 
-            [class.is-invalid]="emailField.invalid && formSubmitted"
-            name="email" 
-            #emailField="ngModel"
-            [(ngModel)]="formModel.email" 
-            required 
-            email 
-            maxlength="100" />
+          <input type="email" class="form-control contact-input"
+            [class.is-invalid]="emailField.invalid && formSubmitted" name="email" #emailField="ngModel"
+            [(ngModel)]="formModel.email" required email maxlength="100" />
           <div class="invalid-feedback" *ngIf="emailField.invalid && formSubmitted">
-            <small *ngIf="emailField.errors?.['required']">البريد الإلكتروني مطلوب</small>
-            <small *ngIf="emailField.errors?.['email']">صيغة البريد الإلكتروني غير صحيحة</small>
-            <small *ngIf="emailField.errors?.['maxlength']">البريد الإلكتروني طويل جداً</small>
+            <small *ngIf="emailField.errors?.['required']">Email is required</small>
+            <small *ngIf="emailField.errors?.['email']">Invalid email format</small>
+            <small *ngIf="emailField.errors?.['maxlength']">Email is too long</small>
           </div>
         </div>
 
+        <!-- Message -->
         <div class="mb-3">
           <label class="form-label small text-muted mb-1">Message</label>
-          <textarea 
-            rows="5" 
-            class="form-control contact-input" 
-            [class.is-invalid]="messageField.invalid && formSubmitted"
-            name="message" 
-            #messageField="ngModel"
-            [(ngModel)]="formModel.message" 
-            required
-            minlength="10"
-            maxlength="500"></textarea>
+          <textarea rows="5" class="form-control contact-input"
+            [class.is-invalid]="messageField.invalid && formSubmitted" name="message" #messageField="ngModel"
+            [(ngModel)]="formModel.message" required minlength="10" maxlength="500"></textarea>
           <div class="invalid-feedback" *ngIf="messageField.invalid && formSubmitted">
-            <small *ngIf="messageField.errors?.['required']">الرسالة مطلوبة</small>
-            <small *ngIf="messageField.errors?.['minlength']">الرسالة قصيرة جداً (الحد الأدنى 10 أحرف)</small>
-            <small *ngIf="messageField.errors?.['maxlength']">الرسالة طويلة جداً (الحد الأقصى 500 حرف)</small>
+            <small *ngIf="messageField.errors?.['required']">Message is required</small>
+            <small *ngIf="messageField.errors?.['minlength']">Message is too short (minimum 10 characters)</small>
+            <small *ngIf="messageField.errors?.['maxlength']">Message is too long (maximum 500 characters)</small>
           </div>
         </div>
 
-        <button 
-          type="submit" 
-          class="btn btn-primary w-100 btn-send mt-2"
-          [disabled]="sending || contactForm.invalid">
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary w-100 btn-send mt-2" [disabled]="sending || contactForm.invalid">
           <span *ngIf="sending" class="spinner-border spinner-border-sm me-2" role="status"></span>
-          {{ sending ? 'جاري الإرسال...' : 'إرسال الرسالة' }}
+          {{ sending ? 'Sending...' : 'Send' }}
         </button>
       </form>
     </div>

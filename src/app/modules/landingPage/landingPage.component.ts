@@ -234,6 +234,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       'solution_title': 'Revolutionary Home Testing Solution',
       'solution_desc': 'Our AI-powered system combines convenience with medical expertise.',
       'solution_image': 'assets/img/testing.jpg',
+      'heroImage': 'assets/images/hero-image.png',
       'solution_list_first': 'Professional-grade testing kits',
       'solution_list_second': 'Instant AI analysis',
       'solution_list_third': 'Direct connection with medical centers',

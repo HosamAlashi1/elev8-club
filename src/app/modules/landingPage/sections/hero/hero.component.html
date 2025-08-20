@@ -3,7 +3,7 @@
         <div class="row align-items-center">
 
             <!-- النصوص -->
-            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-lg-6 mb-5 mb-lg-0 left-side" data-aos="fade-up" data-aos-delay="100">
                 <h1 class="fw-bold mb-4" [innerHTML]="heroTitle">
                 </h1>
                 <p class="text-muted mb-4" style="max-width: 520px;">
@@ -27,7 +27,7 @@
 
             <!-- صورة المنتج -->
             <div class="col-lg-6 text-center" data-aos="fade-up" data-aos-delay="300">
-                <img src="assets/img/hero-image.png" alt="EDKD Kit" class="hero-img">
+                <img [src]="heroImage" alt="EDKD Kit" class="hero-img">
             </div>
 
         </div>

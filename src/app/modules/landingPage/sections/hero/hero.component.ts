@@ -8,6 +8,7 @@ import { Component, OnInit, HostListener, Input } from '@angular/core';
 export class HeroComponent implements OnInit {
   @Input() heroTitle: string = 'Early Detection Saves Lives';
   @Input() heroDescription: string = 'Test for kidney disease easily from home with AI-powered results.';
+  @Input() heroImage: string = 'assets/images/hero-image.png';
   @Input() heroLearnMoreLink: string = '#';
   @Input() iosAppLink: string = '#';
   @Input() androidAppLink: string = '#';

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://turboeat.nstechs.net/admin-api/v1'
+  apiUrl: 'https://landing-dash-backend.edkd.net/api'
 };
