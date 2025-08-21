@@ -2,38 +2,36 @@
   display: block;
 }
 
-/* حجم ثابت لطيف للشاشات مع تجاوب */
+/* إطار موحد للشاشة */
 .screen-wrap {
   width: 220px;
-  /* الأساس */
+  height: 460px; /* طول ثابت عشان يضل نفس الشكل */
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+  background: #f9f9f9; /* خلفية فاتحة كإطار للشكل */
+  border-radius: 20px; /* زوايا حلوة */
+  overflow: hidden; /* يخلي الصورة ما تطلع برة */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 @media (min-width: 576px) {
   .screen-wrap {
     width: 240px;
+    height: 500px;
   }
 }
 
 @media (min-width: 992px) {
   .screen-wrap {
     width: 260px;
+    height: 540px;
   }
 }
 
-/* الصور مباشرة */
-.screen-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .screen-wrap img {
-  min-width: fit-content;
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* أو جرب cover لو بدك يملي الشاشة */
 }

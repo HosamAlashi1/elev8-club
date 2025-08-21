@@ -4,22 +4,31 @@
 
             <!-- النصوص -->
             <div class="col-lg-6 mb-5 mb-lg-0 left-side" data-aos="fade-up" data-aos-delay="100">
-                <h1 class="fw-bold mb-4" [innerHTML]="heroTitle">
-                </h1>
-                <p class="text-muted mb-4" style="max-width: 520px;">
+                <h1 class="fw-bold mb-4 hero-title" [innerHTML]="heroTitle"></h1>
+
+                <p class="text-muted mb-4 hero-desc">
                     {{ heroDescription }}
                 </p>
 
-                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                    <a *ngIf="iosAppLink && iosAppLink !== '#'" [href]="iosAppLink" target="_blank">
-                        <img src="assets/img/apple-store.svg" alt="App Store" class="store-btn">
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4 buttons-container"
+                    *ngIf="(iosAppLink && iosAppLink !== '#') || (androidAppLink && androidAppLink !== '#')">
+
+                    <a [href]="iosAppLink" target="_blank" [class.d-none]="!iosAppLink || iosAppLink === '#'"
+                       class="store-link">
+                        <img src="assets/img/apple-store.svg" alt="App Store" class="store-btn"
+                            [class.show]="isVisible">
                     </a>
-                    <a *ngIf="androidAppLink && androidAppLink !== '#'" [href]="androidAppLink" target="_blank">
-                        <img src="assets/img/google-store.svg" alt="Google Play" class="store-btn">
+
+                    <a [href]="androidAppLink" target="_blank"
+                        [class.d-none]="!androidAppLink || androidAppLink === '#'"
+                        class="store-link">
+                        <img src="assets/img/google-store.svg" alt="Google Play" class="store-btn"
+                            [class.show]="isVisible">
                     </a>
                 </div>
 
-                <a *ngIf="heroLearnMoreLink && heroLearnMoreLink !== '#'" [href]="heroLearnMoreLink" class="learn-more-link">
+                <a *ngIf="heroLearnMoreLink && heroLearnMoreLink !== '#'" [href]="heroLearnMoreLink"
+                    class="learn-more-link">
                     Learn More
                     <i class="fa-solid fa-arrow-right pt-1"></i>
                 </a>

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClient } from '@angular/common/http';
 import { AppComponent } from './app.component';
@@ -16,6 +16,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LottieModule } from 'ngx-lottie';
 import player from 'lottie-web';
 import { SharedModule } from './modules/dash/shared/shared.module';
+import { AppInitializerService } from './core/services/app-initializer.service';
+import { appInitializerFactory } from './core/services/app-initializer.factory';
 
 export function playerFactory() {
   return player;
@@ -46,7 +48,13 @@ export function playerFactory() {
   ],
   providers: [
     DatePipe,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [AppInitializerService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

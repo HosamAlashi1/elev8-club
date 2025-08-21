@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-hero',
@@ -13,12 +13,17 @@ export class HeroComponent implements OnInit {
   @Input() iosAppLink: string = '#';
   @Input() androidAppLink: string = '#';
 
-  isVisible: boolean = false; // لتفعيل الأنيميشن
+  isVisible: boolean = false;
 
   ngOnInit(): void {
-    // نستخدم تايمر بسيط علشان نعمل تأخير قبل ظهور المحتوى
+    console.log('🏪 Hero component initialized');
+    console.log('iOS Link:', this.iosAppLink);
+    console.log('Android Link:', this.androidAppLink);
+    
+    // تأخير قصير لبدء انيميشن الأزرار بعد العنوان والوصف
     setTimeout(() => {
       this.isVisible = true;
-    }, 200);
+      console.log('🎯 Buttons should be visible now:', this.isVisible);
+    }, 500);
   }
 }

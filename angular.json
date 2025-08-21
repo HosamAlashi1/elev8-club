@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "turbo": {
+    "EDKD": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -116,19 +116,19 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "turbo:build:production"
+              "browserTarget": "EDKD:build:production"
             },
             "development": {
-              "browserTarget": "turbo:build:development"
+              "browserTarget": "EDKD:build:development"
             },
             "local": {
-              "browserTarget": "turbo:build:local"
+              "browserTarget": "EDKD:build:local"
             },
             "stage": {
-              "browserTarget": "turbo:build:stage"
+              "browserTarget": "EDKD:build:stage"
             },
             "live": {
-              "browserTarget": "turbo:build:live"
+              "browserTarget": "EDKD:build:live"
             }
           },
           "defaultConfiguration": "development"
@@ -136,7 +136,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "turbo:build"
+            "browserTarget": "EDKD:build"
           }
         },
         "test": {

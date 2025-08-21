@@ -2,42 +2,144 @@
   background:
     url('/assets/img/background.png') no-repeat,
     linear-gradient(90deg, #F5F9FF 0%, #FFF0FE 100%);
-
-  /* حجم أكبر حتى يختفي جزء من الصورة */
   background-size: 550px auto, cover;
-
-  /* إزاحة الصورة لليمين وتحت علشان نصها يختفي */
   background-position: calc(100% + 80px) calc(100% + 250px), center;
-
-  min-height: calc(100vh - var(--h));
+  min-height: 85dvh;
   overflow: hidden;
 }
 
+/* النصوص */
+h1.hero-title {
+  font-size: var(--lp-h1-size);
+  line-height: var(--lp-h1-lh);
+  display: inline-block;
+  overflow: hidden;
+  border-right: 2px solid #333;
+  white-space: nowrap;
+  animation: typing 3s steps(30, end), blink .7s infinite;
+}
 
-.text-muted {
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: #333 }
+}
+
+p.hero-desc {
   font-size: 24px;
+  max-width: 520px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s ease forwards 0.8s;
+}
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .highlight {
   color: #A82EDE;
-  /* اللون البنفسجي من التصميم */
 }
 
+/* الصورة */
 .hero-img {
-  /* max-width: 90%; */
   height: auto;
   filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.1));
 }
 
+/* container الأزرار */
+.buttons-container {
+  opacity: 1; /* مرئي افتراضياً للتشخيص */
+  transform: translateY(0);
+  /* animation: containerSlideUp 0.6s ease forwards 1s; */
+}
+
+@keyframes containerSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* تأثيرات hover للروابط */
+.store-link {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
+  opacity: 1; /* التأكد من أن الرابط مرئي */
+}
+
+.store-link:hover {
+  transform: translateY(-2px);
+}
+
+/* الأزرار */
 .store-btn {
   height: 50px;
-  transition: transform 0.3s ease;
+  opacity: 1; /* مرئية للتشخيص */
+  transform: translateY(0) scale(1);
+  transition: all 0.3s ease;
+}
+
+/* انيميشن ظهور الأزرار */
+.store-btn.show {
+  animation: slideUpBounce 0.8s ease forwards;
+}
+
+/* تأخير مختلف لكل زر */
+.buttons-container .store-link:nth-child(1) .store-btn.show { 
+  animation-delay: 1.2s; 
+}
+.buttons-container .store-link:nth-child(2) .store-btn.show { 
+  animation-delay: 1.4s; 
+}
+
+@keyframes slideUpBounce {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.8); 
+  }
+  60% { 
+    opacity: 1; 
+    transform: translateY(-5px) scale(1.05); 
+  }
+  80% { 
+    transform: translateY(2px) scale(0.98); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
 }
 
 .store-btn:hover {
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.05);
+  filter: brightness(1.1);
+  box-shadow: 0 8px 25px rgba(168, 46, 222, 0.2);
 }
 
+/* تأثير نبضة خفيفة للأزرار */
+.store-btn.show {
+  animation: slideUpBounce 0.8s ease forwards, 
+             gentlePulse 2s ease-in-out 2s infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.02); 
+  }
+}
+
+/* Learn More انيميشن */
 .learn-more-link {
   color: #A82EDE;
   font-weight: 500;
@@ -45,6 +147,18 @@
   align-items: center;
   gap: 6px;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: slideInRight 0.6s ease forwards 1.6s;
+}
+
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .learn-more-link i {
@@ -57,9 +171,17 @@
   transform: translateX(4px);
 }
 
-
-/* تحسين النص */
-h1 {
-  font-size: var(--lp-h1-size);
-  line-height: var(--lp-h1-lh);
+/* الخط المتحرك على hover */
+.learn-more-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.4s ease;
+}
+.learn-more-link:hover::after {
+  width: 100%;
 }

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://turboeat-stage.nstechs.net/admin-api/v1'
+  apiUrl: 'https://EDKDeat-stage.nstechs.net/admin-api/v1'
 };

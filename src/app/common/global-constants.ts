@@ -40,7 +40,7 @@ export class GlobalConstants {
         { formControlName: "minute_after_accept", label: "The number of minutes in which the flight cancellation discount account differs after accept", type: "text" },
         { formControlName: "trip_cancellation_fee_after_starting", label: "Cancellation Fee After Starting Trip", type: "text" },
         { formControlName: "trip_cancellation_fee_befor_driver", label: "Trip Cancellation Fee Before Driver", type: "text" },
-        { formControlName: "turbo_fee", label: "Turbo Fee", type: "text" },
+        { formControlName: "EDKD_fee", label: "EDKD Fee", type: "text" },
         { formControlName: "is_min_ride_price_enable", label: "Enable Minimum Ride Price", type: "radio" },
         { formControlName: "min_ride_price_economy", label: "Economy Ride Minimum Price", type: "number" },
         { formControlName: "min_ride_price_women", label: "Women Ride Minimum Price", type: "number" },
