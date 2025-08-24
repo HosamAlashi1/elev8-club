@@ -1,0 +1,70 @@
+<div class="container py-5">
+  <!-- Title -->
+  <h2 class="fw-bold text-center my-5 " data-aos="fade-up">{{ sectionTitle }}</h2>
+
+  <div class="d-flex justify-content-center">
+    <!-- Timeline -->
+    <div class="timeline px-3 d-flex flex-column align-items-center position-relative">
+      <div class="progress-line"></div>
+
+      <ng-container *ngFor="let step of steps; let i = index">
+        <div class="circle mt-4"
+             [class.completed]="currentIndex >= i"
+             data-aos="fade-right"
+             [attr.data-aos-delay]="i*200">
+          <i class="fa-solid fa-check checkmark"></i>
+        </div>
+        <div *ngIf="i < steps.length - 1"
+             class="line-segment"
+             [class.active]="currentIndex > i"></div>
+      </ng-container>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-container" style="width: 100%; max-width: 700px;">
+      <div *ngFor="let step of steps; let i = index"
+           class="video-card mb-4"
+           (click)="openModal(step, i)"
+           data-aos="fade-left"
+           [attr.data-aos-delay]="i*200">
+
+        <div class="card-img-container">
+          <img [src]="step.img" class="video-thumb" />
+        </div>
+
+        <div class="video-text">
+          <div class="step">{{ step.step }}</div>
+          <div class="title">{{ step.title }}</div>
+          <div class="desc">{{ step.desc }}</div>
+        </div>
+
+        <i class="fa-solid fa-circle-play fa-3x play-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true"
+     [class.show]="currentStep"
+     [style.display]="currentStep ? 'block':'none'"
+     (click)="closeModal()"> <!-- إغلاق عند الضغط برا -->
+
+  <div class="modal-dialog modal-lg modal-dialog-centered"
+       (click)="$event.stopPropagation()"> <!-- منع الإغلاق عند الضغط جوة المودال -->
+    <div class="modal-content bg-dark text-white position-relative rounded-4 overflow-hidden">
+      <div class="d-flex justify-content-center p-3">
+        <video id="videoPlayer" controls class="video-mobile-preview">
+          <source [src]="currentStep?.video" type="video/mp4" />
+        </video>
+      </div>
+      <div class="video-info-box p-4 bg-white text-dark" *ngIf="currentStep">
+        <div class="fw-bold text-purple">{{ currentStep.step }}</div>
+        <div class="h5 fw-bold mb-1">{{ currentStep.title }}</div>
+        <div class="small text-muted">{{ currentStep.desc }}</div>
+      </div>
+      <button class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+              (click)="closeModal()" aria-label="Close"></button>
+    </div>
+  </div>
+</div>

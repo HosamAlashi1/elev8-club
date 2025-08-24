@@ -1,0 +1,79 @@
+/* الكارد */
+.card-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.animate-card {
+  animation: fadeInScale 0.7s ease;
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Icons */
+.status-icon {
+  font-size: 90px;
+  animation: bounce 1s ease;
+}
+.status-icon.success { color: #22c55e; } /* Success Green */
+.status-icon.error { color: #ef4444; }   /* Error Red */
+
+@keyframes bounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* Order Info */
+.order-info {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid #eee;
+  margin-top: 15px;
+}
+
+.order-info p {
+  margin: 0;
+  font-size: 1rem;
+  color: #374151;
+}
+
+/* Progress Bar */
+.progress {
+  height: 6px;
+  background: #eee;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #A82EDE, #9228c2);
+  transition: width 1s linear;
+}
+
+/* Button */
+.btn-cart {
+  background: linear-gradient(90deg, #A82EDE, #9228c2, #A82EDE);
+  background-size: 200% 100%;
+  background-position: left center;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  transition: background-position 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(168, 46, 222, 0.25);
+}
+
+.btn-cart:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(168, 46, 222, 0.35);
+}

@@ -24,6 +24,7 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/dash/dash.module').then((m) => m.DashModule),
     data: { animation: 'dashboard' }
   },
+
   { path: '**', redirectTo: 'error/404' },
 ];
 

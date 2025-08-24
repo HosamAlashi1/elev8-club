@@ -1,0 +1,101 @@
+.cart-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 1150px;
+  margin: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* العناوين */
+.cart-title {
+  font-size: 1.6rem;
+  color: #111827;}
+
+.cart-desc {
+  font-size: 1rem;
+  color: #4b5563 !important;
+}
+
+/* Features */
+.feature-card {
+  background: #FFF6FE;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.feature-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(168, 46, 222, 0.15);
+}
+.feature-card .icon {
+  font-size: 28px;
+  color: #A82EDE;
+  margin-bottom: 12px;
+}
+
+/* الأسعار */
+.price .amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+.price .label {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+/* counter */
+.btn-counter {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 28px;
+  transition: all 0.2s ease;
+}
+.btn-counter:hover {
+  background: #f3e8ff;
+  border-color: #A82EDE;
+  color: #A82EDE;
+}
+/* Add to Cart Button */
+.btn-cart {
+  background: linear-gradient(90deg, #A82EDE, #9228c2, #A82EDE);
+  background-size: 200% 100%;
+  background-position: left center;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  transition: background-position 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(168, 46, 222, 0.25);
+}
+
+.btn-cart:hover {
+  background-position: right center; /* يتحرك التدرج */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(168, 46, 222, 0.35);
+}
+
+.btn-cart:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(168, 46, 222, 0.2);
+}
+
+
+
+p{
+  color: #4B5563 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+.pricing {
+  background: #F9FAFB;
+}
+

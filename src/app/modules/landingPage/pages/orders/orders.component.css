@@ -1,0 +1,118 @@
+/* Stepper Wrapper */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+}
+
+/* كل Step */
+.step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+/* الدوائر */
+.circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  /* دائرة كاملة */
+  border: 2px solid #E5E7EB;
+  /* رمادي فاتح */
+  background: #E5E7EB;
+  color: #374151;
+  /* رمادي غامق */
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.circle.active {
+  background: linear-gradient(90deg, #A82EDE, #9228c2);
+  border-color: #A82EDE;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(168, 46, 222, 0.4);
+  animation: popIn 0.4s ease;
+}
+
+/* النص */
+.label {
+  font-size: 15px;
+  font-weight: 400;
+  color: #6B7280;
+  /* Tailwind gray-500 */
+  white-space: nowrap;
+}
+
+.label.active-label {
+  color: #A82EDE;
+  font-weight: 500;
+}
+
+/* الخط الفاصل */
+.line {
+  flex: 1;
+  height: 2px;
+  width: 160px;
+  background-color: #E5E7EB;
+  margin: 0 10px;
+  transition: background-color 0.3s ease;
+}
+
+.step .circle.active+.label+.line {
+  background-color: #A82EDE;
+}
+
+/* أنيميشن للدائرة */
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 📱 Responsive */
+@media (max-width: 1200px) {
+  .stepper {
+    overflow-x: auto;
+    justify-content: flex-start !important;
+    gap: 25px;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stepper::-webkit-scrollbar {
+    display: none;
+    /* نخفي السكول بار */
+  }
+
+  .line {
+    flex: none;
+    width: 60px;
+    /* أصغر للموبايل */
+  }
+}
+
+
+.cursor-pointer {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cursor-pointer:hover {
+  transform: scale(1.05);
+}

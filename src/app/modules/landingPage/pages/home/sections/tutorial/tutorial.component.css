@@ -1,0 +1,201 @@
+.container {
+  max-width: 1000px;
+}
+
+/* Timeline Wrapper */
+.timeline {
+  width: 60px;
+  min-height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Progress vertical line */
+.progress-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #ddd;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* Step Circle */
+.timeline .circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 3px solid #A82EDE;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.timeline .circle .checkmark {
+  display: none;
+  color: #fff;
+  font-size: 12px;
+}
+
+.timeline .circle.completed {
+  background-color: #A82EDE;
+  animation: popIn 0.4s ease forwards;
+}
+
+.timeline .circle.completed .checkmark {
+  display: inline;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Connector line between circles */
+.line-segment {
+  width: 4px;
+  height: 100px;
+  background-color: #ddd;
+  margin: 0 auto;
+  transition: background 0.4s ease;
+}
+
+.line-segment.active {
+  background: linear-gradient(to bottom, #A82EDE 0%, #9228c2 100%);
+  animation: fillLine 0.6s ease forwards;
+}
+
+/* Video Cards */
+.video-card {
+  background: #fff;
+  border-radius: 16px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s, transform 0.2s;
+  cursor: pointer;
+}
+
+.video-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-img-container {
+  width: 140px;
+  height: 130px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+.video-thumb {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.video-text {
+  flex-grow: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.video-text .step {
+  font-size: 14px;
+  font-weight: 600;
+  color: #A82EDE;
+  margin-bottom: 3px;
+}
+
+.video-text .title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.video-text .desc {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Play icon */
+.play-icon {
+  align-self: center;
+  margin-right: 20px;
+  color: #A82EDE;
+  transition: color 0.2s;
+}
+.video-card:hover .play-icon {
+  color: #9228c2;
+}
+
+/* Modal */
+.video-info-box {
+  background: #fff;
+  color: #333;
+  padding: 20px;
+}
+
+#videoPlayer {
+  max-height: 500px;
+  width: auto;
+  display: block;
+  margin: auto;
+  border-radius: 12px;
+}
+
+.video-mobile-preview {
+  display: block;
+  margin: auto;
+  height: auto;
+  max-height: 500px;
+  width: auto;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .video-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .video-thumb {
+    margin-bottom: 10px;
+  }
+
+  .play-icon {
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+}
+
+/* --- Animations --- */
+@keyframes popIn {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fillLine {
+  from { height: 0; }
+  to { height: 100px; }
+}

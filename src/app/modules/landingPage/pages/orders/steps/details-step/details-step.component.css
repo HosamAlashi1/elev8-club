@@ -1,0 +1,195 @@
+/* الكاردات */
+.card-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 35px;
+  box-shadow: 0 4px 20px #0000000D;
+}
+
+.section-title {
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1F2937;
+  font-size: 20px;
+}
+
+/* الفورم */
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  color: #111827;
+}
+
+.form-control::placeholder {
+  color: #9CA3AF;
+  font-size: 0.9rem;
+}
+
+.form-control:focus {
+  border-color: #A82EDE;
+  box-shadow: 0 0 0 3px rgba(168, 46, 222, 0.15);
+  outline: none;
+  transform: scale(1.01);
+  animation: focusPulse 0.25s ease;
+}
+
+@keyframes focusPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+  100% { transform: scale(1.01); }
+}
+
+/* طرق الدفع */
+.form-check {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-check:hover {
+  border-color: #A82EDE;
+  background: #FDF4FF;
+  transform: scale(1.01);
+}
+
+.form-check-input {
+  flex-shrink: 0;
+  margin-top: 0;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.form-check-label img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ✅ لما يكون الراديو متشَك */
+.form-check-input:checked {
+  background-color: #A82EDE;
+  border-color: #A82EDE;
+}
+
+.form-check-input:checked ~ .form-check-label {
+  color: #A82EDE;
+}
+
+.form-check-input:checked ~ .form-check-label img {
+  filter: hue-rotate(280deg) saturate(1.5);
+}
+
+.form-check:has(.form-check-input:checked) {
+  border-color: #A82EDE;
+  background: #FDF4FF;
+  box-shadow: 0 4px 10px rgba(168, 46, 222, 0.12);
+  animation: cardSelect 0.7s ease;
+}
+
+@keyframes cardSelect {
+  0% { transform: scale(0.99); }
+  60% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+/* Order Summary */
+.order-summary {
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.order-summary .section-title {
+  margin-bottom: 15px;
+}
+
+/* زر الكارت */
+.btn-cart {
+  background: linear-gradient(90deg, #A82EDE, #9228c2, #A82EDE);
+  background-size: 200% 100%;
+  background-position: left center;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  transition: background-position 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(168, 46, 222, 0.25);
+}
+
+.btn-cart:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(168, 46, 222, 0.35);
+}
+
+.btn-cart:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(168, 46, 222, 0.2);
+}
+
+/* النصوص داخل الكروت */
+.price .amount {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.price .label {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* checkout secure */
+.order-summary i {
+  font-size: 15px;
+  color: #6B7280;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.text {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #4B5563;
+}
+
+.error-msg {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.error-msg.show {
+  opacity: 1;
+  max-height: 50px; /* يكفي لعرض النص */
+}
