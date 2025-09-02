@@ -9,27 +9,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
+  padding: 12px 14px; /* 🔧 نفس padding المدخلات */
+  font-size: 0.95rem; /* 🔧 نفس font-size المدخلات */
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
+  color: #111827; /* 🔧 نفس لون النص */
   background-color: #fff;
   background-image: none;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  border: 1px solid #E5E7EB; /* 🔧 نفس لون البوردر */
+  border-radius: 8px; /* 🔧 نفس border-radius المدخلات */
+  transition: all 0.3s ease; /* 🔧 نفس transition المدخلات */
   cursor: pointer;
   min-height: 38px;
 }
 
 .select-button:hover:not(.disabled) {
-  border-color: #86b7fe;
+  border-color: #A82EDE; /* 🔧 نفس لون hover المدخلات */
 }
 
 .select-button.open {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: #A82EDE; /* 🔧 نفس لون focus المدخلات */
+  box-shadow: 0 0 0 3px rgba(168, 46, 222, 0.15); /* 🔧 نفس box-shadow المدخلات */
+  outline: none;
+  transform: scale(1.01); /* 🔧 نفس animation المدخلات */
 }
 
 .select-button.disabled {
@@ -44,7 +46,7 @@
 
 .select-button.invalid.open {
   border-color: #dc3545;
-  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15); /* 🔧 نفس نمط box-shadow */
 }
 
 .select-display {
@@ -54,16 +56,17 @@
 }
 
 .selected-text {
-  color: #212529;
+  color: #111827; /* 🔧 نفس لون النص المدخلات */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .placeholder-text {
-  color: #6c757d;
+  color: #9CA3AF; /* 🔧 نفس لون placeholder المدخلات */
+  font-size: 0.9rem; /* 🔧 نفس حجم placeholder المدخلات */
   font-style: normal;
-  opacity: 0.7;
+  opacity: 1; /* 🔧 إزالة opacity الإضافي */
 }
 
 .select-actions {
@@ -95,7 +98,7 @@
 }
 
 .dropdown-icon {
-  color: #6c757d;
+  color: #9CA3AF; /* 🔧 نفس لون placeholder */
   transition: transform 0.15s ease-in-out;
   font-size: 0.875rem;
 }
@@ -111,8 +114,8 @@
   right: 0;
   z-index: 10000 !important; /* Higher than Google Maps */
   background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
+  border: 1px solid #E5E7EB; /* 🔧 نفس border المدخلات */
+  border-radius: 8px; /* 🔧 نفس border-radius المدخلات */
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   max-height: 0;
   overflow: hidden;
@@ -141,24 +144,47 @@
 .search-container {
   position: relative;
   padding: 0.5rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #E5E7EB; /* 🔧 نفس border المدخلات */
   background-color: #f8f9fa;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.375rem 2rem 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+  padding: 12px 2.5rem 12px 14px; /* 🔧 مساحة للأيقونة من اليمين */
+  font-size: 0.95rem; /* 🔧 نفس font-size المدخلات */
+  border: 1px solid #E5E7EB; /* 🔧 نفس border المدخلات */
+  border-radius: 8px; /* 🔧 نفس border-radius المدخلات */
   background-color: #fff;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  color: #111827; /* 🔧 نفس لون النص */
+  transition: all 0.3s ease; /* 🔧 نفس transition المدخلات */
+}
+
+.search-input::placeholder {
+  color: #9CA3AF; /* 🔧 نفس لون placeholder المدخلات */
+  font-size: 0.9rem; /* 🔧 نفس حجم placeholder المدخلات */
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.125rem rgba(13, 110, 253, 0.25);
+  border-color: #A82EDE; /* 🔧 نفس لون focus المدخلات */
+  box-shadow: 0 0 0 3px rgba(168, 46, 222, 0.15); /* 🔧 نفس box-shadow المدخلات */
+  transform: scale(1.01); /* 🔧 نفس تأثير المدخلات */
+  animation: focusPulse 0.25s ease; /* 🔧 نفس animation المدخلات */
+}
+
+/* 🔧 إضافة نفس animation المدخلات */
+@keyframes focusPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+  100% { transform: scale(1.01); }
+}
+
+.select-button.open {
+  border-color: #A82EDE; /* 🔧 نفس لون focus المدخلات */
+  box-shadow: 0 0 0 3px rgba(168, 46, 222, 0.15); /* 🔧 نفس box-shadow المدخلات */
+  outline: none;
+  transform: scale(1.01); /* 🔧 نفس animation المدخلات */
+  animation: focusPulse 0.25s ease; /* 🔧 نفس animation المدخلات */
 }
 
 .search-icon {
@@ -166,7 +192,7 @@
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #6c757d;
+  color: #9CA3AF; /* 🔧 نفس لون placeholder */
   font-size: 0.875rem;
   pointer-events: none;
 }

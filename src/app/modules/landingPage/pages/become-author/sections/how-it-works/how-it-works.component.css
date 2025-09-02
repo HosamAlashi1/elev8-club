@@ -1,0 +1,43 @@
+.how-it-works {
+  padding: 60px 0;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.how-card {
+  text-align: center;
+  padding: 10px;
+}
+
+.icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #5BBDB7; /* اللون الأساسي */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.icon-circle img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* يخلي الأيقونة بيضا */
+}
+
+.how-card h5 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.how-card p {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}

@@ -1,0 +1,178 @@
+<div class="header">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <h2 class="header-title">
+            <lucide-icon [name]="'shopping-cart'"></lucide-icon>
+            Orders <small>({{ totalCount }})</small>
+          </h2>
+        </div>
+        <div class="col-auto">
+          <!-- <button
+            class="btn btn-sm btn-info rounded-pill px-3"
+            (click)="markAllAsRead()"
+            [disabled]="(httpService.getLoading('markAllOrdersRead') | async)"
+          >
+            <ng-container *ngIf="(httpService.getLoading('markAllOrdersRead') | async)">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            </ng-container>
+            <i class="fe fe-check me-2" *ngIf="!(httpService.getLoading('markAllOrdersRead') | async)"></i>
+            <span>Mark All Read</span>
+          </button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div
+        class="d-flex align-items-center input-group-merge input-group-flush input-group position-relative"
+        style="min-width: 250px;"
+      >
+        <i class="fe fe-search text-muted position-absolute mb-1 me-3"></i>
+        <input
+          [(ngModel)]="searchText"
+          class="form-control m-0 ps-4"
+          placeholder="Search orders..."
+          (ngModelChange)="onSearchChange()"
+        />
+      </div>
+
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <!-- Status Filter -->
+        <app-modern-select
+          [options]="statusOptions"
+          [(ngModel)]="statusFilter"
+          (selectionChange)="onStatusFilterChange()"
+          placeholder2="All Status"
+          icon="fe fe-filter"
+          [clearable]="true"
+          size="sm"
+          minWidth="140px">
+        </app-modern-select>
+
+        <!-- Payment Status Filter -->
+        <app-modern-select
+          [options]="paymentStatusOptions"
+          [(ngModel)]="paymentStatusFilter"
+          (selectionChange)="onPaymentStatusFilterChange()"
+          placeholder2="All Payment Status"
+          icon="fe fe-credit-card"
+          [clearable]="true"
+          size="sm"
+          minWidth="160px">
+        </app-modern-select>
+
+        <button
+          class="btn btn-sm btn-danger d-flex align-items-center gap-2"
+          (click)="reset()"
+        >
+          <i class="fe fe-rotate-ccw"></i>
+          <span>Reset</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-nowrap card-table table-hover">
+        <thead>
+          <tr>
+            <th class="w-5">#NO</th>
+            <th class="w-10">Order ID</th>
+            <th class="w-15">Customer</th>
+            <!-- <th class="w-12">Package</th> -->
+            <th class="w-10">Amount</th>
+            <th class="w-15">Status</th>
+            <th class="w-15">Payment</th>
+            <th class="w-20">Date</th>
+            <th class="w-10">Actions</th>
+          </tr>
+        </thead>
+
+        <!-- Loading skeletons -->
+        <tbody *ngIf="isLoading$ | async">
+          <tr *ngFor="let number of [].constructor(size + 1)">
+            <td *ngFor="let i of [].constructor(8)">
+              <ngx-skeleton-loader
+                appearance="line"
+                animation="progress-dark"
+                [theme]="{
+                  width: '50%',
+                  height: '32px',
+                  'border-radius': '3px',
+                  margin: '0'
+                }"
+              >
+              </ngx-skeleton-loader>
+            </td>
+          </tr>
+        </tbody>
+
+        <tbody *ngIf="!(isLoading$ | async)">
+          <tr *ngFor="let order of orders; let i = index" [class.table-warning]="!order.is_read">
+            <td>#{{ i + 1 }}</td>
+            <td>
+              <strong>#{{ order.id }}</strong>
+            </td>
+            <td>
+              <div>
+                <strong>{{ order.full_name || 'N/A' }}</strong>
+                <br>
+                <small class="text-muted">{{ order.email || 'N/A' }}</small>
+              </div>
+            </td>
+            <!-- <td>
+              <span class="fw-medium">{{ order.package?.name || 'Package #' + order.package_id }}</span>
+            </td> -->
+            <td>
+              <strong class="text-success">${{ order.total || 0 }}</strong>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getStatusBadgeClass(order.status)">
+                {{ order.status | titlecase }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getPaymentStatusBadgeClass(order.payment_status)">
+                {{ order.payment_status | titlecase }}
+              </span>
+            </td>
+            <td>
+              <small>{{ order.created_at | date:'dd/MM/yyyy' }}</small>
+            </td>
+            <td>
+              <div class="btn-group dropstart">
+                <span data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fe fe-more-vertical black-menu fs-2"></i>
+                </span>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" (click)="viewDetails(order)">
+                      <i class="fe fe-eye me-2"></i>View Details
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <app-no-results
+      [isLoading$]="isLoading$"
+      [totalRecords]="totalCount"
+    ></app-no-results>
+    <app-pagination
+      [isLoading$]="isLoading$"
+      [totalRecords]="totalCount"
+      [size]="size"
+      (pageChange)="list($event)"
+    >
+    </app-pagination>
+  </div>
+</div>

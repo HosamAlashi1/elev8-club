@@ -1,0 +1,35 @@
+.success-stories {
+  background: #f9fafb; /* خلفية فاتحة للسكشن */
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.story-card {
+  background: #fff;
+  border-radius: 12px;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
+  transition: all 0.3s ease;
+}
+
+/* .story-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+} */
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.quote {
+  font-size: 15px;
+  color: #444;
+  /* font-style: italic; */
+  min-height: 60px;
+}

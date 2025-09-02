@@ -1,0 +1,55 @@
+<div class="container py-5 mt-5">
+  <h2 class="page-title mb-4 mt-5" data-aos="fade-down" data-aos-duration="1000">
+    Shopping Cart
+  </h2>
+
+  <div class="row g-4">
+    <!-- القائمة -->
+    <div class="col-lg-8">
+      <div *ngFor="let it of items; let i = index; trackBy: trackById" class="item-card shadow-sm"
+        [attr.data-product-id]="it.bookId" data-aos="fade-up" data-aos-duration="900"
+        [attr.data-aos-delay]="200 + (i * 150)">
+        <a class="remove-link" (click)="remove(it.bookId)">Remove</a>
+
+        <div class="d-flex align-items-center">
+          <img class="thumb" [src]="it.thumb" [alt]="it.title" data-aos="zoom-in"
+            [attr.data-aos-delay]="250 + (i * 150)" data-aos-duration="800" />
+
+          <div class="flex-grow-1 ms-3">
+            <div class="title" data-aos="fade-left" [attr.data-aos-delay]="300 + (i * 150)">
+              {{ it.title }}
+            </div>
+            <div class="author text-muted my-1" data-aos="fade-left" [attr.data-aos-delay]="350 + (i * 150)">
+              By {{ it.author }}
+            </div>
+
+            <div class="d-flex align-items-center gap-3 mt-3" data-aos="fade-up"
+              [attr.data-aos-delay]="400 + (i * 150)">
+              <!-- qty -->
+              <div class="qty-box">
+                <button class="qty-btn" (click)="dec(it, qtyVal)">-</button>
+                <div class="qty-value" #qtyVal>{{ it.qty }}</div>
+                <button class="qty-btn" (click)="inc(it, qtyVal)">+</button>
+              </div>
+
+              <div class="line-price fw-semibold">
+                {{ it.unitPrice | currency:'USD' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- حالة فارغة -->
+      <div *ngIf="!items.length" class="empty text-muted" data-aos="fade-in" data-aos-delay="200">
+        Your cart is empty.
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4" data-aos="fade-left" data-aos-delay="500" data-aos-duration="900">
+      <app-order-summary [actionLabel]="'Confirm'" [actionType]="'confirm'" [actionHandler]="proceedToShipping">
+      </app-order-summary>
+    </div>
+  </div>
+</div>

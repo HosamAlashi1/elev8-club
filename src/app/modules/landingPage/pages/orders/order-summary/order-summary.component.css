@@ -1,0 +1,40 @@
+.order-summary-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  padding: 20px;
+}
+
+.order-summary-card h5 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.order-summary-card hr {
+  margin: 12px 0;
+  border-color: rgba(0,0,0,.08);
+}
+
+.action-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 10px;
+  transition: background .2s ease;
+  color: #fff;
+}
+
+/* للأزرق */
+.action-btn.proceed {
+  background: #111827;
+}
+.action-btn.proceed:hover {
+  background: #1f2937;
+}
+
+/* للأخضر */
+.action-btn.confirm {
+  background: #5BBDB7;
+}
+.action-btn.confirm:hover {
+  background: #4ca8a2;
+}

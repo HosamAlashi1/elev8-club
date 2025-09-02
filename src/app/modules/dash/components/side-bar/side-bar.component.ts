@@ -17,11 +17,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   isCollapsed = false;
   isMobile = false;
   unreadContactMessagesCount = 0;
+  unreadOrdersCount = 0;
   private countUpdateInterval: any;
 
   menu: any[] = [
     { label: 'Home', icon: 'home', route: '/dashboard' },
     { label: 'Admins', icon: 'shield-check', route: '/dashboard/admins' },
+    { label: 'Orders', icon: 'shopping-cart', route: '/dashboard/orders' },
+    { label: 'Tutorial', icon: 'book-open', route: '/dashboard/tutorial' },
+    { label: 'Packages', icon: 'package', route: '/dashboard/packages' },
+    { label: 'Package Features', icon: 'list-checks', route: '/dashboard/package-features' },
+    { label: 'Payment Methods', icon: 'credit-card', route: '/dashboard/payment-methods' },
     { label: 'App Previews', icon: 'monitor-smartphone', route: '/dashboard/app-preview' },
     { label: 'Features', icon: 'layers', route: '/dashboard/features' },
     { label: 'Processes', icon: 'workflow', route: '/dashboard/processes' },
@@ -44,10 +50,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.onResize();
     this.user = this.publicService.getUserData();
     this.getUnreadContactMessagesCount();
+    this.getUnreadOrdersCount();
 
     // تحديث العداد كل 30 ثانية
     this.countUpdateInterval = setInterval(() => {
       this.getUnreadContactMessagesCount();
+      this.getUnreadOrdersCount();
     }, 30000);
 
     // استمع لتغيير التنقل واضبط القائمة تلقائيًا
@@ -111,6 +119,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.markAllContactMessagesAsRead();
     }
 
+    // إذا كان الرابط هو الطلبات، قم بتعليم جميع الطلبات كمقروئة
+    if (item.route === '/dashboard/orders') {
+      this.markAllOrdersAsRead();
+    }
+
     if (item.children) {
       if (this.isCollapsed) {
         this.toggleSidebar();
@@ -144,6 +157,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     return item.route === '/dashboard/contact-messages';
   }
 
+  /** التحقق إذا كان العنصر هو الطلبات لإظهار العدد */
+  isOrdersItem(item: any): boolean {
+    return item.route === '/dashboard/orders';
+  }
+
   /** تعليم جميع رسائل الاتصال كمقروئة عند الضغط على رابط رسائل الاتصال */
   markAllContactMessagesAsRead(): void {
     const url = `${this.api.contactMessages.markAllRead}`;
@@ -169,6 +187,35 @@ export class SidebarComponent implements OnInit, OnDestroy {
       },
       error: () => {
         console.error('Failed to get unread contact messages count');
+      }
+    });
+  }
+
+  /** تعليم جميع الطلبات كمقروئة عند الضغط على رابط الطلبات */
+  markAllOrdersAsRead(): void {
+    const url = `${this.api.orders.markAllRead}`;
+    this.httpService.action(url, {}, 'markAllOrdersReadFromSidebar').subscribe({
+      next: (res: any) => {
+        // تم تعليم جميع الطلبات كمقروئة بصمت
+        this.unreadOrdersCount = 0; // إخفاء العدد
+      },
+      error: () => {
+        // يمكن إضافة معالجة للأخطاء هنا إذا لزم الأمر
+      }
+    });
+  }
+
+  /** جلب عدد الطلبات غير المقروءة */
+  getUnreadOrdersCount(): void {
+    const url = `${this.api.orders.unreadCount}`;
+    this.httpService.listGet(url, 'unreadOrdersCountSidebar').subscribe({
+      next: (res: any) => {
+        if (res?.status && res?.data) {
+          this.unreadOrdersCount = res.data.unread_count;
+        }
+      },
+      error: () => {
+        console.error('Failed to get unread orders count');
       }
     });
   }

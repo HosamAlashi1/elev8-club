@@ -13,7 +13,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { LottieModule } from 'ngx-lottie';
 import { LottieOverlayComponent } from './shared/lottie-overlay/lottie-overlay.component';
-import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow } from 'lucide-angular';
+import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow, ListChecks, BookOpen, CreditCard, ShoppingCart } from 'lucide-angular';
 
 
 @NgModule({
@@ -47,7 +47,11 @@ import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Fol
       Inbox,
       Settings,
       MonitorSmartphone,
-      Workflow
+      Workflow,
+      ListChecks,
+      BookOpen,
+      CreditCard,
+      ShoppingCart
     })
   ],
   providers: [

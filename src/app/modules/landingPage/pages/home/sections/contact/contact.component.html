@@ -2,82 +2,96 @@
 
   <!-- العنوان -->
   <div class="text-center pt-2 mb-4" data-aos="fade-up" data-aos-duration="800">
-    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span
-        class="dot"></span></h3>
+    <h3 class="section-title st-divider mb-0">
+      {{ title }} <span class="dot"></span>
+    </h3>
   </div>
 
-  <div class="row row-contacts align-items-start g-4 gx-lg-5 gx-xl-6 pb-4">
+  <div class="row row-contacts g-4 gx-lg-5 gx-xl-6 pb-4 align-items-stretch">
     <!-- الفورم -->
     <div class="col-lg-6" data-aos="fade-right" data-aos-duration="800">
-      <form #contactForm="ngForm" (ngSubmit)="submit(contactForm)" novalidate>
-
-        <!-- Name -->
-        <div class="mb-3">
-          <label class="form-label small text-muted mb-1">Name</label>
-          <input type="text" class="form-control contact-input" [class.is-invalid]="nameField.invalid && formSubmitted"
-            name="name" #nameField="ngModel" [(ngModel)]="formModel.name" required minlength="2" maxlength="50" />
-          <div class="invalid-feedback" *ngIf="nameField.invalid && formSubmitted">
-            <small *ngIf="nameField.errors?.['required']">Name is required</small>
-            <small *ngIf="nameField.errors?.['minlength']">Name must be at least 2 characters</small>
-            <small *ngIf="nameField.errors?.['maxlength']">Name is too long</small>
+      <div class="contact-card h-100">
+        <form #contactForm="ngForm" (ngSubmit)="submit(contactForm)" novalidate>
+          <!-- Name -->
+          <div class="mb-3">
+            <label class="form-label small mb-1">Name</label>
+            <input type="text" class="form-control contact-input"
+              [class.is-invalid]="nameField.invalid && formSubmitted" name="name" #nameField="ngModel"
+              [(ngModel)]="formModel.name" required minlength="2" maxlength="50" />
+            <div class="invalid-feedback" *ngIf="nameField.invalid && formSubmitted">
+              <small *ngIf="nameField.errors?.['required']">Name is required</small>
+              <small *ngIf="nameField.errors?.['minlength']">Min 2 characters</small>
+              <small *ngIf="nameField.errors?.['maxlength']">Too long</small>
+            </div>
           </div>
-        </div>
 
-        <!-- Email -->
-        <div class="mb-3">
-          <label class="form-label small text-muted mb-1">Email</label>
-          <input type="email" class="form-control contact-input"
-            [class.is-invalid]="emailField.invalid && formSubmitted" name="email" #emailField="ngModel"
-            [(ngModel)]="formModel.email" required email maxlength="100" />
-          <div class="invalid-feedback" *ngIf="emailField.invalid && formSubmitted">
-            <small *ngIf="emailField.errors?.['required']">Email is required</small>
-            <small *ngIf="emailField.errors?.['email']">Invalid email format</small>
-            <small *ngIf="emailField.errors?.['maxlength']">Email is too long</small>
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label small mb-1">Email</label>
+            <input type="email" class="form-control contact-input"
+              [class.is-invalid]="emailField.invalid && formSubmitted" name="email" #emailField="ngModel"
+              [(ngModel)]="formModel.email" required email maxlength="100" />
+            <div class="invalid-feedback" *ngIf="emailField.invalid && formSubmitted">
+              <small *ngIf="emailField.errors?.['required']">Email is required</small>
+              <small *ngIf="emailField.errors?.['email']">Invalid format</small>
+              <small *ngIf="emailField.errors?.['maxlength']">Too long</small>
+            </div>
           </div>
-        </div>
 
-        <!-- Message -->
-        <div class="mb-3">
-          <label class="form-label small text-muted mb-1">Message</label>
-          <textarea rows="5" class="form-control contact-input"
-            [class.is-invalid]="messageField.invalid && formSubmitted" name="message" #messageField="ngModel"
-            [(ngModel)]="formModel.message" required minlength="10" maxlength="500"></textarea>
-          <div class="invalid-feedback" *ngIf="messageField.invalid && formSubmitted">
-            <small *ngIf="messageField.errors?.['required']">Message is required</small>
-            <small *ngIf="messageField.errors?.['minlength']">Message is too short (minimum 10 characters)</small>
-            <small *ngIf="messageField.errors?.['maxlength']">Message is too long (maximum 500 characters)</small>
+          <!-- Message -->
+          <div class="mb-3">
+            <label class="form-label small mb-1">Message</label>
+            <textarea rows="3" class="form-control contact-input"
+              [class.is-invalid]="messageField.invalid && formSubmitted" name="message" #messageField="ngModel"
+              [(ngModel)]="formModel.message" required minlength="10" maxlength="500"></textarea>
+            <div class="invalid-feedback" *ngIf="messageField.invalid && formSubmitted">
+              <small *ngIf="messageField.errors?.['required']">Message is required</small>
+              <small *ngIf="messageField.errors?.['minlength']">Too short (min 10)</small>
+              <small *ngIf="messageField.errors?.['maxlength']">Too long (max 500)</small>
+            </div>
           </div>
-        </div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-primary w-100 btn-send mt-2" [disabled]="sending || contactForm.invalid">
-          <span *ngIf="sending" class="spinner-border spinner-border-sm me-2" role="status"></span>
-          {{ sending ? 'Sending...' : 'Send' }}
-        </button>
-      </form>
+          <!-- Submit -->
+          <button type="submit" class="btn btn-send w-100 mt-2" [disabled]="sending || contactForm.invalid">
+            <span *ngIf="sending" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            {{ sending ? 'Sending...' : 'Send Message' }}
+          </button>
+        </form>
+      </div>
     </div>
 
-    <!-- معلومات التواصل + الخريطة -->
+    <!-- معلومات التواصل -->
     <div class="col-lg-6" data-aos="fade-left" data-aos-duration="800" data-aos-delay="120">
+      <div class="contact-card h-100 d-flex flex-column justify-content-between">
 
-      <div class="contact-info mb-3">
-        <div class="info-item d-flex align-items-start mb-3" *ngFor="let i of info">
-          <div class="info-icon me-1">
-            <i [class]="i.icon" class="fs-4" aria-hidden="true"></i>
-          </div>
-          <div>
-            <div class="fw-semibold small mb-1">{{ i.label }}</div>
-            <div class="text-muted small">
-              <a *ngIf="i.href; else plain" [href]="i.href" class="link-muted">{{ i.value }}</a>
-              <ng-template #plain>{{ i.value }}</ng-template>
+        <!-- Contact Info -->
+        <div class="contact-info mt-2">
+          <div class="info-item d-flex align-items-start mb-4" *ngFor="let i of info">
+            <div class="info-icon me-2"><i [class]="i.icon" class="fs-5"></i></div>
+            <div>
+              <div class="fw-semibold small mb-1">{{ i.label }}</div>
+              <div class="text-muted small">
+                <a *ngIf="i.href; else plain" [href]="i.href" class="link-muted">{{ i.value }}</a>
+                <ng-template #plain>{{ i.value }}</ng-template>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- خريطة الشرق الأوسط بدون عنوان/ماركر -->
-      <div class="map-card">
-        <iframe class="map-iframe" [src]="safeMapUrl" loading="lazy"></iframe>
+        <!-- Business Hours -->
+        <div class="info-item d-flex align-items-start mt-3 pt-3 border-top">
+          <div class="info-icon me-2">
+            <i class="fas fa-clock fs-5"></i>
+          </div>
+          <div>
+            <div class="fw-semibold small mb-1">Business Hours</div>
+            <div class="text-muted small">
+              <ng-container *ngFor="let line of businessHoursArray">
+                <div>{{ line }}</div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

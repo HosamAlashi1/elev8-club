@@ -3,23 +3,47 @@ import { Observable } from 'rxjs';
 import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment';
 
-export interface AppPreview {
-  id: number;
-  image: string;
+// ✅ Interfaces بناءً على الداتا الجديدة
+export interface Hero {
+  background: string;
+  slides: { img: string; alt: string }[];
 }
 
-export interface Feature {
-  id: number;
+export interface IntroTrust {
+  icon: string;
   title: string;
-  image: string;
   description: string;
 }
 
-export interface Process {
-  id: number;
-  step: string;
+export interface FeaturedBook {
+  img: string;
   title: string;
-  description: string;
+  author: string;
+  price: string;
+}
+
+export interface Category {
+  icon: string;
+  title: string;
+  count: string;
+}
+
+export interface Book {
+  img: string;
+  title: string;
+  author: string;
+  price: string;
+  rating?: number;
+}
+
+export interface StaffPicks {
+  staff: { img: string; name: string; position: string; quote: string };
+  books: Book[];
+}
+
+export interface AwardWinners {
+  firstRow: Book[];
+  secondRow: Book[];
 }
 
 export interface Testimonial {
@@ -31,24 +55,34 @@ export interface Testimonial {
   testimonial: string;
 }
 
-export interface Setting {
-  id: number;
-  key_id: string;
+export interface Blog {
+  img: string;
   title: string;
-  type: string;
+  description: string;
+  link: string;
+}
+
+export interface Setting {
+  key: string;
   value: string;
 }
 
 export interface LandingPageData {
-  app_previews: AppPreview[];
-  features: Feature[];
-  processes: Process[];
+  hero: Hero;
+  introTrust: IntroTrust[];
+  featuredBooks: FeaturedBook[];
+  categories: Category[];
+  bestsellingBooks: Book[];
+  staffPicks: StaffPicks;
+  awardWinners: AwardWinners;
   testimonials: Testimonial[];
+  blogs: Blog[];
   settings: {
     '': Setting[];
   };
 }
 
+// ✅ Models for Contact
 export interface ContactMessage {
   name: string;
   email: string;
@@ -77,13 +111,13 @@ export interface ApiResponse {
   providedIn: 'root'
 })
 export class LandingService {
-  
   private readonly API_BASE_URL = `${environment.apiUrl}`;
 
-  constructor(private httpService: HttpService) { }
+  constructor(private httpService: HttpService) {}
 
   /**
    * جلب بيانات الصفحة الرئيسية من الـ API
+   * (حاليا ممكن ما تستخدم لأنه بنشتغل بالـ fallbackData)
    */
   getHomeData(): Observable<ApiResponse> {
     const url = `${this.API_BASE_URL}/home`;
@@ -96,7 +130,7 @@ export class LandingService {
   parseSettings(settings: Setting[]): { [key: string]: string } {
     const parsedSettings: { [key: string]: string } = {};
     settings.forEach(setting => {
-      parsedSettings[setting.key_id] = setting.value;
+      parsedSettings[setting.key] = setting.value;
     });
     return parsedSettings;
   }
@@ -105,18 +139,15 @@ export class LandingService {
    * إرسال رسالة اتصال إلى الـ API
    */
   sendContactMessage(contactData: ContactMessage): Observable<ContactResponse> {
-    // التحقق من البيانات قبل الإرسال
     if (!contactData.name?.trim() || !contactData.email?.trim() || !contactData.message?.trim()) {
       throw new Error('جميع الحقول مطلوبة');
     }
 
-    // التحقق من صيغة البريد الإلكتروني
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(contactData.email.trim())) {
       throw new Error('صيغة البريد الإلكتروني غير صحيحة');
     }
 
-    // تنظيف البيانات
     const cleanData: ContactMessage = {
       name: contactData.name.trim(),
       email: contactData.email.trim().toLowerCase(),

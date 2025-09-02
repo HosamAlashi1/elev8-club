@@ -1,0 +1,167 @@
+<!-- Book Details Page Content -->
+<div class="book-details-content animate-route">
+  <div class="lp-section container mt-5 py-5" *ngIf="book as b">
+    <div class="row g-4">
+      <!-- الصور -->
+      <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
+        <div class="gallery-main shadow-sm">
+          <!-- Container للصور مع overflow hidden -->
+          <div class="images-container">
+            <!-- الصورة الحالية -->
+            <img [src]="selectedImg" [alt]="b.title" class="main-img current-img" [class.loaded]="imgLoaded"
+              (load)="onMainImgLoad()" loading="eager" decoding="async" data-aos="zoom-in" data-aos-delay="200"
+              data-aos-duration="1000" />
+
+            <!-- الصورة القديمة (للانيميشن) -->
+            <img *ngIf="oldImg && isTransitioning" [src]="oldImg" [alt]="b.title" class="main-img old-img"
+              [class.slide-out-left]="slideDirection === 'left'" [class.slide-out-right]="slideDirection === 'right'" />
+
+            <!-- الصورة الجديدة (للانيميشن) -->
+            <img *ngIf="newImg && isTransitioning" [src]="newImg" [alt]="b.title" class="main-img new-img"
+              [class.slide-in-left]="slideDirection === 'left'" [class.slide-in-right]="slideDirection === 'right'"
+              (load)="onNewImgLoad()" />
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3 thumbs-wrap" data-aos="fade-up" data-aos-delay="300" data-aos-duration="900">
+          <button *ngFor="let img of b.images" type="button" class="thumb btn p-0" [class.active]="img === selectedImg"
+            (click)="selectImage(img)" [attr.aria-label]="'Preview ' + b.title">
+            <img [src]="img" [alt]="b.title + ' thumbnail'" loading="lazy" />
+          </button>
+        </div>
+      </div>
+
+      <!-- التفاصيل -->
+      <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
+        <h3 class="mb-1">{{ b.title }}</h3>
+        <p class="text-muted mb-2">By {{ b.author }}</p>
+
+        <!-- التقييم العام -->
+        <div class="d-flex align-items-center gap-2 mb-2" data-aos="fade-up" data-aos-delay="200">
+          <div class="rating">
+            <ng-container *ngFor="let s of stars(); let i = index">
+              <i class="bi" [ngClass]="{
+                   'bi-star-fill': isFill(b.rating, i + 1),
+                   'bi-star-half': isHalf(b.rating, i + 1),
+                   'bi-star': !isFill(b.rating, i + 1) && !isHalf(b.rating, i + 1)
+                 }"></i>
+            </ng-container>
+          </div>
+          <small class="text-muted">({{ b.reviewsCount }} reviews)</small>
+        </div>
+
+        <div class="price h5 mb-3" data-aos="fade-up" data-aos-delay="300">
+          ${{ b.price | number:'1.2-2' }}
+        </div>
+
+        <!-- صيغ الكتاب -->
+        <div class="d-flex gap-2 mb-3" data-aos="fade-up" data-aos-delay="400">
+          <button type="button" class="format-pill" [class.active]="format==='ebook'" (click)="format='ebook'">E
+            book</button>
+          <button type="button" class="format-pill" [class.active]="format==='audiobook'"
+            (click)="format='audiobook'">Audio book</button>
+          <button type="button" class="format-pill" [class.active]="format==='both'" (click)="format='both'">Audio+E
+            book</button>
+        </div>
+
+        <!-- الكمية + إضافة للسلة -->
+        <div class="d-flex align-items-center gap-3 mb-3" data-aos="fade-up" data-aos-delay="500">
+          <div class="qty-box" role="group" aria-label="Quantity selector">
+            <button class="qty-btn" (click)="dec()" [disabled]="qty<=1" aria-label="Decrease">−</button>
+            <input type="number" class="qty-input" [(ngModel)]="qty" min="1" max="99" aria-label="Quantity" />
+            <button class="qty-btn" (click)="inc()" [disabled]="qty>=99" aria-label="Increase">+</button>
+          </div>
+
+          <button type="button" class="btn btn-custom" [class.loading]="isAddingToCart" [class.success]="showSuccess"
+            [disabled]="isAddingToCart" (click)="addToCart()" data-aos="zoom-in" data-aos-delay="600">
+
+            <!-- أيقونة التحميل -->
+            <div *ngIf="isAddingToCart" class="spinner"></div>
+
+            <!-- أيقونة النجاح -->
+            <i *ngIf="showSuccess && !isAddingToCart" class="bi bi-check-circle icon"></i>
+
+            <!-- أيقونة السلة العادية -->
+            <i *ngIf="!isAddingToCart && !showSuccess" class="bi bi-cart-plus icon"></i>
+
+            <!-- النص -->
+            <span>
+              {{ isAddingToCart ? 'Adding...' : (showSuccess ? 'Added!' : 'Add to Cart') }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Share -->
+        <div class="share d-flex align-items-center gap-2 mb-4" data-aos="fade-up" data-aos-delay="700">
+          <span class="share-label">Share :</span>
+          <button class="share-btn" aria-label="Share on Facebook"><i class="bi bi-facebook"></i></button>
+          <button class="share-btn" aria-label="Share on Twitter"><i class="bi bi-twitter"></i></button>
+          <button class="share-btn" aria-label="Share on Instagram"><i class="bi bi-instagram"></i></button>
+          <button class="share-btn" aria-label="Share on Linkedin"><i class="bi bi-linkedin"></i></button>
+        </div>
+
+        <!-- الوصف -->
+        <h6 class="fw-bold mb-2" data-aos="fade-up" data-aos-delay="800">
+          Description
+        </h6>
+        <p class="text-muted mb-4" data-aos="fade-up" data-aos-delay="850">
+          {{ b.description }}
+        </p>
+
+        <!-- ميتا -->
+        <div class="meta small" data-aos="fade-up" data-aos-delay="900">
+          <div><span class="label">ISBN:</span> <span class="text-muted">{{ b.isbn }}</span></div>
+          <div><span class="label">Published:</span> <span class="text-muted">{{ b.published }}</span></div>
+          <div><span class="label">Page Count:</span> <span class="text-muted">{{ b.pages }}</span></div>
+        </div>
+
+        <!-- المراجعات -->
+        <h6 class="fw-bold mt-5 mb-3" data-aos="fade-down" data-aos-delay="950">
+          Reviews
+        </h6>
+
+        <div *ngIf="b.reviews?.length; else noReviews">
+          <div *ngFor="let r of b.reviews; let i = index" class="review d-flex gap-3" data-aos="fade-up"
+            [attr.data-aos-delay]="1000 + (i * 150)">
+            <img class="avatar" [src]="r.avatar || 'assets/img/blank.png'" alt="" />
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="reviewer fw-semibold">{{ r.reviewer }}</span>
+                <div class="rating tiny">
+                  <ng-container *ngFor="let s of stars(); let i = index">
+                    <i class="bi" [ngClass]="{
+                          'bi-star-fill': i + 1 <= r.rating,
+                          'bi-star-half': (i + 0.5) < r.rating && r.rating < i + 1,
+                          'bi-star': i + 1 > r.rating
+                        }"></i>
+                  </ng-container>
+                </div>
+              </div>
+              <p class="text-muted mb-0">{{ r.text }}</p>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noReviews>
+          <p class="text-muted">No reviews yet.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" data-aos="fade-left" data-aos-delay="1100" data-aos-duration="800">
+    <div class="toast" [class.show]="showToast" [class.hide]="!showToast">
+      <div class="toast-icon">
+        <i class="bi bi-check-lg"></i>
+      </div>
+      <div class="toast-content">
+        <div class="toast-title">Added to Cart!</div>
+        <div class="toast-message">{{ toastMessage }}</div>
+      </div>
+      <button class="toast-close" (click)="hideToast()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+</div>

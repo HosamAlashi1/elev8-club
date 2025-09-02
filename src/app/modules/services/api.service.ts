@@ -21,6 +21,50 @@ export class ApiService {
 		delete: (id: number) => API_BASE_URL + 'admins/destroy/' + id // POST
 	};
 
+	// Orders
+	public orders = {
+		list: API_BASE_URL + 'orders', // POST
+		details: (id: number) => API_BASE_URL + 'orders/' + id, // GET
+		markAllRead: API_BASE_URL + 'orders/mark-all-read', // POST
+		unreadCount: API_BASE_URL + 'orders/unread-count', // GET
+	};
+
+	// Tutorial
+	public tutorial = {
+		list: API_BASE_URL + 'tutorial', // POST
+		details: (id: number) => API_BASE_URL + 'tutorial/' + id, // GET
+		add: API_BASE_URL + 'tutorial/store', // POST
+		edit: (id: number) => API_BASE_URL + 'tutorial/update/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'tutorial/destroy/' + id // POST
+	};
+
+	// Packages
+	public packages = {
+		list: API_BASE_URL + 'packages', // POST
+		details: (id: number) => API_BASE_URL + 'packages/' + id, // GET
+		add: API_BASE_URL + 'packages/store', // POST
+		edit: (id: number) => API_BASE_URL + 'packages/update/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'packages/destroy/' + id // POST
+	};
+
+	// Package Features
+	public packageFeatures = {
+		list: API_BASE_URL + 'package-features', // POST
+		details: (id: number) => API_BASE_URL + 'package-features/' + id, // GET
+		add: API_BASE_URL + 'package-features/store', // POST
+		edit: (id: number) => API_BASE_URL + 'package-features/update/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'package-features/destroy/' + id // POST
+	};
+
+	// Payment Methods
+	public paymentMethods = {
+		list: API_BASE_URL + 'payment-methods', // POST
+		details: (id: number) => API_BASE_URL + 'payment-methods/' + id, // GET
+		add: API_BASE_URL + 'payment-methods/store', // POST
+		edit: (id: number) => API_BASE_URL + 'payment-methods/update/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'payment-methods/destroy/' + id // POST
+	};
+
 	// Features
 	public features = {
 		list: API_BASE_URL + 'features', // POST

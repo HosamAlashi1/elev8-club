@@ -1,170 +1,111 @@
-:host {
-    display: block;
-}
-
-/* خلفية وألوان عامة */
 .site-footer {
-    background: #1A1030;
-    color: rgba(255, 255, 255, 0.85);
-    padding: 40px 0 26px;
+  background: #111827;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 40px 0 26px;
 }
 
-/* كتلة الشعار */
-.footer-brand {
-    max-width: 380px;
-}
-
-.footer-logo {
-    width: 160px;
-    height: 59px;
-    object-fit: contain;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .25));
-}
-
-.footer-desc {
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.6;
-}
-
-/* عناوين الأعمدة */
 .footer-title {
-    color: #fff;
-    font-weight: 600;
-    font-size: .95rem;
-    margin-bottom: .75rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: .95rem;
+  margin-bottom: .75rem;
 }
 
-/* الروابط */
 .footer-link {
-    display: inline-block;
-    color: rgba(255, 255, 255, 0.75);
-    text-decoration: none;
-    padding: .18rem 0;
-    transition: color .2s ease;
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  padding: .18rem 0;
+  transition: color .2s ease;
 }
+.footer-link:hover { color: #fff; }
 
-.footer-link:hover {
-    color: #fff;
-}
-
-/* أيقونات السوشال – مربّع مستدير بخلفية خفيفة وحد 1px */
-/* الأساس */
+/* أيقونات السوشال مع اللمعة */
 .social-link {
-    position: relative;
-    isolation: isolate;
-    /* يخلي اللمعة/النبضة فوق الخلفية فقط */
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: grid;
-    place-items: center;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.88);
-    text-decoration: none;
-    transition: background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
-    overflow: hidden;
-    /* حتى تبقى اللمعة داخل العنصر */
+  position: relative;
+  isolation: isolate;
+  width: 34px; height: 34px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  transition: background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
+  overflow: hidden;
 }
 
-/* الأيقونة نفسها – تكبير بسيط فقط */
 .social-link i {
-    transition: transform .25s ease, filter .25s ease;
-    will-change: transform;
+  transition: transform .25s ease, filter .25s ease;
 }
 
-/* لمعة تمرّ من اليسار لليمين */
+/* لمعة */
 .social-link::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, .65) 48%, transparent 55%);
-    transform: translateX(-150%) skewX(-20deg);
-    transition: transform .7s ease;
-    pointer-events: none;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, .65) 48%, transparent 55%);
+  transform: translateX(-150%) skewX(-20deg);
+  transition: transform .7s ease;
+  pointer-events: none;
+  z-index: -1;
 }
 
-/* نبضة رينغ لطيفة */
+/* Pulse */
 .social-link::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    box-shadow: 0 0 0 0 rgba(168, 46, 222, .35);
-    opacity: 0;
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(91, 189, 183, .35);
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Hover / Focus */
+/* Hover */
 .social-link:hover,
 .social-link:focus-visible {
-    background: rgba(168, 46, 222, 0.18);
-    border-color: rgba(168, 46, 222, 0.35);
-    color: #fff;
-    box-shadow: 0 8px 18px rgba(168, 46, 222, .22);
+  background: rgba(91, 189, 183, 0.2);
+  border-color: rgba(91, 189, 183, 0.4);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(91, 189, 183, .25);
 }
+.social-link:hover i { transform: scale(1.08); }
 
-.social-link:hover i,
-.social-link:focus-visible i {
-    transform: scale(1.08);
-    filter: drop-shadow(0 2px 6px rgba(168, 46, 222, .35));
-}
+/* Trigger لمعة */
+.social-link:hover::after { transform: translateX(150%) skewX(-20deg); }
 
-.social-link:hover::after,
-.social-link:focus-visible::after {
-    transform: translateX(150%) skewX(-20deg);
-    /* تشغيل اللمعة */
-}
-
-.social-link:hover::before,
-.social-link:focus-visible::before {
-    animation: pulse-ring .6s ease-out forwards;
-    /* نبضة مرة واحدة */
+/* Trigger Pulse */
+.social-link:hover::before {
+  animation: pulse-ring .6s ease-out forwards;
 }
 
 @keyframes pulse-ring {
-    0% {
-        opacity: .5;
-        box-shadow: 0 0 0 0 rgba(168, 46, 222, .35);
-    }
-
-    100% {
-        opacity: 0;
-        box-shadow: 0 0 0 12px rgba(168, 46, 222, 0);
-    }
+  0% {
+    opacity: .5;
+    box-shadow: 0 0 0 0 rgba(91, 189, 183, .35);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 12px rgba(91, 189, 183, 0);
+  }
 }
 
-/* لذوي تقليل الحركة */
-@media (prefers-reduced-motion: reduce) {
-
-    .social-link,
-    .social-link i,
-    .social-link::after {
-        transition: none;
-    }
-
-    .social-link::before {
-        animation: none;
-    }
-}
-
-
-/* الفاصل وحقوق النشر */
+/* Divider */
 .footer-divider {
-    border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.40);
-    margin: 22px 0 12px;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  margin: 20px 0;
 }
 
 .footer-bottom {
-    color: rgba(255, 255, 255, 0.72);
-    font-size: .9rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: .85rem;
 }
 
-/* تجاوب */
-@media (max-width: 575.98px) {
-    .footer-brand {
-        max-width: none;
-    }
+/* Responsive */
+@media (max-width: 767.98px) {
+  .footer-top { text-align: center; }
+  .socials { justify-content: center; margin-top: 10px; }
 }

@@ -1,0 +1,221 @@
+<div class="container py-5 mt-5">
+  <h2 class="page-title mb-4 mt-5" data-aos="fade-down" data-aos-duration="800" data-aos-once="true">Shipping Details</h2>
+
+  <div class="row g-4">
+    <!-- اليسار -->
+    <div class="col-lg-8">
+      <form [formGroup]="form" novalidate>
+
+        <!-- الكارد الكبير -->
+        <div class="shipping-card" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200" data-aos-once="true">
+          <div class="card-body">
+
+            <!-- (1) Create Your Account -->
+            <div class="section" formGroupName="account" data-aos="fade-right" data-aos-duration="600" data-aos-delay="400" data-aos-once="true">
+              <button type="button" class="section-header" (click)="openAccount = !openAccount">
+                <h5 class="section-title">1. Create Your Account</h5>
+                <i class="chev" [class.open]="openAccount"></i>
+              </button>
+
+              <div class="section-body" [@slideAnimation]="openAccount ? 'open' : 'closed'">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <input class="form-control" [class.is-invalid]="fA['username'].touched && fA['username'].invalid" placeholder="Enter username" formControlName="username">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['username'].touched && fA['username'].invalid">
+                      <span *ngIf="fA['username'].errors?.['required']">Username is required</span>
+                      <span *ngIf="fA['username'].errors?.['minlength']">Username must be at least 3 characters</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <input class="form-control" [class.is-invalid]="fA['email'].touched && fA['email'].invalid" placeholder="Email" type="email" formControlName="email">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['email'].touched && fA['email'].invalid">
+                      <span *ngIf="fA['email'].errors?.['required']">Email is required</span>
+                      <span *ngIf="fA['email'].errors?.['email']">Please enter a valid email</span>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <input class="form-control" [class.is-invalid]="fA['password'].touched && fA['password'].invalid" type="password" placeholder="Enter password" formControlName="password">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['password'].touched && fA['password'].invalid">
+                      <span *ngIf="fA['password'].errors?.['required']">Password is required</span>
+                      <span *ngIf="fA['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <input class="form-control" [class.is-invalid]="fA['confirmPassword'].touched && fA['confirmPassword'].invalid" type="password" placeholder="Confirm password" formControlName="confirmPassword">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['confirmPassword'].touched && fA['confirmPassword'].invalid">
+                      <span *ngIf="fA['confirmPassword'].errors?.['required']">Please confirm your password</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <input class="form-control" [class.is-invalid]="fA['phoneNumber'].touched && fA['phoneNumber'].invalid" placeholder="Phone Number" formControlName="phoneNumber">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['phoneNumber'].touched && fA['phoneNumber'].invalid">
+                      <span *ngIf="fA['phoneNumber'].errors?.['required']">Phone number is required</span>
+                      <span *ngIf="fA['phoneNumber'].errors?.['pattern']">Please enter a valid phone number</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12 d-flex gap-2">
+                    <input id="agree" type="checkbox" class="form-check-input" formControlName="agree">
+                    <label for="agree" class="form-check-label small text-muted">
+                      I agree to the Terms &amp; Conditions
+                    </label>
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['agree'].touched && fA['agree'].invalid">
+                      <span *ngIf="fA['agree'].errors?.['required']">You must agree to the terms</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-danger small mt-2" [@errorAnimation] *ngIf="form.errors?.['passwordMismatch']">
+                Password and confirmation do not match.
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <hr class="divider" data-aos="fade" data-aos-duration="400" data-aos-delay="600" data-aos-once="true">
+
+            <!-- (2) Shipping -->
+            <div class="section" formGroupName="shipping" data-aos="fade-left" data-aos-duration="600" data-aos-delay="800" data-aos-once="true">
+              <button type="button" class="section-header" (click)="openShipping = !openShipping">
+                <h5 class="section-title">2. Shipping</h5>
+                <i class="chev" [class.open]="openShipping"></i>
+              </button>
+              <!-- طرق الشحن -->
+              <div class="section-body" [@slideAnimation]="openShipping ? 'open' : 'closed'">
+                <div class="method-grid mb-3">
+                  <button type="button" class="method-card" [class.active]="method==='delivery'"
+                    (click)="setMethod('delivery')">
+                    <div class="method-left">
+                      <span class="icon">
+                        <!-- أيقونة صندوق -->
+                        <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M14.248 8.20068L5.24805 3.01068M1.01758 5.76068L9.74758 10.8107L18.4776 5.76068M9.74805 20.8807V10.8007M18.748 14.8007V6.80068C18.7477 6.44996 18.6551 6.10549 18.4796 5.80185C18.3041 5.4982 18.0518 5.24605 17.748 5.07068L10.748 1.07068C10.444 0.895147 10.0991 0.802734 9.74805 0.802734C9.39697 0.802734 9.05209 0.895147 8.74805 1.07068L1.74805 5.07068C1.44431 5.24605 1.19203 5.4982 1.01651 5.80185C0.84099 6.10549 0.748407 6.44996 0.748047 6.80068V14.8007C0.748407 15.1514 0.84099 15.4959 1.01651 15.7995C1.19203 16.1032 1.44431 16.3553 1.74805 16.5307L8.74805 20.5307C9.05209 20.7062 9.39697 20.7986 9.74805 20.7986C10.0991 20.7986 10.444 20.7062 10.748 20.5307L17.748 16.5307C18.0518 16.3553 18.3041 16.1032 18.4796 15.7995C18.6551 15.4959 18.7477 15.1514 18.748 14.8007Z"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </span>
+                      <div class="text-wrap">
+                        <span class="title">Deliver to me</span>
+                        <span class="price">$5.00</span>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button type="button" class="method-card" [class.active]="method==='pickup'"
+                    (click)="setMethod('pickup')">
+                    <div class="method-left">
+                      <span class="icon">
+                        <!-- أيقونة متجر -->
+                        <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M8.75 6C8.75 5.58579 8.41421 5.25 8 5.25C7.58579 5.25 7.25 5.58579 7.25 6H8H8.75ZM2.75 6C2.75 5.58579 2.41421 5.25 2 5.25C1.58579 5.25 1.25 5.58579 1.25 6H2H2.75ZM14.75 6C14.75 5.58579 14.4142 5.25 14 5.25C13.5858 5.25 13.25 5.58579 13.25 6H14H14.75ZM20.75 6C20.75 5.58579 20.4142 5.25 20 5.25C19.5858 5.25 19.25 5.58579 19.25 6H20H20.75ZM2.05546 20.5018L1.52513 21.0321L1.52513 21.0321L2.05546 20.5018ZM19.9445 20.5018L20.4749 21.0321L20.4749 21.0321L19.9445 20.5018ZM7.25 20.5573C7.25 20.9715 7.58579 21.3073 8 21.3073C8.41421 21.3073 8.75 20.9715 8.75 20.5573H8H7.25ZM8 13.0573V12.3073C7.58579 12.3073 7.25 12.643 7.25 13.0573H8ZM14 13.0573H14.75C14.75 12.643 14.4142 12.3073 14 12.3073V13.0573ZM13.25 20.5573C13.25 20.9715 13.5858 21.3073 14 21.3073C14.4142 21.3073 14.75 20.9715 14.75 20.5573H14H13.25ZM8 6H7.25C7.25 7.24264 6.24264 8.25 5 8.25V9V9.75C7.07107 9.75 8.75 8.07107 8.75 6H8ZM5 9V8.25C3.75736 8.25 2.75 7.24264 2.75 6H2H1.25C1.25 8.07107 2.92893 9.75 5 9.75V9ZM14 6H13.25C13.25 7.24264 12.2426 8.25 11 8.25V9V9.75C13.0711 9.75 14.75 8.07107 14.75 6H14ZM11 9V8.25C9.75736 8.25 8.75 7.24264 8.75 6H8H7.25C7.25 8.07107 8.92893 9.75 11 9.75V9ZM20 6H19.25C19.25 7.24264 18.2426 8.25 17 8.25V9V9.75C19.0711 9.75 20.75 8.07107 20.75 6H20ZM17 9V8.25C15.7574 8.25 14.75 7.24264 14.75 6H14H13.25C13.25 8.07107 14.9289 9.75 17 9.75V9ZM4 1.25V0.5C2.067 0.5 0.5 2.067 0.5 4H1.25H2C2 2.89543 2.89543 2 4 2V1.25ZM1.25 4H0.5V18.5573H1.25H2V4H1.25ZM1.25 18.5573H0.5C0.5 19.4855 0.868749 20.3757 1.52513 21.0321L2.05546 20.5018L2.58579 19.9715C2.21071 19.5964 2 19.0877 2 18.5573H1.25ZM2.05546 20.5018L1.52513 21.0321C2.1815 21.6885 3.07174 22.0573 4 22.0573V21.3073V20.5573C3.46957 20.5573 2.96086 20.3465 2.58579 19.9715L2.05546 20.5018ZM4 21.3073V22.0573H18V21.3073V20.5573H4V21.3073ZM18 21.3073V22.0573C18.9283 22.0573 19.8185 21.6885 20.4749 21.0321L19.9445 20.5018L19.4142 19.9715C19.0391 20.3465 18.5304 20.5573 18 20.5573V21.3073ZM19.9445 20.5018L20.4749 21.0321C21.1313 20.3757 21.5 19.4855 21.5 18.5573H20.75H20C20 19.0877 19.7893 19.5964 19.4142 19.9715L19.9445 20.5018ZM20.75 18.5573H21.5V4H20.75H20V18.5573H20.75ZM20.75 4H21.5C21.5 2.067 19.933 0.5 18 0.5V1.25V2C19.1046 2 20 2.89543 20 4H20.75ZM18 1.25V0.5H4V1.25V2H18V1.25ZM8 20.5573H8.75V13.0573H8H7.25V20.5573H8ZM8 13.0573V13.8073H14V13.0573V12.3073H8V13.0573ZM14 13.0573H13.25V20.5573H14H14.75V13.0573H14Z"
+                            fill="#1B2228" />
+                        </svg>
+                      </span>
+                      <div class="text-wrap">
+                        <span class="title">Store pick up</span>
+                        <span class="price free">Free shipping</span>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                <!-- Delivery options -->
+                <h6 class="section-subtitle">Delivery options</h6>
+                <div class="delivery-options-grid mb-4" [class.disabled]="method==='pickup'">
+                  <label class="opt">
+                    <input type="radio" name="shipOpt" [checked]="option==='standard'" (change)="setOption('standard')">
+                    <span>Standard</span>
+                  </label>
+                  <div class="opt-meta">3–5 Business Days</div>
+
+                  <label class="opt">
+                    <input type="radio" name="shipOpt" [checked]="option==='express'" (change)="setOption('express')">
+                    <span>Express</span>
+                  </label>
+                  <div class="opt-meta">2 Business Days</div>
+
+                  <label class="opt">
+                    <input type="radio" name="shipOpt" [checked]="option==='overnight'"
+                      (change)="setOption('overnight')">
+                    <span>Overnight</span>
+                  </label>
+                  <div class="opt-meta">Next Day</div>
+                </div>
+
+                <!-- عنوان التوصيل -->
+                <h6 class="section-subtitle">Delivery information</h6>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">First name*</label>
+                    <input class="form-control" [class.is-invalid]="fS['firstName'].touched && fS['firstName'].invalid" placeholder="John" formControlName="firstName">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['firstName'].touched && fS['firstName'].invalid">Required</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Last name*</label>
+                    <input class="form-control" [class.is-invalid]="fS['lastName'].touched && fS['lastName'].invalid" placeholder="Doe" formControlName="lastName">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['lastName'].touched && fS['lastName'].invalid">Required</div>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Phone Number*</label>
+                    <input class="form-control" [class.is-invalid]="fS['phone'].touched && fS['phone'].invalid" placeholder="+1 (555) 123-4567" formControlName="phone">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['phone'].touched && fS['phone'].invalid">
+                      <span *ngIf="fS['phone'].errors?.['required']">Phone number is required</span>
+                      <span *ngIf="fS['phone'].errors?.['pattern']">Please enter a valid phone number</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Address*</label>
+                    <input class="form-control" [class.is-invalid]="fS['address1'].touched && fS['address1'].invalid" placeholder="1234 Main Street" formControlName="address1">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['address1'].touched && fS['address1'].invalid">Required</div>
+                    <a class="add-line small text-decoration-none d-block mt-1">Add address line</a>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">City*</label>
+                    <input class="form-control" [class.is-invalid]="fS['city'].touched && fS['city'].invalid" placeholder="New York" formControlName="city">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['city'].touched && fS['city'].invalid">Required</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Zip code*</label>
+                    <input class="form-control" [class.is-invalid]="fS['zip'].touched && fS['zip'].invalid" placeholder="12345" formControlName="zip">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['zip'].touched && fS['zip'].invalid">Required</div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">State / Province</label>
+                    <select class="form-control" formControlName="state">
+                      <option value="" disabled selected>Select...</option>
+                      <option *ngFor="let st of states" [value]="st">{{ st }}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Country*</label>
+                    <select class="form-control" [class.is-invalid]="fS['country'].touched && fS['country'].invalid" formControlName="country">
+                      <option value="" disabled selected>Select country...</option>
+                      <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                    </select>
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['country'].touched && fS['country'].invalid">Required</div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- end shipping section -->
+
+          </div><!-- end card-body -->
+        </div><!-- end card -->
+
+      </form>
+    </div>
+
+    <!-- اليمين: Order Summary -->
+    <div class="col-lg-4" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400" data-aos-once="true">
+      <app-order-summary [actionLabel]="'Proceed to Checkout'" [actionType]="'proceed'"
+        [actionHandler]="onProceedToPayment.bind(this)">
+      </app-order-summary>
+    </div>
+  </div>
+</div>

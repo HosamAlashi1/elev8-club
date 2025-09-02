@@ -1,73 +1,95 @@
 import { Component, HostListener, OnDestroy, OnInit, Input } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { CartService } from 'src/app/modules/services/cart.service'; // عدّل المسار حسب مشروعك
+
+type LinkItem =
+  | { label: string; type: 'route'; route: string }
+  | { label: string; type: 'scroll'; targetId: string };
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  @Input() appDownloadLink: string = '#';
-  @Input() iosAppLink: string = '#';
-  @Input() androidAppLink: string = '#';
-  
+  @Input() logoUrl: string = 'assets/img/landing/home/logo.png';
+  @Input() phone: string = '(800) 123-4567';
+  @Input() email: string = 'support@literaryhaven.com';
+  @Input() socials: Partial<Record<'facebook' | 'twitter' | 'instagram' | 'pinterest' | 'youtube' | 'tiktok', string>> = {
+    facebook: 'https://facebook.com',
+    twitter: 'https://twitter.com',
+    instagram: 'https://instagram.com',
+    pinterest: 'https://pinterest.com',
+    youtube: 'https://youtube.com',
+    tiktok: 'https://tiktok.com'
+  };
+
   scrolled = false;
-  isCollapsed = true; // افتراضياً مغلقة على الموبايل
-  activeSection: 'about' | 'how-it-works' | 'features' | 'order-demo' | 'tutorial' | 'contact' | '' = '';
+  isCollapsed = true;
+  activeSection: 'contact' | '' = '';
   private io?: IntersectionObserver;
-  private pendingScrollId: string | null = null; // 👈 نخزن السكشن المطلوب بعد التنقل
+  private pendingScrollId: string | null = null;
 
-  constructor(private router: Router) {}
+  // 🛒 خصائص السلة
+  cartCount = 0;
+  bumpAnim = false;
+  private cartSub?: Subscription;
 
-  get downloadLink(): string {
-    if (this.appDownloadLink && this.appDownloadLink !== '#') {
-      return this.appDownloadLink;
-    }
-    const userAgent = navigator.userAgent || navigator.vendor;
-    if (/iPad|iPhone|iPod/.test(userAgent)) {
-      return this.iosAppLink;
-    }
-    if (/android/i.test(userAgent)) {
-      return this.androidAppLink;
-    }
-    return this.androidAppLink || this.iosAppLink || '#';
-  }
+  navLinks: LinkItem[] = [
+    { label: 'Home', type: 'scroll', targetId: 'home' },
+    { label: 'Shop', type: 'route', route: '/shop' },
+    { label: 'Featured Author', type: 'route', route: '/featured-author' },
+    { label: 'Best Sellers', type: 'scroll', targetId: 'best-sellers' },
+    { label: 'Author Events', type: 'route', route: '/author-events' },
+    { label: 'Become a Published Author', type: 'route', route: '/become-author' },
+    { label: 'Contact Us', type: 'scroll', targetId: 'contact' },
+  ];
+
+  constructor(private router: Router, private cartService: CartService) { }
 
   ngOnInit(): void {
     this.onScroll();
 
-    const ids = ['about', 'how-it-works', 'features', 'order-demo', 'tutorial', 'contact'];
-    const sections = ids
-      .map(id => document.getElementById(id))
-      .filter((el): el is HTMLElement => !!el);
+    // مراقبة Section contact
+    const contactEl = document.getElementById('contact');
+    if (contactEl) {
+      this.io = new IntersectionObserver(
+        entries => {
+          const vis = entries.find(e => e.isIntersecting);
+          this.activeSection = vis ? 'contact' : '';
+        },
+        { rootMargin: '-40% 0px -55% 0px', threshold: [0, .25, .5, .75, 1] }
+      );
+      this.io.observe(contactEl);
+    }
 
-    this.io = new IntersectionObserver(
-      (entries) => {
-        const vis = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (vis?.target?.id) this.activeSection = vis.target.id as any;
-      },
-      { rootMargin: '-40% 0px -55% 0px', threshold: [0, .25, .5, .75, 1] }
-    );
-    sections.forEach(s => this.io!.observe(s));
+    // معالجة Pending scroll
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.pendingScrollId) {
+          setTimeout(() => {
+            this.scrollIntoView(this.pendingScrollId!);
+            this.pendingScrollId = null;
+          }, 220);
+        }
+      });
 
-    // 👇 اسمع للـ NavigationEnd عشان أعمل Scroll بعد ما أوصل للـ Home
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      if (this.pendingScrollId) {
-        setTimeout(() => {
-          this.scrollIntoView(this.pendingScrollId!);
-          this.pendingScrollId = null;
-        }, 200);
+    // 🛒 الاشتراك مع CartService
+    this.cartSub = this.cartService.getCartObs().subscribe(cart => {
+      const newCount = cart.lines.reduce((s, l) => s + l.qty, 0);
+      if (newCount > this.cartCount) {
+        this.triggerBump();
       }
+      this.cartCount = newCount;
     });
   }
 
   ngOnDestroy(): void {
     this.io?.disconnect();
+    this.cartSub?.unsubscribe();
   }
 
   @HostListener('window:scroll')
@@ -75,21 +97,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.scrolled = window.scrollY > 12;
   }
 
-  scrollTo(id: string, ev?: Event) {
-    if (ev) ev.preventDefault();
+  handleLinkClick(link: LinkItem, ev?: Event) {
+    ev?.preventDefault();
 
-    if (this.router.url !== '/') {
-      // 👇 رجع للصفحة الرئيسية وخزن السكشن
-      this.pendingScrollId = id;
-      this.router.navigate(['/']);
+    if (link.type === 'route') {
+      this.router.navigate([link.route]);
     } else {
-      // 👇 إنت بالصفحة الرئيسية، اعمل Scroll مباشرة
-      this.scrollIntoView(id);
+      if (this.router.url !== '/' && this.router.url !== '/home') {
+        this.pendingScrollId = link.targetId;
+        this.router.navigate(['/']);
+      } else {
+        this.scrollIntoView(link.targetId);
+      }
     }
 
-    // انهِ تأثير الـ focus على اللينك
     (ev?.currentTarget as HTMLElement | null)?.blur();
-    // سكّر القائمة على الموبايل
     this.isCollapsed = true;
   }
 
@@ -100,5 +122,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const offset = (nav?.offsetHeight ?? 64) + 8;
     const top = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  isRouteActive(route: string): boolean {
+    return this.router.url === route;
+  }
+
+  isActive(link: LinkItem): boolean {
+    if (link.type === 'route') {
+      return this.router.url === link.route;
+    }
+    if (link.type === 'scroll') {
+      return this.activeSection === link.targetId;
+    }
+    return false;
+  }
+
+  // 🛒 أنيميشن الـ bump
+  private triggerBump() {
+    this.bumpAnim = true;
+    setTimeout(() => this.bumpAnim = false, 500);
   }
 }

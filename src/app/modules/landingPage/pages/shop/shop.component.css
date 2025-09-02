@@ -1,0 +1,54 @@
+.filters {
+  border-radius: 12px;
+}
+
+.book-card {
+  background: #fff;
+  border-radius: 12px;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+}
+
+.book-card img {
+  border-radius: 8px;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+.price-rating {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+
+.rating .bi {
+  color: #FFC107;
+}
+
+/* شكل الـ checkbox */
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* عند التحديد */
+.form-check-input:checked {
+  background-color: #5BBDB7; /* الخلفية */
+  border-color: #5bbdb623;     /* الإطار */
+  box-shadow: 0 0 4px #5bbdb685;
+}
+
+/* عند التركيز */
+.form-check-input:focus {
+  outline: none;
+  box-shadow: 0 0 4px #5bbdb685;
+}

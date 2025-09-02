@@ -1,102 +1,102 @@
-<!-- Main Content -->
-<div *ngIf="landingData" class="content-container" [class.content-hidden]="!showContent"
-  [class.content-visible]="showContent">
-
-  <!-- Sticky Navbar (شفاف ثم يتلوّن عند التمرير) -->
-  <app-navbar [iosAppLink]="settings['link_ios_app']" [androidAppLink]="settings['link_android_app']" [@fadeInUp]>
-  </app-navbar>
-
+<!-- Home Page Content (بدون navbar/footer - موجودين في الـ layout) -->
+<div class="home-content animate-route">
+  
   <!-- Hero -->
-  <section id="about" class="lp-section pt-4" [@fadeInUp]>
-    <app-hero [heroTitle]="settings['hero_title']" [heroDescription]="settings['hero_desc']"
-      [heroImage]="settings['hero_image']" [heroLearnMoreLink]="settings['hero_learn_more_link']"
-      [iosAppLink]="settings['link_ios_app']" [androidAppLink]="settings['link_android_app']">
+  <section id="home" class="lp-section mt-4" @fadeInUp>
+    <app-hero class="hero-animate" 
+      [background]="pre?.hero?.background" 
+      [slides]="pre?.hero?.slides"
+      [title]="settings['hero_title']" 
+      [subtitle]="settings['hero_desc']" 
+      [buttonText]="'Shop Now'"
+      [buttonLink]="'/shop'">
     </app-hero>
   </section>
 
-  <!-- Solution -->
-  <section id="how-it-works" class="lp-section" [@cardAnimation]>
-    <app-solution [title]="settings['solution_title']" [description]="settings['solution_desc']"
-      [image]="settings['solution_image']" [features]="[
-        settings['solution_list_first'],
-        settings['solution_list_second'],
-        settings['solution_list_third'],
-        settings['solution_list_forth']
-      ]">
-    </app-solution>
+  <!-- Intro / Trust -->
+  <section class="lp-section" @cardAnimation>
+    <app-intro-trust class="card-animate" 
+      [sectionTitle]="settings['intro_trust_title']" 
+      [sectionDescription]="settings['intro_trust_description']" 
+      [items]="pre?.introTrust">
+    </app-intro-trust>
   </section>
 
-  <!-- Process -->
-  <section class="lp-section bg-light" [@cardAnimation]>
-    <app-process [title]="settings['process_title']" [processes]="landingData.processes">
-    </app-process>
+  <!-- Featured Books (سلايدر) -->
+  <section class="lp-section bg-light" @cardAnimation>
+    <app-featured-books class="card-animate" 
+      [title]="settings['featured_books_title']" 
+      [items]="pre?.featuredBooks">
+    </app-featured-books>
   </section>
 
-  <!-- Features -->
-  <section id="features" class="lp-section" [@cardAnimation]>
-    <app-features [title]="settings['features_title']" [features]="landingData.features">
-    </app-features>
+  <!-- Categories -->
+  <section class="lp-section bg-light" @cardAnimation>
+    <app-categories class="card-animate" 
+      [title]="settings['categories_title']" 
+      [items]="pre?.categories">
+    </app-categories>
   </section>
 
-  <!-- App Preview -->
-  <section class="lp-section bg-light" [@cardAnimation]>
-    <app-app-preview [title]="settings['app_preview_title']" [appPreviews]="landingData.app_previews">
-    </app-app-preview>
+  <!-- Bestselling -->
+  <section id="best-sellers" class="lp-section " @cardAnimation>
+    <app-bestselling class="card-animate" 
+      [title]="settings['bestselling_books_title']" 
+      [items]="pre?.bestsellingBooks">
+    </app-bestselling>
   </section>
 
-  <!-- Metrics -->
-  <section class="lp-section" [@cardAnimation]>
-    <app-metrics [testsCompleted]="settings['tests_completed']" [medicalCenters]="settings['medical_centers']"
-      [accuracyRate]="settings['accuracy_rate']" [customerSupport]="settings['customer_support']">
-    </app-metrics>
+  <!-- Staff Picks -->
+  <section class="lp-section" @cardAnimation>
+    <app-staff-picks class="card-animate" 
+      [title]="settings['staff_picks_title']" 
+      [staff]="pre?.staffPicks?.staff"
+      [books]="pre?.staffPicks?.books">
+    </app-staff-picks>
   </section>
 
-  <!-- Order Demo -->
-  <section id="order-demo" class="lp-section bg-light" [@cardAnimation]>
-    <app-order-demo></app-order-demo>
-  </section>
-
-  <!-- Tutorial -->
-  <section id="tutorial" class="lp-section" [@cardAnimation]>
-    <app-tutorial></app-tutorial>
+  <!-- Award Winners -->
+  <section class="lp-section bg-light" @cardAnimation>
+    <app-award-winners class="card-animate" 
+      [title]="settings['award_winners_title']"
+      [firstRow]="pre?.awardWinners?.firstRow" 
+      [secondRow]="pre?.awardWinners?.secondRow">
+    </app-award-winners>
   </section>
 
   <!-- Testimonials -->
-  <section class="lp-section bg-light" [@cardAnimation]>
-    <app-testimonials [title]="settings['testimonial_title']" [testimonials]="landingData.testimonials">
+  <section class="lp-section" @cardAnimation>
+    <app-testimonials class="card-animate"
+      [title]="settings['testimonials_title'] || settings['testimonials_title'] || 'What Our Readers Say'"
+      [testimonials]="pre?.testimonials">
     </app-testimonials>
   </section>
 
-  <!-- CTA -->
-  <section class="lp-section" [@cardAnimation]>
-    <app-cta [title]="settings['get_started_title']" [qrCodeImage]="settings['get_started_QR_code_image']"
-      [iosAppLink]="settings['link_ios_app']" [androidAppLink]="settings['link_android_app']">
-    </app-cta>
+  <!-- Newsletter -->
+  <section class="lp-section bg-light" @cardAnimation>
+    <app-newsletter class="card-animate" 
+      [title]="settings['newsletter_title'] || 'Join Our Literary Community'"
+      [subtitle]="settings['newsletter_subtitle'] || 'Subscribe to receive new releases, author events, special offers, and exclusive content.'">
+    </app-newsletter>
+  </section>
+
+  <!-- Blog -->
+  <section class="lp-section" @cardAnimation>
+    <app-blog class="card-animate" 
+      [title]="settings['blogs_title']" 
+      [items]="pre?.blogs">
+    </app-blog>
   </section>
 
   <!-- Contact -->
-  <section id="contact" class="lp-section bg-light" [@cardAnimation]>
-    <app-contact [title]="settings['contact_us_title']" [phone]="settings['phone']" [email]="settings['email']"
-      [address]="settings['address']" [facebook]="settings['facebook']" [twitter]="settings['twitter']"
-      [instagram]="settings['instagram']" [linkedin]="settings['linkedin']">
+  <section id="contact" class="lp-section bg-light" @cardAnimation>
+    <app-contact class="card-animate" 
+      [title]="settings['contact_us_title']" 
+      [phone]="settings['phone']"
+      [email]="settings['email']" 
+      [address]="settings['address']" 
+      [business_hours]="settings['business_hours']">
     </app-contact>
   </section>
 
-  <!-- Footer -->
-  <app-footer [description]="settings['footer_title']" [facebook]="settings['facebook']" [twitter]="settings['twitter']"
-    [linkedin]="settings['linkedin']" [instagram]="settings['instagram']">
-  </app-footer>
-
-</div>
-
-<!-- Loading State للمحتوى -->
-<div *ngIf="!landingData || !showContent" class="content-loader">
-  <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
-    <div class="text-center">
-      <div class="spinner-border text-primary mb-3" role="status">
-        <span class="sr-only">جاري التحميل...</span>
-      </div>
-      <p class="text-muted">جاري تحضير المحتوى...</p>
-    </div>
-  </div>
 </div>

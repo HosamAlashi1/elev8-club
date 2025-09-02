@@ -69,7 +69,7 @@ export class AdminsComponent implements OnInit {
         this.isLoading$.next(false);
       },
       error: () => {
-        this.toastr.Showerror('Failed to load admins');
+        this.toastr.showError('Failed to load admins');
         this.isLoading$.next(false);
       }
     });

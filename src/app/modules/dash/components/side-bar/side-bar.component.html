@@ -34,6 +34,11 @@
             class="badge bg-danger text-white ms-2 rounded-pill">
             {{ unreadContactMessagesCount }}
           </span>
+          <!-- إظهار عدد الطلبات غير المقروءة -->
+          <span *ngIf="isOrdersItem(item) && unreadOrdersCount > 0 && !isCollapsed"
+            class="badge bg-danger text-white ms-2 rounded-pill">
+            {{ unreadOrdersCount }}
+          </span>
         </div>
         <i *ngIf="item.children && !isCollapsed" class="fe chevron" [ngClass]="{
             'fe-chevron-down': !item.open,

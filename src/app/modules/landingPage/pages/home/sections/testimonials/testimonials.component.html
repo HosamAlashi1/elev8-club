@@ -1,39 +1,34 @@
 <div class="container py-5">
   <!-- عنوان السكشن -->
   <div class="text-center pt-2 mb-4" data-aos="fade-up" data-aos-duration="800">
-    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span class="dot"></span></h3>
+    <h3 class="section-title st-divider mb-0" data-aos="fade-up" data-aos-duration="800">{{ title }} <span
+        class="dot"></span></h3>
   </div>
 
   <div class="row pb-4 g-4 g-lg-4">
-    <div
-      class="col-12 col-md-6 col-lg-4"
-      *ngFor="let t of testimonials; index as i"
-      data-aos="fade-up"
-      [attr.data-aos-delay]="i * 100"
-      data-aos-duration="800"
-    >
-      <div class="testimonial-card p-4 bg-white">
-        <!-- رأس الكرت: أفاتار + اسم/وظيفة -->
-        <div class="d-flex align-items-center mb-3">
-          <img [src]="t.image" [alt]="t.name" class="avatar me-3">
-          <div>
-            <div class="fw-semibold name">{{ t.name }}</div>
-            <div class="text-muted small role">{{ t.position }}</div>
+  <div class="col-12 col-md-6 col-lg-4 d-flex" *ngFor="let t of testimonials; index as i" 
+       data-aos="fade-up" [attr.data-aos-delay]="i * 100" data-aos-duration="800">
+       
+    <div class="testimonial-card p-4 bg-white h-100 w-100">
+      <!-- رأس الكرت: أفاتار + اسم/وظيفة -->
+      <div class="d-flex align-items-center mb-3">
+        <img [src]="t.image || 'assets/img/blank.png'" [alt]="t.name" class="avatar me-3">
+        <div>
+          <div class="fw-semibold name">{{ t.name }}</div>
+          <!-- التقييم -->
+          <div class="stars">
+            <i *ngFor="let star of [1,2,3,4,5]; let i = index" 
+               class="fas fa-star" 
+               [class.text-warning]="i < t.rating"
+               [class.text-muted]="i >= t.rating"></i>
           </div>
         </div>
-
-        <!-- الاقتباس -->
-        <p class="quote text-muted fs-6 mb-3">"{{ t.testimonial }}"</p>
-
-        <!-- التقييم -->
-        <div class="stars">
-          <i *ngFor="let star of [1,2,3,4,5]; let i = index"
-             class="fas fa-star"
-             [class.text-warning]="i < t.rating"
-             [class.text-muted]="i >= t.rating"></i>
-        </div>
       </div>
+
+      <!-- الاقتباس -->
+      <p class="quote text-muted fs-6 mb-3">"{{ t.testimonial }}"</p>
     </div>
   </div>
 </div>
-  
+
+</div>

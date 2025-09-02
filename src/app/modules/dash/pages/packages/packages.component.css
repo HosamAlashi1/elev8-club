@@ -1,0 +1,40 @@
+/* Custom styles for packages table */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25em 0.5em;
+}
+
+.badge.bg-primary {
+  background-color: #007bff !important;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+/* Table styling */
+.table td {
+  vertical-align: middle;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.2em 0.4em;
+  }
+}

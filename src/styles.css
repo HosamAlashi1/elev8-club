@@ -2,3 +2,77 @@
 .modal-image .modal-content {
     background-color: rgba(255, 255, 255, 0.3);
 }
+
+
+/* شكل عام */
+.custom-toast {
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* ألوان حسب الحالة */
+.success-toast {
+  background: #ECFDF5 !important;
+  color: #065F46 !important;
+  border-left: 5px solid #10B981 !important;
+}
+
+.error-toast {
+  background: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-left: 5px solid #EF4444 !important;
+}
+
+.info-toast {
+  background: #EFF6FF !important;
+  color: #1E3A8A !important;
+  border-left: 5px solid #3B82F6 !important;
+}
+
+.warning-toast {
+  background: #FFFBEB !important;
+  color: #92400E !important;
+  border-left: 5px solid #F59E0B !important;
+}
+
+/* أنيميشن دخول */
+.ngx-toastr {
+  animation: slideIn .4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+
+.form-check-input:checked {
+  background-color: #5BBDB7;
+  border-color: #5BBDB7;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(91, 189, 183, 0.25);
+}
+
+/* كل حقول الإدخال */
+.form-control:focus,
+.form-select:focus {
+  border-color: #5bbdb670;
+  box-shadow: 0 0 0 0.2rem rgba(91, 189, 183, 0.25);
+  outline: none; /* نشيل الافتراضي */
+}
+
+/* تشيك بوكس وراديو */
+.form-check-input:focus {
+  border-color: #5bbdb680;
+  box-shadow: 0 0 0 0.2rem rgba(91, 189, 183, 0.25);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

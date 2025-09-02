@@ -1,37 +1,51 @@
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService, IndividualConfig } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ToastrsService {
+  private baseConfig: Partial<IndividualConfig> = {
+    timeOut: 3000,
+    positionClass: 'toast-top-right',
+    closeButton: true,
+    progressBar: true,
+    progressAnimation: 'decreasing',
+    easeTime: 300,
+    enableHtml: true, // نحتاجها عشان الأيقونات
+  };
+
   constructor(private toast: ToastrService) {}
 
-  Showsuccess(message: string) {
-    this.toast.success(message, '', {
-      timeOut: 4000,
-      positionClass: 'toast-top-right'
-    });
+  showSuccess(message: string) {
+    this.toast.success(
+      `✅ ${message}`,
+      '',
+      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast success-toast' }
+    );
   }
 
-  Showerror(message: string) {
-    this.toast.error(message, '', {
-      timeOut: 5000,
-      positionClass: 'toast-top-right'
-    });
+  showError(message: string) {
+    this.toast.error(
+      `❌ ${message}`,
+      '',
+      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast error-toast', timeOut: 5000 }
+    );
   }
 
-  Showinfo(message: string) {
-    this.toast.info(message, '', {
-      timeOut: 4000,
-      positionClass: 'toast-top-right'
-    });
+  showInfo(message: string) {
+    this.toast.info(
+      `ℹ️ ${message}`,
+      '',
+      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast info-toast' }
+    );
   }
 
-  ShowWarning(message: string) {
-    this.toast.warning(message, '', {
-      timeOut: 4500,
-      positionClass: 'toast-top-right'
-    });
+  showWarning(message: string) {
+    this.toast.warning(
+      `⚠️ ${message}`,
+      '',
+      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast warning-toast' }
+    );
   }
 }

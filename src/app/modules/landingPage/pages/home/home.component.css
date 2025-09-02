@@ -1,23 +1,22 @@
+/* Home page content styles */
+.home-content {
+  width: 100%;
+}
+
 /* انيميشنز هادئة وبسيطة */
 .content-container {
   transition: opacity 0.3s ease;
   overflow-x: hidden;
 }
 
-.content-hidden {
-  opacity: 0;
-}
-
-.content-visible {
-  opacity: 1;
-}
+.content-hidden { opacity: 0; }
+.content-visible { opacity: 1; }
 
 /* انيميشن بسيط للعناصر */
 .animate-item {
   opacity: 0;
   animation: simpleShow 0.4s ease forwards;
 }
-
 .animate-item:nth-child(1) { animation-delay: 0.05s; }
 .animate-item:nth-child(2) { animation-delay: 0.1s; }
 .animate-item:nth-child(3) { animation-delay: 0.15s; }
@@ -26,52 +25,44 @@
 .animate-item:nth-child(6) { animation-delay: 0.3s; }
 
 /* انيميشن بسيط للبطاقات */
-.card-animate {
-  opacity: 0;
-  animation: simpleShow 0.3s ease forwards;
-}
+.card-animate { opacity: 0; animation: simpleShow 0.3s ease forwards; }
 
 /* انيميشن هادئ للعناوين */
-.hero-animate {
-  opacity: 0;
-  animation: simpleShow 0.5s ease forwards;
+.hero-animate { opacity: 0; animation: simpleShow 0.5s ease forwards; }
+
+/* انيميشن للصفحة */
+.animate-route {
+  animation: fadeInUp 0.3s ease-out;
 }
 
 /* تعريف الانيميشن البسيط */
-@keyframes simpleShow {
+@keyframes simpleShow { to { opacity: 1; } }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 /* تأثير hover خفيف */
-.interactive-element {
-  transition: opacity 0.2s ease;
-}
-
-.interactive-element:hover {
-  opacity: 0.8;
-}
+.interactive-element { transition: opacity 0.2s ease; }
+.interactive-element:hover { opacity: 0.8; }
 
 /* Responsive - تقليل الانيميشن أكثر في الموبايل */
 @media (max-width: 768px) {
-  .animate-item,
-  .card-animate,
-  .hero-animate {
-    animation-duration: 0.2s;
-  }
+  .animate-item, .card-animate, .hero-animate { animation-duration: 0.2s; }
 }
 
 /* تقليل الحركة للمستخدمين الذين يفضلون ذلك */
 @media (prefers-reduced-motion: reduce) {
-  .animate-item,
-  .card-animate,
-  .hero-animate {
-    animation: none;
-    opacity: 1;
+  .animate-item, .card-animate, .hero-animate, .animate-route { 
+    animation: none; 
+    opacity: 1; 
   }
-  
-  .content-container {
-    transition: none;
-  }
+  .content-container { transition: none; }
 }

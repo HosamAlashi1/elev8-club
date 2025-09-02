@@ -66,7 +66,7 @@ export class ProcessComponent implements OnInit {
         this.isLoading$.next(false);
       },
       error: () => {
-        this.toastr.Showerror('Failed to load processes');
+        this.toastr.showError('Failed to load processes');
         this.isLoading$.next(false);
       }
     });

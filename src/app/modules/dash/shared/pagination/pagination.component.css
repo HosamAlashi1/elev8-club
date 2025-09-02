@@ -39,12 +39,12 @@ ul.pagination .page-link {
 }
 
 ul.pagination .page-link:hover {
-  background-color: #4bbbe8;
+  background-color: #DB48F7;
   color: #fff;
 }
 
 ul.pagination .page-link.text-bg-primary {
-  background-color: #4bbbe8 !important;
+  background-color: #DB48F7 !important;
   color: #fff !important;
   /* font-weight: 600; */
   pointer-events: none;

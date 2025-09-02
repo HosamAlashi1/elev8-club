@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { animate, style, transition, trigger, query, group } from '@angular/animations';
 import { PublicService } from './modules/services/public.service';
-import * as AOS from 'aos'; 
+import * as AOS from 'aos';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -30,15 +30,26 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   previousUrl: string | null = null;
 
-  constructor(private publicService: PublicService, private router: Router) {}
+  constructor(private publicService: PublicService, private router: Router) { }
 
   ngOnInit(): void {
-    // ✅ تهيئة مكتبة AOS
     AOS.init({
-      duration: 1000, // مدة الأنيميشن
-      once: true,     // يشتغل مرة وحدة فقط
+      duration: 800,
+      once: true,
+      offset: 100,                     // أخّر التريغر شوي
+      anchorPlacement: 'top-center',   // أدقّ من الافتراضي
+      startEvent: 'load',              // بعد ما يجهز كلشي
+      mirror: false
     });
 
+    // بعد كل ناڤيجيشن + بعد انتهاء ترانزيشن الراوتر
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        setTimeout(() => AOS.refreshHard(), 350); // 300ms ترانزيشن + هامِش
+      });
+
+    // لو عندك تحميل أولي للصور/الخطوط: رجّح حسابات AOS بعد التحميل
+    window.addEventListener('load', () => AOS.refreshHard());
     // ✅ كود التحقق من الاتصال
     this.publicService.onlineStatus.subscribe((isOnline) => {
       if (!isOnline) {
@@ -56,7 +67,7 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/auth') || event.urlAfterRedirects.startsWith('/error')) {
+        if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/auth/') || event.urlAfterRedirects.startsWith('/error')) {
           this.loadCSS('/assets/css/custom.css');
           this.loadCSS('/assets/css/theme.bundle.css');
           this.removeCSS('/assets/css/landingPage.css');

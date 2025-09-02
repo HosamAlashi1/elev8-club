@@ -1,0 +1,107 @@
+<div class="shop-content animate-route my-5">
+  <section class="lp-section container py-5">
+    <div class="row">
+
+      <!-- Sidebar Filters -->
+      <aside class="col-md-3 mb-4 mb-md-0"
+             data-aos="fade-right"
+             data-aos-duration="1000">
+        <div class="filters card border-0 p-3">
+          <h5 class="fw-bold mb-3">Filters</h5>
+
+          <div class="mb-3">
+            <h6 class="fw-semibold mb-3">Categories</h6>
+            <div *ngFor="let cat of categories" class="my-2"
+                 data-aos="fade-right"
+                 data-aos-delay="200"
+                 data-aos-duration="800">
+              <input type="checkbox" class="form-check-input me-2" [id]="cat.title">
+              <label [for]="cat.title" class="form-check-label">{{cat.title}}</label>
+            </div>
+          </div>
+
+          <div class="mb-3" data-aos="fade-right" data-aos-delay="300">
+            <h6 class="fw-semibold mb-4">Price Range</h6>
+            <div class="d-flex gap-2">
+              <input type="number" class="form-control form-control-sm" placeholder="Min">
+              <input type="number" class="form-control form-control-sm" placeholder="Max">
+            </div>
+          </div>
+
+          <div class="mb-3" data-aos="fade-right" data-aos-delay="400">
+            <h6 class="fw-semibold mb-4">Bestsellers</h6>
+            <div class="form-check">
+              <input type="checkbox" id="bestsellers" class="form-check-input">
+              <label for="bestsellers" class="form-check-label">Show Bestsellers</label>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Books Grid -->
+      <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-3"
+             data-aos="fade-right"
+             data-aos-duration="1000">
+          <h4 class="fw-bold mb-0">Browse Books</h4>
+          <select class="form-select form-select-sm w-auto">
+            <option>Sort by: Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Newest</option>
+            <option>Rating</option>
+          </select>
+        </div>
+
+        <!-- Skeleton Loader -->
+        <div class="row g-3" *ngIf="isLoading">
+          <div class="col-6 col-md-4" *ngFor="let sk of skeletonArray">
+            <ngx-skeleton-loader animation="progress-dark"
+              [theme]="{ 'border-radius': '8px', width: '100%', height: '480px' }">
+            </ngx-skeleton-loader>
+          </div>
+        </div>
+
+        <!-- Books Grid -->
+        <div class="row g-3" *ngIf="!isLoading">
+          <div class="col-6 col-md-4 cursor-pointer" *ngFor="let book of books; let i = index">
+            <div class="book-card h-100"
+                 [routerLink]="['/book', book.id]"
+                 data-aos-duration="900">
+              <img [src]="book.img" [alt]="book.title" class="img-fluid rounded">
+              <h6 class="fw-bold mt-2 mb-1">{{book.title}}</h6>
+              <p class="text-muted small mb-1">{{book.author}}</p>
+              <div class="price-rating">
+                <p class="fw-bold">{{book.price}}</p>
+                <div class="rating">
+                  <ng-container *ngFor="let star of [1,2,3,4,5]">
+                    <i class="bi" [ngClass]="{
+                      'bi-star-fill': star <= book.rating,
+                      'bi-star-half': star - 0.5 === book.rating,
+                      'bi-star': star > book.rating
+                    }"></i>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sentinel -->
+        <div #infiniteScrollSentinel class="mt-3 text-center"
+             data-aos="fade-up"
+             data-aos-delay="200"
+             data-aos-duration="800">
+          <div *ngIf="isLoadingMore" class="row g-3 my-3">
+            <div class="col-6 col-md-4" *ngFor="let sk of skeletonArray">
+              <ngx-skeleton-loader animation="progress-dark"
+                [theme]="{ 'border-radius': '8px', width: '100%', height: '480px' }">
+              </ngx-skeleton-loader>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>

@@ -48,7 +48,7 @@ export class AddEditComponent implements OnInit {
       // For edit: allow submit without new image
       // For create: require image
       if (!this.preview && !this.selectedFile) {
-        this.toastrsService.Showerror('Please select an image');
+        this.toastrsService.showError('Please select an image');
         return;
       }
 
@@ -61,16 +61,16 @@ export class AddEditComponent implements OnInit {
       this.httpService.action(url, formData, 'addEditPreview').subscribe({
         next: (res: any) => {
           if (res.status) {
-            this.toastrsService.Showsuccess(res.message || 'Operation completed successfully');
+            this.toastrsService.showSuccess(res.message || 'Operation completed successfully');
             this.activeModal.close(true);
           } else {
-            this.toastrsService.Showerror(res.message || 'Operation failed');
+            this.toastrsService.showError(res.message || 'Operation failed');
           }
         },
         error: (error: any) => {
           console.error('Error:', error);
           const errorMessage = error?.error?.message || error?.message || 'Operation failed';
-          this.toastrsService.Showerror(errorMessage);
+          this.toastrsService.showError(errorMessage);
         }
       });
     }
@@ -81,13 +81,13 @@ export class AddEditComponent implements OnInit {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        this.toastrsService.Showerror('Please select a valid image file');
+        this.toastrsService.showError('Please select a valid image file');
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        this.toastrsService.Showerror('Image size should be less than 5MB');
+        this.toastrsService.showError('Image size should be less than 5MB');
         return;
       }
 

@@ -84,7 +84,7 @@ export class ContactMessagesComponent implements OnInit {
         this.isLoading$.next(false);
       },
       error: () => {
-        this.toastr.Showerror('Failed to load contactMessages');
+        this.toastr.showError('Failed to load contactMessages');
         this.isLoading$.next(false);
       }
     });
@@ -109,14 +109,14 @@ export class ContactMessagesComponent implements OnInit {
     this.httpService.action(url, {}, 'markAllcontactMessagesRead').subscribe({
       next: (res: { status: any; }) => {
         if (res?.status) {
-          this.toastr.Showsuccess('All contactMessages marked as read');
+          this.toastr.showSuccess('All contactMessages marked as read');
           this.unreadCount = 0;
           // Update the local data
           this.contactMessages = this.contactMessages.map(sub => ({...sub, is_read: 1}));
         }
       },
       error: () => {
-        this.toastr.Showerror('Failed to mark all as read');
+        this.toastr.showError('Failed to mark all as read');
       }
     });
   }

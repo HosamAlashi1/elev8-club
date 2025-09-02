@@ -69,7 +69,7 @@ export class CompaniesComponent implements OnInit {
         this.isLoading$.next(false);
       },
       error: () => {
-        this.toastr.Showerror('Failed to load app previews');
+        this.toastr.showError('Failed to load app previews');
         this.isLoading$.next(false);
       }
     });

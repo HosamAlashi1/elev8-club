@@ -1,0 +1,23 @@
+<div class="categories-section" data-aos="fade-up" data-aos-duration="800">
+  <div class="container">
+    <!-- العنوان -->
+    <h2 class="fw-bold mb-4" data-aos="fade-up" data-aos-delay="100">{{ title }}</h2>
+
+    <!-- الشبكة -->
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-4 col-lg-2" 
+           *ngFor="let item of items; let i = index" 
+           data-aos="zoom-in" 
+           [attr.data-aos-delay]="150 + (i * 100)">
+           
+        <div class="category-card h-100 text-center">
+          <div class="icon mb-3 mx-auto">
+            <img [src]="item.icon" [alt]="item.title" />
+          </div>
+          <h6 class="fw-bold">{{ item.title }}</h6>
+          <p class="text-muted small mb-0">{{ item.count }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

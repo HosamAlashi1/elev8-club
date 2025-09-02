@@ -1,0 +1,30 @@
+<section class="blog-section py-5">
+    <div class="container">
+        <!-- العنوان -->
+        <h2 class="fw-bold my-3" data-aos="fade-up">{{ title }}</h2>
+
+        <!-- الشبكة -->
+        <div class="row g-4 mt-3">
+            <div class="col-md-4" *ngFor="let blog of items; let i = index" data-aos="fade-up"
+                [attr.data-aos-delay]="i * 200">
+                <div class="blog-card h-100 shadow-sm bg-white rounded overflow-hidden d-flex flex-column">
+                    <!-- صورة -->
+                    <img [src]="blog.img" [alt]="blog.title" class="w-100 blog-img">
+
+                    <!-- المحتوى -->
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <h6 class="fw-bold mb-2">{{ blog.title }}</h6>
+                        <p class="text-muted small mb-3 flex-grow-1">{{ blog.description }}</p>
+
+                        <!-- رابط المزيد -->
+                        <div class="mt-auto">
+                            <a [routerLink]="blog.link" class="read-more d-inline-flex align-items-center fw-semibold">
+                                Read More <span class="arrow ms-1">→</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

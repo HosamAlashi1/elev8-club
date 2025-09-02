@@ -1,0 +1,194 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #FF7B7E;
+  color: #fff;
+  height: auto;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  z-index: 1030;
+}
+
+.topbar .contact {
+  opacity: 0.95;
+}
+
+.topbar .socials a {
+  color: #fff;
+  opacity: 0.9;
+  margin: 0 0.45rem;
+  font-size: 14px;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.topbar .socials a:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+/* Navbar تحت التوب بار */
+.lp-navbar {
+  position: fixed;
+  top: 35px;
+  /* Offset للتوب بار */
+  left: 0;
+  right: 0;
+  z-index: 1035;
+  background: #fff;
+  transition: box-shadow .25s ease, background-color .25s ease;
+}
+
+.lp-navbar.scrolled {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+  border-color: #eee !important;
+}
+
+.logo {
+  height: 36px;
+  width: auto;
+}
+
+/* Links */
+.lp-navbar-links .nav-link {
+  color: #111827;
+  font-weight: 400;
+  padding: .9rem .65rem;
+  border: none;
+  transition: color .3s ease;
+}
+
+.lp-navbar-links .nav-link:hover,
+.lp-navbar-links .nav-link:focus,
+.lp-navbar-links .nav-link.active {
+  color: #5BBDB7;
+}
+
+/* Actions */
+.lp-actions .icon-btn {
+  color: #111827;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: .35rem;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.lp-actions .icon-btn:hover {
+  color: #5BBDB7;
+  transform: translateY(-1px);
+}
+
+/* Mobile Menu */
+@media (max-width: 991.98px) {
+
+  .lp-navbar {
+    top: 0px;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 320px;
+    background: #fff;
+    box-shadow: -4px 0 25px rgba(0, 0, 0, 0.08);
+    padding: 2rem 1.2rem;
+    transition: right 0.35s ease, opacity 0.35s ease;
+    opacity: 0;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mobile-menu.open {
+    right: 0;
+    opacity: 1;
+  }
+
+  .mobile-menu .nav-link {
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: .9rem 0;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #f2f2f2;
+    color: #111827;
+    transition: color .25s ease;
+  }
+
+  .mobile-menu .nav-link:hover,
+  .mobile-menu .nav-link.active {
+    color: #5BBDB7;
+  }
+
+  .mobile-menu .btn-close {
+    align-self: flex-end;
+    margin-bottom: 1.5rem;
+  }
+
+  .social-mobile a {
+    color: #111827;
+    font-size: 18px;
+    transition: color .2s;
+  }
+
+  .social-mobile a:hover {
+    color: #5BBDB7;
+  }
+}
+
+/* Responsive Topbar */
+@media (max-width: 768px) {
+  .topbar {
+    text-align: center;
+    padding: 0.6rem 0;
+  }
+
+  .topbar .contact {
+    margin-bottom: 0.35rem;
+  }
+
+  .topbar .socials {
+    margin-top: 0.25rem;
+  }
+}
+
+/* ====== Cart Icon Badge ====== */
+.cart-icon-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #5BBDB7; /* أو اللون الأساسي عندك */
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  min-width: 20px;
+  text-align: center;
+}
+
+/* أنيميشن bump */
+.cart-icon-wrapper.bump {
+  animation: bumpAnim 0.45s ease;
+}
+
+@keyframes bumpAnim {
+  0%   { transform: scale(1); }
+  10%  { transform: scale(1.15); }
+  30%  { transform: scale(0.9); }
+  50%  { transform: scale(1.05); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+

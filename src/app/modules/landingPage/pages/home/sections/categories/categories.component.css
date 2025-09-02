@@ -1,0 +1,28 @@
+.categories-section {
+  padding: 3.5rem 0;
+}
+
+.category-card {
+  /* background: #ffffff; */
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.category-card .icon img {
+  display: block;
+  margin: 0 auto;
+  filter: brightness(0) saturate(100%) invert(56%) sepia(42%) saturate(423%) hue-rotate(121deg) brightness(95%) contrast(92%);
+}
+
+.icon{
+    max-width: 40px;
+    max-height: 40px;
+}

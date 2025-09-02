@@ -1,0 +1,43 @@
+<div class="past-events my-5 p-4">
+    <!-- العنوان -->
+    <h3 class="section-title mb-4" data-aos="fade-up" data-aos-duration="1000">
+        {{ sectionTitle }}
+    </h3>
+
+    <!-- الشبكة -->
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4" *ngFor="let event of events; let i = index">
+            <div class="card past-event-card h-100 shadow-sm border-0" data-aos="fade-up" data-aos-duration="1000"
+                [attr.data-aos-delay]="200 + (i * 150)">
+
+                <!-- صورة -->
+                <img [src]="event.image" [alt]="event.title" class="card-img-top" data-aos="zoom-in"
+                    [attr.data-aos-delay]="300 + (i * 150)" data-aos-duration="900">
+
+                <div class="p-2">
+                    <!-- المحتوى -->
+                    <div class="card-body">
+                        <h5 class="event-title" data-aos="fade-left" [attr.data-aos-delay]="400 + (i * 150)"
+                            data-aos-duration="900">
+                            {{ event.title }}
+                        </h5>
+
+                        <p class="event-description text-muted" data-aos="fade-left"
+                            [attr.data-aos-delay]="500 + (i * 150)" data-aos-duration="900">
+                            {{ event.description }}
+                        </p>
+                    </div>
+
+                    <!-- التاريخ + الرابط -->
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center pb-4"
+                        data-aos="fade-up" [attr.data-aos-delay]="600 + (i * 150)" data-aos-duration="900">
+                        <span class="event-date text-muted">{{ event.date }}</span>
+                        <a [href]="event.link || '#'" class="event-link">
+                            {{ event.linkText }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

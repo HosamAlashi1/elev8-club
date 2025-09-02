@@ -31,7 +31,7 @@
 }
 
 .contact-input:focus {
-    border-color: var(--lp-primary, #A82EDE);
+    border-color: var(--lp-primary, #5BBDB7);
     box-shadow: 0 0 0 3px rgba(168, 46, 222, .15);
 }
 
@@ -40,7 +40,7 @@
     position: relative;
     overflow: hidden;
     /* عشان اللمعة تبقى داخل الزر */
-    background: linear-gradient(135deg, var(--lp-primary, #A82EDE) 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--lp-primary, #5BBDB7) 0%, #43dfd4 100%);
     color: #fff;
     border: 0;
     border-radius: 10px;
@@ -97,7 +97,7 @@
     display: grid;
     place-items: center;
     /* background: rgba(168,46,222,.10);  */
-    color: var(--lp-primary, #A82EDE);
+    color: var(--lp-primary, #5BBDB7);
     flex: 0 0 36px;
 }
 
@@ -174,4 +174,17 @@
     opacity: 0.65;
     cursor: not-allowed;
     box-shadow: 0 4px 8px rgba(168, 46, 222, .10);
+}
+
+.contact-card {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.business-hours {
+  border-top: 1px solid #eee;
+  margin-top: 1rem;
+  padding-top: 0.5rem;
 }

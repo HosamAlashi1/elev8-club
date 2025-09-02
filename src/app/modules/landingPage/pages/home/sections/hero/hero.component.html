@@ -1,56 +1,70 @@
-<section class="lp-hero d-flex align-items-center py-5 my-5">
-  <div class="container">
-    <div class="row align-items-center">
+<div class="hero position-relative text-white d-flex align-items-center">
 
-      <!-- النصوص -->
-      <div class="col-lg-6 mb-5 mb-lg-0 left-side" data-aos="fade-up" data-aos-delay="100">
-        <h1 class="fw-bold mb-4 hero-title" [innerHTML]="heroTitle"></h1>
-
-        <p class="text-muted mb-4 hero-desc">
-          {{ heroDescription }}
-        </p>
-
-        <!-- روابط المتاجر -->
-        <div class="d-flex flex-wrap align-items-center gap-3 mb-4 buttons-container"
-             *ngIf="(iosAppLink && iosAppLink !== '#') || (androidAppLink && androidAppLink !== '#')">
-
-          <a [href]="iosAppLink" target="_blank"
-             [class.d-none]="!iosAppLink || iosAppLink === '#'"
-             class="store-link"
-             data-aos="fade-up" data-aos-delay="400">
-            <img src="assets/img/apple-store.svg" alt="App Store" class="store-btn">
-          </a>
-
-          <a [href]="androidAppLink" target="_blank"
-             [class.d-none]="!androidAppLink || androidAppLink === '#'"
-             class="store-link"
-             data-aos="fade-up" data-aos-delay="600">
-            <img src="assets/img/google-store.svg" alt="Google Play" class="store-btn">
-          </a>
-        </div>
-
-        <!-- زر Learn More -->
-        <a *ngIf="heroLearnMoreLink && heroLearnMoreLink !== '#'" 
-           [href]="heroLearnMoreLink"
-           class="learn-more-link d-inline-block mb-4"
-           data-aos="fade-right" data-aos-delay="1000">
-          Learn More
-          <i class="fa-solid fa-arrow-right pt-1"></i>
-        </a>
-
-        <!-- زر Order Demo -->
-        <div data-aos="zoom-in" data-aos-delay="1300">
-          <a routerLink="/orders" class="btn lp-hero-cta mt-3">
-            Order Demo Now !
-          </a>
-        </div>
-      </div>
-
-      <!-- صورة المنتج -->
-      <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-delay="300">
-        <img [src]="heroImage" alt="EDKD Kit" class="hero-img">
-      </div>
-
+    <!-- الخلفية -->
+    <div class="hero-bg">
+        <img [src]="background" alt="Hero Background">
+        <img src="assets/img/landing/home/hero/overlay.png" alt="Overlay" class="hero-overlay">
     </div>
-  </div>
-</section>
+
+    <!-- العناصر المتحركة الجذابة -->
+    <div class="floating-elements">
+        <!-- النجوم المتلألئة -->
+        <div class="star star-1"></div>
+        <div class="star star-2"></div>
+        <div class="star star-3"></div>
+        <div class="star star-4"></div>
+        <div class="star star-5"></div>
+        
+        <!-- الدوائر العائمة -->
+        <div class="floating-circle circle-1"></div>
+        <div class="floating-circle circle-2"></div>
+        <div class="floating-circle circle-3"></div>
+        
+        <!-- خطوط الطاقة -->
+        <div class="energy-line line-1"></div>
+        <div class="energy-line line-2"></div>
+        
+        <!-- نقاط متحركة -->
+        <div class="moving-dot dot-1"></div>
+        <div class="moving-dot dot-2"></div>
+        <div class="moving-dot dot-3"></div>
+        <div class="moving-dot dot-4"></div>
+    </div>
+
+    <div class="container position-relative z-2">
+        <div class="row align-items-center">
+
+            <!-- النص -->
+            <div class="col-lg-6 text-center text-lg-start hero-text-wrapper" data-aos="fade-right-custom">
+                <h1 class="hero-title fx-shimmer fx-underline mb-3 " data-aos="fade-right">
+                    {{ title }}
+                    <!-- هالة متوهجة حول العنوان -->
+                    <div class="title-glow"></div>
+                </h1>
+                <p class="hero-subtitle mb-4" data-aos="fade-left" data-aos-delay="600">{{ subtitle }}</p>
+                <a *ngIf="buttonText" [routerLink]="buttonLink" class="btn btn-custom lp-hero-cta"
+                    data-aos="fade-up-custom" data-aos-delay="400">
+                    {{ buttonText }}
+                      <div class="bg-anim"></div>
+                    <span class="orbit"></span>
+                    <span class="orbit"></span>
+                </a>
+            </div>
+
+            <!-- السلايدر -->
+            <div class="col-lg-6 mt-4 mt-lg-0 hero-slider-wrapper" data-aos="fade-left-custom" data-aos-delay="300">
+                <div class="hero-slider">
+                    <div class="slide" *ngFor="let slide of slides; let i = index" [class.active]="i === currentSlide">
+                        <img [src]="slide.img" [alt]="slide.alt || 'Book Cover'" class="book-slide">
+                    </div>
+                    <!-- دوائر متوهجة حول الصور -->
+                    <div class="image-orbit orbit-ring-1"></div>
+                    <div class="image-orbit orbit-ring-2"></div>
+                    <!-- شعاع ضوئي -->
+                    <div class="light-beam"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

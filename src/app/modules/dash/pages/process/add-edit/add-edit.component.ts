@@ -52,16 +52,16 @@ export class AddEditComponent implements OnInit {
       this.httpService.action(url, payload, 'addEditProcess').subscribe({
         next: (res: any) => {
           if (res.status) {
-            this.toastrsService.Showsuccess(res.message || 'Operation completed successfully');
+            this.toastrsService.showSuccess(res.message || 'Operation completed successfully');
             this.activeModal.close(true);
           } else {
-            this.toastrsService.Showerror(res.message || 'Operation failed');
+            this.toastrsService.showError(res.message || 'Operation failed');
           }
         },
         error: (error: any) => {
           console.error('Error:', error);
           const errorMessage = error?.error?.message || error?.message || 'Operation failed';
-          this.toastrsService.Showerror(errorMessage);
+          this.toastrsService.showError(errorMessage);
         }
       });
     }

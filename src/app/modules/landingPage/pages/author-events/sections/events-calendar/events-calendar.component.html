@@ -1,0 +1,56 @@
+<div class="events-calendar mx-4 my-5 py-5"
+     data-aos="fade-up"
+     data-aos-duration="1000">
+
+    <!-- العنوان + الأزرار -->
+    <div class="d-flex justify-content-between align-items-center mb-4"
+         data-aos="fade-down"
+         data-aos-duration="1000">
+        <h2 class="section-title">{{ sectionTitle }}</h2>
+
+        <div class="view-switch" data-aos="fade-left" data-aos-delay="200">
+            <button class="btn btn-view active">Calendar View</button>
+            <button class="btn btn-view">List View</button>
+        </div>
+    </div>
+
+    <!-- الكرت -->
+    <div class="card shadow-sm p-4 border-0"
+         data-aos="zoom-in"
+         data-aos-duration="900"
+         data-aos-delay="300">
+        <div class="d-flex justify-content-between align-items-center mb-3"
+             data-aos="fade-up"
+             data-aos-delay="400">
+            <button class="nav-btn" (click)="prevMonth()">&lt;</button>
+            <h5 class="fw-bold month-title">{{ monthName }} {{ currentYear }}</h5>
+            <button class="nav-btn" (click)="nextMonth()">&gt;</button>
+        </div>
+
+        <!-- شبكة الأيام -->
+        <div class="calendar-grid calendar-animate" [@fadeSlide]="currentMonth + '-' + currentYear"
+             data-aos="fade-up"
+             data-aos-delay="500"
+             data-aos-duration="1000">
+             
+            <!-- أسماء الأيام -->
+            <div class="day-name"
+                 *ngFor="let d of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; let i = index"
+                 data-aos="fade-down"
+                 [attr.data-aos-delay]="600 + (i * 100)">
+                {{ d }}
+            </div>
+
+            <!-- اطبع الخانات -->
+            <div class="day"
+                 *ngFor="let day of daysInMonth; let j = index"
+                 data-aos="fade-up"
+                 [attr.data-aos-delay]="1300 + (j % 7) * 80">
+                <span *ngIf="day !== null; else empty" [class.today]="isActive(day)">
+                    {{ day }}
+                </span>
+                <ng-template #empty>&nbsp;</ng-template>
+            </div>
+        </div>
+    </div>
+</div>

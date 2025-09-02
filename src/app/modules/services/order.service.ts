@@ -1,94 +1,161 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
-export interface OrderData {
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  country?: string;
-  street?: string;
-  city?: string;
-  postalCode?: string;
-  paymentMethod?: string;
-
-  // ✅ بيانات الدفع
-  cardNumber?: string;
-  cardholder?: string;
-  expiry?: string;
-  cvv?: string;
-
-  quantity: number;
-  pricePerUnit: number;
-  total: number;
+export interface OrderItem {
+  bookId: string;
+  qty: number;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface ShippingDetails {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  country: string;
+}
+
+export interface Order {
+  id: string;
+  items: OrderItem[];
+  shipping?: ShippingDetails;
+  status: 'draft' | 'awaiting_payment' | 'confirmed';
+  total: number;
+  currency: string;
+}
+
+const STORAGE_KEY = 'lh:orders';
+
+@Injectable({ providedIn: 'root' })
 export class OrderService {
-  private defaultData: OrderData = {
-    fullName: '',
-    email: '',
-    phone: '',
-    country: '',
-    street: '',
-    city: '',
-    postalCode: '',
-    paymentMethod: 'card',
+  private orders: Order[] = [];
+  // داخل OrderService
+  private ACTIVE_KEY = 'lh:activeOrderId';
+  private activeOrderId?: string;
 
-    // بيانات الدفع افتراضية
-    cardNumber: '',
-    cardholder: '',
-    expiry: '',
-    cvv: '',
-
-    quantity: 1,
-    pricePerUnit: 12,
-    total: 1 * 12
-  };
-
-  private orderDataSubject = new BehaviorSubject<OrderData>(this.defaultData);
-  orderData$ = this.orderDataSubject.asObservable();
-
-  // ✅ جلب نسخة من البيانات الحالية
-  getOrderData(): OrderData {
-    return this.orderDataSubject.value;
+  constructor() {
+    this.loadFromStorage();
+    this.activeOrderId = sessionStorage.getItem(this.ACTIVE_KEY) || undefined;
   }
 
-  // ✅ تحديث أي جزء من البيانات (Details + Payment)
-  setOrderData(data: Partial<OrderData>) {
-    const updated = {
-      ...this.orderDataSubject.value,
-      ...data,
+  /**
+   * 🟢 إنشاء طلبية جديدة من السلة
+   * Mock: بياخد items ويخزن order بـ localStorage
+   *
+   * 🔹 API الحقيقي (Backend):
+   * POST /orders
+   * Body: { items: [{ bookId, qty }] }
+   * Response: { orderId, status: "draft", total, currency }
+   */
+  createOrderFromCart(items: OrderItem[]): Order {
+    const order: Order = {
+      id: uuidv4(),
+      items: JSON.parse(JSON.stringify(items)), // snapshot
+      status: 'draft',
+      total: 0,
+      currency: 'USD'
     };
-
-    // إعادة حساب total لو تغيّرت الكمية أو السعر
-    updated.total = updated.quantity * updated.pricePerUnit;
-
-    this.orderDataSubject.next(updated);
+    this.orders.push(order);
+    this.setActiveDraft(order.id);
+    this.commit();
+    return order;
   }
 
-  // ✅ تحديث الكمية
-  setQuantity(quantity: number) {
-    this.setOrderData({ quantity });
+
+  setActiveDraft(id: string) {
+    this.activeOrderId = id;
+    sessionStorage.setItem(this.ACTIVE_KEY, id);
   }
 
-  getQuantity(): number {
-    return this.orderDataSubject.value.quantity;
+  getActiveDraft(): Order | undefined {
+    const id = this.activeOrderId || sessionStorage.getItem(this.ACTIVE_KEY) || undefined;
+    return id ? this.orders.find(o => o.id === id && o.status !== 'confirmed') : undefined;
   }
 
-  // ✅ إرجاع السعر الكلي
-  getTotal(): number {
-    return this.getOrderData().total;
+
+
+  /**
+   * ✏️ تحديث بيانات الشحن
+   *
+   * 🔹 API الحقيقي:
+   * PATCH /orders/{orderId}/shipping
+   * Body: { name, phone, address, city, country }
+   * Response: { orderId, status: "awaiting_payment", shipping: {...} }
+   */
+  updateShipping(orderId: string, details: ShippingDetails): Order | null {
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) return null;
+    order.shipping = details;
+    order.status = 'awaiting_payment';
+    this.commit();
+    return order;
   }
 
-  // ✅ إرجاع السعر للوحدة
-  getPricePerUnit(): number {
-    return this.getOrderData().pricePerUnit;
+  /**
+   * 💳 بدء عملية الدفع
+   * Mock: نغيّر status ونرجع رابط وهمي
+   *
+   * 🔹 API الحقيقي:
+   * POST /orders/{orderId}/payment
+   * Body: { method: "stripe" | "paypal" | ... }
+   * Response: { paymentUrl: "https://gateway.com/session" }
+   */
+  initiatePayment(orderId: string, method: string = 'mock'): string | null {
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) return null;
+
+    // Mock → رابط وهمي
+    return `https://payment-gateway-mock.com/pay/${order.id}`;
   }
 
-  // ✅ إعادة ضبط الطلب (تمسح كلشي بعد نجاح العملية)
-  clearOrderData() {
-    this.orderDataSubject.next(this.defaultData);
+  /**
+   * ✅ تأكيد الطلب بعد الدفع
+   *
+   * 🔹 API الحقيقي:
+   * GET /orders/{orderId}/confirmation
+   * Response: {
+   *   orderId, status: "confirmed", total, currency, items, shipping, createdAt
+   * }
+   */
+  confirmOrder(orderId: string): Order | null {
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) return null;
+    order.status = 'confirmed';
+    this.commit();
+    // نظّف الـ active لو هو نفسه
+    if (this.activeOrderId === orderId) {
+      this.activeOrderId = undefined;
+      sessionStorage.removeItem(this.ACTIVE_KEY);
+    }
+    return order;
+  }
+
+  /** 🧾 جلب طلبية */
+  getOrderById(orderId: string): Order | undefined {
+    return this.orders.find(o => o.id === orderId);
+  }
+
+  /** 💾 حفظ */
+  private commit() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.orders));
+  }
+
+  /** 📂 تحميل */
+  private loadFromStorage() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        this.orders = JSON.parse(raw);
+      } catch {
+        this.orders = [];
+      }
+    }
+  }
+
+  getLastDraftOrder() {
+    return this.orders.find(o => o.status === 'draft');
+  }
+
+  getLastOrderAwaitingPayment() {
+    return this.orders.find(o => o.status === 'awaiting_payment');
   }
 }

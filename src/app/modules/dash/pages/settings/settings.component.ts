@@ -69,7 +69,7 @@ export class SettingsComponent implements OnInit {
         }
       },
       error: () => {
-        this.toastr.Showerror('Failed to load settings');
+        this.toastr.showError('Failed to load settings');
       },
     });
   }
@@ -100,22 +100,26 @@ export class SettingsComponent implements OnInit {
     return colClass;
   }
 
-  getSectionIcon(sectionType: string): string {
-    const iconMap: { [key: string]: string } = {
-      'General Settings': 'settings',
-      'Hero Section Settings': 'home',
-      'Solution Section Settings': 'lightbulb',
-      'Process Section Settings': 'workflow',
-      'Features Section Settings': 'layers',
-      'App Preview Section Settings': 'monitor-smartphone',
-      'Testimonial Section Settings': 'message-square',
-      'Get Started Section Settings': 'play-circle',
-      'Contact Us Section Settings': 'phone',
-      'Footer Section Settings': 'layout'
-    };
-    
-    return iconMap[sectionType] || 'folder';
-  }
+getSectionIcon(sectionType: string): string {
+  const iconMap: { [key: string]: string } = {
+    'General Settings': 'settings',
+    'Hero Section Settings': 'home',
+    'Solution Section Settings': 'lightbulb',
+    'Process Section Settings': 'workflow',
+    'Features Section Settings': 'layers',
+    'App Preview Section Settings': 'monitor-smartphone',
+    'Testimonial Section Settings': 'message-square',
+    'Get Started Section Settings': 'play-circle',
+    'Contact Us Section Settings': 'phone',
+    'Footer Section Settings': 'layout',
+
+    'Tutorial Section Settings': 'book-open',
+    'Order Section Settings': 'shopping-cart'
+  };
+
+  return iconMap[sectionType] || 'folder';
+}
+
 
   getSectionColor(sectionType: string): string {
     const colorMap: { [key: string]: string } = {
@@ -185,14 +189,14 @@ export class SettingsComponent implements OnInit {
     this.httpService.action(this.api.settings.update, formData, 'settingsUpdate').subscribe({
       next: (res) => {
         if (res?.status) {
-          this.toastr.Showsuccess('Settings updated successfully');
+          this.toastr.showSuccess('Settings updated successfully');
           this.loadSettings();
         } else {
-          this.toastr.Showerror(res?.message || 'Update failed');
+          this.toastr.showError(res?.message || 'Update failed');
         }
       },
       error: () => {
-        this.toastr.Showerror('Update failed');
+        this.toastr.showError('Update failed');
       },
     });
   }

@@ -1,0 +1,62 @@
+/* Layout Styles */
+.content-container {
+  transition: opacity 0.3s ease;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-hidden { 
+  opacity: 0; 
+}
+
+.content-visible { 
+  opacity: 1; 
+}
+
+/* Main content area */
+main {
+  flex: 1;
+  position: relative;
+}
+
+/* Route animations */
+.route-container {
+  position: relative;
+  width: 100%;
+}
+
+/* انيميشن ناعم للصفحات */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-route {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content-container {
+    overflow-x: auto;
+  }
+}
+
+/* تقليل الحركة للمستخدمين الذين يفضلون ذلك */
+@media (prefers-reduced-motion: reduce) {
+  .content-container {
+    transition: none;
+  }
+  
+  .animate-route {
+    animation: none;
+  }
+}

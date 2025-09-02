@@ -19,6 +19,7 @@ import { SharedModule } from './modules/dash/shared/shared.module';
 import { AppInitializerService } from './core/services/app-initializer.service';
 import { appInitializerFactory } from './core/services/app-initializer.factory';
 
+
 export function playerFactory() {
   return player;
 }

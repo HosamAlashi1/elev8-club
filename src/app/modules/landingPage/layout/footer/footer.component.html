@@ -4,55 +4,58 @@
     <!-- أعلى الفوتر -->
     <div class="row footer-top g-4 gx-lg-5 gx-xl-6 align-items-start">
 
-      <!-- شعار + وصف -->
-      <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="footer-brand">
-          <img src="assets/img/Logo footer.svg" alt="EKD Logo" class="footer-logo mb-2">
-          <p class="footer-desc mb-0">
-            {{ description }}
-          </p>
-        </div>
-      </div>
-
       <!-- Quick Links -->
-      <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="200">
+      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
         <h6 class="footer-title">Quick Links</h6>
         <ul class="list-unstyled mb-0">
-          <li><a href="javascript:void(0)" class="footer-link" (click)="scrollTo('about')">About Us</a></li>
-          <li><a href="javascript:void(0)" class="footer-link" (click)="scrollTo('how-it-works')">How It Works</a></li>
-          <li><a href="javascript:void(0)" class="footer-link" (click)="scrollTo('features')">Features</a></li>
-          <li><a href="javascript:void(0)" class="footer-link" (click)="scrollTo('contact')">Contact</a></li>
+          <li><a (click)="scrollTo('about')" href="javascript:void(0)" class="footer-link">About Us</a></li>
+          <li><a routerLink="/shop" class="footer-link">Shop</a></li>
+          <li><a routerLink="/author-events" class="footer-link">Author Events</a></li>
+          <li><a (click)="scrollTo('contact')" href="javascript:void(0)" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Service -->
+      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+        <h6 class="footer-title">Customer Service</h6>
+        <ul class="list-unstyled mb-0">
+          <li><a href="#" class="footer-link">Shipping Policy</a></li>
+          <li><a href="#" class="footer-link">Returns & Exchanges</a></li>
+          <li><a href="#" class="footer-link">FAQ</a></li>
+          <li><a href="#" class="footer-link">Track Order</a></li>
         </ul>
       </div>
 
       <!-- Legal -->
-      <div class="col-6 col-md-3 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
         <h6 class="footer-title">Legal</h6>
         <ul class="list-unstyled mb-0">
           <li><a href="#" class="footer-link">Privacy Policy</a></li>
-          <li><a href="#" class="footer-link">Terms &amp; Conditions</a></li>
-          <li><a href="#" class="footer-link">Cookie Policy</a></li>
+          <li><a href="#" class="footer-link">Terms of Use</a></li>
+          <li><a href="#" class="footer-link">Confidentiality Statement</a></li>
         </ul>
       </div>
 
-      <!-- Follow Us -->
+      <!-- Social -->
       <div class="col-12 col-md-12 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-        <h6 class="footer-title">Follow Us</h6>
-        <ul class="socials list-unstyled d-flex align-items-center gap-2 mb-0">
-          <li *ngIf="isValidLink(facebook)"><a [href]="facebook" class="social-link" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></li>
-          <li *ngIf="isValidLink(twitter)"><a [href]="twitter" class="social-link" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a></li>
-          <li *ngIf="isValidLink(linkedin)"><a [href]="linkedin" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
-          <li *ngIf="isValidLink(instagram)"><a [href]="instagram" class="social-link" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
-        </ul>
+        <h6 class="footer-title">Connect With Us</h6>
+        <div class="socials d-flex gap-2">
+          <a *ngIf="isValidLink(facebook)" [href]="facebook" target="_blank" class="social-link text-decoration-none"><i class="fab fa-facebook-f"></i></a>
+          <a *ngIf="isValidLink(twitter)" [href]="twitter" target="_blank" class="social-link text-decoration-none"><i class="fab fa-twitter"></i></a>
+          <a *ngIf="isValidLink(instagram)" [href]="instagram" target="_blank" class="social-link text-decoration-none"><i class="fab fa-instagram"></i></a>
+          <a *ngIf="isValidLink(pinterest)" [href]="pinterest" target="_blank" class="social-link text-decoration-none"><i class="fab fa-pinterest-p"></i></a>
+          <a *ngIf="isValidLink(youtube)" [href]="youtube" target="_blank" class="social-link text-decoration-none"><i class="fab fa-youtube"></i></a>
+          <a *ngIf="isValidLink(tiktok)" [href]="tiktok" target="_blank" class="social-link text-decoration-none"><i class="fab fa-tiktok"></i></a>
+        </div>
       </div>
 
     </div>
 
     <hr class="footer-divider" data-aos="fade-left" data-aos-delay="500">
 
-    <!-- أسفل الفوتر -->
-    <div class="footer-bottom text-center py-3" data-aos="fade-right" data-aos-delay="600">
-      © 2025 EDKD. All rights reserved.
+    <!-- أسفل -->
+    <div class="footer-bottom text-center py-3">
+      © {{ currentYear }} Dorrance. All rights reserved.
     </div>
   </div>
 </footer>

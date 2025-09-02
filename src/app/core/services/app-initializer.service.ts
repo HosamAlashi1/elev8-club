@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { LandingService } from '../../modules/services/landing.service';
-import { timeout, catchError, of, tap } from 'rxjs';
+// import { LandingService } from '../../modules/services/landing.service';
+// import { timeout, catchError, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,128 +9,177 @@ export class AppInitializerService {
   private isDataLoaded = false;
   private cachedData: any = null;
 
-  constructor(private landingService: LandingService) {}
+  constructor(
+    // private landingService: LandingService
+  ) { }
 
   /**
-   * دالة التهيئة التي ستعمل قبل بدء التطبيق
+   * التهيئة (حاليا بدون API)
    */
   initialize(): Promise<any> {
     console.log('🚀 APP_INITIALIZER: Starting application initialization...');
-    
-    return new Promise((resolve, reject) => {
-      this.landingService.getHomeData()
-        .pipe(
-          timeout(15000), // مهلة 15 ثانية
-          catchError((error) => {
-            console.error('❌ APP_INITIALIZER: Failed to load initial data:', error);
-            // في حالة الخطأ، نكمل بالبيانات الاحتياطية
-            this.setFallbackData();
-            return of({ status: false, data: null, message: 'Using fallback data' });
-          }),
-          tap((response) => {
-            if (response.status && response.data) {
-              console.log('✅ APP_INITIALIZER: Data loaded successfully');
-              this.cachedData = response.data;
-              this.isDataLoaded = true;
-            } else {
-              console.warn('⚠️ APP_INITIALIZER: Using fallback data');
-              this.setFallbackData();
-            }
-          })
-        )
-        .subscribe({
-          next: () => {
-            console.log('🎉 APP_INITIALIZER: Application ready to start');
-            resolve(true);
-          },
-          error: (error) => {
-            console.error('💥 APP_INITIALIZER: Critical error:', error);
-            this.setFallbackData();
-            resolve(true); // نكمل حتى لو فشل
-          }
-        });
+
+    return new Promise((resolve) => {
+      // API لسه مش جاهزة
+      this.setFallbackData();
+      resolve(true);
     });
   }
 
-  /**
-   * الحصول على البيانات المحملة مسبقاً
-   */
   getPreloadedData(): any {
     return this.cachedData;
   }
 
-  /**
-   * التحقق من حالة تحميل البيانات
-   */
   isAppDataLoaded(): boolean {
     return this.isDataLoaded;
   }
 
   /**
-   * تعيين البيانات الاحتياطية
+   * البيانات الاحتياطية من التصميم
    */
   private setFallbackData(): void {
     this.cachedData = {
-      app_previews: [
-        { id: 1, image: 'assets/img/app 1.svg' },
-        { id: 2, image: 'assets/img/app 2.svg' },
-        { id: 3, image: 'assets/img/app 3.svg' },
-        { id: 4, image: 'assets/img/app 4.svg' }
+      hero: {
+        background: 'assets/img/landing/home/hero/bg.png',
+        slides: [
+          { img: 'assets/img/landing/home/hero/book1.png', alt: 'Book 1' },
+          { img: 'assets/img/landing/home/hero/book2.png', alt: 'Book 2' }
+        ]
+      },
+
+      introTrust: [
+        { icon: 'assets/img/landing/home/intro-trust/consultation.png', title: 'Consultation', description: 'Expert guidance on your publishing journey' },
+        { icon: 'assets/img/landing/home/intro-trust/book-production.png', title: 'Book Production', description: 'State-of-the-art printing and digital publishing' },
+        { icon: 'assets/img/landing/home/intro-trust/distribution.png', title: 'Distribution', description: 'Wide-reaching distribution network' }
       ],
-      features: [
-        { id: 1, title: 'AI-Powered Diagnosis', image: 'assets/img/feature 1.svg', description: 'Advanced machine learning algorithms for accurate results' },
-        { id: 2, title: 'Mobile App Integration', image: 'assets/img/feature 2.svg', description: 'iOS and Android compatible with easy-to-use interface' },
-        { id: 3, title: 'Medical Center Network', image: 'assets/img/feature 3.svg', description: 'Connected with certified healthcare providers' }
+
+      featuredBooks: [
+        { id: 'book1', img: 'assets/img/landing/home/featured-books/book1.png', title: 'The Art of Storytelling', author: 'Sarah Johnson', price: '$24.99', rating: 4.5 },
+        { id: 'book2', img: 'assets/img/landing/home/featured-books/book2.png', title: 'Modern Philosophy', author: 'Michael Chen', price: '$29.99', rating: 4.0 },
+        { id: 'book3', img: 'assets/img/landing/home/featured-books/book3.png', title: 'The Silent Echo', author: 'Emily Parker', price: '$19.99', rating: 5.0 },
+        { id: 'book4', img: 'assets/img/landing/home/featured-books/book4.png', title: 'Digital Revolution', author: 'David Wilson', price: '$27.99', rating: 4.8 },
+        { id: 'book1', img: 'assets/img/landing/home/featured-books/book1.png', title: 'The Art of Storytelling', author: 'Sarah Johnson', price: '$24.99', rating: 4.5 },
+        { id: 'book2', img: 'assets/img/landing/home/featured-books/book2.png', title: 'Modern Philosophy', author: 'Michael Chen', price: '$29.99', rating: 4.0 },
+        { id: 'book3', img: 'assets/img/landing/home/featured-books/book3.png', title: 'The Silent Echo', author: 'Emily Parker', price: '$19.99', rating: 5.0 },
+        { id: 'book4', img: 'assets/img/landing/home/featured-books/book4.png', title: 'Digital Revolution', author: 'David Wilson', price: '$27.99', rating: 4.8 }
       ],
-      processes: [
-        { id: 1, step: '1', title: 'Order Testing Kit', description: 'Purchase your home testing kit through our app' },
-        { id: 2, step: '2', title: 'Follow Instructions', description: 'Use the kit and capture images in the app' },
-        { id: 3, step: '3', title: 'AI Analysis', description: 'Our AI system analyzes your test results' },
-        { id: 4, step: '4', title: 'Get Results', description: 'Receive instant results and recommendations' }
+
+      categories: [
+        { icon: 'assets/img/landing/home/categories/icon1.png', title: 'Fiction', count: '2,345 Books' },
+        { icon: 'assets/img/landing/home/categories/icon2.png', title: 'Non-Fiction', count: '1,987 Books' },
+        { icon: 'assets/img/landing/home/categories/icon3.png', title: 'Biography', count: '982 Books' },
+        { icon: 'assets/img/landing/home/categories/icon4.png', title: 'Romance', count: '1,250 Books' },
+        { icon: 'assets/img/landing/home/categories/icon5.png', title: 'Academic', count: '713 Books' },
+        { icon: 'assets/img/landing/home/categories/icon6.png', title: 'Children’s', count: '1,120 Books' }
       ],
+
+      bestsellingBooks: [
+        { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+        { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+        { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+        { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 },
+        { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+        { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+        { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+        { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 }
+      ],
+
+      staffPicks: {
+        staff: {
+          img: 'assets/img/landing/home/staff-picks/staff.png',
+          name: 'Emily Parker',
+          position: 'Chief Editor',
+          quote: 'Award-winning author of contemporary fiction. Her latest novel "The Silent Echo" has been hailed as a masterpiece of modern storytelling.',
+          books: [
+            { id: 'book1', img: 'assets/img/landing/home/staff-picks/book1.png', title: 'The Silent Echo', author: 'Emily Parker', price: '$19.99' },
+            { id: 'book2', img: 'assets/img/landing/home/staff-picks/book2.png', title: 'The Silent Echo 2', author: 'Emily Parker', price: '$21.99' },
+            { id: 'book3', img: 'assets/img/landing/home/staff-picks/book3.png', title: 'The Silent Echo 3', author: 'Emily Parker', price: '$23.99' }
+          ]
+        },
+        books: [
+          { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+          { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+          { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+          { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 },
+          { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+          { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+          { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+          { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 }
+        ],
+      },
+
+      awardWinners: {
+        firstRow: [
+          { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+          { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+          { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+          { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 },
+          { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+          { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+          { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+          { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 }
+        ],
+        secondRow: [
+          { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+          { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+          { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+          { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 },
+          { id: 'book1', img: 'assets/img/landing/home/books/book1.png', title: 'The Creative Mind', author: 'Sarah Johnson', price: '$25.99', rating: 5 },
+          { id: 'book2', img: 'assets/img/landing/home/books/book2.png', title: 'Future of AI', author: 'John King', price: '$32.99', rating: 4.5 },
+          { id: 'book3', img: 'assets/img/landing/home/books/book3.png', title: 'Mountain Dreams', author: 'David Lee', price: '$19.95', rating: 4 },
+          { id: 'book4', img: 'assets/img/landing/home/books/book4.png', title: 'Urban Tales', author: 'Rachel Smith', price: '$24.50', rating: 5 }
+        ]
+      },
+
       testimonials: [
-        { id: 1, name: 'Dr. Sarah Johnson', position: 'Nephrologist', image: 'assets/img/person 1.png', rating: 5, testimonial: 'A game-changing solution for early kidney disease detection.' },
-        { id: 2, name: 'Michael Chen', position: 'Patient', image: 'assets/img/person 2.png', rating: 5, testimonial: 'The app made home testing so simple and convenient.' }
+        { id: 1, name: 'Sarah Thompson', image: 'assets/img/landing/home/testimonials/person1.png', rating: 5, testimonial: 'The best online bookstore I\'ve ever used. Fast shipping and excellent customer service!' },
+        { id: 2, name: 'Michael Chen', image: 'assets/img/landing/home/testimonials/person2.png', rating: 5, testimonial: 'Amazing selection of books and great prices. I\'ve discovered so many wonderful authors here.' },
+        { id: 3, name: 'Emma Watson', image: 'assets/img/landing/home/testimonials/person3.png', rating: 4, testimonial: 'The perfect place to find both popular bestsellers and hidden gems. Highly recommended!' }
       ],
+
+      blogs: [
+        { img: 'assets/img/landing/home/blogs/blog1.png', title: 'The Future of Reading: Digital vs. Physical Books', description: 'Explore how reading is being reshaped in the digital age...', link: '/blog/1' },
+        { img: 'assets/img/landing/home/blogs/blog2.png', title: 'The Joy of Collecting Books in Modern Times', description: 'Why physical books still hold a special place...', link: '/blog/2' },
+        { img: 'assets/img/landing/home/blogs/blog3.png', title: 'Top 10 Must-Read Books of the Year', description: 'Curated list of the most influential books this year...', link: '/blog/3' }
+      ],
+
       settings: {
         '': [
-          { key: 'hero_title', value: 'Early Detection Saves Lives' },
-          { key: 'hero_desc', value: 'Test for kidney disease easily from home with AI-powered results.' },
-          { key: 'hero_learn_more_link', value: '#' },
-          { key: 'link_ios_app', value: 'https://apps.apple.com' },
-          { key: 'link_android_app', value: 'https://play.google.com' },
-          { key: 'solution_title', value: 'Revolutionary Home Testing Solution' },
-          { key: 'solution_desc', value: 'Our AI-powered system combines convenience with medical expertise.' },
-          { key: 'solution_image', value: 'assets/img/testing.jpg' },
-          { key: 'hero_image', value: 'assets/img/hero-image.png' },
-          { key: 'solution_list_first', value: 'Professional-grade testing kits' },
-          { key: 'solution_list_second', value: 'Instant AI analysis' },
-          { key: 'solution_list_third', value: 'Direct connection with medical centers' },
-          { key: 'solution_list_forth', value: 'Secure and private results' },
-          { key: 'process_title', value: 'Simple 4-Step Process' },
-          { key: 'features_title', value: 'Key Features' },
-          { key: 'app_preview_title', value: 'App Previews' },
-          { key: 'testimonial_title', value: 'What People Say' },
-          { key: 'get_started_title', value: 'Get Started Today' },
-          { key: 'get_started_QR_code_image', value: 'assets/img/QR.svg' },
+          { key: 'hero_title', value: 'Discover Your Next Literary Adventure' },
+          { key: 'hero_desc', value: 'Curated collection of finest literature' },
+          { key: 'intro_trust_title', value: 'America\'s Oldest Publishing Services Company' },
+          { key: 'intro_trust_description', value: 'Trusted for 100+ Years' },
+          { key: 'featured_books_title', value: 'Featured Books' },
+          { key: 'categories_title', value: 'Browse by Category' },
+          { key: 'bestselling_books_title', value: 'Bestselling Books' },
+          { key: 'staff_picks_title', value: 'August Staff Picks' },
+          { key: 'award_winners_title', value: 'Recent Award Winners' },
+          { key: 'testimonials_title', value: 'What People Say' },
+          { key: 'newsletter_title', value: 'Join Our Literary Community' },
+          { key: 'newsletter_subtitle', value: 'Subscribe to receive new releases, author events, special offers, and exclusive content.' },
+          { key: 'blogs_title', value: 'Latest From Our Blog' },
           { key: 'contact_us_title', value: 'Contact Us' },
-          { key: 'footer_title', value: 'Making kidney disease detection accessible and convenient for everyone.' },
-          { key: 'tests_completed', value: '10,000+' },
-          { key: 'medical_centers', value: '500+' },
-          { key: 'accuracy_rate', value: '99.9%' },
-          { key: 'customer_support', value: '24/7' },
-          { key: 'phone', value: '+1 (555) 123-4567' },
-          { key: 'email', value: 'contact@kidneytest.com' },
-          { key: 'address', value: '123 Medical Center Drive, Healthcare City, HC 12345' },
-          { key: 'facebook', value: 'https://www.facebook.com/' },
-          { key: 'twitter', value: 'https://www.twitter.com/' },
-          { key: 'instagram', value: 'https://www.instagram.com/' },
-          { key: 'linkedin', value: 'https://www.linkedin.com/' }
+          { key: 'footer_title', value: 'America’s Oldest Publishing Services Company — Trusted for 100+ Years.' },
+          { key: 'phone', value: '(800) 123-4567' },
+          { key: 'email', value: 'support@literaryhaven.com' },
+          { key: 'address', value: '123 Library Lane, Booktown, BT 56789' },
+          {
+            key: 'business_hours',
+            value: `Monday - Friday: 9:00 AM - 8:00 PM
+Saturday: 10:00 AM - 6:00 PM
+Sunday: Closed`
+          },
+          { key: 'facebook', value: 'https://facebook.com' },
+          { key: 'twitter', value: 'https://twitter.com' },
+          { key: 'instagram', value: 'https://instagram.com' },
+          { key: 'pinterest', value: 'https://pinterest.com' },
+          { key: 'youtube', value: 'https://youtube.com' },
+          { key: 'tiktok', value: 'https://tiktok.com' }
         ]
       }
     };
-    
+
     this.isDataLoaded = true;
-    console.log('🎭 APP_INITIALIZER: Fallback data set');
+    console.log('🎭 APP_INITIALIZER: Fallback data set ready');
   }
 }

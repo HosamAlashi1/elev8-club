@@ -22,6 +22,41 @@ const routes: Routes = [
         data: { animation: 'adminsPage' }
       },
       {
+        path: 'orders',
+        loadChildren: () =>
+          import('./pages/orders/orders.module').then((m) => m.OrdersModule),
+        title: 'Orders | EDKD',
+        data: { animation: 'ordersPage' }
+      },
+      {
+        path: 'tutorial',
+        loadChildren: () =>
+          import('./pages/tutorial/tutorial.module').then((m) => m.TutorialModule),
+        title: 'Tutorial | EDKD',
+        data: { animation: 'tutorialPage' }
+      },
+      {
+        path: 'packages',
+        loadChildren: () =>
+          import('./pages/packages/packages.module').then((m) => m.PackagesModule),
+        title: 'Packages | EDKD',
+        data: { animation: 'packagesPage' }
+      },
+      {
+        path: 'package-features',
+        loadChildren: () =>
+          import('./pages/package-features/package-features.module').then((m) => m.PackageFeaturesModule),
+        title: 'Package Features | EDKD',
+        data: { animation: 'packageFeaturesPage' }
+      }, 
+      {
+        path: 'payment-methods',
+        loadChildren: () =>
+          import('./pages/payment-methods/payment-methods.module').then((m) => m.PaymentMethodsModule),
+        title: 'Payment Methods | EDKD',
+        data: { animation: 'paymentMethodsPage' }
+      },
+      {
         path: 'app-preview',
         loadChildren: () =>
           import('./pages/companies/companies.module').then((m) => m.CompaniesModule),

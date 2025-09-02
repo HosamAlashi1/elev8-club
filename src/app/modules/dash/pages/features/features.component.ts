@@ -66,7 +66,7 @@ export class FeaturesComponent implements OnInit {
         this.isLoading$.next(false);
       },
       error: () => {
-        this.toastr.Showerror('Failed to load features');
+        this.toastr.showError('Failed to load features');
         this.isLoading$.next(false);
       }
     });

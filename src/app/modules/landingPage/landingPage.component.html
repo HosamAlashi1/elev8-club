@@ -1,0 +1,38 @@
+<!-- Landing Page Layout -->
+<div *ngIf="pre" class="content-container" 
+     [class.content-hidden]="!showContent" 
+     [class.content-visible]="showContent">
+
+  <!-- Navbar (ثابت لكل الصفحات) -->
+  <app-navbar 
+    [logoUrl]="pre?.navbar?.logo || 'assets/img/landing/home/logo.png'"
+    [phone]="settings['phone']"
+    [email]="settings['email']"
+    [socials]="{
+      facebook: settings['facebook'],
+      twitter: settings['twitter'],
+      instagram: settings['instagram'],
+      pinterest: settings['pinterest'],
+      youtube: settings['youtube'],
+      tiktok: settings['tiktok']
+    }">
+  </app-navbar>
+
+  <!-- Main Content Area with Router Outlet -->
+  <main [@routeAnimations]="prepareRoute(outlet)" class="mt-5">
+    <router-outlet #outlet="outlet"></router-outlet>
+  </main>
+
+  <!-- Footer (ثابت لكل الصفحات) -->
+  <app-footer 
+    [description]="settings['footer_title']"
+    [facebook]="settings['facebook']"
+    [twitter]="settings['twitter']"
+    [instagram]="settings['instagram']"
+    [pinterest]="settings['pinterest']"
+    [youtube]="settings['youtube']"
+    [tiktok]="settings['tiktok']">
+    <img brand src="assets/img/landing/home/logo.svg" alt="Dorrance" height="28" />
+  </app-footer>
+
+</div>

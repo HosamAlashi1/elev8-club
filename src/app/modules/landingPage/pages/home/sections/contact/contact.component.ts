@@ -20,23 +20,28 @@ interface ContactInfo {
 })
 export class ContactComponent implements OnInit, AfterViewInit {
   @Input() title: string = 'Contact Us';
-  @Input() address: string = '123 Medical Center Drive, Healthcare City, HC 12345';
-  @Input() phone: string = '+1 (555) 123-4567';
-  @Input() email: string = 'contact@kidneytest.com';
-  @Input() facebook: string = 'https://www.facebook.com/';
-  @Input() twitter: string = 'https://www.twitter.com/';
-  @Input() instagram: string = 'https://www.instagram.com/';
-  @Input() linkedin: string = 'https://www.linkedin.com/';
+  @Input() address: string = '';
+  @Input() phone: string = '';
+  @Input() email: string = '';
+  @Input() business_hours: string = '';
 
   formModel = { name: '', email: '', message: '' };
   sending = false;
   formSubmitted = false; // متغير للتحكم في عرض رسائل الخطأ
   info: ContactInfo[] = [];
 
-  ngOnInit(): void {
-    // تحضير معلومات الاتصال مرة واحدة فقط
-    this.updateContactInfo();
+ngOnInit(): void {
+  this.updateContactInfo();
+
+  if (this.business_hours) {
+    // تقسيم حسب new line أو الفواصل
+    this.businessHoursArray = this.business_hours
+      .split(/\r?\n|;/) // يقسم على الأسطر أو الفاصلة المنقوطة
+      .map(x => x.trim())
+      .filter(x => x.length > 0); // يشيل الأسطر الفارغة
   }
+}
+
 
   updateContactInfo(): void {
     this.info = [
@@ -51,6 +56,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
   private center = { lat: 26, lng: 44 };  // وسط الشرق الأوسط تقريبًا
   private zoom = 4;                       // زوم واسع
   safeMapUrl: SafeResourceUrl;
+  businessHoursArray: string[] = [];
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -62,7 +68,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    try { if (typeof AOS !== 'undefined' && AOS?.refresh) AOS.refresh(); } catch {}
+    try { if (typeof AOS !== 'undefined' && AOS?.refresh) AOS.refresh(); } catch { }
   }
 
   submit(form: NgForm) {
@@ -110,7 +116,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
       next: (response) => {
         console.log('Contact message sent successfully:', response);
         this.toastr.success('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.', 'تم الإرسال');
-        
+
         // إعادة تعيين النموذج وإخفاء رسائل الخطأ
         form.resetForm();
         this.formModel = { name: '', email: '', message: '' };

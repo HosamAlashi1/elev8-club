@@ -1,0 +1,63 @@
+<div class="hero position-relative text-white d-flex align-items-center justify-content-center">
+  <!-- الخلفية -->
+  <div class="hero-bg">
+    <img [src]="'assets/img/landing/home/hero/bg.png'" alt="Featured Background">
+    <img src="assets/img/landing/featured-author/overlay.png" alt="Overlay" class="hero-overlay">
+  </div>
+
+  <div class="container position-relative z-2 text-center">
+    <div class="row justify-content-center mt-4">
+      <!-- النص -->
+      <div class="col-lg-8 mt-5">
+        <h1 class="hero-title fx-shimmer fx-underline mb-3" 
+            data-aos="fade-down" 
+            data-aos-duration="1000" 
+            data-aos-delay="200">
+          {{ title }}
+        </h1>
+        <p class="hero-subtitle fx-shimmer mb-4" 
+           data-aos="fade-up" 
+           data-aos-duration="1200" 
+           data-aos-delay="400">
+          {{ subtitle }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="authors container my-5">
+  <div *ngFor="let author of authors; let i = index" 
+       class="row align-items-stretch mb-5" 
+       [ngClass]="{'flex-row-reverse': author.reverse}"
+       [attr.data-aos]="author.reverse ? 'fade-left' : 'fade-right'"
+       data-aos-duration="1000"
+       [attr.data-aos-delay]="i * 200">
+
+    <!-- صورة -->
+    <div class="col-lg-4 d-flex" 
+         [ngClass]="author.reverse ? 'justify-content-end' : 'justify-content-start'">
+      <div class="author-img-wrapper" data-aos="zoom-in" data-aos-duration="1000">
+        <img [src]="author.image" [alt]="author.name" class="rounded shadow">
+      </div>
+    </div>
+
+    <!-- نص -->
+    <div class="col-lg-8 d-flex flex-column justify-content-center">
+      <div>
+        <h3 class="author-name">{{ author.name }}</h3>
+        <h5 class="author-book">{{ author.book }}</h5>
+        <p class="author-description text-muted">{{ author.description }}</p>
+        
+        <a *ngIf="author.link !== undefined" 
+           [href]="author.link || '#'" 
+           class="btn btn-custom"
+           data-aos="zoom-in-up"
+           data-aos-delay="300"
+           data-aos-duration="800">
+          Learn More
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

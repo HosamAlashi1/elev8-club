@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule ,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TextLengthPipe } from '../../pipe/text-length.pipe';
 import { PaginationComponent } from './pagination/pagination.component';
@@ -13,7 +13,12 @@ import { SearchableSelectComponent } from './searchable-select/searchable-select
 import { ModernSelectComponent } from './modern-select/modern-select.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { LucideAngularModule, Home, Store, Layers, UserCheck, Users, ShoppingCart, BarChart2, Bell, Settings } from 'lucide-angular';
+import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow, ListChecks, BookOpen, UserCheck, CreditCard, ShoppingCart, User, MapPin, Box, AlertCircle, X, List } from 'lucide-angular';
+import { SliderComponent } from './slider/slider.component';
+import { RouterModule } from '@angular/router';
+import { register } from 'swiper/element/bundle';
+register();
+
 
 @NgModule({
     declarations: [
@@ -25,10 +30,12 @@ import { LucideAngularModule, Home, Store, Layers, UserCheck, Users, ShoppingCar
         UserProfileComponent,
         MultiSelectComponent,
         SearchableSelectComponent,
-        ModernSelectComponent
+        ModernSelectComponent,
+        SliderComponent
     ],
     imports: [
         CommonModule,
+        RouterModule,
         NgxPaginationModule,
         ReactiveFormsModule,
         FormsModule,
@@ -36,14 +43,29 @@ import { LucideAngularModule, Home, Store, Layers, UserCheck, Users, ShoppingCar
         NgxSkeletonLoaderModule,
         LucideAngularModule.pick({
             Home,
-            Store,
+            ShieldCheck,
+            Building2,
             Layers,
-            UserCheck,
+            Package,
+            Folder,
             Users,
+            MessageSquare,
+            Mail,
+            Inbox,
+            Settings,
+            MonitorSmartphone,
+            Workflow,
+            ListChecks,
+            BookOpen,
+            UserCheck,
+            CreditCard,
             ShoppingCart,
-            BarChart2,
-            Bell,
-            Settings
+            User,
+            MapPin,
+            Box,
+            AlertCircle,
+            X,
+            List
         })
     ],
     exports: [
@@ -58,7 +80,9 @@ import { LucideAngularModule, Home, Store, Layers, UserCheck, Users, ShoppingCar
         NgbModule,
         NgxPaginationModule,
         NgxSkeletonLoaderModule,
-        LucideAngularModule
-    ]
+        LucideAngularModule,
+        SliderComponent
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule { }

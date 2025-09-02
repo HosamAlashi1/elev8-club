@@ -69,7 +69,7 @@ export class TestimonialsComponent implements OnInit {
         this.isLoading$.next(false);
       },
       error: () => {
-        this.toastr.Showerror('Failed to load testimonials');
+        this.toastr.showError('Failed to load testimonials');
         this.isLoading$.next(false);
       }
     });

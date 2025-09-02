@@ -1,0 +1,26 @@
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.faq-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.faq-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.toggle-icon {
+  font-size: 20px;
+  /* font-weight: bold; */
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.rotate {
+  transform: rotate(45deg); /* يخلي + تتحول إلى × عند الفتح */
+}

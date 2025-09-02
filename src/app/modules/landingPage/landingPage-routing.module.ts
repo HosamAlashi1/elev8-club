@@ -1,32 +1,61 @@
+// landingPage-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { LandingPageComponent } from './landingPage.component';
+
 import { HomeComponent } from './pages/home/home.component';
-import { OrdersComponent } from './pages/orders/orders.component';
-import { CartStepComponent } from './pages/orders/steps/cart-step/cart-step.component';
-import { DetailsStepComponent } from './pages/orders/steps/details-step/details-step.component';
-import { PaymentStepComponent } from './pages/orders/steps/payment-step/payment-step.component';
-import { ConfirmationStepComponent } from './pages/orders/steps/confirmation-step/confirmation-step.component';
+import { ShopComponent } from './pages/shop/shop.component';
+import { BookDetailsComponent } from './pages/book-details/book-details.component';
+import { AuthorsComponent } from './pages/authors/authors.component';
+import { AuthorEventsComponent } from './pages/author-events/author-events.component';
+import { BecomeAuthorComponent } from './pages/become-author/become-author.component';
+
+
+import { CartComponent } from './pages/orders/cart/cart.component';
+import { ShippingDetailsComponent } from './pages/orders/shipping-details/shipping-details.component';
+import { ConfirmationComponent } from './pages/orders/confirmation/confirmation.component';
+import { CartGuard } from './guards/cart.guard';
+import { DetailsGuard } from './guards/details.guard';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
-  },
-  {
-    path: 'home',
-    component: HomeComponent,
-    title: 'EDKD - Home',
-  },
-  {
-    path: 'orders',
-    component: OrdersComponent,
+    component: LandingPageComponent, // الـ layout الرئيسي
     children: [
-      { path: '', redirectTo: 'cart', pathMatch: 'full' },
-      { path: 'cart', component: CartStepComponent },
-      { path: 'details', component: DetailsStepComponent },
-      { path: 'payment', component: PaymentStepComponent },
-      { path: 'confirmation/:id', component: ConfirmationStepComponent }
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      {
+        path: 'home',
+        component: HomeComponent,
+        data: { animation: 'HomePage' }
+      },
+      {
+        path: 'shop',
+        component: ShopComponent,
+        data: { animation: 'ShopPage' }
+      },
+      {
+        path: 'book/:id',
+        component: BookDetailsComponent,
+        data: { animation: 'BookDetailsPage' }
+      },
+      {
+        path: 'featured-author',
+        component: AuthorsComponent,
+        data: { animation: 'AuthorsPage' }
+      },
+      {
+        path: 'author-events',
+        component: AuthorEventsComponent,
+        data: { animation: 'EventsPage' }
+      },
+      {
+        path: 'become-author',
+        component: BecomeAuthorComponent,
+        data: { animation: 'BecomeAuthorPage' }
+      },
+      { path: 'cart', component: CartComponent, data: { animation: 'CartPage' }, canActivate: [CartGuard] },
+      { path: 'shipping-details', component: ShippingDetailsComponent, data: { animation: 'ShippingDetailsPage' }, canActivate: [DetailsGuard] },
+      { path: 'confirmation/:orderId', component: ConfirmationComponent, data: { animation: 'ConfirmationPage' } }
     ]
   }
 ];

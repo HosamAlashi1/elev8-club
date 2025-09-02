@@ -1,0 +1,52 @@
+.section-title {
+  font-weight: 700;
+  font-size: 1.9rem;
+}
+
+.event-card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.card-img-top {
+  max-height: 250px;
+  object-fit: cover;
+}
+
+.event-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.event-speaker {
+  font-size: 0.9rem;
+}
+
+.event-meta {
+  font-size: 0.9rem;
+  color: #4B5563;
+}
+
+
+.btn-register {
+  background-color: #5BBDB7;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn-register:hover {
+  background-color: #4AA7A2;
+  color: #fff;
+}

@@ -1,0 +1,36 @@
+<div class="slider-section" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1200">
+  <div *ngIf="title" class="slider-header mb-3">
+    <h3>{{ title }}</h3>
+  </div>
+
+  <swiper-container #swiperEl [attr.slides-per-view]="slidesPerView" space-between="20" loop="true" speed="800"
+    autoplay='{"delay": 3500, "disableOnInteraction": false}' class="slider-wrapper">
+
+    <swiper-slide *ngFor="let item of items">
+      <div class="book-card text-start h-100" [routerLink]="['/book', item.id]" style="cursor: pointer;">
+
+        <div class="thumb mb-3">
+          <img [src]="item.img" [alt]="item.alt || item.title" />
+        </div>
+
+        <div class="pb-2">
+          <h6 class="fw-bold mb-1">{{ item.title }}</h6>
+          <p *ngIf="item.author" class="text-muted small mb-1">{{ item.author }}</p>
+
+          <div class="price-rating d-flex justify-content-between align-items-center">
+            <p *ngIf="item.price" class="fw-semibold mb-0">{{ item.price }}</p>
+            <div class="rating" aria-label="Rating">
+              <ng-container *ngFor="let star of [1,2,3,4,5]">
+                <i class="bi" [ngClass]="{
+                 'bi-star-fill': starType(star, item.rating) === 'full',
+                 'bi-star-half': starType(star, item.rating) === 'half',
+                 'bi-star':      starType(star, item.rating) === 'empty'
+               }"></i>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </swiper-slide>
+  </swiper-container>
+</div>

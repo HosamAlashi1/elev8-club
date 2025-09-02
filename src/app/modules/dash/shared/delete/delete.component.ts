@@ -36,6 +36,15 @@ delete() {
     case 'admin':
       url = this.api.admin.delete(this.id);
       break;
+    case 'tutorial':
+      url = this.api.tutorial.delete(this.id);
+      break;
+    case 'package':
+      url = this.api.packages.delete(this.id);
+      break;
+    case 'package-feature':
+      url = this.api.packageFeatures.delete(this.id);
+      break;
     case 'features':
       url = this.api.features.delete(this.id);
       break;

@@ -1,0 +1,111 @@
+.section-title {
+  font-weight: 700;
+  font-size: 1.9rem;
+}
+
+.view-switch {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-view {
+  background: transparent;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  color: #1A365D;
+}
+
+.btn-view.active {
+  border-color: #E5E7EB;
+  background: #fff;
+}
+
+.nav-btn {
+  border: none;
+  background: transparent;
+  font-size: 1.55rem;
+  cursor: pointer;
+  color: #4B5563;
+}
+
+.month-title {
+  color: #1A365D;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.day-name {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #4B5563;
+  margin-bottom: 4px;
+}
+
+.day {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #374151;
+}
+
+.day span.today {
+  background: #5BBDB7;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  width: 95%;
+  display: inline-block;
+}
+
+.calendar-animate {
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+}
+
+.fade-slide-enter {
+  animation-name: fadeSlideIn;
+}
+
+.fade-slide-leave {
+  animation-name: fadeSlideOut;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+
+  .day span.today {
+    padding: 8px 6px;
+  }
+}

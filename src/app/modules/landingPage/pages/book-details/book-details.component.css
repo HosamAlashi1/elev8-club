@@ -1,0 +1,546 @@
+/* Book details page content styles */
+.book-details-content {
+  width: 100%;
+}
+
+/* انيميشن للصفحة */
+.animate-route {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* تقليل الحركة للمستخدمين الذين يفضلون ذلك */
+@media (prefers-reduced-motion: reduce) {
+  .animate-route {
+    animation: none;
+    opacity: 1;
+  }
+  
+  /* تقليل انيميشن الصور أيضاً */
+  .old-img.slide-out-left,
+  .old-img.slide-out-right,
+  .new-img.slide-in-left,
+  .new-img.slide-in-right {
+    animation-duration: 0.1s;
+  }
+}
+
+/* ====== معرض الصور ====== */
+.gallery-main {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+}
+
+/* Container للصور */
+.images-container {
+  position: relative;
+  width: 100%;
+  height: 650px;
+  overflow: hidden;
+}
+
+/* الصورة الرئيسية */
+.gallery-main .main-img {
+  width: 100%;
+  height: 650px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  image-rendering: auto;
+  transform: translateZ(0);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* الصورة الحالية */
+.current-img {
+  opacity: 1;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.current-img.loaded {
+  opacity: 1;
+}
+
+/* ====== أنيميشن Swiper-style (صورتين تتحركان معاً) ====== */
+
+/* الصورة القديمة - تخرج */
+.old-img {
+  z-index: 3;
+  opacity: 1;
+}
+
+.old-img.slide-out-left {
+  animation: slideOutLeft 0.4s ease-in-out forwards;
+}
+
+.old-img.slide-out-right {
+  animation: slideOutRight 0.4s ease-in-out forwards;
+}
+
+/* الصورة الجديدة - تدخل */
+.new-img {
+  z-index: 4;
+  opacity: 1;
+}
+
+.new-img.slide-in-left {
+  animation: slideInLeft 0.4s ease-in-out forwards;
+}
+
+.new-img.slide-in-right {
+  animation: slideInRight 0.4s ease-in-out forwards;
+}
+
+/* تعريف الأنيميشنز */
+@keyframes slideOutLeft {
+  0%   { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(-100%); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+  0%   { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  0%   { transform: translateX(100%); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  0%   { transform: translateX(-100%); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+
+/* الصور المصغرة */
+.thumbs-wrap {
+  display: flex;
+  flex-wrap: wrap;       /* ⬅️ يخلي الصور تنزل سطر جديد */
+  gap: 12px;             /* مسافة ثابتة بين الصور */
+}
+
+.thumbs-wrap .thumb {
+  border: 1px solid rgba(0, 0, 0, .06);
+  border-radius: 10px;
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  flex: 0 0 auto;        /* ⬅️ يخلي كل صورة تظل بنفس الحجم */
+  position: relative;
+}
+
+.thumbs-wrap .thumb:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
+}
+
+.thumbs-wrap .thumb.active {
+  border-color: #111827;
+}
+
+/* تعطيل الـ thumbnail أثناء الانيميشن */
+.thumbs-wrap .thumb.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.thumbs-wrap img {
+  width: 153.8px;
+  height: 153.8px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+
+/* ====== النجوم ====== */
+.rating .bi {
+  color: #FFC107;
+  font-size: 1.1rem;
+}
+
+.rating.tiny .bi {
+  font-size: .9rem;
+}
+
+/* ====== صيغ الكتاب (pills) ====== */
+.format-pill {
+  border: 1px solid rgba(0, 0, 0, .12);
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.format-pill:hover {
+  border-color: rgba(0, 0, 0, .2);
+}
+
+.format-pill.active {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+/* ====== الكمية (pill + dividers) ====== */
+.qty-box {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 44px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.qty-box:hover {
+  /* border-color: #5BBDB7; */
+  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.1);
+}
+
+.qty-btn {
+  background: #fff;
+  border: 0;
+  padding: 0 16px;
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: #F9FAFB;
+  color: #5BBDB7;
+}
+
+.qty-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.qty-input {
+  width: 60px;
+  border: 0;
+  text-align: center;
+  padding-left: 15px;
+  outline: none;
+  font-weight: 600;
+  color: #111827;
+  background: transparent;
+  /* الديفايدر الخفيف يمين وشمال الرقم */
+  border-left: 1px solid rgba(0, 0, 0, .08);
+  border-right: 1px solid rgba(0, 0, 0, .08);
+}
+
+/* ====== زر إضافة للسلة المطور ====== */
+.btn-add-to-cart {
+  background: linear-gradient(135deg, #5BBDB7 0%, #4CAF50 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 12px 32px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(91, 189, 183, 0.3);
+}
+
+.btn-add-to-cart:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(91, 189, 183, 0.4);
+  background: linear-gradient(135deg, #4CAF50 0%, #5BBDB7 100%);
+}
+
+.btn-add-to-cart:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(91, 189, 183, 0.3);
+}
+
+.btn-add-to-cart:disabled {
+  opacity: 0.7;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* أنيميشن الأيقونة */
+.btn-add-to-cart .icon {
+  transition: transform 0.3s ease;
+}
+
+.btn-add-to-cart:hover .icon {
+  transform: scale(1.1);
+}
+
+/* أنيميشن النجاح */
+.btn-add-to-cart.success {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-add-to-cart.success .icon {
+  animation: successBounce 0.6s ease;
+}
+
+@keyframes successBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+/* أنيميشن التحميل */
+.btn-add-to-cart.loading {
+  pointer-events: none;
+}
+
+.btn-add-to-cart .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ====== Share ====== */
+.share {
+  border-top: 1px solid rgba(0, 0, 0, .06);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.share-label {
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.share-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, .08);
+  background: #1F2937;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s ease, border-color .2s ease, transform .15s ease;
+}
+
+.share-btn:hover {
+  border-color: rgba(0, 0, 0, .2);
+  transform: translateY(-1px);
+}
+
+.share-btn i {
+  font-size: 1rem;
+  color: #fff;
+}
+
+/* ====== الميتا ====== */
+.meta .label {
+  font-weight: 600;
+  margin-right: 4px;
+  color: #4B5563;
+}
+
+/* ====== المراجعات (مع ديفايدر خفيف جدًا) ====== */
+.review {
+  padding: 12px 0;
+}
+
+.review+.review {
+  border-top: 1px solid rgba(0, 0, 0, .06);
+  margin-top: 10px;
+  padding-top: 16px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 28px;
+}
+
+/* ====== Toast Notification ====== */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  background: white;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #5BBDB7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 320px;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast.hide {
+  transform: translateX(400px);
+  opacity: 0;
+}
+
+.toast-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #5BBDB7, #4CAF50);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  font-size: 18px;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  color: #111827;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.toast-message {
+  color: #6B7280;
+  font-size: 13px;
+  margin: 0;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.toast-close:hover {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+/* تأثير Ripple عند الإضافة */
+.book-ripple {
+  animation: bookRipple 0.6s ease-out;
+}
+
+@keyframes bookRipple {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(91, 189, 183, 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 10px rgba(91, 189, 183, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(91, 189, 183, 0);
+  }
+}
+
+/* أنيميشن خاص للموبايل */
+@media (max-width: 768px) {
+  .toast-container {
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+  }
+  
+  .toast {
+    min-width: auto;
+    transform: translateY(100px);
+  }
+  
+  .toast.show {
+    transform: translateY(0);
+  }
+  
+  .toast.hide {
+    transform: translateY(100px);
+  }
+}
+
+/* ====== السعر ====== */
+.price {
+  color: #5BBDB7;
+  font-weight: 700;
+}
+
+/* تحسينات عامة للصفحة */
+.book-details-content .lp-section {
+  min-height: auto;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* تحسين الاستجابة للموبايل */
+@media (max-width: 991px) {
+  .btn-add-to-cart {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .qty-box {
+    width: 120px;
+  }
+}
