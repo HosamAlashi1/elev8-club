@@ -1,0 +1,63 @@
+/* حاوية المحتوى مثل التصميم */
+.preview-wrap{
+  display:flex;
+  gap:24px;
+  align-items:flex-start;
+}
+
+/* الصورة: أبعاد ثابتة مع قصّ ذكي */
+.preview-left{
+  min-width:452px;
+  height:552px;
+  border-radius:12px;
+  /* overflow:hidden; */
+  background:#f3f4f6;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+.preview-left img{
+  width:100%;
+  height:100%;
+  /* object-fit:cover; */
+  display:block;
+}
+
+/* لوحة التفاصيل على اليمين مع فاصل رأسي */
+.preview-right{
+  flex:0 0 270px;              /* عرض مقارب للصورة المرجعية */
+  padding-left:24px;
+  border-left:1px solid #E5E7EB;
+  display:flex;
+  flex-direction:column;
+  align-self:stretch;          /* يمتد بنفس ارتفاع الصورة */
+}
+
+/* العناصر (Label + Value) */
+.pair{ margin-bottom:18px; }
+.label{
+  font-size:.9rem;
+  color:#4B5563;               /* رمادي فاتح */
+  margin-bottom:4px;
+}
+.value{
+  font-size:1rem;
+  color:#111827;               /* أسود فاتح */
+}
+
+/* أزرار مثل الصورة: Download ممتلئ (btn-custom) و Replace شفاف بحد */
+.btns{ display:flex; flex-direction:column; gap:12px; }
+.btn-custom{
+  /* height:48px; */
+  padding-top:7px;
+  /* padding-bottom:12px; */
+  /* border-radius:8px; */
+  font-weight:400;
+}
+
+
+/* استجابة للموبايل: صف واحد فوق الآخر */
+@media (max-width: 991.98px){
+  .preview-wrap{ flex-direction:column; }
+  .preview-right{ border-left:0; padding-left:0; }
+  .preview-left{ width:100%; height:auto; }
+  .preview-left img{ height:auto; }
+}

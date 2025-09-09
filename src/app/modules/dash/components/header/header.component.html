@@ -1,0 +1,35 @@
+<!-- الهيدر -->
+<header class="main-header d-flex align-items-center justify-content-between px-4">
+    <!-- Search -->
+    <div class="search-box flex-grow-1 me-3 position-relative">
+        <i class="fe fe-search search-icon"></i>
+        <input type="text" class="form-control search-input ps-5" placeholder="Search...">
+    </div>
+
+    <!-- Right Section -->
+    <div class="d-flex align-items-center gap-3">
+        <!-- Notification -->
+        <div class="icon-btn position-relative">
+            <i class="fe fe-bell"></i>
+            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 rounded-circle"></span>
+        </div>
+
+        <!-- User Dropdown -->
+        <div class="dropdown">
+            <a class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle" href="#" id="userMenu"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="assets/img/blank.png" alt="User" class="rounded-circle me-3" width="32" height="32">
+                <span class="fw-medium">John Doe</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+<!-- 🔹 End Header -->

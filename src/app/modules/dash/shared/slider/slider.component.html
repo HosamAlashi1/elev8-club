@@ -9,11 +9,11 @@
     <swiper-slide *ngFor="let item of items">
       <div class="book-card text-start h-100" [routerLink]="['/book', item.id]" style="cursor: pointer;">
 
-        <div class="thumb mb-3">
-          <img [src]="item.img" [alt]="item.alt || item.title" />
+        <div class="thumb rounded-bottom-0 ">
+          <img class="rounded-bottom-0" [src]="item.img" [alt]="item.alt || item.title" loading="lazy" />
         </div>
 
-        <div class="pb-2">
+        <div class="p-3">
           <h6 class="fw-bold mb-1">{{ item.title }}</h6>
           <p *ngIf="item.author" class="text-muted small mb-1">{{ item.author }}</p>
 

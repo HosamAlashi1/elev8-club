@@ -21,21 +21,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private countUpdateInterval: any;
 
   menu: any[] = [
-    { label: 'Home', icon: 'home', route: '/dashboard' },
-    { label: 'Admins', icon: 'shield-check', route: '/dashboard/admins' },
+    { label: 'Dashboard', icon: 'home', route: '/dashboard' },
+    { label: 'Catalog', icon: 'package', route: '/dashboard/catalog' },
     { label: 'Orders', icon: 'shopping-cart', route: '/dashboard/orders' },
-    { label: 'Tutorial', icon: 'book-open', route: '/dashboard/tutorial' },
-    { label: 'Packages', icon: 'package', route: '/dashboard/packages' },
-    { label: 'Package Features', icon: 'list-checks', route: '/dashboard/package-features' },
-    { label: 'Payment Methods', icon: 'credit-card', route: '/dashboard/payment-methods' },
-    { label: 'App Previews', icon: 'monitor-smartphone', route: '/dashboard/app-preview' },
-    { label: 'Features', icon: 'layers', route: '/dashboard/features' },
-    { label: 'Processes', icon: 'workflow', route: '/dashboard/processes' },
-    { label: 'Testimonials', icon: 'message-square', route: '/dashboard/testimonials' },
-    { label: 'Contacts Messages', icon: 'inbox', route: '/dashboard/contact-messages' },
+    { label: 'Customers', icon: 'users', route: '/dashboard/customers' },
+    { label: 'Reports', icon: 'bar-chart-2', route: '/dashboard/reports' },
     { label: 'Settings', icon: 'settings', route: '/dashboard/settings' }
   ];
-
 
   constructor(
     private authService: AuthService,
@@ -84,6 +76,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.isMobile = window.innerWidth <= 768;
 
     if (this.isMobile && !this.isCollapsed) {
+      this.toggleSidebar();
+    }
+  }
+
+  onSidebarClick(event: Event): void {
+    const target = event.target as HTMLElement;
+
+    // إذا السايدبار مسكّر، والنقرة مش على أيقونة التوغل
+    if (this.isCollapsed && !target.classList.contains('toggle-icon')) {
       this.toggleSidebar();
     }
   }

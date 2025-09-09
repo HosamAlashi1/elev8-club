@@ -1,0 +1,62 @@
+/* Chart Container */
+.card-body {
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* ApexCharts Responsive Fix */
+:host ::ng-deep .apexcharts-canvas {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+:host ::ng-deep .apexcharts-inner {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Chart Legend */
+:host ::ng-deep .apexcharts-legend {
+  padding: 0 !important;
+  margin: 10px 0 0 0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem !important;
+    height: 300px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-body {
+    padding: 0.75rem !important;
+    height: 250px !important;
+  }
+  
+  .card-header {
+    padding: 0.75rem !important;
+  }
+  
+  .card-header h4 {
+    font-size: 1rem !important;
+  }
+  
+  .form-select-sm {
+    font-size: 0.8rem !important;
+  }
+}

@@ -1,39 +1,62 @@
-<ul class="pagination m-3" *ngIf="!(isLoading$ | async) && totalRecords > size">
-  <!-- Prev -->
-  <li class="page-item">
-    <button type="button" class="page-link" [disabled]="disabled || isFirstPage()" (click)="goToPage(currentPage - 1)">
-      <i class="fe fe-chevrons-left"></i>
-    </button>
-  </li>
+<nav class="m-3" aria-label="Page navigation" *ngIf="totalRecords > size">
+  <ul class="pagination" 
+      [class.disabled]="disabled || (isLoading$ | async)">
 
-  <!-- First + ... -->
-  <li class="page-item" *ngIf="pages[0] > 1">
-    <button class="page-link" (click)="goToPage(1)">1</button>
-    <!-- <button class="page-link dots" disabled>…</button> -->
-  </li>
+    <!-- Prev -->
+    <li class="page-item">
+      <button type="button" class="page-link" 
+              [disabled]="isFirstPage()" 
+              aria-label="Previous page"
+              (click)="goToPage(currentPage - 1)">
+        <span class="icon" aria-hidden="true">
+          <!-- Left arrow -->
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="label">Previous</span>
+      </button>
+    </li>
 
-  <!-- Dynamic Pages -->
-  <li class="page-item" *ngFor="let page of pages">
-    <button type="button" class="page-link"
-      [ngClass]="{'text-bg-primary': currentPage === page}"
-      [disabled]="disabled || currentPage === page"
-      (click)="goToPage(page)">
-      {{ page }}
-    </button>
-  </li>
+    <!-- First + leading dots (مخفية على الموبايل) -->
+    <li class="page-item" *ngIf="!isMobile && pages[0] > 1">
+      <button class="page-link" (click)="goToPage(1)" [class.active]="currentPage === 1">1</button>
+    </li>
+    <li class="page-item" *ngIf="!isMobile && pages[0] > 2">
+      <span class="page-link dots" aria-hidden="true">…</span>
+    </li>
 
-  <!-- ... + Last -->
-  <li class="page-item" *ngIf="pages[pages.length - 1] < totalPages">
-    <!-- <button class="page-link dots" disabled>…</button> -->
-    <button class="page-link" [disabled]="disabled" (click)="goToPage(totalPages)">
-      {{ totalPages }}
-    </button>
-  </li>
+    <!-- Dynamic pages -->
+    <li class="page-item" *ngFor="let p of pages">
+      <button type="button" class="page-link"
+              [class.active]="currentPage === p"
+              [attr.aria-current]="currentPage === p ? 'page' : null"
+              (click)="goToPage(p)">
+        {{ p }}
+      </button>
+    </li>
 
-  <!-- Next -->
-  <li class="page-item">
-    <button type="button" class="page-link" [disabled]="disabled || isLastPage()" (click)="goToPage(currentPage + 1)">
-      <i class="fe fe-chevrons-right"></i>
-    </button>
-  </li>
-</ul>
+    <!-- trailing dots + Last (مخفية على الموبايل) -->
+    <li class="page-item" *ngIf="!isMobile && pages[pages.length-1] < totalPages - 1">
+      <span class="page-link dots" aria-hidden="true">…</span>
+    </li>
+    <li class="page-item" *ngIf="!isMobile && pages[pages.length-1] < totalPages">
+      <button class="page-link" (click)="goToPage(totalPages)"
+              [class.active]="currentPage === totalPages">
+        {{ totalPages }}
+      </button>
+    </li>
+
+    <!-- Next -->
+    <li class="page-item">
+      <button type="button" class="page-link" 
+              [disabled]="isLastPage()" 
+              aria-label="Next page"
+              (click)="goToPage(currentPage + 1)">
+        <span class="icon" aria-hidden="true">
+          <!-- Right arrow -->
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="label">Next</span>
+      </button>
+    </li>
+  </ul>
+</nav>

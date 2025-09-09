@@ -1,0 +1,68 @@
+.catalog-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.catalog-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* Tabs container */
+.tabs {
+  display: flex;
+  position: relative;
+  padding: 0;
+  border-bottom: 1px solid #e5e7eb;
+
+  /* الموبايل: سكرول أفقي */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+.tabs::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Tab buttons */
+.tab-btn {
+  font-weight: 500;
+  color: #6c757d;
+  border: none !important;
+  background: none !important;
+  text-decoration: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  padding: 16px 24px !important;
+  margin-right: 0.5rem !important;
+  position: relative;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab-btn:hover {
+  color: #5BBDB7;
+}
+
+.tab-btn.active {
+  color: #5BBDB7 !important;
+  /* font-weight: 600; */
+}
+
+/* Underline المتحرك */
+.tab-underline-dynamic {
+  position: absolute;
+  bottom: -2px;
+  height: 4px;
+  background: linear-gradient(90deg, #21d1c5, #5bbdb7);
+  border-radius: 2px 2px 0 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(91, 189, 183, 0.3);
+  left: 0;
+  width: 0;
+}

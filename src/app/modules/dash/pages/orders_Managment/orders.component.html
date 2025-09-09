@@ -1,0 +1,114 @@
+<div class="p-3">
+  <!-- Header -->
+  <div class="header">
+    <div class="container-fluid">
+      <div class="header-body border-0">
+        <div class="row align-items-center">
+          <div class="col d-flex">
+            <h2 class="header-title fw-bold">Orders Management</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <!-- Stat Cards -->
+    <div class="row g-4">
+      <div class="col-xl-3 col-md-6" *ngFor="let card of cards; let i = index" data-aos="fade-up"
+        [attr.data-aos-delay]="(i * 150).toString()" data-aos-duration="700">
+        <div class="stat-card shadow-sm">
+          <div class="stat-grid">
+            <!-- Icon -->
+            <div class="icon-wrap brand-bg">
+              <i [class]="card.icon" class="brand-color icon-size"></i>
+            </div>
+
+            <!-- النص الأساسي (العنوان + الرقم) -->
+            <div class="stat-main">
+              <div class="stat-label">{{ card.label }}</div>
+              <div class="stat-value">
+                <span *ngIf="card.prefix">{{ card.prefix }}</span>
+                {{ numbers[i] | number:getDigits(i) }}
+              </div>
+            </div>
+
+            <!-- سطر التغيّر: يبدأ من نفس بداية الأيقونة -->
+            <div class="stat-sub" [style.color]="card.changeColor || '#16A34A'">
+              {{ card.change }} <span class="ms-2 text-muted">vs last month</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row equal-height-row mt-4">
+
+      <!-- Line Chart -->
+      <div class="col-md-6 equal-height-col">
+        <app-line-chart [seriesName]="'sales'" [color]="'#5BBDB7'" [categories]="lineCats" [values]="lineVals">
+        </app-line-chart>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="col-md-6 equal-height-col">
+        <app-bar-chart [seriesName]="'value'" [color]="'#5BBDB7'" [categories]="barCats" [values]="barVals">
+        </app-bar-chart>
+      </div>
+    </div>
+
+    <!-- ===== Tabs (بدون فلاتر/جدول) ===== -->
+    <div class="card rounded-2 mt-4">
+      <!-- Tabs header -->
+      <div class="tabs d-flex position-relative">
+        <button #tabBtn class="tab-btn" [class.active]="activeTab === 'all'" (click)="setTab('all')">
+          All Orders ({{ counts.all }})
+        </button>
+
+        <button #tabBtn class="tab-btn" [class.active]="activeTab === 'pending'" (click)="setTab('pending')">
+          Pending ({{ counts.pending }})
+        </button>
+
+        <button #tabBtn class="tab-btn" [class.active]="activeTab === 'paid'" (click)="setTab('paid')">
+          Paid/Processing ({{ counts.paid }})
+        </button>
+
+        <button #tabBtn class="tab-btn" [class.active]="activeTab === 'shipped'" (click)="setTab('shipped')">
+          Shipped/Completed ({{ counts.shipped }})
+        </button>
+
+        <button #tabBtn class="tab-btn" [class.active]="activeTab === 'refunds'" (click)="setTab('refunds')">
+          Refunds & Cancellations ({{ counts.refunds }})
+        </button>
+
+        <!-- underline -->
+        <div class="tab-underline-dynamic" [ngStyle]="{ left: underlineLeft + 'px', width: underlineWidth + 'px' }">
+        </div>
+      </div>
+
+      <!-- محتوى التاب (placeholder فقط) -->
+      <div class="tab-content p-4 pt-0 text-muted">
+        <!-- Orders Table -->
+        <app-orders-table 
+          [rows]="rows" 
+          [totalCount]="totalCount"
+          [page]="page"
+          [pageSize]="pageSize"
+          [isLoading]="!!(isLoading$ | async)"
+          [statusFilter]="statusFilter" 
+          [paymentFilter]="paymentFilter"
+          [statusOptions]="statusOptions" 
+          [paymentOptions]="paymentOptions" 
+          (statusChange)="onStatusChange($event)"
+          (paymentChange)="onPaymentChange($event)"
+          (dateRangeChange)="onDateRangeChange($event)"
+          (pageChange)="onPageChange($event)">
+        </app-orders-table>
+      </div>
+    </div>
+
+
+  </div>
+</div>

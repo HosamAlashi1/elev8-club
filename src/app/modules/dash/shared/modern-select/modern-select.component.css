@@ -12,31 +12,32 @@
   align-items: center;
   width: 100%;
   padding: 4px 12px;
-  background: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  background: var(--select-bg-color, #EFEFEF);
+  border: 1px solid var(--select-border-color, #d1d5db);
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   outline: none;
   min-height: 31px;
+  color: var(--select-text-color, #64748B);
 }
 
 .modern-select-trigger:hover {
-  border-color: #adb5bd;
+  border-color: var(--hover-border-color, #adb5bd);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .modern-select-trigger:focus {
-  border-color: #6c757d;
+  border-color: var(--focus-border-color, #6c757d);
   box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
   outline: none;
 }
 
 .modern-select-open .modern-select-trigger {
-  border-color: #6c757d;
-  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+  border-color: #5bbdb759;
+  box-shadow: 0 0 0 3px #5bbdb759
 }
 
 /* إزالة الخلفية الرمادية للخيارات غير الحقيقية */
@@ -52,10 +53,10 @@
 
 /* Size Variants */
 .modern-select-sm {
-  min-height: 31px;
+  min-height: 38px;
   font-size: 0.875rem;
   padding: 4px 12px;
-  width: 160px;
+  width: 110px;
 }
 
 .modern-select-sm.no-icon {
@@ -99,7 +100,7 @@
 /* Selected Text */
 .modern-select-text {
   flex: 1;
-  color: #212529;
+  color: var(--select-text-color, #000000); /* <-- بدل #212529 */
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -108,11 +109,11 @@
 }
 
 .modern-select-text.placeholder2 {
-  color: #6c757d;
-  font-weight: 400;
+  color: var(--select-text-color, #000000); /* <-- استخدم نفس المتغيّر */
+  font-weight: 500;
   display: inline-block;
   min-height: 1em;
-  opacity: .5;
+  opacity: .55; /* محتفظين بخفة بسيطة للـ placeholder */
   vertical-align: middle;
 }
 
@@ -240,8 +241,8 @@
 
 /* فقط إظهار التحديد للخيارات التي لها قيمة حقيقية وليست "All" */
 .modern-select-option.selected.has-real-value {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: #dcfce771;
+  color: #5BBDB7;
   font-weight: 500;
 }
 

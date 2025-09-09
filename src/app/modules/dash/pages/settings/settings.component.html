@@ -1,133 +1,77 @@
-<div class="header">
-  <div class="container-fluid">
-    <div class="header-body">
-      <div class="row align-items-center justify-content-between">
-        <div class="col">
-          <h2 class="header-title">
-            <lucide-icon [name]="'settings'"></lucide-icon>
-            Settings
-          </h2>
-        </div>
-         <div class="col-auto">
-          <button class="btn btn-sm btn-custom" type="submit" (click)="submit()"
-                [disabled]="(httpService.getLoading('settingsUpdate') | async)">
-          <ng-container *ngIf="(httpService.getLoading('settingsUpdate') | async)">
-            <span class="spinner-border spinner-border-sm me-2"></span> Updating...
-          </ng-container>
-          <ng-container *ngIf="!(httpService.getLoading('settingsUpdate') | async)">
-            <i class="fe fe-check me-1"></i>
-            Update Settings
-          </ng-container>
-        </button>
-        </div>
+<div class="settings-container">
+  <h2 class="settings-title">Settings</h2>
+
+  <div class="card rounded-2 mt-4">
+    <!-- Tabs -->
+    <div class="tabs d-flex position-relative">
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'store-info'"
+        (click)="setTab('store-info')">Store Info</button>
+
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'payments'"
+        (click)="setTab('payments')">Payments</button>
+
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'shipping'"
+        (click)="setTab('shipping')">Shipping</button>
+
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'taxes'"
+        (click)="setTab('taxes')">Taxes</button>
+
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'constants'"
+        (click)="setTab('constants')">Constants</button>
+
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'users-roles'"
+        (click)="setTab('users-roles')">Users & Roles</button>
+
+      <!-- Underline المتحرك -->
+      <div
+        class="tab-underline-dynamic"
+        [ngStyle]="{ left: underlineLeft + 'px', width: underlineWidth + 'px' }">
       </div>
     </div>
-  </div>
-</div>
 
-<div class="container-fluid">
-  <div class="row pb-4">
-    <div class="col-12">
-      <form
-        #settingsForm="ngForm"
-        enctype="multipart/form-data"
-      >
-        <div *ngFor="let type of settingsTypes" class="card mb-3 border-0 shadow-sm">
-          <div class="card-header" >
-            <h4 class="card-title d-flex align-items-center mb-0" 
-                [title]="getSectionDescription(type.type)">
-              <lucide-icon [name]="getSectionIcon(type.type)" class="me-1"></lucide-icon>
-              {{ type.type }}
-            </h4>
-            <small class="text-muted mt-1 d-none d-md-block">{{ getSectionDescription(type.type) }}</small>
-          </div>
-          <div class="card-body">
-            <div class="row" *ngIf="settings[type.type]">
-              <div
-                *ngFor="let key of getSettingKeys(type.type)"
-                [ngClass]="getFieldColClass(settings[type.type][key].key_id, type.type)"
-                class="mb-3"
-              >
-              <label class="form-label">
-                {{ settings[type.type][key].title }}
-                <span class="text-danger" *ngIf="key.includes('title') || key.includes('email') || key.includes('phone')">*</span>
-                <small *ngIf="key.includes('image')" class="text-muted">
-                  (Optional)
-                </small>
-              </label>
+    <!-- Tab content -->
+    <div class="tab-content p-4" [@tabSlide]="activeTab">
+      <ng-container *ngIf="activeTab === 'store-info'">
+        <app-store-info></app-store-info>
+      </ng-container>
 
-              <!-- textarea -->
-              <textarea
-                *ngIf="key.includes('desc') || key.includes('tagline')"
-                [(ngModel)]="formValues[key]"
-                name="{{ key }}"
-                rows="1"
-                class="form-control"
-                placeholder="..."
-              ></textarea>
+      <ng-container *ngIf="activeTab === 'payments'">
+        <app-payments></app-payments>
+      </ng-container>
 
-              <!-- url/link input -->
-              <input
-                *ngIf="key.includes('link') || key.includes('twitter') || key.includes('facebook') || key.includes('instagram') || key.includes('linkedin')"
-                type="url"
-                name="{{ key }}"
-                [(ngModel)]="formValues[key]"
-                class="form-control"
-                placeholder="Enter URL..."
-              />
+      <ng-container *ngIf="activeTab === 'shipping'">
+        <app-shipping></app-shipping>
+      </ng-container>
 
-              <!-- email input -->
-              <input
-                *ngIf="key.includes('email')"
-                type="email"
-                name="{{ key }}"
-                [(ngModel)]="formValues[key]"
-                class="form-control"
-                placeholder="Enter email..."
-              />
+      <ng-container *ngIf="activeTab === 'taxes'">
+        <app-taxes></app-taxes>
+      </ng-container>
 
-              <!-- phone input -->
-              <input
-                *ngIf="key.includes('phone')"
-                type="tel"
-                name="{{ key }}"
-                [(ngModel)]="formValues[key]"
-                class="form-control"
-                placeholder="Enter phone number..."
-              />
+      <ng-container *ngIf="activeTab === 'constants'">
+        <app-constants></app-constants>
+      </ng-container>
 
-              <!-- image -->
-              <input
-                *ngIf="key.includes('image')"
-                type="file"
-                name="{{ key }}"
-                (change)="onFileChange($event, key)"
-                class="form-control form-control"
-                accept="image/*"
-              />
-
-              <!-- regular text input -->
-              <input
-                *ngIf="!key.includes('desc') && !key.includes('image') && !key.includes('tagline') && !key.includes('link') && !key.includes('twitter') && !key.includes('facebook') && !key.includes('instagram') && !key.includes('linkedin') && !key.includes('email') && !key.includes('phone')"
-                type="text"
-                name="{{ key }}"
-                [(ngModel)]="formValues[key]"
-                class="form-control"
-              />
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
+      <ng-container *ngIf="activeTab === 'users-roles'">
+        <app-users-roles></app-users-roles>
+      </ng-container>
     </div>
   </div>
 </div>
-
-<!-- Fixed Back to Top Button -->
-<button 
-  class="btn btn-custom btn-back-to-top" 
-  (click)="scrollToTop()"
-  [style.display]="showBackToTop ? 'block' : 'none'"
-  title="العودة إلى الأعلى">
-  <i class="fe fe-arrow-up"></i>
-</button>

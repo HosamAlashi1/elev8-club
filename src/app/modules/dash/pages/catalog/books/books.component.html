@@ -1,0 +1,174 @@
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-4 border-0 my-3 ">
+    <!-- Left side (search, bulk, filter) -->
+    <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
+        <!-- Search -->
+        <div class="search-wrap position-relative flex-grow-1" style="max-width: 240px;">
+            <i class="fe fe-search text-muted position-absolute"></i>
+            <input [(ngModel)]="searchText" class="form-control ps-5" placeholder="Search Books..."
+                (ngModelChange)="onSearchChange()" />
+        </div>
+
+        <!-- Bulk actions -->
+        <div class="dropdown">
+            <button class="btn btn-action btn-action-bulk dropdown-toggle" data-bs-toggle="dropdown">
+                Bulk Actions
+            </button>
+            <ul class="dropdown-menu">
+                <li><button class="dropdown-item" (click)="bulkArchive()"
+                        [disabled]="selectedIds.size === 0">Archive</button></li>
+                <li><button class="dropdown-item" (click)="bulkArchive()"
+                        [disabled]="selectedIds.size === 0">Delete</button></li>
+            </ul>
+        </div>
+
+        <!-- Filter -->
+        <button class="btn btn-action btn-action-filter d-flex align-items-center gap-1">
+            <i class="fe fe-filter"></i> Filter
+        </button>
+    </div>
+
+    <!-- Right side (Add button) -->
+    <div>
+        <button class="btn btn-custom d-flex align-items-center gap-2">
+            <i class="fe fe-plus"></i>
+            Add New Book
+        </button>
+    </div>
+</div>
+<div class="card mb-0 mx-4">
+    <!-- Toolbar -->
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-sm table-nowrap card-table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="w-5">
+                        <input class="form-check-input" type="checkbox" [checked]="selectAll"
+                            (change)="toggleSelectAll()" />
+                    </th>
+                    <th class="w-10">Book<br>Cover</th>
+                    <th class="w-15">Title</th>
+                    <th class="w-10">Author</th>
+                    <th class="w-10">ISBN</th>
+                    <th class="w-10">Price</th>
+                    <th class="w-10">Stock</th>
+                    <th class="w-10">Category</th>
+                    <th class="w-10">Status</th>
+                    <th class="w-10">Actions</th>
+                </tr>
+            </thead>
+
+            <!-- Skeleton while loading -->
+            <tbody *ngIf="(isLoading$ | async)">
+                <tr *ngFor="let _ of [].constructor(size)">
+                    <td style="padding: 8px 0px 0px 20px;">
+                        <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                            [theme]="{ width: '18px', height: '18px', 'border-radius': '4px', margin: '0' ,padding: '0' }">
+                        </ngx-skeleton-loader>
+                    </td>
+                    <td style="padding: 5px 10px 0px 10px;">
+                        <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                            [theme]="{ width: '48px', height: '64px', 'border-radius': '6px', margin: '0px 0px 0px 5px' }">
+                        </ngx-skeleton-loader>
+                    </td>
+                    <td *ngFor="let __ of [].constructor(8)" style="padding: 30.75px 10px;">
+                        <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                            [theme]="{ width: '70%', height: '25px', 'border-radius': '6px', margin: '0' }">
+                        </ngx-skeleton-loader>
+                    </td>
+                </tr>
+            </tbody>
+
+            <!-- Data -->
+            <tbody *ngIf="!(isLoading$ | async)">
+                <tr *ngFor="let b of books">
+                    <td>
+                        <input class="form-check-input" type="checkbox" [checked]="selectedIds.has(b.id)"
+                            (change)="toggleRow(b.id, $event)" />
+                    </td>
+
+                    <td>
+                        <img [src]="b.cover" alt="cover" class="cover rounded-3 cursor-pointer" 
+                        (click)="openImageModal(b.cover || 'assets/img/blank.png')">
+                    </td>
+
+                    <td class="title-cell">
+                        <div class="fw-semibold text-dark" [ngbTooltip]="b.title" placement="top">
+                            {{ b.title | maxLength: 30 }}
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="text-muted">{{ b.author_name }}</div>
+                    </td>
+
+                    <td class="text-muted">
+                        <div>{{ b.isbn }}</div>
+                    </td>
+
+                    <td><span class="fw-semibold">${{ b.price | number:'1.2-2' }}</span></td>
+
+                    <td>
+                        <span [class]="getStockClass(b.stock)">
+                            {{ b.stock }}
+                        </span>
+
+                        <!-- حالة ستوك = 0 -->
+                        <i *ngIf="b.stock === 0" class="fas fa-exclamation-triangle ms-1 text-danger"></i>
+
+                        <!-- حالة ستوك من 1 إلى 5 -->
+                        <i *ngIf="b.stock > 0 && b.stock <= 5"
+                            class="fas fa-exclamation-triangle ms-1 text-warning"></i>
+                    </td>
+
+                    <td class="text-muted">{{ b.category }}</td>
+
+                    <td>
+                        <span class="pill" [ngClass]="getStatusPillClass(b.status)">
+                            {{ b.status === 'active' ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="btn-group dropstart">
+                            <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                <i class="fe fe-more-vertical black-menu fs-3"></i>
+                            </span>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" >
+                                        <i class="fe fe-edit me-2"></i>Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="m-2" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" >
+                                        <i class="fe fe-trash-2 text-danger me-2"></i>
+                                        <span class="text-danger">Delete</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<!-- Footer -->
+<div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <small class="text-muted">
+        Showing {{ books.length ? ( (page-1)*size + 1 ) : 0 }}
+        -
+        {{ (page-1)*size + books.length }}
+        of {{ totalCount }} books
+    </small>
+
+    <!-- لو عندك كومبوننت جاهز -->
+    <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size" (pageChange)="list($event)">
+    </app-pagination>
+</div>

@@ -9,7 +9,7 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const data = JSON.parse(localStorage.getItem('EDKD-data') || '{}');
+    const data = JSON.parse(localStorage.getItem('Dorrance-data') || '{}');
     // دعم شكل الرسبونس الجديد: { user, token } داخل data
     const token = data?.token || data?.data?.token;
     if (token) {

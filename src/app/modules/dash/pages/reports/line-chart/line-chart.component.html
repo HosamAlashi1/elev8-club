@@ -1,0 +1,23 @@
+<div class="chart-wrap" [@chartAnimation] [@chartUpdate]="animationState" [style.height]="'calc(100dvh - 415px)'">
+  <div class="mini-title">Monthly Revenue Trend</div>
+
+  <apx-chart
+    [series]="chartOptionsRevenue.series"
+    [chart]="chartOptionsRevenue.chart"
+    [xaxis]="chartOptionsRevenue.xaxis"
+    [yaxis]="chartOptionsRevenue.yaxis"
+    [dataLabels]="chartOptionsRevenue.dataLabels"
+    [stroke]="chartOptionsRevenue.stroke"
+    [colors]="chartOptionsRevenue.colors"
+    [markers]="chartOptionsRevenue.markers"
+    [tooltip]="chartOptionsRevenue.tooltip"
+    [legend]="chartOptionsRevenue.legend"
+    [grid]="chartOptionsRevenue.grid">
+  </apx-chart>
+
+<div class="center-legend">
+  <span class="legend-marker"></span>
+  <span class="legend-text">revenue</span>
+</div>
+
+</div>

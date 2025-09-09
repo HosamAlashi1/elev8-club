@@ -1,0 +1,113 @@
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-4 border-0 my-3">
+    <!-- Left side (search + status filter) -->
+    <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
+        <!-- Search -->
+        <div class="search-wrap position-relative flex-grow-1" style="max-width: 240px;">
+            <i class="fe fe-search text-muted position-absolute"></i>
+            <input [(ngModel)]="searchText" class="form-control ps-5" placeholder="Search Categories..."
+                (ngModelChange)="onSearchChange()" />
+        </div>
+
+        <!-- Status filter with modern select -->
+        <app-modern-select [(ngModel)]="statusFilter" [options]="statusOptions" placeholder2="All" size="sm"
+            (selectionChange)="onStatusFilterChange()" style="max-width: 160px;">
+        </app-modern-select>
+    </div>
+
+    <!-- Right side (Add button) -->
+    <div>
+        <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+            <i class="fe fe-plus"></i>
+            New Category
+        </button>
+    </div>
+</div>
+
+<div class="card mb-0 mx-4">
+    <div class="table-responsive">
+        <table class="table table-sm table-nowrap card-table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="w-15">Icon</th>
+                    <th class="w-20">Category Name</th>
+                    <th class="w-35">Description</th>
+                    <th class="w-10">Books</th>
+                    <th class="w-10">Status</th>
+                    <th class="w-10">Actions</th>
+                </tr>
+            </thead>
+
+            <!-- Skeleton while loading -->
+            <tbody *ngIf="isLoading$ | async">
+                <tr *ngFor="let number of [].constructor(size)">
+                    <td *ngFor="let i of [].constructor(6)" style="padding: 17.26px 10px;">
+                        <ngx-skeleton-loader appearance="line" animation="progress-dark" [theme]="{
+                  width: '50%',
+                  height: '20px',
+                  'border-radius': '3px',
+                  margin: '0'
+                }">
+                        </ngx-skeleton-loader>
+                    </td>
+                </tr>
+            </tbody>
+
+            <!-- Data -->
+            <tbody *ngIf="!(isLoading$ | async)">
+                <tr *ngFor="let c of categories">
+                    <td>
+                        <img [src]="c.icon" alt="icon" width="32" height="32" class="rounded-2" >
+                    </td>
+                    <td class="fw-semibold text-dark">{{ c.name }}</td>
+                    <td>
+                        <div class="text-muted">
+                            <div [ngbTooltip]="c.description" placement="top">{{ c.description | maxLength:60 }}</div>
+                        </div>
+                    </td>
+                    <td>{{ c.books }}</td>
+                    <td>
+                        <span class="pill" [ngClass]="getStatusPillClass(c.status)">
+                            {{ c.status === 'active' ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group dropstart">
+                            <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                <i class="fe fe-more-vertical black-menu fs-3"></i>
+                            </span>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" (click)="edit(c)">
+                                        <i class="fe fe-edit me-2"></i>Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="m-2" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item">
+                                        <i class="fe fe-trash-2 text-danger me-2"></i>
+                                        <span class="text-danger">Delete</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <small class="text-muted">
+        Showing {{ categories.length ? ((page-1)*size + 1) : 0 }}
+        -
+        {{ (page-1)*size + categories.length }}
+        of {{ totalCount }} categories
+    </small>
+
+    <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size" (pageChange)="list($event)">
+    </app-pagination>
+</div>

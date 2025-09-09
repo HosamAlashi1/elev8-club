@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
         next: (res: any) => {
           if (res?.status === true && res?.data?.token) {
             // Save user and token in localStorage
-            localStorage.setItem('EDKD-data', JSON.stringify({
+            localStorage.setItem('Dorrance-data', JSON.stringify({
               user: res.data.user,
               token: res.data.token
             }));

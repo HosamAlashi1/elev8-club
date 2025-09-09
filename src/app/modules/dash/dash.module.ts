@@ -13,15 +13,25 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { LottieModule } from 'ngx-lottie';
 import { LottieOverlayComponent } from './shared/lottie-overlay/lottie-overlay.component';
-import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow, ListChecks, BookOpen, CreditCard, ShoppingCart } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Home,
+  Package,
+  ShoppingCart,
+  Users,
+  BarChart2,
+  Settings
+} from 'lucide-angular';
+import { HeaderComponent } from './components/header/header.component';
 
 
 @NgModule({
   declarations: [
     DashComponent,
     SidebarComponent,
-    ConfirmationDialogComponent, 
-    LottieOverlayComponent
+    ConfirmationDialogComponent,
+    LottieOverlayComponent,
+    HeaderComponent,
   ],
   imports: [
     CommonModule,
@@ -33,25 +43,14 @@ import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Fol
     InlineSVGModule,
     NgxPaginationModule,
     NgxSkeletonLoaderModule,
-    LottieModule, 
+    LottieModule,
     LucideAngularModule.pick({
       Home,
-      ShieldCheck,
-      Building2,
-      Layers,
       Package,
-      Folder,
+      ShoppingCart,
       Users,
-      MessageSquare,
-      Mail,
-      Inbox,
-      Settings,
-      MonitorSmartphone,
-      Workflow,
-      ListChecks,
-      BookOpen,
-      CreditCard,
-      ShoppingCart
+      BarChart2,
+      Settings
     })
   ],
   providers: [

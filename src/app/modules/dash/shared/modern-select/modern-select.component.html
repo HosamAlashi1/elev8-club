@@ -2,6 +2,7 @@
      [class.modern-select-open]="isOpen"
      [class.modern-select-disabled]="disabled"
      [style.min-width]="minWidth"
+     [style.width]="customWidth"
      (click)="toggleDropdown($event)"
      (document:click)="onDocumentClick($event)">
   
@@ -10,7 +11,8 @@
        [class]="'modern-select-' + size"
        [class.has-selection]="hasSelection"
        [class.has-real-value]="hasRealValue"
-       [class.no-icon]="!hasIcon">
+       [class.no-icon]="!hasIcon"
+       [ngStyle]="customStyles">
     
     <!-- Icon (اختيارية) -->
     <span *ngIf="hasIcon" class="modern-select-icon">

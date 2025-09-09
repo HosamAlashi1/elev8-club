@@ -1,0 +1,210 @@
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3 border-0 my-3">
+    <!-- Left side: search + type + date -->
+    <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
+        <!-- Search -->
+        <div class="search-wrap position-relative flex-grow-1" style="max-width: 240px;">
+            <i class="fe fe-search text-muted position-absolute"></i>
+            <input [(ngModel)]="searchText" class="form-control ps-5" placeholder="Search Categories..."
+                (ngModelChange)="onSearchChange()" />
+        </div>
+
+        <!-- File Type -->
+        <app-modern-select [(ngModel)]="fileTypeFilter" [options]="fileTypeOptions" placeholder2="File Type" size="sm"
+            (selectionChange)="onTypeChange()" [minWidth]="'100px'" [icon]="'fe fe-filter'" [customWidth]="'120px'"
+            [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
+        </app-modern-select>
+
+        <!-- Date Range -->
+        <app-modern-select [(ngModel)]="dateRangeFilter" [options]="dateRangeOptions" placeholder2="Date Range"
+            size="sm" (selectionChange)="onDateChange()" [minWidth]="'160px'" [icon]="'fe fe-filter'"
+            [customWidth]="'180px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
+        </app-modern-select>
+    </div>
+
+    <!-- Right side: view toggle + upload -->
+    <div class="d-flex align-items-center gap-2">
+        <div class="btn-shift d-none d-md-flex" [ngClass]="{ 'grid-active': view==='grid', 'list-active': view==='list' }">
+            <button class="btn-icon" [class.active]="view==='grid'" (click)="toggleView('grid')">
+                <i class="fe fe-grid"></i>
+            </button>
+            <button class="btn-icon" [class.active]="view==='list'" (click)="toggleView('list')">
+                <i class="fe fe-list"></i>
+            </button>
+        </div>
+
+        <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+            <i class="fe fe-upload"></i>
+            Upload New File
+        </button>
+        <input #fileInput type="file" class="d-none" (change)="onUploadChange($event)" />
+    </div>
+</div>
+
+<div class="mb-0 mx-4">
+    <!-- Skeleton while loading - GRID VIEW -->
+    <ng-container *ngIf="(isLoading$ | async) && view === 'grid'">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4"
+            style="margin-bottom: 0; padding-bottom: 0;">
+            <div class="col" *ngFor="let _ of [].constructor(gridSize)" style="margin-bottom: 0; padding-bottom: 0;">
+                <ngx-skeleton-loader appearance="line" animation="progress-dark" [theme]="{ 
+          width: '100%', 
+          padding: '0',
+          height: '318.5px', 
+          'border-radius': '12px', 
+          'margin-bottom': '18px', 
+          'margin-top': '0', 
+          'margin-left': '0', 
+          'margin-right': '0' 
+        }">
+                </ngx-skeleton-loader>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- Skeleton while loading - LIST VIEW -->
+    <ng-container *ngIf="(isLoading$ | async) && view === 'list'">
+        <div class="card mb-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-nowrap card-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="w-15">File<br>Thumbnail</th>
+                            <th class="w-25">Name</th>
+                            <th class="w-15">Type</th>
+                            <th class="w-15">Size</th>
+                            <th class="w-20">Date</th>
+                            <th class="w-10">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let _ of [].constructor(listSize)">
+                            <td style="padding: 5px 10px 0px 10px;">
+                                <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                    [theme]="{ width: '48px', height: '64px', 'border-radius': '6px', margin: '0px 0px 0px 5px' }">
+                                </ngx-skeleton-loader>
+                            </td>
+                            <td *ngFor="let __ of [].constructor(5)" style="padding: 30.75px 10px;">
+                                <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                    [theme]="{ width: '70%', height: '25px', 'border-radius': '6px', margin: '0' }">
+                                </ngx-skeleton-loader>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </ng-container>
+
+
+    <!-- GRID VIEW -->
+    <div *ngIf="!(isLoading$ | async) && view === 'grid'" [class.view-container]="showViewAnimation">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            <div class="col" *ngFor="let f of pageFiles">
+                <div class="card file-card cursor-pointer" (click)="preview(f)">
+                    <img [src]="f.thumbnail" class="card-img-top object-fit-cover" style="height:200px;" alt="thumb" />
+                    <div class="card-body">
+                        <div class="fw-semibold text-truncate" [ngbTooltip]="f.title" placement="top">{{ f.title }}
+                        </div>
+                        <div class="small text-muted mt-1">
+                            <i [class]="getTypeIcon(f.type)"></i>
+                            <span class="ms-1 text-capitalize">{{ f.type }}</span>
+                            <span class="mx-2">•</span>
+                            <span>{{ f.sizeMB }} MB</span>
+                        </div>
+                        <div class="small text-muted mt-1">{{ f.date | date:'MMM d, y' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div *ngIf="!(isLoading$ | async) && view === 'list'" [class.view-container]="showViewAnimation">
+        <div class="card mb-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-nowrap card-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="w-15">File<br>Thumbnail</th>
+                            <th class="w-25">Name</th>
+                            <th class="w-15">Type</th>
+                            <th class="w-15">Size</th>
+                            <th class="w-20">Date</th>
+                            <th class="w-10">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let f of pageFiles">
+                            <td>
+                                <img [src]="f.thumbnail" alt="thumbnail" class="cover rounded-3 cursor-pointer"
+                                    (click)="openImageModal(f.thumbnail || 'assets/img/blank.png')">
+                            </td>
+
+                            <td class="title-cell">
+                                <div class="fw-semibold text-dark" [ngbTooltip]="f.title" placement="top">
+                                    {{ f.title }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="text-muted text-capitalize">
+                                    <i [class]="getTypeIcon(f.type)"></i>
+                                    <span class="ms-1">{{ f.type }}</span>
+                                </div>
+                            </td>
+
+                            <td class="text-muted">
+                                <div>{{ f.sizeMB }} MB</div>
+                            </td>
+
+                            <td class="text-muted">{{ f.date | date:'MMM d, y' }}</td>
+
+                            <td>
+                                <div class="btn-group dropstart">
+                                    <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                        <i class="fe fe-more-vertical black-menu fs-3"></i>
+                                    </span>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item">
+                                                <i class="fe fe-download me-2"></i>Download
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" (click)="edit(f)">
+                                                <i class="fe fe-edit me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="m-2" />
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item">
+                                                <i class="fe fe-trash-2 text-danger me-2"></i>
+                                                <span class="text-danger">Delete</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer / Pagination -->
+    <div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+        <small class="text-muted">
+            Showing {{ pageFiles.length ? ((page-1)*currentSize + 1) : 0 }}
+            -
+            {{ (page-1)*currentSize + pageFiles.length }}
+            of {{ totalCount }} files
+        </small>
+
+        <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="currentSize"
+            (pageChange)="list($event)">
+        </app-pagination>
+    </div>
+</div>

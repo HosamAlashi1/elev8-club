@@ -37,6 +37,7 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
   @Input() maxHeight: string = '200px';
 
   @Output() selectionChange = new EventEmitter<any>();
+  @Output() searchChange = new EventEmitter<string>(); // إضافة event للبحث
 
   @ViewChild('selectButton') selectButton!: ElementRef<HTMLDivElement>;
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
@@ -109,6 +110,8 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
       )
       .subscribe(query => {
         this.filterOptions(query);
+        // إرسال event للبحث
+        this.searchChange.emit(query);
       });
 
     // Initial filter - ensure filteredOptions are populated immediately

@@ -1,0 +1,145 @@
+<div class="p-3">
+  <!-- Header -->
+  <div class="header">
+    <div class="container-fluid">
+      <div class="header-body border-0">
+        <div class="row align-items-center">
+          <div class="col d-flex">
+            <h2 class="header-title fw-bold">Reports & Analytics</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <!-- Stat Cards -->
+    <div class="row g-4">
+      <div class="col-xl-3 col-md-6" *ngFor="let card of cards; let i = index; trackBy: trackByCard" data-aos="fade-up"
+        [attr.data-aos-delay]="(i * 150).toString()" data-aos-duration="700">
+
+        <div class="stat-card shadow-sm">
+          <!-- العنوان + الأيقونة -->
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="stat-label">{{ card.label }}</div>
+            <i [class]="card.icon" class="icon-size brand-color"></i>
+          </div>
+
+          <!-- الرقم + التغيير -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="stat-value">
+              <span *ngIf="card.prefix">{{ card.prefix }}</span>
+              {{ numbers[i] | number:getDigits(i) }}
+            </div>
+            <div class="stat-change d-flex align-items-center" [style.color]="getChangeColor(card.change)">
+              <i [class]="getChangeIcon(card.change)" class="me-1"></i>
+              {{ card.change }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Sales Overview -->
+  <div class="card sales-card mx-3 mt-4" data-aos="fade-up" data-aos-duration="700">
+    <div class="card-body p-3 p-md-4">
+
+      <h5 class="section-title mb-4">Sales Overview</h5>
+
+      <!-- Line: Monthly Revenue Trend (عرض كامل) -->
+      <div class="mb-4">
+
+        <div class="chart-container">
+          <!-- هنركّب الشارت لاحقاً -->
+          <app-line-chart [seriesName]="'revenue'" [color]="'#5BBDB7'" [categories]="lineCats"
+            [values]="lineVals"></app-line-chart>
+        </div>
+
+      </div>
+
+      <!-- الصف السفلي: Bar يسار + Donut يمين -->
+      <div class="row g-4 chart-section">
+        <div class="col-md-6">
+          <div class="chart-container">
+            <app-bar-chart [seriesName]="'value'" [color]="'#5BBDB7'" [categories]="barCats"
+              [values]="barVals"></app-bar-chart>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="chart-container">
+            <app-pie-chart [labels]="pieLabels" [values]="pieValues" [colors]="pieColors"></app-pie-chart>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Top Books -->
+  <div class="card shadow-sm mx-3 mt-4">
+    <div class="card-header fw-bold d-flex align-items-center">
+      <h4 class="mb-0">Top Books</h4>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4 col-lg-4" *ngFor="let book of topBooks; let i = index" data-aos="fade-up"
+          [attr.data-aos-delay]="(i * 120).toString()">
+          <div class="top-book-card d-flex align-items-center">
+            <!-- صورة -->
+            <img [src]="book.cover" alt="{{ book.title }}" class="book-cover">
+
+            <!-- التفاصيل -->
+            <div class="book-info ms-3">
+              <span class="rank-badge">#{{ book.rank }}</span>
+              <h5 class="book-title">{{ book.title }}</h5>
+              <div class="book-author">{{ book.author }}</div>
+              <div class="book-meta">Units Sold: {{ book.units }}</div>
+              <div class="book-meta">Revenue: ${{ book.revenue | number }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mx-3 mt-4">
+    <div class="card-header fw-bold d-flex align-items-center">
+      <h4 class="mb-0">Digital Downloads</h4>
+    </div>
+
+    <div class="table-responsive overflow-y-hidden">
+      <table class="table table-nowrap mb-0 digital-table">
+        <thead>
+          <tr>
+            <th class="ps-4 w-35">Book</th>
+            <th class="w-25">Downloads</th>
+            <th class="w-25">Revenue</th>
+            <th class="w-15">Last Download</th>
+          </tr>
+        </thead>
+        <tbody class="ps-4">
+          <tr *ngFor="let d of downloads; let i = index" data-aos="fade-up"
+            [attr.data-aos-delay]="(i * 120).toString()">
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <img [src]="d.cover" alt="{{ d.title }}" class="download-cover" />
+                <div>
+                  <div class="fw-semibold text-dark">{{ d.title }}</div>
+                  <div class="text-muted small">{{ d.author }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="fw-semibold">{{ d.downloads }}</td>
+            <td class="fw-semibold">${{ d.revenue | number:'1.0-0' }}</td>
+            <td class="text-muted">{{ d.last }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</div>

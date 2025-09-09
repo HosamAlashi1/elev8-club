@@ -24,7 +24,7 @@ export class PublicService {
     }
 
     public getUserData() {
-        const data = localStorage.getItem('EDKD-data');
+        const data = localStorage.getItem('Dorrance-data');
         return data ? JSON.parse(data).user : null;
     }
 

@@ -1,0 +1,47 @@
+<div class="catalog-container">
+  <h2 class="catalog-title">Catalog</h2>
+
+  <div class="card rounded-2 mt-4">
+    <!-- Tabs -->
+    <div class="tabs d-flex position-relative">
+      <button 
+        #tabBtn 
+        class="tab-btn" 
+        [class.active]="activeTab === 'books'" 
+        (click)="setTab('books')">Books</button>
+
+      <button 
+        #tabBtn 
+        class="tab-btn" 
+        [class.active]="activeTab === 'categories'" 
+        (click)="setTab('categories')">Categories</button>
+
+      <button 
+        #tabBtn 
+        class="tab-btn" 
+        [class.active]="activeTab === 'files'" 
+        (click)="setTab('files')">Files & Assets</button>
+
+      <!-- Underline المتحرك -->
+      <div 
+        class="tab-underline-dynamic" 
+        [ngStyle]="{ left: underlineLeft + 'px', width: underlineWidth + 'px' }">
+      </div>
+    </div>
+
+    <!-- Tab content -->
+    <div class="tab-content" [@tabSlide]="activeTab">
+      <ng-container *ngIf="activeTab === 'books'">
+        <app-books></app-books>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'categories'">
+        <app-categories></app-categories>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'files'">
+        <app-files></app-files>
+      </ng-container>
+    </div>
+  </div>
+</div>

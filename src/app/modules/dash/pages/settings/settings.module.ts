@@ -10,11 +10,22 @@ import { MdbDropdownModule } from 'mdb-angular-ui-kit/dropdown';
 import { MdbRippleModule } from 'mdb-angular-ui-kit/ripple';
 import { SharedModule } from '../../shared/shared.module';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { LucideAngularModule, Settings, Home, Lightbulb, Workflow, Layers, MonitorSmartphone, MessageSquare, PlayCircle, Phone, Layout, Folder } from 'lucide-angular';
+import { StoreInfoComponent } from './store-info/store-info.component';
+import { PaymentsComponent } from './payments/payments.component';
+import { ShippingComponent } from './shipping/shipping.component';
+import { TaxesComponent } from './taxes/taxes.component';
+import { ConstantsComponent } from './constants/constants.component';
+import { UsersRolesComponent } from './users-roles/users-roles.component';
 
 @NgModule({
   declarations: [
     SettingsComponent,
+    StoreInfoComponent,
+    PaymentsComponent,
+    ShippingComponent,
+    TaxesComponent,
+    ConstantsComponent,
+    UsersRolesComponent,
   ],
   imports: [
     CommonModule,
@@ -31,19 +42,6 @@ import { LucideAngularModule, Settings, Home, Lightbulb, Workflow, Layers, Monit
     MdbDropdownModule,
     MdbRippleModule,
     SharedModule,
-    LucideAngularModule.pick({ 
-      Settings, 
-      Home, 
-      Lightbulb, 
-      Workflow, 
-      Layers, 
-      MonitorSmartphone, 
-      MessageSquare, 
-      PlayCircle, 
-      Phone, 
-      Layout, 
-      Folder 
-    })
   ]
 })
 export class SettingsModule { }

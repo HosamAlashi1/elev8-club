@@ -1,0 +1,98 @@
+<!-- upload-file.modal.html -->
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">Upload New File</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Drag & Drop box -->
+    <div
+      class="upload-box border rounded-3 d-flex flex-column align-items-center justify-content-center py-5 position-relative"
+      [class.drag-over]="isDragOver" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)" style="border: 2px dashed #E5E7EB !important; cursor: pointer;"
+      (click)="fileInput?.click()">
+      <!-- يغطي الصندوق ليأخذ النقر -->
+      <input #fileInput type="file" class="file-input-overlay" [attr.accept]="acceptString"
+        (change)="onFileChange($event)" />
+
+      <ng-container *ngIf="imagePreview && isImage; else placeholder">
+        <img [src]="imagePreview" alt="Preview" class="img-preview mb-3" />
+        <div class="text-muted small">{{ selectedFile?.name }} ({{ selectedFileSize }})</div>
+      </ng-container>
+
+      <ng-template #placeholder>
+        <i class="fe fe-upload mb-3" style="font-size: 36px; color: #6B7280;"></i>
+        <div class="text-muted">Drag and drop your file here</div>
+        <div class="text-muted">or</div>
+        <button type="button" class="btn btn-teal mt-2">Browse Files</button>
+      </ng-template>
+    </div>
+    <div *ngIf="submitted && f['file'].invalid" class="invalid-feedback d-block mt-1">
+      File is required and must match the selected type.
+    </div>
+
+    <!-- File Name -->
+    <div class="mt-3">
+      <label class="form-label">File Name <span class="text-danger">*</span></label>
+      <input class="form-control" formControlName="file_name" placeholder="Enter file name"
+        [ngClass]="{ 'is-invalid': submitted && f['file_name'].invalid, 'is-valid': submitted && f['file_name'].valid }" />
+      <div *ngIf="submitted && f['file_name'].invalid" class="invalid-feedback">
+        File name is required.
+      </div>
+    </div>
+
+    <!-- File Type -->
+    <div class="mt-3">
+      <label class="form-label">
+        File Type <span class="text-danger">*</span>
+      </label>
+
+      <app-modern-select formControlName="file_type" [options]="fileTypeOptions" placeholder2="File Type" size="sm"
+        (selectionChange)="onTypeChange()" [minWidth]="'140px'" [customWidth]="'100%'" 
+        [backgroundColor]="'#EFEFEF'" [textColor]="'#000000'">
+      </app-modern-select>
+
+      <div *ngIf="submitted && f['file_type'].invalid" class="invalid-feedback d-block mt-1">
+        Please choose a file type.
+      </div>
+    </div>
+
+    <!-- Linked Book -->
+    <div class="mt-3">
+      <label class="form-label">Linked Book</label>
+      
+      <app-searchable-select 
+        formControlName="book_id"
+        [options]="booksOptions"
+        placeholder="Search and select a book..."
+        [loading]="(isLoadingBooks$ | async) || false"
+        [clearable]="true"
+        displayField="title"
+        valueField="id"
+        [searchFields]="['title', 'author', 'isbn']"
+        (selectionChange)="onBookSelectionChange($event)"
+        (searchChange)="onBookSearch($event)"
+        class="book-select-container">
+      </app-searchable-select>
+      
+      <!-- <div class="form-text text-muted mt-1">
+        <small>
+          <i class="fe fe-info"></i>
+          Type at least 2 characters to search through {{ allBooksDatabase.length | number }} books
+        </small>
+      </div> -->
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-teal"
+      [disabled]="(httpService.getLoading('uploadFile') | async) || form.invalid">
+      <ng-container *ngIf="(httpService.getLoading('uploadFile') | async); else uploadTxt">
+        <span class="spinner-border spinner-border-sm me-2"></span> Uploading...
+      </ng-container>
+      <ng-template #uploadTxt>Upload File</ng-template>
+    </button>
+  </div>
+</form>

@@ -1,17 +1,25 @@
-<div class="card shadow-sm equal-height-card">
-    <div class="card-header fw-bold d-flex align-items-center">
-        <h4>
-            <i class="fa fa-envelope me-2"></i>
-            <span>Weekly Contact Messages</span>
-        </h4>
-    </div>
-    <div class="card-body" [style.height]="'calc(100dvh - 343px)'">
-        <apx-chart [series]="chartOptionsWeeklySubscribers.series" [chart]="chartOptionsWeeklySubscribers.chart"
-            [xaxis]="chartOptionsWeeklySubscribers.xaxis" [dataLabels]="chartOptionsWeeklySubscribers.dataLabels"
-            [stroke]="chartOptionsWeeklySubscribers.stroke" [colors]="chartOptionsWeeklySubscribers.colors"
-            [tooltip]="chartOptionsWeeklySubscribers.tooltip" [fill]="chartOptionsWeeklySubscribers.fill"
-            [legend]="chartOptionsWeeklySubscribers.legend">
-        </apx-chart>
+<div class="card shadow-sm equal-height-card" data-aos="fade-up" data-aos-duration="700">
+  <div class="card-header fw-bold d-flex align-items-center justify-content-between" 
+       data-aos="fade-down" data-aos-duration="600">
+    <h4 class="m-0">
+      <span class="fw-bold">Revenue Overview</span>
+    </h4>
+    <select class="form-select form-select-sm" style="width:auto;">
+      <option>Last 6 months</option>
+      <option>Last 12 months</option>
+    </select>
+  </div>
 
+  <div class="card-body p-3 chart-container" style="height: 400px;">
+    <div class="chart-wrapper" 
+         data-aos="zoom-in" data-aos-duration="800"
+         [@chartAnimation] [@chartUpdate]="animationState">
+      <apx-chart [series]="chartOptionsRevenue.series" [chart]="chartOptionsRevenue.chart"
+                 [xaxis]="chartOptionsRevenue.xaxis" [dataLabels]="chartOptionsRevenue.dataLabels"
+                 [stroke]="chartOptionsRevenue.stroke" [colors]="chartOptionsRevenue.colors"
+                 [tooltip]="chartOptionsRevenue.tooltip" [markers]="chartOptionsRevenue.markers"
+                 [legend]="chartOptionsRevenue.legend" [responsive]="chartOptionsRevenue.responsive">
+      </apx-chart>
     </div>
+  </div>
 </div>

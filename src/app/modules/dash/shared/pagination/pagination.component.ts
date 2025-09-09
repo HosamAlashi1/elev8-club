@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -6,43 +6,53 @@ import { Observable } from 'rxjs';
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.css']
 })
-export class PaginationComponent implements OnChanges {
+export class PaginationComponent implements OnInit, OnChanges {
   @Input() isLoading$: Observable<boolean>;
-  @Input() totalRecords: number = 0;
-  @Input() disabled: boolean = false;
-  @Input() size: number = 10;
-  @Output() pageChange: EventEmitter<number> = new EventEmitter<number>();
+  @Input() totalRecords = 0;
+  @Input() disabled = false;
+  @Input() size = 10;
+  @Output() pageChange = new EventEmitter<number>();
 
-  currentPage: number = 1;
-  totalPages: number = 1;
-  maxVisiblePages = 3;
+  currentPage = 1;
+  totalPages = 1;
+
+  // يتغير حسب حجم الشاشة
+  maxVisiblePages = 7;
+  isMobile = false;
+
+  ngOnInit(): void {
+    this.updateResponsive();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.updateResponsive();
+  }
+
+  private updateResponsive() {
+    this.isMobile = window.innerWidth <= 768;
+    this.maxVisiblePages = this.isMobile ? 3 : 7;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.totalPages = Math.ceil(this.totalRecords / this.size);
-    this.currentPage = Math.min(this.currentPage, this.totalPages || 1);
+    this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.size));
+    this.currentPage = Math.min(this.currentPage, this.totalPages);
   }
 
   get pages(): number[] {
     const pages: number[] = [];
-    if (this.totalPages <= this.maxVisiblePages) {
-      for (let i = 1; i <= this.totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const half = Math.floor(this.maxVisiblePages / 2);
-      let start = Math.max(this.currentPage - half, 1);
-      let end = start + this.maxVisiblePages - 1;
+    const max = Math.min(this.maxVisiblePages, this.totalPages);
 
-      if (end > this.totalPages) {
-        end = this.totalPages;
-        start = Math.max(end - this.maxVisiblePages + 1, 1);
-      }
+    // نافذة متحركة حول الصفحة الحالية
+    const half = Math.floor(max / 2);
+    let start = Math.max(this.currentPage - half, 1);
+    let end = start + max - 1;
 
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
+    if (end > this.totalPages) {
+      end = this.totalPages;
+      start = Math.max(end - max + 1, 1);
     }
-
+    for (let i = start; i <= end; i++) pages.push(i);
     return pages;
   }
 
@@ -52,11 +62,6 @@ export class PaginationComponent implements OnChanges {
     this.pageChange.emit(this.currentPage);
   }
 
-  isFirstPage(): boolean {
-    return this.currentPage === 1;
-  }
-
-  isLastPage(): boolean {
-    return this.currentPage === this.totalPages;
-  }
+  isFirstPage(): boolean { return this.currentPage === 1; }
+  isLastPage(): boolean { return this.currentPage === this.totalPages; }
 }

@@ -1,64 +1,90 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-line-chart',
   templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css']
+  styleUrls: ['./line-chart.component.css'],
+  animations: [
+    trigger('chartAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('600ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('chartUpdate', [
+      transition('* => *', [
+        style({ opacity: 0.7, transform: 'scale(0.98)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+      ])
+    ])
+  ]
 })
-export class LineChartComponent implements OnChanges {
-  @Input() subscribersData: { date: string; day: string; count: number }[] = []; // Now used for contact messages data
-  chartOptionsWeeklySubscribers: any;
-
-  last7Days: string[] = [];
+export class LineChartComponent implements OnInit, OnChanges {
+  @Input() revenueData: { month: string; sales: number }[] = [];
+  chartOptionsRevenue: any;
+  showChart: boolean = true;
+  animationState: string = 'initial';
 
   constructor() {
-    this.last7Days = this.getLast7Days();
+    // تحميل الداتا الابتدائية مباشرة
+    this.loadInitialData();
+  }
 
-    this.chartOptionsWeeklySubscribers = this.buildChart(this.last7Days, Array(7).fill(0));
+  ngOnInit() {
+    // لا حاجة لشيء هنا
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['subscribersData'] && this.subscribersData?.length > 0) {
-      const categories = this.subscribersData.map(x => this.formatDateLabel(x.date));
-      const data = this.subscribersData.map(x => x.count);
-      this.chartOptionsWeeklySubscribers = this.buildChart(categories, data);
+    if (changes['revenueData'] && this.revenueData?.length > 0) {
+      // تشغيل أنيميشن التحديث
+      this.animationState = 'updated-' + Date.now();
+      
+      const categories = this.revenueData.map(x => x.month);
+      const data = this.revenueData.map(x => x.sales);
+      this.chartOptionsRevenue = this.buildChart(categories, data);
     }
   }
 
-  getLast7Days(): string[] {
-    const dates: string[] = [];
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      dates.push(this.formatDateLabel(d.toISOString()));
+  loadInitialData() {
+    // داتا ابتدائية لآخر 6 شهور بصفر revenue
+    const initialData = this.generateLastSixMonthsData(0);
+
+    const categories = initialData.map(x => x.month);
+    const data = initialData.map(x => x.sales);
+    this.chartOptionsRevenue = this.buildChart(categories, data);
+  }
+
+  // توليد داتا لآخر 6 شهور
+  generateLastSixMonthsData(defaultSales: number = 0): { month: string; sales: number }[] {
+    const currentDate = new Date();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const data: { month: string; sales: number }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthName = monthNames[date.getMonth()];
+      data.push({ month: monthName, sales: defaultSales });
     }
-    return dates;
+    
+    return data;
   }
-
-
-  formatDateLabel(dateStr: string): string {
-    const date = new Date(dateStr);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = date.toLocaleString('default', { month: 'short' }); // Jul
-    return `${day} ${month}`;
-  }
-
 
   buildChart(categories: string[], data: number[]) {
-    console.log(data);
-
     return {
       series: [
         {
-          name: 'Contact Messages',
+          name: 'Revenue',
           data
         }
       ],
       chart: {
         type: 'line',
-        height: window.innerHeight - 405,
+        height: 350,
+        width: '100%',
         zoom: { enabled: false },
+        toolbar: { show: false },
+        parentHeightOffset: 0,
         animations: {
           enabled: true,
           easing: 'easeinout',
@@ -69,47 +95,88 @@ export class LineChartComponent implements OnChanges {
           },
           dynamicAnimation: {
             enabled: true,
-            speed: 800
+            speed: 350
           }
         }
       },
+      responsive: [
+        {
+          breakpoint: 768,
+          options: {
+            chart: {
+              height: 250
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        },
+        {
+          breakpoint: 576,
+          options: {
+            chart: {
+              height: 200
+            },
+            xaxis: {
+              labels: {
+                style: {
+                  fontSize: '11px'
+                }
+              }
+            }
+          }
+        }
+      ],
       xaxis: {
         categories,
         labels: {
           style: {
             fontSize: '13px',
-            colors: Array(categories.length).fill('#666')
+            colors: Array(categories.length).fill('#6b7280')
           }
         }
       },
-      dataLabels: {
-        enabled: false
+      yaxis: {
+        labels: {
+          style: {
+            colors: ['#6b7280']
+          },
+          formatter: function (value: number) {
+            return '$' + (value / 1000).toFixed(0) + 'k';
+          }
+        }
       },
+      dataLabels: { enabled: false },
       stroke: {
         curve: 'smooth',
         width: 3
       },
-      colors: ['#A82EF0'],
-      tooltip: {
-        enabled: true
-      },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'vertical',
-          shadeIntensity: 0.5,
-          gradientToColors: ['#A82EDE'],
-          opacityFrom: 0.9,
-          opacityTo: 0.2,
-          stops: [0, 90, 100]
+      colors: ['#5BBDB7'],
+      markers: {
+        size: 5,
+        colors: ['#fff'],
+        strokeColors: '#5BBDB7',
+        strokeWidth: 2,
+        hover: {
+          size: 7
         }
       },
-      plotOptions: {
-        bar: {} // dummy
+      tooltip: { 
+        enabled: true,
+        y: {
+          formatter: function (value: number) {
+            return '$' + value.toLocaleString();
+          }
+        }
       },
       legend: {
-        show: false
+        show: true,
+        position: 'bottom',
+        labels: { colors: '#5BBDB7' }
+      },
+      grid: {
+        borderColor: '#f0f0f0',
+        strokeDashArray: 3
       }
     };
   }

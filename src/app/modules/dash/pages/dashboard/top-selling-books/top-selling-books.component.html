@@ -1,0 +1,58 @@
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm" data-aos="fade-up" data-aos-duration="700">
+      <div class="card-header fw-bolder fs-3" data-aos="fade-down" data-aos-duration="600">
+        Top Selling Books
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-lg-3 col-md-6" *ngFor="let book of topSellingBooks; let i = index">
+            <div class="book-card p-3 shadow-sm rounded-3 h-100"
+                 data-aos="fade-up"
+                 [attr.data-aos-delay]="i * 100"
+                 data-aos-duration="700">
+              <img [src]="book.img" 
+                   class="img-fluid rounded-3 mb-3" 
+                   [alt]="book.title"
+                   (error)="onImageError($event)">
+              <h6 class="fw-bold mb-2 book-title">{{ book.title }}</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted">
+                  <i class="fe fe-trending-up me-1"></i>
+                  {{ book.sold | number }} sold
+                </small>
+                <small class="text-muted">
+                  <i class="fe fe-target me-1"></i>
+                  {{ book.target | number }} target
+                </small>
+              </div>
+              <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar progress-bar-animated" 
+                     role="progressbar"
+                     [style.width.%]="getProgressPercentage(book.sold, book.target)"
+                     [style.background-color]="getProgressColor(book.sold, book.target)"
+                     [attr.aria-valuenow]="getProgressPercentage(book.sold, book.target)"
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="progress-text fw-semibold" 
+                       [style.color]="getProgressColor(book.sold, book.target)">
+                  {{ getProgressPercentage(book.sold, book.target) | number:'1.0-1' }}% completed
+                </small>
+                <span class="badge badge-performance" 
+                      [style.background-color]="getProgressColor(book.sold, book.target) + '20'"
+                      [style.color]="getProgressColor(book.sold, book.target)">
+                  {{ getProgressPercentage(book.sold, book.target) >= 90 ? 'Excellent' : 
+                     getProgressPercentage(book.sold, book.target) >= 70 ? 'Good' : 
+                     getProgressPercentage(book.sold, book.target) >= 50 ? 'Average' : 'Low' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

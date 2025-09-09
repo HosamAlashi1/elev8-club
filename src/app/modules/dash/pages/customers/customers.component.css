@@ -1,0 +1,11 @@
+.customer-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.customer-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}

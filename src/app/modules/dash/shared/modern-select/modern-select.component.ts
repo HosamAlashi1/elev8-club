@@ -62,6 +62,14 @@ export class ModernSelectComponent implements OnInit, ControlValueAccessor {
   @Input() clearable: boolean = false;
   @Input() searchable: boolean = false;
   @Input() minWidth: string = '160px';
+  
+  // خصائص التخصيص الجديدة
+  @Input() customWidth?: string;
+  @Input() backgroundColor?: string = '#EFEFEF'; // الخلفية الافتراضية
+  @Input() textColor?: string = '#64748B'; // لون النص الافتراضي
+  @Input() borderColor?: string = '#d1d5db'; // لون الحد الافتراضي
+  @Input() hoverBorderColor?: string = '#adb5bd'; // لون الحد عند الـ hover
+  @Input() focusBorderColor?: string = '#6c757d'; // لون الحد عند الـ focus
 
   @Output() selectionChange = new EventEmitter<any>();
 
@@ -123,6 +131,18 @@ export class ModernSelectComponent implements OnInit, ControlValueAccessor {
            !label.includes('جميع') && 
            !label.startsWith('all') &&
            !label.startsWith('كل');
+  }
+
+  // دالة للحصول على الستايلات المخصصة
+  get customStyles(): any {
+    return {
+      '--select-bg-color': this.backgroundColor,
+      '--select-text-color': this.textColor,
+      '--select-border-color': this.borderColor,
+      '--hover-border-color': this.hoverBorderColor,
+      '--focus-border-color': this.focusBorderColor,
+      'width': this.customWidth || 'auto'
+    };
   }
 
   toggleDropdown(event?: Event) {

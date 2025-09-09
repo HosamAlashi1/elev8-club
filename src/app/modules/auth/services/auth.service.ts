@@ -28,7 +28,7 @@ export class AuthService {
         next: (res: any) => {
           if (res?.status === true && res?.data?.token) {
             // Save user and token in localStorage
-            localStorage.setItem('EDKD-data', JSON.stringify({
+            localStorage.setItem('Dorrance-data', JSON.stringify({
               user: res.data.user,
               token: res.data.token
             }));
@@ -66,12 +66,12 @@ export class AuthService {
     this.http.post(`${API_BASE_URL}/logout`, {}).subscribe({
       next: () => {
         
-        localStorage.removeItem('EDKD-data');
+        localStorage.removeItem('Dorrance-data');
         this.router.navigate(['/auth/login']);
       },
       error: () => {
         
-        localStorage.removeItem('EDKD-data');
+        localStorage.removeItem('Dorrance-data');
         this.router.navigate(['/auth/login']);
       }
     });

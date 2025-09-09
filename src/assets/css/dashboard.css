@@ -1,0 +1,548 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+
+/* Prevent annoying scroll when dropdowns are open */
+body.dropdown-open {
+  overflow-anchor: none;
+}
+
+.page-item {
+  cursor: pointer;
+}
+
+.header-title,
+.nav-tabs .nav-overflow {
+  white-space: nowrap;
+}
+
+
+.black-menu {
+  color: #00000080;
+  padding: 7px;
+  font-size: 20px;
+  border-radius: 50%;
+}
+
+.black-menu:hover {
+  cursor: pointer;
+  color: #000;
+  transition: background-color 0.5s ease;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.dropdown-menu {
+  padding: 8px;
+  border-radius: 0.5rem;
+  border: none;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1050 !important;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.dropdown-item {
+  border-radius: 6px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+  background-color: rgba(62, 164, 228, 0.2);
+  border-radius: 6px;
+}
+
+/* @font-face {
+  font-family: 'CoconFont';
+  src: url('../fonts/cocon_next_arabic_light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+} */
+
+.main-layout {
+  height: 100vh;
+  /* أو 100dvh للأجهزة الحديثة */
+  display: flex;
+  overflow: hidden;
+}
+
+.sidebar {
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.main-content-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow:hidden;
+}
+
+.main-content {
+  width: 100%;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* لما تتسكر */
+body:not(.collapsed) .main-content {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+body.collapsed .main-content {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+body.sidebar-transition .equal-height-col,
+body.sidebar-transition .equal-height-card {
+  transition: all 0.4s ease-in-out;
+}
+
+
+@media (max-width: 768px) {
+  nav.sidebar {
+    height: 100vh;
+    transition: all 0.3s ease;
+  }
+
+  body.collapsed nav.sidebar {
+    position: relative;
+    transform: none !important;
+    z-index: auto;
+    height: 100%;
+  }
+
+
+  body:not(.collapsed) nav.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    z-index: 1050;
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    overflow: scroll;
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  nav.sidebar {
+    height: 100vh !important;
+    /* ثبات كامل */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    overflow-y: auto;
+    /* لو زاد طوله */
+    background-color: #fff;
+  }
+
+  .main-content-wrapper {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-content {
+    padding-bottom: 27px !important;
+  }
+
+}
+
+.main-content {
+  padding-bottom: 32px !important;
+}
+
+
+/* Smooth transitions for form steps */
+.card {
+  scroll-behavior: smooth;
+}
+
+/* Better form field spacing to prevent jumpiness */
+.form-control, .form-select, .searchable-select {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Prevent layout shift when validation messages appear */
+.invalid-feedback {
+  min-height: 1.25rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.main-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #999595;
+  padding: 12px 20px;
+  font-size: 14px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+body:not(.collapsed) .main-footer {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+body.collapsed .main-footer {
+  margin-left: 80px;
+  width: calc(100% - 60px);
+}
+
+@media (max-width: 768px) {
+  .main-footer {
+    width: 100% !important;
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* app.component.css */
+.main-wrapper {
+  position: relative;
+  overflow-x: hidden;
+}
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.custom-switch-pink .form-check-input:checked {
+  background-color: #5BBDB7;
+  border-color: #5BBDB7;
+}
+
+/* Ensure dropdown selects always appear above Google Maps and other content */
+.searchable-select .dropdown-menu.show,
+.location-select-container .dropdown-menu.show {
+  z-index: 10000 !important;
+  position: absolute !important;
+}
+
+/* Additional mobile support for dropdowns */
+@media (max-width: 768px) {
+  .searchable-select .dropdown-menu.show,
+  .location-select-container .dropdown-menu.show {
+    z-index: 10001 !important;
+  }
+}
+
+/* ===== HEADER ===== */
+.main-header {
+  height: 64px;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  position: fixed; /* نخليه ثابت فوق */
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* الوضع الطبيعي لما السايدبار مفتوح */
+body:not(.collapsed) .main-header {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+/* لما السايدبار مسكر */
+body.collapsed .main-header {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+/* في الموبايل الهيدر ياخد العرض كامل */
+@media (max-width: 768px) {
+  .main-header {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+.search-box {
+  max-width: 320px;
+}
+
+.search-input {
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.icon-btn {
+  font-size: 20px;
+  color: #4b5563;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(91, 189, 183, 0.1);
+  color: #5BBDB7;
+}
+
+.dropdown-toggle::after {
+  margin-left: .4rem;
+}
+/* شكل الـ checkbox */
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* عند التحديد */
+.form-check-input:checked {
+  background-color: #5BBDB7; /* الخلفية */
+  border-color: #5bbdb623;     /* الإطار */
+  box-shadow: 0 0 4px #5bbdb685;
+}
+
+/* عند التركيز */
+.form-check-input:focus {
+  outline: none;
+  box-shadow: 0 0 4px #5bbdb685;
+}
+
+/* Card feel */
+.card {
+    border: 1px solid #e6eef3;
+    border-radius: 12px;
+}
+
+/* Toolbar */
+.search-wrap {
+    min-width: 260px;
+}
+
+.search-wrap .fe.fe-search {
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.search-wrap .form-control {
+    height: 38px;
+}
+
+/* Table header */
+.table thead th {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid #e6eef3 !important;
+    background: #f8fafc;
+}
+
+/* Rows */
+.table tbody td {
+    vertical-align: middle;
+    padding: 14px 16px;
+}
+
+/* Cover image */
+.cover {
+    width: 48px;
+    height: 64px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Title cell */
+.title-cell .fw-semibold {
+    color: #111827;
+}
+
+/* Status pills */
+.pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pill-success {
+    background: #DCFCE7;
+    color: #10B981;
+}
+
+.pill-secondary {
+    background: #E5E7EB;
+    color: #64748B;
+}
+
+/* Utilities */
+.minw-150 {
+    min-width: 150px;
+}
+
+/* Hover */
+.table tbody tr:hover {
+    background-color: #fbfdff;
+}
+
+/* Footer */
+.card-footer {
+    background: transparent;
+    border-top: 1px solid #e6eef3;
+}
+
+/* Little tweak for dropdown caret trigger */
+.black-menu {
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.black-menu:hover {
+    color: #111827;
+}
+
+/* Unified control style for search, bulk, filter */
+.btn-control,
+.search-wrap .form-control {
+    height: 38px;
+    min-width: 140px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #374151;
+}
+
+.btn-control:hover {
+    background: #f9fafb;
+    color: #111827;
+}
+
+/* Search icon */
+.search-wrap {
+    position: relative;
+}
+
+.search-wrap .fe.fe-search {
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.search-wrap .form-control {
+    padding-left: 36px;
+}
+
+/* Custom add button */
+.btn-custom {
+    background: #5bbdb7;
+    color: #fff;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-custom:hover {
+    background: #189585;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    /* نص رمادي غامق */
+    background: #f9fafb;
+    /* خلفية فاتحة */
+    border: 1px solid #e5e7eb;
+    /* حدود خفيفة */
+    border-radius: 6px;
+    /* حواف ناعمة */
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.btn-action:disabled,
+.btn-action[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+.btn-action-bulk {
+    background-color: #EFEFEF;
+    color: #64748B;
+}
+
+.btn-action-filter{
+    color: #64748B;
+}

@@ -1,0 +1,44 @@
+<div class="modal-header border-0 pb-0">
+  <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body preview-wrap">
+  <!-- الصورة: 452 × 552 -->
+  <div class="preview-left">
+    <img
+      [src]="file.thumbnail"
+      alt="Preview Image"
+      width="452"
+      height="552"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- لوحة التفاصيل -->
+  <div class="preview-right">
+    <h2 class="modal-title mb-4">Preview</h2>
+    <ul class="list-unstyled mb-4">
+      <li class="pair">
+        <div class="label">File Name</div>
+        <div class="value">{{ file.title }}</div>
+      </li>
+      <li class="pair">
+        <div class="label">File Type</div>
+        <div class="value">{{ file.type | titlecase }}</div>
+      </li>
+      <li class="pair">
+        <div class="label">Size</div>
+        <div class="value">{{ file.sizeMB }} MB</div>
+      </li>
+      <li class="pair">
+        <div class="label">Upload Date</div>
+        <div class="value">{{ file.date | date:'MMM d, y' }}</div>
+      </li>
+    </ul>
+
+    <div class="btns">
+      <a [href]="file.thumbnail" download class="btn btn-custom">Download</a>
+      <button type="button" class="btn btn-outline-secondary" (click)="replaceFile()">Replace</button>
+    </div>
+  </div>
+</div>

@@ -68,12 +68,12 @@ export class AppComponent implements OnInit {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/auth/') || event.urlAfterRedirects.startsWith('/error')) {
-          this.loadCSS('/assets/css/custom.css');
+          this.loadCSS('/assets/css/dashboard.css');
           this.loadCSS('/assets/css/theme.bundle.css');
           this.removeCSS('/assets/css/landingPage.css');
         } else {
           this.loadCSS('/assets/css/landingPage.css');
-          this.removeCSS('/assets/css/custom.css');
+          this.removeCSS('/assets/css/dashboard.css');
           this.removeCSS('/assets/css/theme.bundle.css');
         }
       });
