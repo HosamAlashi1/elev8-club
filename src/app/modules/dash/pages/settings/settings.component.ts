@@ -8,12 +8,12 @@ import { trigger, transition, style, animate, query, group } from '@angular/anim
   animations: [
     trigger('tabSlide', [
       transition('* => *', [
-        query(':enter, :leave', style({ position: 'absolute', width: '100%' }), { optional: true }),
+        // query(':enter, :leave', style({ position: 'absolute', width: '100%' }), { optional: true }),
 
         group([
-          query(':leave', [
-            animate('300ms ease', style({ transform: 'translateX(-100%)', opacity: 0 }))
-          ], { optional: true }),
+          // query(':leave', [
+          //   animate('300ms ease', style({ transform: 'translateX(-100%)', opacity: 0 }))
+          // ], { optional: true }),
 
           query(':enter', [
             style({ transform: 'translateX(100%)', opacity: 0 }),

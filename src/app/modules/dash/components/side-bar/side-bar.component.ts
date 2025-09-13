@@ -21,12 +21,48 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private countUpdateInterval: any;
 
   menu: any[] = [
-    { label: 'Dashboard', icon: 'home', route: '/dashboard' },
-    { label: 'Catalog', icon: 'package', route: '/dashboard/catalog' },
-    { label: 'Orders', icon: 'shopping-cart', route: '/dashboard/orders' },
-    { label: 'Customers', icon: 'users', route: '/dashboard/customers' },
-    { label: 'Reports', icon: 'bar-chart-2', route: '/dashboard/reports' },
-    { label: 'Settings', icon: 'settings', route: '/dashboard/settings' }
+    {
+      label: 'Dashboard',
+      icon: 'home',
+      route: '/dashboard',
+      permissions: [] // الداشبورد مفتوحة لأي مستخدم عامل لوج إن
+    },
+    {
+      label: 'Admins',
+      icon: 'user-cog',
+      route: '/dashboard/admins',
+      permissions: ['VIEW_ADMINS']
+    },
+    {
+      label: 'Catalog',
+      icon: 'package',
+      route: '/dashboard/catalog',
+      permissions: ['VIEW_BOOKS', 'VIEW_CATEGORIES'] // لازم واحدة منهم على الأقل
+    },
+    {
+      label: 'Orders',
+      icon: 'shopping-cart',
+      route: '/dashboard/orders',
+      permissions: ['VIEW_ORDERS']
+    },
+    {
+      label: 'Users',
+      icon: 'users',
+      route: '/dashboard/users',
+      permissions: ['VIEW_USERS']
+    },
+    {
+      label: 'Reports',
+      icon: 'bar-chart-2',
+      route: '/dashboard/reports',
+      permissions: ['MANAGE_LOGS']
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      route: '/dashboard/settings',
+      permissions: ['MANAGE_ROLES']
+    }
   ];
 
   constructor(

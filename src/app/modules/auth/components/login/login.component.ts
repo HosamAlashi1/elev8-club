@@ -3,6 +3,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastrsService } from '../../../services/toater.service';
+import { environment } from 'src/environments/environment';
+import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-login',
@@ -53,22 +55,32 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(email, password).subscribe({
         next: (res: any) => {
-          if (res?.status === true && res?.data?.token) {
-            // Save user and token in localStorage
-            localStorage.setItem('Dorrance-data', JSON.stringify({
-              user: res.data.user,
-              token: res.data.token
-            }));
+          if (res?.success === true && res?.data?.access_token) {
+            // Prepare data
+            const payload = {
+              user: res.data.data,
+              token: res.data.access_token,
+              permissions: res.data.permissions
+            };
+
+            // Encrypt before saving
+            const encrypted = CryptoJS.AES.encrypt(
+              JSON.stringify(payload),
+              environment.cryptoKey
+            ).toString();
+
+            localStorage.setItem(`${environment.prefix}-data`, encrypted);
+
             this.router.navigate(['/dashboard']);
           } else {
-            this.showMsg(false, res?.message ?? 'Login failed');
+            this.showMsg(false, res?.msg ?? 'Login failed');
           }
         },
         error: (err: any) => {
           if (err.status === 422) {
             this.showMsg(false, 'The credentials you entered are incorrect.');
-          } else if (err?.error?.message) {
-            this.showMsg(false, err.error.message);
+          } else if (err?.error?.msg) {
+            this.showMsg(false, err.error.msg);
           } else {
             this.showMsg(false, 'Something went wrong. Please try again.');
           }
@@ -76,6 +88,5 @@ export class LoginComponent implements OnInit {
       });
     }
   }
-
 
 }

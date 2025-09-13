@@ -12,24 +12,38 @@ import { ToastrsService } from '../../../../../services/toater.service';
 })
 export class AddEditCategoryComponent implements OnInit {
 
-  @Input() category: any;
-  form: FormGroup;
+  @Input() category: any; // لو جاي تعديل
+  form!: FormGroup;
   submitted = false;
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   isDragOver = false;
 
+  get isEdit(): boolean {
+    return !!this.category?.id;
+  }
+
   constructor(
     public activeModal: NgbActiveModal,
     public httpService: HttpService,
     private api: ApiService,
-    private toastrsService: ToastrsService
+    private toastr: ToastrsService
   ) { }
 
   ngOnInit() {
     this.initForm();
-    if (this.category?.icon) {
-      this.imagePreview = this.category.icon;
+
+    if (this.isEdit) {
+      this.httpService.listGet(this.api.categories.details(this.category.id), 'category-details').subscribe({
+        next: (res: any) => {
+          if (res?.success && res?.data) {
+            this.patchForm(res.data);
+          } else {
+            this.toastr.showError(res?.msg || 'Failed to load category');
+          }
+        },
+        error: () => this.toastr.showError('Failed to load category')
+      });
     }
   }
 
@@ -39,83 +53,81 @@ export class AddEditCategoryComponent implements OnInit {
 
   initForm() {
     this.form = new FormGroup({
-      name: new FormControl(this.category?.name || '', Validators.required),
-      description: new FormControl(this.category?.description || '', Validators.required),
-      icon: new FormControl(null, this.category ? [] : [Validators.required]),
-      status: new FormControl(this.category ? this.category.status === 'active' : true)
+      name: new FormControl(this.category?.name || '', [Validators.required, Validators.maxLength(190)]),
+      description: new FormControl(this.category?.description || '', [Validators.required]),
+      file: new FormControl(null, this.isEdit ? [] : [Validators.required]) // مطلوب فقط عند الإضافة
     });
+  }
+
+  patchForm(cat: any) {
+    this.form.patchValue({
+      name: cat.name || '',
+      description: cat.description || '',
+      file: null
+    });
+    if (cat.image) {
+      this.imagePreview = cat.image;
+    }
   }
 
   submit() {
     this.submitted = true;
-    if (this.form.valid) {
-      const formData = new FormData();
-      formData.append('name', this.form.value.name.trim());
-      formData.append('description', this.form.value.description.trim());
-      formData.append('status', this.form.value.status ? 'active' : 'inactive');
+    if (this.form.invalid) return;
 
-      if (this.selectedFile) {
-        formData.append('icon', this.selectedFile);
-      }
+    const formData = new FormData();
+    formData.append('name', String(this.form.value.name).trim());
+    formData.append('description', String(this.form.value.description).trim());
 
-      // const url = this.category ? this.api.categories.edit(this.category.id) : this.api.categories.add;
-      // this.httpService.action(url, formData, 'addEditCategory').subscribe({
-      //   next: (res: any) => {
-      //     if (res.status) {
-      //       this.toastrsService.showSuccess(res.message || 'Category saved successfully');
-      //       this.activeModal.close(true);
-      //     } else {
-      //       this.toastrsService.showError(res.message || 'Operation failed');
-      //     }
-      //   },
-      //   error: (error: any) => {
-      //     console.error('Error:', error);
-      //     const errorMessage = error?.error?.message || error?.message || 'Operation failed';
-      //     this.toastrsService.showError(errorMessage);
-      //   }
-      // });
-      this.activeModal.close(true);
-
+    if (this.selectedFile) {
+      formData.append('file', this.selectedFile);
     }
+
+    const url = this.isEdit
+      ? this.api.categories.edit(this.category.id)
+      : this.api.categories.add;
+
+    this.httpService.action(url, formData, 'addEditCategory').subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          this.toastr.showSuccess(res?.msg || 'Category saved successfully');
+          this.activeModal.close(true);
+        } else {
+          this.toastr.showError(res?.msg || 'Operation failed');
+        }
+      },
+      error: (error: any) => {
+        const msg = error?.error?.msg || error?.message || 'Operation failed';
+        this.toastr.showError(msg);
+      }
+    });
   }
 
-
+  // 📂 File Handling
   onDragOver(event: DragEvent) {
     event.preventDefault();
     this.isDragOver = true;
   }
-
   onDragLeave(event: DragEvent) {
     event.preventDefault();
     this.isDragOver = false;
   }
-
   onDrop(event: DragEvent) {
     event.preventDefault();
     this.isDragOver = false;
-
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      const file = event.dataTransfer.files[0];
-      this.handleFile(file);
+    if (event.dataTransfer?.files?.length) {
+      this.handleFile(event.dataTransfer.files[0]);
     }
   }
-
   onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.handleFile(file);
-    }
+    const file = event.target.files?.[0];
+    if (file) this.handleFile(file);
   }
 
   private handleFile(file: File) {
     this.selectedFile = file;
-    this.form.patchValue({ icon: file });
-
+    this.form.patchValue({ file });
     const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.imagePreview = e.target.result;
-    };
+    reader.onload = (e: any) => (this.imagePreview = e.target.result);
     reader.readAsDataURL(file);
   }
-
 }

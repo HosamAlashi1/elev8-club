@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
     AOS.init({
       duration: 800,
       once: true,
-      offset: 100,                     // أخّر التريغر شوي
+      offset: 0,                     // أخّر التريغر شوي
       anchorPlacement: 'top-center',   // أدقّ من الافتراضي
       startEvent: 'load',              // بعد ما يجهز كلشي
       mirror: false

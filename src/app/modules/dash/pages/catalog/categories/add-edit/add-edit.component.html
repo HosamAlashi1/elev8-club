@@ -1,6 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="modal-header">
-    <h4 class="modal-title">{{ category ? 'Edit Category' : 'Add New Category' }}</h4>
+    <h4 class="modal-title">{{ isEdit ? 'Edit Category' : 'Add New Category' }}</h4>
     <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
   </div>
 
@@ -26,12 +26,12 @@
         </div>
       </div>
 
-      <!-- Category Icon -->
+      <!-- Category Image -->
       <div class="col-12 mb-3">
-        <label class="form-label">Category Icon <span class="text-danger" *ngIf="!category">*</span></label>
+        <label class="form-label">Category Image <span class="text-danger" *ngIf="!isEdit">*</span></label>
 
-
-        <div class="upload-box border rounded d-flex flex-column align-items-center justify-content-center py-4 position-relative"
+        <div
+          class="upload-box border rounded d-flex flex-column align-items-center justify-content-center py-4 position-relative"
           [class.drag-over]="isDragOver" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
           (drop)="onDrop($event)" style="border: 2px dashed #E5E7EB !important; cursor: pointer;">
           <!-- input يغطي البوكس بالكامل ويكون شفاف -->
@@ -42,38 +42,27 @@
           <ng-template #uploadPlaceholder>
             <i class="fe fe-upload mb-2" style="color: #6B7280; font-size: 34px;"></i>
             <div class="text-muted" style="color: #6B7280;">
-              Drag and drop an icon here, or click to select
+              Drag and drop an image here, or click to select
             </div>
           </ng-template>
         </div>
 
-        <div *ngIf="submitted && f['icon'].invalid" class="invalid-feedback d-block">
-          Icon is required.
+        <div *ngIf="submitted && f['file'].invalid" class="invalid-feedback d-block">
+          Image is required.
         </div>
-        <small class="text-muted" *ngIf="category">Leave empty to keep current icon</small>
-      </div>
-
-
-      <!-- Status -->
-      <div class="col-12 mb-3">
-        <label class="form-label d-block">Status</label>
-        <div class="form-check form-switch custom-switch-pink">
-          <input type="checkbox" class="form-check-input" formControlName="status" style="width: 48px; height: 24px;" />
-          <label class="form-check-label mt-1 me-1" style="color: #6B7280;">
-            {{ form.get('status')?.value ? 'Active' : 'Inactive' }}
-          </label>
-        </div>
+        <small class="text-muted" *ngIf="isEdit">Leave empty to keep current image</small>
       </div>
     </div>
   </div>
 
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
-    <button type="submit" class="btn btn-sm btn-custom" [disabled]="(httpService.getLoading('addEditUser') | async)">
-      <ng-container *ngIf="(httpService.getLoading('addEditUser') | async)">
+    <button type="submit" class="btn btn-sm btn-custom"
+      [disabled]="(httpService.getLoading('addEditCategory') | async)">
+      <ng-container *ngIf="(httpService.getLoading('addEditCategory') | async)">
         <span class="spinner-border spinner-border-sm me-2"></span> Saving...
       </ng-container>
-      <ng-container *ngIf="!(httpService.getLoading('addEditUser') | async)">
+      <ng-container *ngIf="!(httpService.getLoading('addEditCategory') | async)">
         <i class="fe fe-check me-2"></i> Save
       </ng-container>
     </button>

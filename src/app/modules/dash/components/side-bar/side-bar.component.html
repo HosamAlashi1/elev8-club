@@ -10,8 +10,11 @@
   </div>
 
   <ul class="nav flex-column">
-    <li *ngFor="let item of menu" class="nav-item mx-3 my-2"
-      [ngClass]="{ 'has-children': item.children, open: item.open }">
+    <li *ngFor="let item of menu" 
+    class="nav-item mx-3 my-2"
+    [ngClass]="{ 'has-children': item.children, open: item.open }"
+    [hidden]="!(item.permissions.length === 0 || publicService.hasAnyPermission(item.permissions))">
+
       <a class="nav-link" [routerLink]="item.children ? null : item.route" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" (click)="handleClick(item)"
         [ngClass]="{ toggleable: item.children }" [ngbTooltip]="isCollapsed ? item.label : null" container="body"
@@ -20,7 +23,6 @@
         <div class="nav-content">
           <lucide-icon [name]="item.icon"></lucide-icon>
           <span *ngIf="!isCollapsed">{{ item.label }}</span>
-          <!-- نفس شغلة العدادات -->
         </div>
       </a>
 

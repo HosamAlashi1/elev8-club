@@ -1,0 +1,37 @@
+.drag-over {
+  border-color: #5BBDB7 !important;
+  background-color: #f0fdfa;
+  /* أخضر فاتح يوحي بقبول الملف */
+}
+
+.upload-box {
+  min-height: 140px;
+  text-align: center;
+  position: relative;
+}
+
+.upload-box.drag-over {
+  border-color: #5BBDB7 !important;
+  background-color: #f0fdfa;
+  /* أخضر فاتح */
+}
+
+.file-input-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.img-preview {
+  max-height: 120px;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  z-index: 1;
+}

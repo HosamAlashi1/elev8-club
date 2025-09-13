@@ -15,7 +15,8 @@ import { PaymentsComponent } from './payments/payments.component';
 import { ShippingComponent } from './shipping/shipping.component';
 import { TaxesComponent } from './taxes/taxes.component';
 import { ConstantsComponent } from './constants/constants.component';
-import { UsersRolesComponent } from './users-roles/users-roles.component';
+import { RolesPermissionsComponent } from './roles-permissions/roles-permissions.component';
+import { AddEditRoleComponent } from './roles-permissions/add-edit/add-edit.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { UsersRolesComponent } from './users-roles/users-roles.component';
     ShippingComponent,
     TaxesComponent,
     ConstantsComponent,
-    UsersRolesComponent,
+    RolesPermissionsComponent,
+    AddEditRoleComponent
   ],
   imports: [
     CommonModule,

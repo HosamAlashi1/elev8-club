@@ -3,11 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from './modules/auth/guards/auth.guard';
 
 export const routes: Routes = [
-  // {
-  //   path: 'auth',
-  //   loadChildren: () => import('./modules/auth/auth.module').then((m) => m.AuthModule),
-  //   data: { animation: 'auth' }
-  // },
+  {
+    path: 'auth',
+    loadChildren: () => import('./modules/auth/auth.module').then((m) => m.AuthModule),
+    data: { animation: 'auth' }
+  },
   {
     path: '',
     loadChildren: () => import('./modules/landingPage/landingPage.module').then((m) => m.LandingPageModule),
@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     loadChildren: () => import('./modules/dash/dash.module').then((m) => m.DashModule),
     data: { animation: 'dashboard' }
   },

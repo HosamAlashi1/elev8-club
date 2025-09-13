@@ -1,44 +1,62 @@
-<div class="settings-container">
-  <h2 class="settings-title">Settings</h2>
+<div class="settings-container" data-aos="fade-up">
+  <h2 class="settings-title" data-aos="fade-right" data-aos-delay="100">Settings</h2>
 
-  <div class="card rounded-2 mt-4">
+  <div class="card rounded-2 mt-4" data-aos="zoom-in" data-aos-delay="200">
     <!-- Tabs -->
     <div class="tabs d-flex position-relative">
       <button
         #tabBtn
         class="tab-btn"
         [class.active]="activeTab === 'store-info'"
-        (click)="setTab('store-info')">Store Info</button>
+        (click)="setTab('store-info')"
+        data-aos="fade-up" data-aos-delay="300">
+        Store Info
+      </button>
 
       <button
         #tabBtn
         class="tab-btn"
         [class.active]="activeTab === 'payments'"
-        (click)="setTab('payments')">Payments</button>
+        (click)="setTab('payments')"
+        data-aos="fade-up" data-aos-delay="350">
+        Payments
+      </button>
 
       <button
         #tabBtn
         class="tab-btn"
         [class.active]="activeTab === 'shipping'"
-        (click)="setTab('shipping')">Shipping</button>
+        (click)="setTab('shipping')"
+        data-aos="fade-up" data-aos-delay="400">
+        Shipping
+      </button>
 
       <button
         #tabBtn
         class="tab-btn"
         [class.active]="activeTab === 'taxes'"
-        (click)="setTab('taxes')">Taxes</button>
+        (click)="setTab('taxes')"
+        data-aos="fade-up" data-aos-delay="450">
+        Taxes
+      </button>
 
       <button
         #tabBtn
         class="tab-btn"
         [class.active]="activeTab === 'constants'"
-        (click)="setTab('constants')">Constants</button>
+        (click)="setTab('constants')"
+        data-aos="fade-up" data-aos-delay="500">
+        Constants
+      </button>
 
       <button
         #tabBtn
         class="tab-btn"
-        [class.active]="activeTab === 'users-roles'"
-        (click)="setTab('users-roles')">Users & Roles</button>
+        [class.active]="activeTab === 'roles-permissions'"
+        (click)="setTab('roles-permissions')"
+        data-aos="fade-up" data-aos-delay="550">
+        Roles & permissions
+      </button>
 
       <!-- Underline المتحرك -->
       <div
@@ -48,7 +66,7 @@
     </div>
 
     <!-- Tab content -->
-    <div class="tab-content p-4" [@tabSlide]="activeTab">
+    <div class="tab-content p-4" [@tabSlide]="activeTab" data-aos="fade-in" data-aos-delay="600">
       <ng-container *ngIf="activeTab === 'store-info'">
         <app-store-info></app-store-info>
       </ng-container>
@@ -69,8 +87,8 @@
         <app-constants></app-constants>
       </ng-container>
 
-      <ng-container *ngIf="activeTab === 'users-roles'">
-        <app-users-roles></app-users-roles>
+      <ng-container *ngIf="activeTab === 'roles-permissions'">
+        <app-roles-permissions></app-roles-permissions>
       </ng-container>
     </div>
   </div>

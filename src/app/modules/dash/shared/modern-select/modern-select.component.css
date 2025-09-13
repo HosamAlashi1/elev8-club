@@ -1,204 +1,174 @@
-/* Modern Select Component Styles */
+/* 🎨 Modern Select Component - Simple & Clean */
 .modern-select-container {
   position: relative;
   display: inline-block;
   width: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Trigger Button */
+/* 🎯 Trigger Button - بسيط وحلو */
 .modern-select-trigger {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 4px 12px;
-  background: var(--select-bg-color, #EFEFEF);
-  border: 1px solid var(--select-border-color, #d1d5db);
-  border-radius: 6px;
+  padding: 8px 14px;
+  background: var(--select-bg-color, #fafbfc);
+  border: 1px solid var(--select-border-color, #e1e5e9);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.2s ease;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   outline: none;
-  min-height: 31px;
-  color: var(--select-text-color, #64748B);
+  min-height: 38px;
+  color: var(--select-text-color, #2d3436);
 }
 
 .modern-select-trigger:hover {
-  border-color: var(--hover-border-color, #adb5bd);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  background: var(--select-bg-color, #f8f9fa);
+  border-color: var(--hover-border-color, #d1d5db);
 }
 
 .modern-select-trigger:focus {
-  border-color: var(--focus-border-color, #6c757d);
-  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
+  border-color: #5BBDB7;
+  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.08);
   outline: none;
 }
 
 .modern-select-open .modern-select-trigger {
-  border-color: #5bbdb759;
-  box-shadow: 0 0 0 3px #5bbdb759
+  border-color: #5BBDB7;
+  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.08);
+  background: #fff;
 }
 
-/* إزالة الخلفية الرمادية للخيارات غير الحقيقية */
-.modern-select-trigger.has-selection:not(.has-real-value) {
-  background: #ffffff;
-  border-color: #dee2e6;
-}
-
-/* تصميم خاص عند عدم وجود أيقونة */
-.modern-select-trigger.no-icon {
-  padding-left: 12px;
-}
-
-/* Size Variants */
+/* 📏 Size Variants - مبسطة وموحدة */
 .modern-select-sm {
   min-height: 38px;
-  font-size: 0.875rem;
-  padding: 4px 12px;
-  width: 110px;
-}
-
-.modern-select-sm.no-icon {
-  padding-left: 12px;
+  font-size: 14px;
+  padding: 6px 12px;
 }
 
 .modern-select-md {
-  min-height: 44px;
-  font-size: 0.9rem;
-  padding: 10px 16px;
-}
-
-.modern-select-md.no-icon {
-  padding-left: 16px;
+  min-height: 42px;
+  font-size: 14px;
+  padding: 8px 14px;
 }
 
 .modern-select-lg {
-  min-height: 52px;
-  font-size: 1rem;
-  padding: 14px 20px;
+  min-height: 46px;
+  font-size: 15px;
+  padding: 10px 16px;
 }
 
-.modern-select-lg.no-icon {
-  padding-left: 20px;
+.modern-select-trigger.no-icon {
+  padding-left: 14px;
 }
 
-/* Icon */
+/* 🎨 Icon - بسيط ونظيف */
 .modern-select-icon {
   display: flex;
   align-items: center;
-  color: #6c757d;
-  margin-right: 8px;
-  font-size: 0.875rem;
-  transition: color 0.2s ease;
+  color: #74808b;
+  margin-right: 10px;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
-.modern-select-trigger:hover .modern-select-icon {
-  color: #495057;
-}
-
-/* Selected Text */
+/* 📝 Selected Text - مريح للعين */
 .modern-select-text {
   flex: 1;
-  color: var(--select-text-color, #000000); /* <-- بدل #212529 */
+  color: var(--select-text-color, #2d3436);
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 .modern-select-text.placeholder2 {
-  color: var(--select-text-color, #000000); /* <-- استخدم نفس المتغيّر */
-  font-weight: 500;
-  display: inline-block;
-  min-height: 1em;
-  opacity: .55; /* محتفظين بخفة بسيطة للـ placeholder */
-  vertical-align: middle;
+  color: #74808b;
+  font-weight: 400;
+  opacity: 0.85;
 }
 
-/* Clear Button */
+/* 🗑️ Clear Button - بسيط وهادئ */
 .modern-select-clear {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  margin-right: 6px;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
   background: none;
   border: none;
-  border-radius: 50%;
-  color: #6c757d;
+  border-radius: 4px;
+  color: #74808b;
   cursor: pointer;
-  transition: all 0.2s ease;
-  opacity: 0.8;
+  transition: color 0.15s ease;
+  opacity: 0.7;
 }
 
 .modern-select-clear:hover {
-  background: #f8f9fa;
-  color: #495057;
+  color: #e74c3c;
   opacity: 1;
-  transform: scale(1.1);
 }
 
-/* Chevron */
+/* 🔽 Chevron - ناعم ومريح */
 .modern-select-chevron {
   display: flex;
   align-items: center;
-  color: #6c757d;
-  margin-left: 6px;
-  font-size: 0.75rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: #74808b;
+  margin-left: 8px;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  opacity: 0.8;
 }
 
-.modern-select-trigger:hover .modern-select-chevron {
-  color: #495057;
-}
-
-/* Dropdown */
+/* 📋 Dropdown - نظيف وأنيق */
 .modern-select-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   z-index: 1050;
-  margin-top: 8px;
+  margin-top: 6px;
   background: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e1e5e9;
+  border-radius: 10px;
+  box-shadow: 
+    0 4px 25px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  max-height: 190px;
+  max-height: 220px;
 }
 
 .modern-select-dropdown-content {
-  max-height: 235px;
+  max-height: 220px;
   overflow-y: auto;
 }
 
-/* Search Container */
+/* 🔍 Search Container - هادئ وبسيط */
 .modern-select-search-container {
   position: relative;
-  padding: 12px;
-  border-bottom: 1px solid #f1f3f4;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f3f6;
   background: #fafbfc;
 }
 
 .modern-select-search {
   width: 100%;
-  padding: 8px 36px 8px 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  padding: 8px 35px 8px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
   background: #ffffff;
+  color: #2d3436;
 }
 
 .modern-select-search:focus {
-  border-color: #6c757d;
-  box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.1);
+  border-color: #5BBDB7;
   outline: none;
 }
 
@@ -207,41 +177,43 @@
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6c757d;
-  font-size: 0.875rem;
+  color: #74808b;
+  font-size: 13px;
+  opacity: 0.7;
 }
 
-/* Options */
+/* 📝 Options - بساطة وسلاسة */
 .modern-select-options {
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .modern-select-option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  color: #212529;
+  padding: 10px 16px;
+  color: #2d3436;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.1s ease;
   position: relative;
   font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .modern-select-option:hover {
-  background-color: #f8f9fa;
-  color: #495057;
+  background-color: #f8fafb;
 }
 
 .modern-select-option.selected {
   background-color: transparent;
-  color: #212529;
+  color: #2d3436;
   font-weight: 400;
 }
 
-/* فقط إظهار التحديد للخيارات التي لها قيمة حقيقية وليست "All" */
+/* 🎯 إظهار التحديد للخيارات الحقيقية بس */
 .modern-select-option.selected.has-real-value {
-  background-color: #dcfce771;
+  background-color: rgba(91, 189, 183, 0.08);
   color: #5BBDB7;
   font-weight: 500;
 }
@@ -259,56 +231,45 @@
 .option-text {
   flex: 1;
   line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
+/* ✓ Check Icon - بسيط وواضح */
 .option-check {
-  color: #28a745;
-  font-size: 1rem;
-  margin-left: 12px;
-  animation: checkmark 0.3s ease-in-out;
+  color: #5BBDB7;
+  font-size: 14px;
+  margin-left: 10px;
+  opacity: 0.9;
 }
 
-@keyframes checkmark {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* No Results */
+/* 🔍 No Results - مريح ومفهوم */
 .modern-select-no-results {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
-  color: #6c757d;
-  font-size: 0.875rem;
+  padding: 20px;
+  color: #74808b;
+  font-size: 14px;
 }
 
 .modern-select-no-results i {
-  font-size: 2rem;
-  margin-bottom: 12px;
-  opacity: 0.5;
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.6;
 }
 
-/* Disabled State */
+/* 🚫 Disabled State - واضح ومفهوم */
 .modern-select-disabled .modern-select-trigger {
-  background-color: #f8f9fa;
-  color: #6c757d;
+  background-color: #f5f6f8;
+  color: #adb5bd;
   cursor: not-allowed;
-  opacity: 0.65;
-  border-color: #dee2e6;
+  opacity: 0.7;
+  border-color: #e1e5e9;
 }
 
 .modern-select-disabled .modern-select-trigger:hover {
-  border-color: #dee2e6;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-  transform: none;
+  background-color: #f5f6f8;
+  border-color: #e1e5e9;
 }
 
 /* Responsive Design */
@@ -328,55 +289,25 @@
   }
 }
 
-/* Custom Scrollbar */
+/* 📜 Custom Scrollbar - نظيف وبسيط */
 .modern-select-dropdown-content::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .modern-select-dropdown-content::-webkit-scrollbar-track {
-  background: #f1f3f4;
-  border-radius: 4px;
+  background: transparent;
 }
 
 .modern-select-dropdown-content::-webkit-scrollbar-thumb {
-  background: #dee2e6;
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  background: #e1e5e9;
+  border-radius: 3px;
 }
 
 .modern-select-dropdown-content::-webkit-scrollbar-thumb:hover {
-  background: #adb5bd;
+  background: #d1d5db;
 }
 
-/* Focus Styles - إزالة الحدود والتأثيرات تماماً */
-.modern-select-trigger:focus-within {
-  outline: none;
-  border-color: #6c757d;
-  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
-}
-
-.modern-select-container:focus-within .modern-select-trigger {
-  outline: none;
-  border-color: #6c757d;
-  box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
-}
-
-/* Animation Support */
+/* 🎨 Animation Support */
 .modern-select-dropdown {
   transform-origin: top center;
-}
-
-/* Loading State (if needed) */
-.modern-select-loading .modern-select-chevron i {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
 }

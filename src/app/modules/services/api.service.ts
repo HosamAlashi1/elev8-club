@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-const API_BASE_URL = `${environment.apiUrl}/dashboard/`;
+const API_BASE_URL = `${environment.apiUrl}/`;
 
 @Injectable({
 	providedIn: 'root'
@@ -13,12 +13,55 @@ export class ApiService {
 	};
 
 	// Admin
-	public admin = {
-		list: API_BASE_URL + 'admins', // POST
-		details: (id: number) => API_BASE_URL + 'admins/' + id, // GET
-		add: API_BASE_URL + 'admins/store', // POST
-		edit: (id: number) => API_BASE_URL + 'admins/update/' + id, // POST
-		delete: (id: number) => API_BASE_URL + 'admins/destroy/' + id // POST
+	public admins = {
+		list: API_BASE_URL + 'admins/list', // GET
+		details: (id: number) => API_BASE_URL + 'admins/details/' + id, // GET
+		add: API_BASE_URL + 'admins/add', // POST
+		edit: (id: number) => API_BASE_URL + 'admins/edit/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'admins/delete/' + id, // POST
+		active: (id: number) => API_BASE_URL + 'admins/active/' + id // POST
+	};
+
+	// Roles
+	public roles = {
+		list: API_BASE_URL + 'roles/list', // GET
+		details: (id: number) => API_BASE_URL + 'roles/details/' + id, // GET
+		add: API_BASE_URL + 'roles/add', // POST
+		edit: (id: number) => API_BASE_URL + 'roles/edit/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'roles/delete/' + id // POST
+	};
+
+	// permissions
+	public permissions = {
+		list: API_BASE_URL + 'Common/permissions', // GET
+	}
+
+	// books
+	public books = {
+		list: API_BASE_URL + 'books/list', // GET
+		details: (id: number) => API_BASE_URL + 'books/details/' + id, // GET
+		add: API_BASE_URL + 'books/add', // POST
+		edit: (id: number) => API_BASE_URL + 'books/edit/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'books/delete/' + id // POST
+	};
+
+	// categories
+	public categories = {
+		list: API_BASE_URL + 'categories/list', // GET
+		details: (id: number) => API_BASE_URL + 'categories/details/' + id, // GET
+		add: API_BASE_URL + 'categories/add', // POST
+		edit: (id: number) => API_BASE_URL + 'categories/edit/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'categories/delete/' + id // POST
+	};
+
+	// Users
+	public users = {
+		list: API_BASE_URL + 'users/list', // GET
+		details: (id: number) => API_BASE_URL + 'users/details/' + id, // GET
+		add: API_BASE_URL + 'users/add', // POST
+		edit: (id: number) => API_BASE_URL + 'users/edit/' + id, // POST
+		delete: (id: number) => API_BASE_URL + 'users/delete/' + id, // POST
+		active: (id: number) => API_BASE_URL + 'users/active/' + id // POST
 	};
 
 	// Orders

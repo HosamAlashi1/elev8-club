@@ -1,0 +1,48 @@
+<div class="users-container" data-aos="fade-up">
+  <h2 class="users-title" data-aos="fade-right" data-aos-delay="100">
+    Users Management
+  </h2>
+
+  <div class="card rounded-2 mt-4" data-aos="zoom-in" data-aos-delay="200">
+    <!-- Tabs -->
+    <div class="tabs d-flex position-relative">
+      <button #tabBtn *ngIf="publicService.hasPermission('VIEW_USERS')" class="tab-btn"
+        [class.active]="activeTab === 'customers'" (click)="setTab('customers')"
+        data-aos="fade-up" data-aos-delay="300">
+        <i class="fe fe-users me-2"></i>Customers
+      </button>
+
+      <button #tabBtn *ngIf="publicService.hasPermission('VIEW_USERS')" class="tab-btn"
+        [class.active]="activeTab === 'authors'" (click)="setTab('authors')"
+        data-aos="fade-up" data-aos-delay="400">
+        <i class="fe fe-edit-3 me-2"></i>Authors
+      </button>
+
+      <button #tabBtn *ngIf="publicService.hasPermission('VIEW_USERS')" class="tab-btn"
+        [class.active]="activeTab === 'editors'" (click)="setTab('editors')"
+        data-aos="fade-up" data-aos-delay="500">
+        <i class="fe fe-edit me-2"></i>Editors
+      </button>
+
+      <!-- Underline المتحرك -->
+      <div class="tab-underline-dynamic"
+           [ngStyle]="{ left: underlineLeft + 'px', width: underlineWidth + 'px' }">
+      </div>
+    </div>
+
+    <!-- Tab content -->
+    <div class="tab-content" [@tabSlide]="activeTab" data-aos="fade-in" data-aos-delay="600">
+      <ng-container *ngIf="activeTab === 'customers'">
+        <app-customers></app-customers>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'authors'">
+        <app-authors></app-authors>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'editors'">
+        <app-editors></app-editors>
+      </ng-container>
+    </div>
+  </div>
+</div>

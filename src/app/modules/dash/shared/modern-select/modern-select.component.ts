@@ -1,6 +1,8 @@
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, OnInit, OnDestroy } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { ModernSelectService } from './modern-select.service';
+import { Subscription } from 'rxjs';
 
 export interface SelectOption {
   value: any;
@@ -53,7 +55,7 @@ export interface SelectOption {
     ])
   ]
 })
-export class ModernSelectComponent implements OnInit, ControlValueAccessor {
+export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() options: SelectOption[] = [];
   @Input() placeholder2: string = 'Select an option';
   @Input() icon?: string; // جعل الأيقونة اختيارية
@@ -78,12 +80,36 @@ export class ModernSelectComponent implements OnInit, ControlValueAccessor {
   selectedOption: SelectOption | null = null;
   searchTerm = '';
   filteredOptions: SelectOption[] = [];
+  
+  // معرف فريد لكل instance
+  private componentId: string;
+  private closeAllSubscription: Subscription;
 
   private onChange = (value: any) => {};
   private onTouched = () => {};
 
+  constructor(private modernSelectService: ModernSelectService) {
+    // إنشاء معرف فريد لكل كومبوننت
+    this.componentId = 'modern-select-' + Math.random().toString(36).substr(2, 9);
+  }
+
   ngOnInit() {
     this.filteredOptions = [...this.options];
+    
+    // الاشتراك في خدمة إغلاق جميع الـ selects
+    this.closeAllSubscription = this.modernSelectService.closeAll$.subscribe((excludeId: string) => {
+      // إذا كان الـ ID المستثنى مختلف عن ID هذا الكومبوننت، أغلق الـ dropdown
+      if (excludeId !== this.componentId && this.isOpen) {
+        this.isOpen = false;
+      }
+    });
+  }
+  
+  ngOnDestroy() {
+    // إلغاء الاشتراك لتجنب memory leaks
+    if (this.closeAllSubscription) {
+      this.closeAllSubscription.unsubscribe();
+    }
   }
 
   get dropdownState() {
@@ -153,6 +179,11 @@ export class ModernSelectComponent implements OnInit, ControlValueAccessor {
     
     if (this.disabled) return;
     
+    // إذا كان سيفتح، أغلق جميع الـ selects الأخرى أولاً
+    if (!this.isOpen) {
+      this.modernSelectService.closeAllExcept(this.componentId);
+    }
+    
     this.isOpen = !this.isOpen;
     this.onTouched();
     
@@ -213,10 +244,20 @@ export class ModernSelectComponent implements OnInit, ControlValueAccessor {
 
   onDocumentClick(event: Event) {
     const target = event.target as HTMLElement;
-    const selectElement = document.querySelector('.modern-select-container');
     
-    if (selectElement && !selectElement.contains(target)) {
-      this.isOpen = false;
+    // البحث عن الـ container الخاص بهذا الكومبوننت تحديداً
+    const allSelectContainers = document.querySelectorAll('.modern-select-container');
+    let clickedInsideAnySelect = false;
+    
+    allSelectContainers.forEach(container => {
+      if (container.contains(target)) {
+        clickedInsideAnySelect = true;
+      }
+    });
+    
+    // إذا ما انضغط جوا أي select، أغلق الكل
+    if (!clickedInsideAnySelect) {
+      this.modernSelectService.closeAll();
     }
   }
 

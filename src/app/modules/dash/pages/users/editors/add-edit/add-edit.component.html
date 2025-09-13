@@ -1,0 +1,99 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ isEdit ? 'Edit Editor' : 'Add New Editor' }}</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- First Name -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">First Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="first_name" placeholder="Enter first name"
+          [ngClass]="{ 'is-invalid': submitted && f['first_name'].invalid, 'is-valid': submitted && f['first_name'].valid }" />
+        <div *ngIf="submitted && f['first_name'].invalid" class="invalid-feedback">
+          First name is required.
+        </div>
+      </div>
+
+      <!-- Middle Name -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Middle Name</label>
+        <input class="form-control" formControlName="middle_name" placeholder="Enter middle name" />
+      </div>
+
+      <!-- Last Name -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Last Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="last_name" placeholder="Enter last name"
+          [ngClass]="{ 'is-invalid': submitted && f['last_name'].invalid, 'is-valid': submitted && f['last_name'].valid }" />
+        <div *ngIf="submitted && f['last_name'].invalid" class="invalid-feedback">
+          Last name is required.
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Email <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="email" placeholder="Enter email"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].invalid, 'is-valid': submitted && f['email'].valid }" />
+        <div *ngIf="submitted && f['email'].invalid" class="invalid-feedback">
+          Valid email is required.
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Phone <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="phone" placeholder="Enter phone"
+          [ngClass]="{ 'is-invalid': submitted && f['phone'].invalid, 'is-valid': submitted && f['phone'].valid }" />
+        <div *ngIf="submitted && f['phone'].invalid" class="invalid-feedback">
+          Phone is required.
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="col-md-6 mb-3" *ngIf="!isEdit">
+        <label class="form-label">Password <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" formControlName="password" placeholder="Enter password"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].invalid, 'is-valid': submitted && f['password'].valid }" />
+        <div *ngIf="submitted && f['password'].invalid" class="invalid-feedback">
+          Password is required (min 6 characters).
+        </div>
+      </div>
+
+      <!-- Profile Image -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Profile Image <span class="text-danger" *ngIf="!isEdit">*</span></label>
+        <div class="upload-box border rounded d-flex flex-column align-items-center justify-content-center py-4 position-relative"
+          [class.drag-over]="isDragOver" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)" style="border: 2px dashed #E5E7EB !important; cursor: pointer;">
+          <input type="file" class="file-input-overlay" (change)="onFileChange($event)" accept="image/*" />
+          <ng-container *ngIf="imagePreview; else uploadPlaceholder">
+            <img [src]="imagePreview" alt="Preview" class="img-preview" />
+          </ng-container>
+          <ng-template #uploadPlaceholder>
+            <i class="fe fe-upload mb-2" style="color: #6B7280; font-size: 34px;"></i>
+            <div class="text-muted">Drag and drop an image here, or click to select</div>
+          </ng-template>
+        </div>
+        <div *ngIf="submitted && f['file'].invalid" class="invalid-feedback d-block">
+          Image is required.
+        </div>
+        <small class="text-muted" *ngIf="isEdit">Leave empty to keep current image</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-sm btn-custom" [disabled]="(httpService.getLoading('addEditUser') | async)">
+      <ng-container *ngIf="(httpService.getLoading('addEditUser') | async)">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-container *ngIf="!(httpService.getLoading('addEditUser') | async)">
+        <i class="fe fe-check me-2"></i> Save
+      </ng-container>
+    </button>
+  </div>
+</form>

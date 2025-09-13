@@ -546,3 +546,31 @@ body.collapsed .main-header {
 .btn-action-filter{
     color: #64748B;
 }
+
+
+.page-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+
+
+.table-responsive .dropdown-menu {
+  position: fixed !important;
+}
+
+.btn-danger {
+    color: #fff;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.2s;
+}

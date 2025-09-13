@@ -11,12 +11,15 @@ import { MdbRippleModule } from 'mdb-angular-ui-kit/ripple';
 import { SharedModule } from '../../shared/shared.module';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { LucideAngularModule, MessageSquare } from "lucide-angular";
-import { CustomersComponent } from './customers.component';
+import { AdminsComponent } from './admins.component';
+import { AddEditAdminComponent } from './add-edit/add-edit.component';
+
 
 
 @NgModule({
   declarations: [
-    CustomersComponent
+    AdminsComponent,
+    AddEditAdminComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +29,7 @@ import { CustomersComponent } from './customers.component';
     RouterModule.forChild([
         {
             path: '',
-            component: CustomersComponent
+            component: AdminsComponent
         }
     ]),
     NgxPaginationModule,
@@ -39,4 +42,4 @@ import { CustomersComponent } from './customers.component';
     LucideAngularModule.pick({ MessageSquare })
 ]
 })
-export class CustomersModule { }
+export class AdminsModule { }

@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 import { trigger, transition, style, animate, query, group } from '@angular/animations';
+import { PublicService } from 'src/app/modules/services/public.service';
 
 @Component({
   selector: 'app-catalog',
@@ -8,12 +9,12 @@ import { trigger, transition, style, animate, query, group } from '@angular/anim
   animations: [
     trigger('tabSlide', [
       transition('* => *', [
-        query(':enter, :leave', style({ position: 'absolute', width: '100%' }), { optional: true }),
+        // query(':enter, :leave', style({ position: 'absolute', width: '100%' }), { optional: true }),
 
         group([
-          query(':leave', [
-            animate('300ms ease', style({ transform: 'translateX(-100%)', opacity: 0 }))
-          ], { optional: true }),
+          // query(':leave', [
+          //   animate('300ms ease', style({ transform: 'translateX(-100%)', opacity: 0 }))
+          // ], { optional: true }),
 
           query(':enter', [
             style({ transform: 'translateX(100%)', opacity: 0 }),
@@ -31,6 +32,8 @@ export class CatalogComponent implements AfterViewInit {
   @ViewChildren('tabBtn', { read: ElementRef }) tabBtns!: QueryList<ElementRef>;
   underlineLeft = 0;
   underlineWidth = 0;
+
+  constructor(public publicService: PublicService) {}
 
   ngAfterViewInit() {
     this.moveUnderline();

@@ -16,7 +16,8 @@
 
     <!-- Right side (Add button) -->
     <div>
-        <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+        <button class="btn btn-custom d-flex align-items-center gap-2"
+            *ngIf="publicService.hasPermission('ADD_CATEGORY')" (click)="add()">
             <i class="fe fe-plus"></i>
             New Category
         </button>
@@ -39,14 +40,14 @@
 
             <!-- Skeleton while loading -->
             <tbody *ngIf="isLoading$ | async">
-                <tr *ngFor="let number of [].constructor(size)">
-                    <td *ngFor="let i of [].constructor(6)" style="padding: 17.26px 10px;">
+                <tr *ngFor="let _ of [].constructor(size)">
+                    <td *ngFor="let __ of [].constructor(6)" style="padding: 17.26px 10px;">
                         <ngx-skeleton-loader appearance="line" animation="progress-dark" [theme]="{
-                  width: '50%',
-                  height: '20px',
-                  'border-radius': '3px',
-                  margin: '0'
-                }">
+                                   width: '50%',
+                                   height: '20px',
+                                   'border-radius': '3px',
+                                   margin: '0'
+                                 }">
                         </ngx-skeleton-loader>
                     </td>
                 </tr>
@@ -56,15 +57,18 @@
             <tbody *ngIf="!(isLoading$ | async)">
                 <tr *ngFor="let c of categories">
                     <td>
-                        <img [src]="c.icon" alt="icon" width="32" height="32" class="rounded-2" >
+                        <img [src]="c.image || 'assets/img/blank.png'" alt="icon" width="32" height="32"
+                            class="rounded-2">
                     </td>
                     <td class="fw-semibold text-dark">{{ c.name }}</td>
                     <td>
                         <div class="text-muted">
-                            <div [ngbTooltip]="c.description" placement="top">{{ c.description | maxLength:60 }}</div>
+                            <div [ngbTooltip]="c.description" placement="top">
+                                {{ c.description | maxLength:60 }}
+                            </div>
                         </div>
                     </td>
-                    <td>{{ c.books }}</td>
+                    <td>{{ c.books || 0}}</td>
                     <td>
                         <span class="pill" [ngClass]="getStatusPillClass(c.status)">
                             {{ c.status === 'active' ? 'Active' : 'Inactive' }}
@@ -76,7 +80,7 @@
                                 <i class="fe fe-more-vertical black-menu fs-3"></i>
                             </span>
                             <ul class="dropdown-menu">
-                                <li>
+                                <li *ngIf="publicService.hasPermission('EDIT_CATEGORY')">
                                     <a class="dropdown-item" (click)="edit(c)">
                                         <i class="fe fe-edit me-2"></i>Edit
                                     </a>
@@ -84,8 +88,8 @@
                                 <li>
                                     <hr class="m-2" />
                                 </li>
-                                <li>
-                                    <a class="dropdown-item">
+                                <li *ngIf="publicService.hasPermission('DELETE_CATEGORY')">
+                                    <a class="dropdown-item" (click)="delete(c)">
                                         <i class="fe fe-trash-2 text-danger me-2"></i>
                                         <span class="text-danger">Delete</span>
                                     </a>

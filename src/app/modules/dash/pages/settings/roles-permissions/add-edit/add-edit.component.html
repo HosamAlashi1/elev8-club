@@ -1,0 +1,97 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <!-- Header -->
+  <div class="modal-header">
+    <h4 class="modal-title">{{ isEdit ? 'Edit Role' : 'Add New Role' }}</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Role Name -->
+    <div class="mb-3">
+      <label class="form-label">Role Name</label>
+      <input
+        class="form-control"
+        formControlName="name"
+        placeholder="Enter role name"
+        [ngClass]="{
+          'is-invalid': submitted && f['name'].invalid,
+          'is-valid': submitted && f['name'].valid
+        }"
+      />
+      <div *ngIf="submitted && f['name'].invalid" class="invalid-feedback">
+        Role name is required.
+      </div>
+    </div>
+
+    <!-- Permissions -->
+    <div class="mb-3">
+      <label class="form-label d-flex justify-content-between align-items-center">
+        Permissions
+        <a class="small" (click)="toggleSelectAll(!allSelected)"  [style.color]="'#5BBDB7'">
+          {{ allSelected ? 'Unselect All' : 'Select All' }}
+        </a>
+      </label>
+
+      <div class="permissions-container border rounded p-3" style="max-height: 420px; overflow-y: auto;">
+        <!-- ما في صلاحيات -->
+        <div *ngIf="!groups?.length" class="text-center text-muted py-4">
+          <i class="fe fe-shield fs-3 d-block mb-2"></i>
+          No permissions available.
+        </div>
+
+        <!-- مجموعات الصلاحيات -->
+        <ng-container *ngFor="let g of groups">
+          <!-- عنوان الجروب -->
+          <div class="fw-bold text-uppercase small text-secondary border-bottom pb-2 mt-3 mb-2 d-flex justify-content-between align-items-center">
+            <span>{{ g.name }}</span>
+            <a class="small"
+               (click)="toggleGroup(g, !isGroupAllChecked(g))"
+               [style.color]="'#5BBDB7'">
+               {{ isGroupAllChecked(g) ? 'Unselect group' : 'Select group' }}
+            </a>
+          </div>
+
+          <!-- عناصر الصلاحيات -->
+          <div class="row">
+            <div class="col-md-6 mb-2" *ngFor="let sp of g.sub_permissions">
+              <div class="form-check form-switch custom-switch-pink">
+                <input
+                  #permCbx
+                  type="checkbox"
+                  class="form-check-input"
+                  [checked]="isChecked(sp.id)"
+                  (change)="toggleChild(g, sp, permCbx.checked)"
+                  id="perm_{{ sp.id }}"
+                />
+                <label class="form-check-label text-capitalize" for="perm_{{ sp.id }}">
+                  {{ sp.name }}
+                  <!-- <span class="text-muted">(<code>{{ sp.code }}</code>)</span> -->
+                </label>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
+      <i class="fe fe-x me-2"></i> Close
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-sm btn-custom"
+      [disabled]="(httpService.getLoading('addEditRole') | async) || (isSaving$ | async)"
+    >
+      <ng-container *ngIf="(httpService.getLoading('addEditRole') | async) || (isSaving$ | async); else saveTxt">
+        <span class="spinner-border spinner-border-sm me-2"></span> Saving...
+      </ng-container>
+      <ng-template #saveTxt>
+        <i class="fe fe-check me-2"></i> Save
+      </ng-template>
+    </button>
+  </div>
+</form>

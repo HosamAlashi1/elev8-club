@@ -20,7 +20,8 @@ import {
   ShoppingCart,
   Users,
   BarChart2,
-  Settings
+  Settings,
+  UserCog
 } from 'lucide-angular';
 import { HeaderComponent } from './components/header/header.component';
 
@@ -32,6 +33,7 @@ import { HeaderComponent } from './components/header/header.component';
     ConfirmationDialogComponent,
     LottieOverlayComponent,
     HeaderComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -50,7 +52,8 @@ import { HeaderComponent } from './components/header/header.component';
       ShoppingCart,
       Users,
       BarChart2,
-      Settings
+      Settings,
+      UserCog
     })
   ],
   providers: [

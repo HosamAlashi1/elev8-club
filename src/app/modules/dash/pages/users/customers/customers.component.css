@@ -1,0 +1,185 @@
+.customer-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.customer-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* 🗓️ Custom Date Picker Styles - Same as Orders */
+.custom-date-field {
+  background: #fafbfc;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 10px 40px 10px 12px;
+  font-size: 14px;
+  color: #2d3436;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-date-field:focus {
+  outline: none;
+  border-color: #5BBDB7;
+  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.1);
+  background: #fff;
+}
+
+.custom-date-field::placeholder {
+  color: #a0a6aa;
+  font-weight: 400;
+}
+
+/* Mini Calendar Styles */
+.mini-calendar {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calendar-header .btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-color: #e1e5e9;
+  color: #6c757d;
+}
+
+.calendar-header .btn:hover {
+  background-color: #5BBDB7;
+  border-color: #5BBDB7;
+  color: white;
+}
+
+.calendar-grid {
+  width: 100%;
+}
+
+.calendar-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.day-header {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  padding: 8px 4px;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2d3436;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.day-cell:hover {
+  background-color: #5bbdb61f;
+  color: #5BBDB7;
+}
+
+.day-cell.other-month {
+  color: #bdc3c7;
+}
+
+.day-cell.other-month:hover {
+  color: #95a5a6;
+  background-color: #f1f3f4;
+}
+
+.day-cell.today {
+  background-color: #fff3e0;
+  color: #f57c00;
+  font-weight: 600;
+}
+
+.day-cell.today:hover {
+  background-color: #ffe0b2;
+}
+
+.day-cell.selected {
+  background-color: #5BBDB7;
+  color: white;
+  font-weight: 600;
+}
+
+.day-cell.selected:hover {
+  background-color: #4a9d97;
+}
+
+/* Quick date selection buttons */
+.quick-dates {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.quick-date-btn {
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-date-btn:hover {
+  background-color: #5BBDB7;
+  border-color: #5BBDB7;
+  color: white;
+}
+
+/* Animation for dropdown */
+.position-relative .card {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

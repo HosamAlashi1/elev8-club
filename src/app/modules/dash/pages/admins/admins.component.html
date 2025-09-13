@@ -1,0 +1,143 @@
+<div class="page-container">
+    <h2 class="page-title" data-aos="fade-right" data-aos-delay="100">
+        Admins
+    </h2>
+
+    <div class="content" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-4 border-0 my-3"
+            data-aos="zoom-in" data-aos-delay="300">
+
+            <!-- Left side (search) -->
+            <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
+                <!-- Search -->
+                <div class="search-wrap position-relative flex-grow-1" style="max-width: 260px;" data-aos="fade-left"
+                    data-aos-delay="400">
+                    <i class="fe fe-search text-muted position-absolute"></i>
+                    <input [(ngModel)]="searchText" class="form-control ps-5"
+                        placeholder="Search by name, email or phone..." (ngModelChange)="onSearchChange()" />
+                </div>
+            </div>
+
+            <!-- Right side (Add button) -->
+            <div data-aos="fade-left" data-aos-delay="500">
+                <button class="btn btn-custom d-flex align-items-center gap-2"
+                    *ngIf="publicService.hasPermission('ADD_ADMIN')" (click)="add()">
+                    <i class="fe fe-plus"></i>
+                    Add Admin
+                </button>
+            </div>
+        </div>
+
+        <div class="card mb-0">
+            <div class="table-responsive mb-2">
+                <table class="table table-sm table-nowrap card-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="w-20">Admin</th>
+                            <th class="w-20">Email</th>
+                            <th class="w-15">Phone</th>
+                            <th class="w-15">Role</th>
+                            <th class="w-10">Status</th>
+                            <th class="w-10">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Skeletons -->
+                    <tbody *ngIf="(isLoading$ | async)">
+                        <tr *ngFor="let _ of [].constructor(size)">
+                            <td style="padding: 15px 0px 0px 18px;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                        [theme]="{ width: '46px', height: '45px', 'border-radius': '50%' }">
+                                    </ngx-skeleton-loader>
+                                    <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                        [theme]="{ width: '120px', height: '18px', 'border-radius': '6px' }">
+                                    </ngx-skeleton-loader>
+                                </div>
+                            </td>
+                            <td *ngFor="let __ of [].constructor(4)" style="padding:27.25px 10px;">
+                                <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                    [theme]="{ width: '60%', height: '16px', 'border-radius': '6px', margin: '0' }">
+                                </ngx-skeleton-loader>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <!-- Data -->
+                    <tbody *ngIf="!(isLoading$ | async)">
+                        <tr *ngFor="let a of admins">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <img [src]="a.image || 'assets/img/blank.png'" alt="avatar"
+                                        class="avatar rounded-circle cursor-pointer"
+                                        (click)="openImageModal(a.image || 'assets/img/blank.png')">
+                                    <div class="fw-semibold text-dark">{{ fullName(a) }}</div>
+                                </div>
+                            </td>
+
+                            <td class="text-muted">{{ a.email }}</td>
+                            <td class="text-muted">{{ a.phone || '-' }}</td>
+                            <td class="text-muted">{{ a.role }}</td>
+
+                            <td>
+                                <span class="pill" [ngClass]="statusPillClass(a)">
+                                    {{ a.is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="btn-group dropstart">
+                                    <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                        <i class="fe fe-more-vertical black-menu fs-3"></i>
+                                    </span>
+                                    <ul class="dropdown-menu">
+                                        <li *ngIf="publicService.hasPermission('EDIT_ADMIN')">
+                                            <a class="dropdown-item" (click)="edit(a)">
+                                                <i class="fe fe-edit me-2"></i>Edit
+                                            </a>
+                                        </li>
+
+                                        <li *ngIf="publicService.hasPermission('ACTIVE_ADMIN')">
+                                            <a class="dropdown-item" (click)="toggleActive(a)">
+                                                <i
+                                                    [ngClass]="a.is_active ? 'fe fe-user-x me-2' : 'fe fe-user-check me-2'"></i>
+                                                {{ a.is_active ? 'Deactivate' : 'Activate' }}
+                                            </a>
+                                        </li>
+
+
+                                        <li>
+                                            <hr class="m-2" />
+                                        </li>
+
+                                        <li *ngIf="publicService.hasPermission('DELETE_ADMIN')">
+                                            <a class="dropdown-item" (click)="delete(a)">
+                                                <i class="fe fe-trash-2 text-danger me-2"></i>
+                                                <span class="text-danger">Delete</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <app-no-results [isLoading$]="isLoading$" [totalRecords]="totalCount"></app-no-results>
+
+            <!-- Footer -->
+            <div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <small class="text-muted">
+                    Showing {{ admins.length ? ( (page-1)*size + 1 ) : 0 }}
+                    -
+                    {{ (page-1)*size + admins.length }}
+                    of {{ totalCount }} admins
+                </small>
+
+                <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size"
+                    (pageChange)="list($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

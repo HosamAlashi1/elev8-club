@@ -2,16 +2,22 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpInterceptor, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthService } from '../modules/auth/services/auth.service';
+import { Router } from '@angular/router';
+import { PublicService } from '../modules/services/public.service'; // استدعاء السيرفس
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private publicService: PublicService
+  ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const data = JSON.parse(localStorage.getItem('Dorrance-data') || '{}');
-    // دعم شكل الرسبونس الجديد: { user, token } داخل data
-    const token = data?.token || data?.data?.token;
+    // جلب التوكن المفكوك
+    const token = this.publicService.getToken();
+
     if (token) {
       req = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`)
@@ -22,22 +28,29 @@ export class AuthInterceptor implements HttpInterceptor {
       tap({
         next: () => {},
         error: (err: HttpErrorResponse) => {
-          // الحالة الأولى: حالة HTTP 401 من الهيدر
-          if (err.status === 401) {
+          // 1. تجاهل أخطاء logout نفسه
+          if (req.url.includes('/Auth/logout')) {
+            return;
+          }
+
+          // 2. لو 401 → اعمل logout بشرط ما أكون في صفحة login
+          if (err.status === 401 && this.router.url !== '/auth/login') {
             this.authService.logout();
             return;
           }
 
-          // الحالة الثانية: status 401 أو رسالة انتهاء الجلسة من body حسب شكل الرسبونس الجديد
-          const backendStatus = err?.error?.status;
-          const backendMessage = err?.error?.message;
-          if (backendStatus === false && backendMessage && backendMessage.toLowerCase().includes('unauth')) {
+          // 3. backend response الجديد (success + msg)
+          const backendSuccess = err?.error?.success;
+          const backendMsg = err?.error?.msg;
+
+          if (backendSuccess === false && backendMsg?.toLowerCase().includes('unauth') && this.router.url !== '/auth/login') {
             this.authService.logout();
             return;
           }
-          // دعم statusCode 401 القديم
+
+          // 4. دعم statusCode القديم لو موجود
           const backendStatusCode = err?.error?.statusCode;
-          if (backendStatusCode === 401) {
+          if (backendStatusCode === 401 && this.router.url !== '/auth/login') {
             this.authService.logout();
           }
         }
