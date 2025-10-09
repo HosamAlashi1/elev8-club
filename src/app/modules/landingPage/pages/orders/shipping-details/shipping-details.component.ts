@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CartService } from 'src/app/modules/services/cart.service';
@@ -54,8 +54,7 @@ const SHIPPING_RATES = {
 })
 export class ShippingDetailsComponent implements OnInit {
 
-  // فتح/إغلاق الـPanels
-  openAccount = true;
+  // فتح/إغلاق القسم
   openShipping = true;
 
   // Reactive Form
@@ -70,7 +69,7 @@ export class ShippingDetailsComponent implements OnInit {
   shippingFee = 5;
   total = 0;
 
-  // قائمة ولايات/محافظات
+  // قائمة الولايات / المحافظات
   states = [
     'California', 'New York', 'Texas', 'Florida',
     'Washington', 'Colorado', 'Illinois', 'Arizona'
@@ -91,7 +90,7 @@ export class ShippingDetailsComponent implements OnInit {
     private orderService: OrderService,
     private checkoutAdapter: CheckoutAdapter,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const priced = this.cartService.priceCart();
@@ -104,35 +103,20 @@ export class ShippingDetailsComponent implements OnInit {
     this.recalcTotal();
 
     this.form = this.fb.group({
-      account: this.fb.group({
-        username: ['', [Validators.required, Validators.minLength(3)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required]],
-        phoneNumber: ['', [Validators.required, Validators.pattern(/^[\+]?[\d\s\-\(\)]{10,}$/)]],
-        agree: [false, [Validators.requiredTrue]]
-      }),
       shipping: this.fb.group({
-        firstName: ['', []],
-        lastName: ['', []],
-        phone: ['', []],
-        address1: ['', []],
+        first_name: ['', [Validators.required]],
+        last_name: ['', [Validators.required]],
+        phone: ['', [Validators.required, Validators.pattern(/^[\+]?[\d\s\-\(\)]{10,}$/)]],
+        address1: ['', [Validators.required]],
         address2: [''],
-        city: ['', []],
+        city: ['', [Validators.required]],
         state: [''],
-        country: ['', []],
-        zip: ['', []]
+        country: ['', [Validators.required]],
+        zip: ['', [Validators.required]]
       })
-    }, { validators: this.passwordsMatch });
+    });
 
     this.applyAddressValidators();
-  }
-
-  private passwordsMatch(group: AbstractControl) {
-    const p = group.get('account.password')?.value;
-    const c = group.get('account.confirmPassword')?.value;
-    if (p || c) return p === c ? null : { passwordMismatch: true };
-    return null;
   }
 
   // تغيير طريقة الشحن
@@ -154,26 +138,26 @@ export class ShippingDetailsComponent implements OnInit {
     const s = this.form.get('shipping') as FormGroup;
     const req = [Validators.required];
     const phoneReq = [Validators.required, Validators.pattern(/^[\+]?[\d\s\-\(\)]{10,}$/)];
-    const fields = ['firstName','lastName','address1','city','country','zip'] as const;
+    const fields = ['address1', 'city', 'country', 'zip'] as const;
 
     if (this.method === 'delivery') {
       fields.forEach(f => {
         s.get(f)?.setValidators(req);
-        s.get(f)?.enable({emitEvent:false});
-        s.get(f)?.updateValueAndValidity({emitEvent:false});
+        s.get(f)?.enable({ emitEvent: false });
+        s.get(f)?.updateValueAndValidity({ emitEvent: false });
       });
       s.get('phone')?.setValidators(phoneReq);
-      s.get('phone')?.enable({emitEvent:false});
-      s.get('phone')?.updateValueAndValidity({emitEvent:false});
+      s.get('phone')?.enable({ emitEvent: false });
+      s.get('phone')?.updateValueAndValidity({ emitEvent: false });
     } else {
       fields.forEach(f => {
         s.get(f)?.clearValidators();
-        s.get(f)?.disable({emitEvent:false});
-        s.get(f)?.updateValueAndValidity({emitEvent:false});
+        s.get(f)?.disable({ emitEvent: false });
+        s.get(f)?.updateValueAndValidity({ emitEvent: false });
       });
       s.get('phone')?.clearValidators();
-      s.get('phone')?.disable({emitEvent:false});
-      s.get('phone')?.updateValueAndValidity({emitEvent:false});
+      s.get('phone')?.disable({ emitEvent: false });
+      s.get('phone')?.updateValueAndValidity({ emitEvent: false });
     }
   }
 
@@ -186,15 +170,8 @@ export class ShippingDetailsComponent implements OnInit {
 
   // متابعة الدفع
   async onProceedToPayment() {
-    // التحقق من Account validation
-    (this.form.get('account') as FormGroup).markAllAsTouched();
-    
-    // التحقق من Shipping validation إذا كان delivery
-    if (this.method === 'delivery') {
-      (this.form.get('shipping') as FormGroup).markAllAsTouched();
-    }
-    
-    // إذا كان الفورم غير صالح، توقف
+    (this.form.get('shipping') as FormGroup).markAllAsTouched();
+
     if (this.form.invalid) {
       return;
     }
@@ -206,20 +183,24 @@ export class ShippingDetailsComponent implements OnInit {
     }
 
     const s = (this.form.get('shipping') as FormGroup).getRawValue();
+    const fullName = `${s.first_name} ${s.last_name}`.trim();
+
     const compact: ShippingDetails = {
-      name: `${s.firstName || ''} ${s.lastName || ''}`.trim(),
+      name: fullName || '',
       phone: s.phone || '',
       address: s.address1 || '',
       city: s.city || '',
       country: s.country || ''
     };
+
     this.orderService.updateShipping(order.id, compact);
 
     await this.checkoutAdapter.initiatePayment(order.id, 'mock');
     this.router.navigate(['/confirmation', order.id]);
   }
 
-  // Getters
-  get fA() { return (this.form.get('account') as FormGroup).controls; }
-  get fS() { return (this.form.get('shipping') as FormGroup).controls; }
+  // Getter
+  get fS() {
+    return (this.form.get('shipping') as FormGroup).controls;
+  }
 }

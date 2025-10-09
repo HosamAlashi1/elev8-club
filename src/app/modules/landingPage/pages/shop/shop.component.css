@@ -20,14 +20,50 @@
   height: auto;
 }
 
-.price-rating {
+/* السعر + النجوم في نفس الصف */
+.book-card .price-rating {
+  margin-top: 4px;
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
+  align-items: center;
+}
+
+/* السعر */
+.book-card .price-rating p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* النجوم */
+.book-card .price-rating .rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.book-card .price-rating .rating .bi {
+  font-size: 14px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.book-card .price-rating .rating .bi-star-fill,
+.book-card .price-rating .rating .bi-star-half {
+  color: #FFC107;
+  /* أصفر */
 }
 
 .rating .bi {
   color: #FFC107;
+}
+
+.book-card .price-rating .rating .bi-star {
+  color: #E5E7EB;
+  /* رمادي فاتح */
 }
 
 /* شكل الـ checkbox */
@@ -35,15 +71,17 @@
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  
+
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
 /* عند التحديد */
 .form-check-input:checked {
-  background-color: #5BBDB7; /* الخلفية */
-  border-color: #5bbdb623;     /* الإطار */
+  background-color: #5BBDB7;
+  /* الخلفية */
+  border-color: #5bbdb623;
+  /* الإطار */
   box-shadow: 0 0 4px #5bbdb685;
 }
 
@@ -51,4 +89,181 @@
 .form-check-input:focus {
   outline: none;
   box-shadow: 0 0 4px #5bbdb685;
+}
+
+.book-card-skeleton {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card-skeleton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.row.g-4 {
+  margin-top: 8px;
+}
+
+/* تنعيم مظهر الـ skeleton نفسه */
+::ng-deep ngx-skeleton-loader .skeleton-loader {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-image-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 0px;
+  border-radius: 8px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  overflow: hidden;
+}
+
+/* لو بدك تتحكم بالمظهر أكثر */
+@media (max-width: 768px) {
+  .skeleton-image-wrapper {
+    aspect-ratio: 2 / 3;
+  }
+}
+
+.book-card img {
+  width: 100%;
+  height: 396.66px;      /* الارتفاع المطلوب */
+  object-fit: cover;     /* يخلي الصورة تملى الإطار بدون تمدد غريب */
+  border-radius: 8px;    /* نفس التنسيق السابق */
+  transition: transform 0.3s ease;
+}
+
+/* 1) غيّر شبكة الكتب: كتاب واحد على XS، 2 على SM، 3 على MD+ */
+/* لو أنت متحكم من HTML بالـ col-* طنّش هذي */
+@media (max-width: 575.98px) {
+  .shop-content .col-6.col-md-4 {
+    width: 100%;
+    flex: 0 0 100%;
+  }
+}
+
+/* 2) صورة الكتاب: استخدم aspect-ratio بدل ارتفاع ثابت على الشاشات الصغيرة */
+.book-card img {
+  width: 100%;
+  height: 396.66px;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+/* تدرّج ذكي للارتفاع عبر البريكبوينتس */
+@media (max-width: 1199.98px) {
+  .book-card img { height: 340px; }
+}
+@media (max-width: 991.98px) {
+  .book-card img { height: 300px; }
+}
+@media (max-width: 767.98px) {
+  /* على التابلت/الموبايل المائل: خليه 272.33px كما طلبت سابقًا */
+  .book-card img { height: 272.33px; }
+}
+@media (max-width: 575.98px) {
+  /* على الموبايل الصغير: استخدم نسبة أبعاد لتجنّب تمدد الكرت */
+  .book-card img {
+    height: auto;
+    aspect-ratio: 3 / 4;  /* غلّف الصورة بالحجم المثالي */
+  }
+}
+
+/* 3) تهيئة السكيلتون لنفس النسبة */
+.skeleton-image-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+@media (max-width: 768px) {
+  .skeleton-image-wrapper { aspect-ratio: 2 / 3; }
+}
+
+/* 4) الهيدر (العنوان + السورت) يتكيّف في الموبايل */
+@media (max-width: 575.98px) {
+  .shop-content .d-flex.justify-content-between.align-items-center {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+  .shop-content select.form-select.w-auto {
+    width: 100% !important;
+  }
+  .lp-section{
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* 5) السايدبار: مسافات أريح على الموبايل */
+@media (max-width: 767.98px) {
+  .filters.card {
+    /* padding: 1rem !important; */
+    border-radius: 12px;
+  }
+}
+
+/* 6) الـ sentinel: خلّيه ظاهر دائمًا */
+#infiniteScrollSentinel,
+[infiniteScrollSentinel] {
+  min-height: 1px;
+}
+
+.filters {
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.filter-section h6 {
+  font-size: 0.9rem;
+  color: #333;
+  border-left: 3px solid #21d1c5;
+  padding-left: 8px;
+}
+
+.form-check-input {
+  border: 1px solid #ccc;
+  width: 16px;
+  height: 16px;
+}
+
+.form-check-input:checked {
+  background-color: #21d1c5;
+  border-color: #21d1c5;
+}
+
+.btn-outline-custom {
+  border: 1px solid #21d1c5;
+  color: #189585;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background-color: #fff;
+}
+
+.btn-outline-custom:hover {
+  background-color: #189585;
+  color: #fff;
+  border-color: #189585;
+}
+
+.filters input.form-control {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  border-radius: 6px;
 }

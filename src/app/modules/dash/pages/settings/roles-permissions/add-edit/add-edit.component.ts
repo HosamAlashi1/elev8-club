@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../../../services/http.service';
 import { ToastrsService } from '../../../../../services/toater.service';
-import { ApiService } from '../../../../../services/api.service';
+import { ApiAdminService } from '../../../../../services/api.admin.service';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
@@ -45,8 +45,8 @@ export class AddEditRoleComponent implements OnInit {
     public activeModal: NgbActiveModal,
     public httpService: HttpService,
     private toastr: ToastrsService,
-    private api: ApiService
-  ) {}
+    private api: ApiAdminService
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -69,8 +69,14 @@ export class AddEditRoleComponent implements OnInit {
   // بحالة الإضافة: بنجيب الكاتالوج العام فقط
   private loadCatalogOnly(): void {
     this.isLoading$.next(true);
-    this.httpService.listGet(this.api.permissions.list, 'permissions-list')
-      .pipe(finalize(() => this.isLoading$.next(false)))
+    this.httpService.listGet(this.api.common.permissions, 'permissions-list')
+      .pipe(finalize(() => {
+        this.isLoading$.next(false);
+        setTimeout(() => {
+          document.querySelector('.permissions-container')?.classList.add('ng-animating');
+        }, 100);
+      })
+      )
       .subscribe({
         next: (res: any) => {
           const catalog: PermissionGroup[] = (res?.success && Array.isArray(res?.data)) ? res.data : [];
@@ -92,33 +98,38 @@ export class AddEditRoleComponent implements OnInit {
 
     forkJoin({
       details: this.httpService.listGet(this.api.roles.details(id), 'role-details'),
-      catalog: this.httpService.listGet(this.api.permissions.list, 'permissions-list')
+      catalog: this.httpService.listGet(this.api.common.permissions, 'permissions-list')
     })
-    .pipe(finalize(() => this.isLoading$.next(false)))
-    .subscribe({
-      next: ({ details, catalog }: any) => {
-        // اسم الدور من التفاصيل
-        const r = details?.data?.role;
-        this.form.patchValue({ name: r?.name || '' });
+      .pipe(finalize(() => {
+        this.isLoading$.next(false);
+        setTimeout(() => {
+          document.querySelector('.permissions-container')?.classList.add('ng-animating');
+        }, 100);
+      }))
+      .subscribe({
+        next: ({ details, catalog }: any) => {
+          // اسم الدور من التفاصيل
+          const r = details?.data?.role;
+          this.form.patchValue({ name: r?.name || '' });
 
-        // بنبني الشجرة من الكاتالوج العام فقط (مش من details)
-        const groups: PermissionGroup[] = (catalog?.success && Array.isArray(catalog?.data)) ? catalog.data : [];
-        this.prepareGroups(groups);
+          // بنبني الشجرة من الكاتالوج العام فقط (مش من details)
+          const groups: PermissionGroup[] = (catalog?.success && Array.isArray(catalog?.data)) ? catalog.data : [];
+          this.prepareGroups(groups);
 
-        // IDs المختارة من role.permissions (قائمة مسطحة تضم آباء وأبناء)
-        const preSelected: number[] = Array.isArray(r?.permissions)
-          ? Array.from(new Set((r.permissions as PermissionItem[]).map(p => p.id)))
-          : [];
+          // IDs المختارة من role.permissions (قائمة مسطحة تضم آباء وأبناء)
+          const preSelected: number[] = Array.isArray(r?.permissions)
+            ? Array.from(new Set((r.permissions as PermissionItem[]).map(p => p.id)))
+            : [];
 
-        this.form.patchValue({ permissions_ids: preSelected });
+          this.form.patchValue({ permissions_ids: preSelected });
 
-        // افتح الكل
-        this.groups.forEach(g => this.expanded.add(g.id));
-      },
-      error: () => {
-        this.toastr.showError('Failed to load role data');
-      }
-    });
+          // افتح الكل
+          this.groups.forEach(g => this.expanded.add(g.id));
+        },
+        error: () => {
+          this.toastr.showError('Failed to load role data');
+        }
+      });
   }
 
   private prepareGroups(groups: PermissionGroup[]): void {
@@ -132,7 +143,7 @@ export class AddEditRoleComponent implements OnInit {
         ...g,
         sub_permissions: [...g.sub_permissions].sort((a, b) => a.name.localeCompare(b.name))
       }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      ;
 
     this.groups = sorted;
     this.allPermissionIds = this.groups.flatMap(g => [g.id, ...g.sub_permissions.map(sp => sp.id)]);

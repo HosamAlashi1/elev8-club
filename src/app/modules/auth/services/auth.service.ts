@@ -3,7 +3,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../../services/api.service';
+import { ApiAdminService } from '../../services/api.admin.service';
 import { environment } from 'src/environments/environment';
 import * as CryptoJS from 'crypto-js';
 
@@ -20,15 +20,15 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private apiService: ApiService
+    private ApiAdminService: ApiAdminService
   ) {
     this.isAuthLoadingSubject = new BehaviorSubject<boolean>(false);
     this.isAuthLoading$ = this.isAuthLoadingSubject.asObservable();
   }
 
-  login(email: string, password: string, fcm_token: string = '', device_id: string = ''): Observable<any> {
+  login(email: string, password: string, auth_type: string, fcm_token: string = '', device_id: string = ''): Observable<any> {
     this.isAuthLoadingSubject.next(true);
-    return this.http.post<any>(`${API_BASE_URL}/Auth/login`, { email, password, fcm_token, device_id }).pipe(
+    return this.http.post<any>(`${API_BASE_URL}/Auth/login`, { email, password, auth_type, fcm_token, device_id }).pipe(
       tap({
         next: (res: any) => {
           if (res?.success === true && res?.data?.access_token) {
@@ -37,7 +37,7 @@ export class AuthService {
               user: res.data.data,
               token: res.data.access_token,
               permissions: res.data.permissions,
-              device_id: device_id
+              device_id: device_id,
             };
 
             // تشفير قبل التخزين

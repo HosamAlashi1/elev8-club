@@ -14,10 +14,8 @@ import { ModernSelectComponent } from './modern-select/modern-select.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow, ListChecks, BookOpen, UserCheck, CreditCard, ShoppingCart, User, MapPin, Box, AlertCircle, X, List } from 'lucide-angular';
-import { SliderComponent } from './slider/slider.component';
 import { RouterModule } from '@angular/router';
-import { register } from 'swiper/element/bundle';
-register();
+
 
 
 @NgModule({
@@ -31,7 +29,6 @@ register();
         MultiSelectComponent,
         SearchableSelectComponent,
         ModernSelectComponent,
-        SliderComponent
     ],
     imports: [
         CommonModule,
@@ -81,7 +78,6 @@ register();
         NgxPaginationModule,
         NgxSkeletonLoaderModule,
         LucideAngularModule,
-        SliderComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

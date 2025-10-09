@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Subject, debounceTime } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../../services/http.service';
-import { ApiService } from '../../../../services/api.service';
+import { ApiAdminService } from '../../../../services/api.admin.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
 import { DeleteComponent } from '../../../shared/delete/delete.component';
@@ -51,7 +51,7 @@ export class EditorsComponent implements OnInit {
 
   constructor(
     private http: HttpService,
-    private api: ApiService,
+    private api: ApiAdminService,
     public publicService: PublicService,
     private modalService: NgbModal,
     private toastr: ToastrsService
@@ -93,7 +93,7 @@ export class EditorsComponent implements OnInit {
     let url = `${this.api.users.list}?q=${q}&auth_type=3&size=${this.size}&page=${this.page}`;
     
     if (this.statusFilter) {
-      const statusValue = this.statusFilter === 'active' ? '1' : '0';
+      const statusValue = this.statusFilter === 'active' ? "1" : "2";
       url += `&is_active=${statusValue}`;
     }
     

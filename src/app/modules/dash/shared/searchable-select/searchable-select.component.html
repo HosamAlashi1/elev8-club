@@ -5,6 +5,7 @@
        class="select-button" 
        [class.open]="isOpen"
        [class.has-value]="selectedOption"
+       [ngStyle]="dynamicButtonStyles"
        (click)="toggleDropdown()">
     
     <!-- Display area -->
@@ -46,15 +47,22 @@
       <input #searchInput
              type="text"
              class="search-input"
-             placeholder="Search..."
+             [ngStyle]="dynamicInputStyles"
+             placeholder="Search for items..."
              (input)="onSearchInput($event)"
              (keydown)="onSearchKeydown($event)"
-             [value]="searchQuery">
+             [value]="currentSearchQuery">
       <i class="fe fe-search search-icon"></i>
     </div>
 
+    <!-- Loading state -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner-border spinner-border-sm me-2"></div>
+      <span>Loading data...</span>
+    </div>
+
     <!-- Options list -->
-    <div class="options-container" *ngIf="hasResults">
+    <div class="options-container" *ngIf="!loading && hasResults">
       <div *ngFor="let option of filteredOptions; let i = index; trackBy: trackByFn"
            class="option-item"
            [class.highlighted]="i === highlightedIndex"
@@ -73,16 +81,16 @@
       </div>
     </div>
 
-    <!-- No results -->
-    <div *ngIf="!hasResults && searchQuery" class="no-results">
-      <i class="fe fe-search"></i>
-      <span>No results found for "{{ searchQuery }}"</span>
+    <!-- Show placeholder when no search query and no initial data -->
+    <div *ngIf="!loading && !searchQuery && !hasResults" class="no-results">
+      <i class="fe fe-users"></i>
+      <span>Recent items will appear here...</span>
     </div>
 
-    <!-- Loading state -->
-    <div *ngIf="loading" class="loading-state">
-      <div class="spinner-border spinner-border-sm me-2"></div>
-      <span>Loading options...</span>
+    <!-- No results -->
+    <div *ngIf="!loading && !hasResults && searchQuery" class="no-results">
+      <i class="fe fe-search"></i>
+      <span>No results found for "{{ searchQuery }}"</span>
     </div>
   </div>
 </ng-template>

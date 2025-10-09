@@ -1,3 +1,4 @@
+/* ====== 🧱 Topbar ====== */
 .topbar {
   position: fixed;
   top: 0;
@@ -28,11 +29,10 @@
   transform: translateY(-1px);
 }
 
-/* Navbar تحت التوب بار */
+/* ====== 🧭 Navbar ====== */
 .lp-navbar {
   position: fixed;
-  top: 35px;
-  /* Offset للتوب بار */
+  top: 35px; /* Offset للتوب بار */
   left: 0;
   right: 0;
   z-index: 1035;
@@ -50,7 +50,7 @@
   width: auto;
 }
 
-/* Links */
+/* ====== Links ====== */
 .lp-navbar-links .nav-link {
   color: #111827;
   font-weight: 400;
@@ -65,7 +65,7 @@
   color: #5BBDB7;
 }
 
-/* Actions */
+/* ====== Actions ====== */
 .lp-actions .icon-btn {
   color: #111827;
   font-size: 1.05rem;
@@ -79,9 +79,165 @@
   transform: translateY(-1px);
 }
 
-/* Mobile Menu */
-@media (max-width: 991.98px) {
+/* ====== 🛒 Cart Icon Badge ====== */
+.cart-icon-wrapper {
+  display: inline-block;
+  position: relative;
+}
 
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #5BBDB7;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  min-width: 20px;
+  text-align: center;
+}
+
+/* أنيميشن bump */
+.cart-icon-wrapper.bump {
+  animation: bumpAnim 0.45s ease;
+}
+
+@keyframes bumpAnim {
+  0%   { transform: scale(1); }
+  10%  { transform: scale(1.15); }
+  30%  { transform: scale(0.9); }
+  50%  { transform: scale(1.05); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* ====== 👤 Avatar & Dropdown ====== */
+
+/* إلغاء السهم الافتراضي */
+.avatar-btn::after {
+  display: none !important;
+}
+
+/* الزر نفسه */
+.avatar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* الحلقة حول الصورة */
+.avatar-ring {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5BBDB7, #34d399);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+/* الصورة أو الأحرف */
+.avatar-img,
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #5BBDB7;
+  font-size: 14px;
+}
+
+/* أنيميشن عند hover */
+.avatar-ring:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(91,189,183,0.4);
+}
+
+/* السهم الداخلي */
+.avatar-caret {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #5BBDB7;
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+/* عند فتح القائمة */
+.user-avatar-wrapper.show .avatar-caret {
+  transform: translateX(-50%) rotate(180deg);
+  opacity: 0.85;
+}
+
+/* ====== ✨ Pulse Glow Animation ====== */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(91,189,183,0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(91,189,183,0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(91,189,183,0);
+  }
+}
+
+.user-avatar-wrapper.show .avatar-ring {
+  animation: pulseGlow 1.6s ease-out infinite;
+}
+
+/* ====== Dropdown Menu ====== */
+.user-dropdown-menu {
+  min-width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.1);
+  border: none;
+  padding: 0.5rem 0;
+}
+
+.user-dropdown-menu a.dropdown-item {
+  font-weight: 500;
+  color: #1f2937;
+  padding: 8px 16px;
+  transition: background .2s ease, color .2s ease;
+}
+
+.user-dropdown-menu a.dropdown-item:hover {
+  background: #f0fdfa;
+  color: #189585;
+}
+
+.dropdown-header strong {
+  color: #0f172a;
+}
+
+.dropdown-header small {
+  font-size: 12px;
+}
+
+/* ====== 📱 Mobile Menu ====== */
+@media (max-width: 991.98px) {
   .lp-navbar {
     top: 0px;
   }
@@ -140,7 +296,7 @@
   }
 }
 
-/* Responsive Topbar */
+/* ====== Responsive Topbar ====== */
 @media (max-width: 768px) {
   .topbar {
     text-align: center;
@@ -155,40 +311,3 @@
     margin-top: 0.25rem;
   }
 }
-
-/* ====== Cart Icon Badge ====== */
-.cart-icon-wrapper {
-  display: inline-block;
-  position: relative;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -10px;
-  background: #5BBDB7; /* أو اللون الأساسي عندك */
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1;
-  padding: 3px 6px;
-  border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
-  min-width: 20px;
-  text-align: center;
-}
-
-/* أنيميشن bump */
-.cart-icon-wrapper.bump {
-  animation: bumpAnim 0.45s ease;
-}
-
-@keyframes bumpAnim {
-  0%   { transform: scale(1); }
-  10%  { transform: scale(1.15); }
-  30%  { transform: scale(0.9); }
-  50%  { transform: scale(1.05); }
-  70%  { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
-

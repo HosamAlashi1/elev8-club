@@ -2,25 +2,26 @@
   position: relative;
   width: 100%;
   isolation: isolate; /* Create new stacking context */
-  z-index: 100000;
+  z-index: 1040;
 }
 
 .select-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px; /* 🔧 نفس padding المدخلات */
+  padding: 0 14px; /* 🔧 إزالة padding العمودي لاستخدام الارتفاع الديناميكي */
   font-size: 0.95rem; /* 🔧 نفس font-size المدخلات */
   font-weight: 400;
   line-height: 1.5;
   color: #111827; /* 🔧 نفس لون النص */
   background-color: #fff;
   background-image: none;
-  border: 1px solid #E5E7EB; /* 🔧 نفس لون البوردر */
+  border: 1px solid #d1d5db; /* 🔧 نفس لون البوردر */
   border-radius: 8px; /* 🔧 نفس border-radius المدخلات */
   transition: all 0.3s ease; /* 🔧 نفس transition المدخلات */
   cursor: pointer;
-  min-height: 38px;
+  min-height: 38px; /* 🔧 القيمة الافتراضية - يمكن تجاوزها بـ ngStyle */
+  box-sizing: border-box;
 }
 
 .select-button:hover:not(.disabled) {
@@ -150,13 +151,15 @@
 
 .search-input {
   width: 100%;
-  padding: 12px 2.5rem 12px 14px; /* 🔧 مساحة للأيقونة من اليمين */
+  padding: 0 2.5rem 0 14px; /* 🔧 إزالة padding العمودي لاستخدام الارتفاع الديناميكي */
   font-size: 0.95rem; /* 🔧 نفس font-size المدخلات */
   border: 1px solid #E5E7EB; /* 🔧 نفس border المدخلات */
   border-radius: 8px; /* 🔧 نفس border-radius المدخلات */
   background-color: #fff;
   color: #111827; /* 🔧 نفس لون النص */
   transition: all 0.3s ease; /* 🔧 نفس transition المدخلات */
+  min-height: 38px; /* 🔧 القيمة الافتراضية - يمكن تجاوزها بـ ngStyle */
+  box-sizing: border-box;
 }
 
 .search-input::placeholder {
@@ -275,7 +278,7 @@
 }
 
 .no-results i, .loading-state .spinner-border {
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
   color: #adb5bd;
 }
 
@@ -305,26 +308,9 @@
   }
 }
 
-/* Loading state animation */
+/* Loading state - no visual effect, just disable interaction */
 .loading .select-button {
-  position: relative;
-}
-
-.loading .select-button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(0,123,255,0.1), transparent);
-  animation: shimmer 1.5s infinite;
   pointer-events: none;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
 }
 
 /* Custom scrollbar for dropdown */

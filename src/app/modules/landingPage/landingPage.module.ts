@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LandingPageComponent } from './landingPage.component';
 import { HomeComponent } from './pages/home/home.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // import { ConfirmationDialogService } from './components/confirmation-dialog/confirmation-dialog.service';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 // import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
@@ -48,6 +48,7 @@ import { FreeGuideFormComponent } from './pages/become-author/sections/free-guid
 import { ChooseUsComponent } from './pages/become-author/sections/choose-us/choose-us.component';
 import { SuccessStoriesComponent } from './pages/become-author/sections/success-stories/success-stories.component';
 import { FaqComponent } from './pages/become-author/sections/faq/faq.component';
+import { LandingSharedModule } from './shared/landing-shared.module';
 
 
 
@@ -103,8 +104,10 @@ export function playerFactory() {
     InlineSVGModule,
     NgxSkeletonLoaderModule,
     SharedModule,
+    NgbDropdownModule,
     LandingPageRoutingModule,
-    LottieModule.forRoot({ player: playerFactory })
+    LottieModule.forRoot({ player: playerFactory }),
+    LandingSharedModule
   ],
   providers: [
     // ConfirmationDialogService

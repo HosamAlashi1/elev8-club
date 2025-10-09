@@ -2,85 +2,124 @@
   <section class="lp-section container py-5">
     <div class="row">
 
-      <!-- Sidebar Filters -->
-      <aside class="col-md-3 mb-4 mb-md-0"
-             data-aos="fade-right"
-             data-aos-duration="1000">
-        <div class="filters card border-0 p-3">
-          <h5 class="fw-bold mb-3">Filters</h5>
+     <!-- Sidebar Filters -->
+<aside class="col-md-3 mb-4 mb-md-0" data-aos="fade-right" data-aos-duration="1000">
+  <div class="filters card border-0 p-4 shadow-sm">
+    <h5 class="fw-bold mb-4 text-uppercase text-muted small">Filters</h5>
 
-          <div class="mb-3">
-            <h6 class="fw-semibold mb-3">Categories</h6>
-            <div *ngFor="let cat of categories" class="my-2"
-                 data-aos="fade-right"
-                 data-aos-delay="200"
-                 data-aos-duration="800">
-              <input type="checkbox" class="form-check-input me-2" [id]="cat.title">
-              <label [for]="cat.title" class="form-check-label">{{cat.title}}</label>
-            </div>
-          </div>
+    <!-- Categories -->
+    <div class="filter-section mb-4">
+      <h6 class="fw-semibold mb-3 text-dark">Categories</h6>
+      <div *ngFor="let cat of categories" class="form-check mb-2">
+        <input type="checkbox"
+               class="form-check-input rounded-1 me-2"
+               [id]="'cat-' + cat.id"
+               [checked]="selectedCategoryIds.includes(cat.id)"
+               (change)="onCategoryToggle(cat.id, $any($event.target).checked)">
+        <label [for]="'cat-' + cat.id" class="form-check-label small text-dark">{{ cat.name }}</label>
+      </div>
+    </div>
 
-          <div class="mb-3" data-aos="fade-right" data-aos-delay="300">
-            <h6 class="fw-semibold mb-4">Price Range</h6>
-            <div class="d-flex gap-2">
-              <input type="number" class="form-control form-control-sm" placeholder="Min">
-              <input type="number" class="form-control form-control-sm" placeholder="Max">
-            </div>
-          </div>
+    <!-- Price Range -->
+    <div class="filter-section mb-4">
+      <h6 class="fw-semibold mb-3 text-dark">Price Range</h6>
+      <div class="d-flex gap-2">
+        <input type="number" class="form-control form-control-sm shadow-none" placeholder="Min"
+               #minPrice (change)="onPriceChange(+minPrice.value, +maxPrice.value)">
+        <input type="number" class="form-control form-control-sm shadow-none" placeholder="Max"
+               #maxPrice (change)="onPriceChange(+minPrice.value, +maxPrice.value)">
+      </div>
+    </div>
 
-          <div class="mb-3" data-aos="fade-right" data-aos-delay="400">
-            <h6 class="fw-semibold mb-4">Bestsellers</h6>
-            <div class="form-check">
-              <input type="checkbox" id="bestsellers" class="form-check-input">
-              <label for="bestsellers" class="form-check-label">Show Bestsellers</label>
-            </div>
-          </div>
-        </div>
-      </aside>
+    <!-- Bestsellers -->
+    <div class="filter-section mb-4">
+      <h6 class="fw-semibold mb-3 text-dark">Bestsellers</h6>
+      <div class="form-check">
+        <input type="checkbox" id="bestsellers" class="form-check-input rounded-1"
+               (change)="onToggleBestsellers($any($event.target).checked)">
+        <label for="bestsellers" class="form-check-label small text-dark">Show Bestsellers</label>
+      </div>
+    </div>
+
+    <!-- Reset Filters -->
+    <div class="text-center mt-4">
+      <button type="button" class="btn-outline-custom w-100 py-2 fw-semibold" (click)="resetFilters()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i> Reset Filters
+      </button>
+    </div>
+  </div>
+</aside>
+
 
       <!-- Books Grid -->
       <div class="col-md-9">
-        <div class="d-flex justify-content-between align-items-center mb-3"
-             data-aos="fade-right"
-             data-aos-duration="1000">
+        <div class="d-flex justify-content-between align-items-center mb-3" data-aos="fade-right"
+          data-aos-duration="1000">
           <h4 class="fw-bold mb-0">Browse Books</h4>
-          <select class="form-select form-select-sm w-auto">
-            <option>Sort by: Featured</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Newest</option>
-            <option>Rating</option>
+          <select class="form-select form-select-sm w-auto" (change)="onSortChange($any($event.target).value)">
+            <option value="featured">Sort by: Featured</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+            <option value="newest">Newest</option>
+            <option value="rating">Rating</option>
           </select>
         </div>
 
-        <!-- Skeleton Loader -->
         <div class="row g-3" *ngIf="isLoading">
           <div class="col-6 col-md-4" *ngFor="let sk of skeletonArray">
-            <ngx-skeleton-loader animation="progress-dark"
-              [theme]="{ 'border-radius': '8px', width: '100%', height: '480px' }">
-            </ngx-skeleton-loader>
+            <div class="book-card-skeleton">
+              <!-- صورة -->
+              <div class="skeleton-image-wrapper">
+                <ngx-skeleton-loader [theme]="{ width: '100%', height: '94%', 'border-radius': '4px' }">
+                </ngx-skeleton-loader>
+              </div>
+
+              <div class="px-3">
+                <!-- عنوان -->
+                <ngx-skeleton-loader
+                  [theme]="{ width: '75%', height: '18px', 'margin-bottom': '5px', 'border-radius': '4px' }">
+                </ngx-skeleton-loader>
+
+                <!-- اسم المؤلف -->
+                <ngx-skeleton-loader
+                  [theme]="{ width: '50%', height: '10px', 'margin-bottom': '0x', 'border-radius': '4px' }">
+                </ngx-skeleton-loader>
+
+                <!-- السعر + النجوم -->
+                <div class="d-flex justify-content-between align-items-center">
+                  <ngx-skeleton-loader [theme]="{ width: '40px', height: '12px', 'border-radius': '4px' }">
+                  </ngx-skeleton-loader>
+
+                  <div class="d-flex gap-1">
+                    <ngx-skeleton-loader *ngFor="let i of [1,2,3,4,5]"
+                      [theme]="{ width: '14px', height: '14px', 'border-radius': '2px' }">
+                    </ngx-skeleton-loader>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Books Grid -->
         <div class="row g-3" *ngIf="!isLoading">
           <div class="col-6 col-md-4 cursor-pointer" *ngFor="let book of books; let i = index">
-            <div class="book-card h-100"
-                 [routerLink]="['/book', book.id]"
-                 data-aos-duration="900">
-              <img [src]="book.img" [alt]="book.title" class="img-fluid rounded">
-              <h6 class="fw-bold mt-2 mb-1">{{book.title}}</h6>
-              <p class="text-muted small mb-1">{{book.author}}</p>
-              <div class="price-rating">
-                <p class="fw-bold">{{book.price}}</p>
-                <div class="rating">
-                  <ng-container *ngFor="let star of [1,2,3,4,5]">
-                    <i class="bi" [ngClass]="{
+            <div class="book-card h-100 rounded-bottom-0" [routerLink]="['/book', book.id]" data-aos-duration="900">
+              <img [src]="book.img" [alt]="book.title" class="img-fluid rounded rounded-bottom-0">
+              <div class="p-3">
+                <h6 class="fw-bold mt-2 mb-1">{{book.title}}</h6>
+                <p class="text-muted small mb-1">{{book.author}}</p>
+                <div class="price-rating">
+                  <p class="fw-bold">{{book.price}}</p>
+                  <div class="rating">
+                    <ng-container *ngFor="let star of [1,2,3,4,5]">
+                      <i class="bi" [ngClass]="{
                       'bi-star-fill': star <= book.rating,
                       'bi-star-half': star - 0.5 === book.rating,
                       'bi-star': star > book.rating
                     }"></i>
-                  </ng-container>
+                    </ng-container>
+                  </div>
                 </div>
               </div>
             </div>
@@ -88,10 +127,8 @@
         </div>
 
         <!-- Sentinel -->
-        <div #infiniteScrollSentinel class="mt-3 text-center"
-             data-aos="fade-up"
-             data-aos-delay="200"
-             data-aos-duration="800">
+        <div #infiniteScrollSentinel class="mt-3 text-center" data-aos="fade-up" data-aos-delay="200"
+          data-aos-duration="800">
           <div *ngIf="isLoadingMore" class="row g-3 my-3">
             <div class="col-6 col-md-4" *ngFor="let sk of skeletonArray">
               <ngx-skeleton-loader animation="progress-dark"

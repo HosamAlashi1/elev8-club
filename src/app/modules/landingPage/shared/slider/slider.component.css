@@ -1,0 +1,85 @@
+/* حاوية السلايدر */
+.slider-wrapper {
+  padding: 0 16px;
+  /* مساحة صغيرة يمين/يسار حتى ما تقطع الأسهم */
+  box-sizing: border-box;
+}
+
+.swiper-button-disabled {
+  /* لما يوصل للنهاية لو loop=false */
+  opacity: .35;
+  pointer-events: none;
+}
+
+/* لا تغيّر عرض السلايد! خليه على Swiper */
+swiper-slide {
+  height: auto;
+}
+
+/* بطاقة الكتاب */
+.book-card {
+  background: #ffffff;
+  border-radius: 12px;
+  /* padding: 10px; */
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+}
+
+/* صورة الكتاب */
+.book-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
+
+/* السعر + النجوم في نفس الصف */
+.book-card .price-rating {
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* السعر */
+.book-card .price-rating p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* النجوم */
+.book-card .price-rating .rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.book-card .price-rating .rating .bi {
+  font-size: 14px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.book-card .price-rating .rating .bi-star-fill,
+.book-card .price-rating .rating .bi-star-half {
+  color: #FFC107;
+  /* أصفر */
+}
+
+.rating .bi {
+  color: #FFC107;
+}
+
+.book-card .price-rating .rating .bi-star {
+  color: #E5E7EB;
+  /* رمادي فاتح */
+}

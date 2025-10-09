@@ -17,6 +17,8 @@ import { BooksComponent } from './books/books.component';
 import { AddEditCategoryComponent } from './categories/add-edit/add-edit.component';
 import { AddEditFileComponent } from './files/add-edit/add-edit.component';
 import { PreviewModalComponent } from './files/preview/preview.component';
+import { AddEditBookComponent } from './books/add-edit/add-edit.component';
+import { AdvancedFiltersComponent } from './books/advanced-filters/advanced-filters.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { PreviewModalComponent } from './files/preview/preview.component';
     BooksComponent,
     AddEditCategoryComponent,
     AddEditFileComponent,
-    PreviewModalComponent
+    PreviewModalComponent,
+    AddEditBookComponent,
+    AdvancedFiltersComponent
   ],
   imports: [
     CommonModule,

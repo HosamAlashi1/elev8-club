@@ -36,7 +36,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/catalog/catalog.module').then((m) => m.CatalogModule),
         title: 'Catalog | Dorrance',
-        data: { animation: 'catalogPage', permission: 'VIEW_BOOKS' },
+        data: { animation: 'catalogPage', permission: ['VIEW_BOOKS', 'VIEW_CATEGORIES', 'VIEW_FILES'] },
         canActivate: [PermissionGuard]
       },
       {
@@ -52,7 +52,10 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/users/users.module').then((m) => m.UsersModule),
         title: 'Users Management | Dorrance',
-        data: { animation: 'usersPage', permission: 'VIEW_USERS' },
+        data: {
+          animation: 'usersPage',
+          permission: ['VIEW_AUTHORS', 'VIEW_EDITORS', 'VIEW_CUSTOMERS'] 
+        },
         canActivate: [PermissionGuard]
       },
       {

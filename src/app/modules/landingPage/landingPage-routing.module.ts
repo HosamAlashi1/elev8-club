@@ -1,3 +1,4 @@
+import { AuthGuard } from './../auth/guards/auth.guard';
 // landingPage-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -16,6 +17,7 @@ import { ShippingDetailsComponent } from './pages/orders/shipping-details/shippi
 import { ConfirmationComponent } from './pages/orders/confirmation/confirmation.component';
 import { CartGuard } from './guards/cart.guard';
 import { DetailsGuard } from './guards/details.guard';
+import { LandingAuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -53,9 +55,9 @@ const routes: Routes = [
         component: BecomeAuthorComponent,
         data: { animation: 'BecomeAuthorPage' }
       },
-      { path: 'cart', component: CartComponent, data: { animation: 'CartPage' }, canActivate: [CartGuard] },
-      { path: 'shipping-details', component: ShippingDetailsComponent, data: { animation: 'ShippingDetailsPage' }, canActivate: [DetailsGuard] },
-      { path: 'confirmation/:orderId', component: ConfirmationComponent, data: { animation: 'ConfirmationPage' } }
+      { path: 'cart', component: CartComponent, data: { animation: 'CartPage' }, canActivate: [LandingAuthGuard,CartGuard] },
+      { path: 'shipping-details', component: ShippingDetailsComponent, data: { animation: 'ShippingDetailsPage' }, canActivate: [LandingAuthGuard,DetailsGuard] },
+      { path: 'confirmation/:orderId', component: ConfirmationComponent, data: { animation: 'ConfirmationPage' } , canActivate: [LandingAuthGuard]},
     ]
   }
 ];

@@ -1,29 +1,24 @@
 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3 border-0 my-3">
-    <!-- Left side: search + type + date -->
+    <!-- Left side: search + type -->
     <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
         <!-- Search -->
         <div class="search-wrap position-relative flex-grow-1" style="max-width: 240px;">
             <i class="fe fe-search text-muted position-absolute"></i>
-            <input [(ngModel)]="searchText" class="form-control ps-5" placeholder="Search Categories..."
+            <input [(ngModel)]="searchText" class="form-control ps-5" placeholder="Search Files..."
                 (ngModelChange)="onSearchChange()" />
         </div>
 
         <!-- File Type -->
         <app-modern-select [(ngModel)]="fileTypeFilter" [options]="fileTypeOptions" placeholder2="File Type" size="sm"
-            (selectionChange)="onTypeChange()" [minWidth]="'100px'" [icon]="'fe fe-filter'" [customWidth]="'120px'"
+            (selectionChange)="onTypeChange()" [minWidth]="'140px'" [icon]="'fe fe-filter'" [customWidth]="'150px'"
             [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
-        </app-modern-select>
-
-        <!-- Date Range -->
-        <app-modern-select [(ngModel)]="dateRangeFilter" [options]="dateRangeOptions" placeholder2="Date Range"
-            size="sm" (selectionChange)="onDateChange()" [minWidth]="'160px'" [icon]="'fe fe-filter'"
-            [customWidth]="'180px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
         </app-modern-select>
     </div>
 
     <!-- Right side: view toggle + upload -->
     <div class="d-flex align-items-center gap-2">
-        <div class="btn-shift d-none d-md-flex" [ngClass]="{ 'grid-active': view==='grid', 'list-active': view==='list' }">
+        <div class="btn-shift d-none d-md-flex"
+            [ngClass]="{ 'grid-active': view==='grid', 'list-active': view==='list' }">
             <button class="btn-icon" [class.active]="view==='grid'" (click)="toggleView('grid')">
                 <i class="fe fe-grid"></i>
             </button>
@@ -32,11 +27,11 @@
             </button>
         </div>
 
-        <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+        <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()"
+            *ngIf="publicService.hasPermission('ADD_FILE')">
             <i class="fe fe-upload"></i>
             Upload New File
         </button>
-        <input #fileInput type="file" class="d-none" (change)="onUploadChange($event)" />
     </div>
 </div>
 
@@ -95,23 +90,48 @@
         </div>
     </ng-container>
 
-
     <!-- GRID VIEW -->
     <div *ngIf="!(isLoading$ | async) && view === 'grid'" [class.view-container]="showViewAnimation">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
-            <div class="col" *ngFor="let f of pageFiles">
+            <div class="col" *ngFor="let f of files">
                 <div class="card file-card cursor-pointer" (click)="preview(f)">
-                    <img [src]="f.thumbnail" class="card-img-top object-fit-cover" style="height:200px;" alt="thumb" />
+                    <!-- Smart preview depending on type -->
+                    <div class="card-img-top d-flex justify-content-center align-items-center bg-light"
+                        style="height:200px; overflow:hidden;">
+                        <ng-container [ngSwitch]="getFriendlyType(f.file_type)">
+                            <!-- Image -->
+                            <img *ngSwitchCase="'Image'" [src]="f.file_url" class="w-100 h-100 object-fit-cover"
+                                alt="image" />
+
+                            <!-- PDF -->
+                            <i *ngSwitchCase="'PDF'" class="fe fe-file-text text-danger fs-1"></i>
+
+                            <!-- Document -->
+                            <i *ngSwitchCase="'Document'" class="fe fe-file text-primary fs-1"></i>
+
+                            <!-- Audio -->
+                            <i *ngSwitchCase="'Audio'" class="fe fe-mic text-warning fs-1"></i>
+
+                            <!-- Video -->
+                            <i *ngSwitchCase="'Video'" class="fe fe-video text-info fs-1"></i>
+
+                            <!-- Default -->
+                            <i *ngSwitchDefault class="fe fe-file text-muted fs-1"></i>
+                        </ng-container>
+                    </div>
                     <div class="card-body">
-                        <div class="fw-semibold text-truncate" [ngbTooltip]="f.title" placement="top">{{ f.title }}
+                        <div class="fw-semibold text-truncate" [ngbTooltip]="f.file_name" placement="top">
+                            {{ f.file_name }}
                         </div>
                         <div class="small text-muted mt-1">
-                            <i [class]="getTypeIcon(f.type)"></i>
-                            <span class="ms-1 text-capitalize">{{ f.type }}</span>
+                            <i [class]="getFileIcon(f.file_type)"></i>
+                            <span class="ms-1">{{ getFriendlyType(f.file_type) }}</span>
                             <span class="mx-2">•</span>
-                            <span>{{ f.sizeMB }} MB</span>
+                            <span>{{ f.file_size }}</span>
                         </div>
-                        <div class="small text-muted mt-1">{{ f.date | date:'MMM d, y' }}</div>
+                        <div class="small text-muted mt-1">
+                            {{ f.insert_date | date:'MMM d, y' }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,31 +154,62 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let f of pageFiles">
-                            <td>
-                                <img [src]="f.thumbnail" alt="thumbnail" class="cover rounded-3 cursor-pointer"
-                                    (click)="openImageModal(f.thumbnail || 'assets/img/blank.png')">
-                            </td>
+                        <tr *ngFor="let f of files">
+                            <td class="text-center">
+                                <ng-container [ngSwitch]="getFriendlyType(f.file_type)">
+                                    <!-- 🖼️ صورة -->
+                                    <img *ngSwitchCase="'Image'" [src]="f.file_url" alt="thumb"
+                                        class="cover rounded-3 cursor-pointer shadow-sm" (click)="openPreview(f)" />
 
-                            <td class="title-cell">
-                                <div class="fw-semibold text-dark" [ngbTooltip]="f.title" placement="top">
-                                    {{ f.title }}
+                                    <!-- 📄 PDF -->
+                                    <div *ngSwitchCase="'PDF'"
+                                        class="file-icon-box bg-light d-flex align-items-center justify-content-center rounded-3 cursor-pointer"
+                                        (click)="openPreview(f)">
+                                        <i class="fe fe-file-text text-danger fs-2"></i>
+                                    </div>
+
+                                    <!-- 📝 Word / Document -->
+                                    <div *ngSwitchCase="'Document'"
+                                        class="file-icon-box bg-light d-flex align-items-center justify-content-center rounded-3 cursor-pointer"
+                                        (click)="openPreview(f)">
+                                        <i class="fe fe-file text-primary fs-2"></i>
+                                    </div>
+
+                                    <!-- 🎵 Audio -->
+                                    <div *ngSwitchCase="'Audio'"
+                                        class="file-icon-box bg-light d-flex align-items-center justify-content-center rounded-3 cursor-pointer"
+                                        (click)="openPreview(f)">
+                                        <i class="fe fe-mic text-warning fs-2"></i>
+                                    </div>
+
+                                    <!-- 🎥 Video -->
+                                    <div *ngSwitchCase="'Video'"
+                                        class="file-icon-box bg-light d-flex align-items-center justify-content-center rounded-3 cursor-pointer"
+                                        (click)="openPreview(f)">
+                                        <i class="fe fe-video text-info fs-2"></i>
+                                    </div>
+
+                                    <!-- 📦 أي نوع آخر -->
+                                    <div *ngSwitchDefault
+                                        class="file-icon-box bg-light d-flex align-items-center justify-content-center rounded-3 cursor-pointer"
+                                        (click)="openPreview(f)">
+                                        <i class="fe fe-file text-muted fs-2"></i>
+                                    </div>
+                                </ng-container>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark" [ngbTooltip]="f.file_name" placement="top">
+                                    {{ f.file_name }}
                                 </div>
                             </td>
-
                             <td>
                                 <div class="text-muted text-capitalize">
-                                    <i [class]="getTypeIcon(f.type)"></i>
-                                    <span class="ms-1">{{ f.type }}</span>
+                                    <i [class]="getFileIcon(f.file_type)"></i>
+                                    <span class="ms-1">{{ getFriendlyType(f.file_type) }}</span>
                                 </div>
                             </td>
-
-                            <td class="text-muted">
-                                <div>{{ f.sizeMB }} MB</div>
-                            </td>
-
-                            <td class="text-muted">{{ f.date | date:'MMM d, y' }}</td>
-
+                            <td class="text-muted">{{ f.file_size }}</td>
+                            <td class="text-muted">{{ f.insert_date | date:'MMM d, y' }}</td>
                             <td>
                                 <div class="btn-group dropstart">
                                     <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
@@ -166,12 +217,13 @@
                                     </span>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item">
+                                            <a class="dropdown-item" (click)="download(f)">
                                                 <i class="fe fe-download me-2"></i>Download
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" (click)="edit(f)">
+                                            <a class="dropdown-item" (click)="edit(f)"
+                                                *ngIf="publicService.hasPermission('EDIT_FILE')">
                                                 <i class="fe fe-edit me-2"></i>Edit
                                             </a>
                                         </li>
@@ -179,7 +231,8 @@
                                             <hr class="m-2" />
                                         </li>
                                         <li>
-                                            <a class="dropdown-item">
+                                            <a class="dropdown-item" (click)="delete(f)"
+                                                *ngIf="publicService.hasPermission('DELETE_FILE')">
                                                 <i class="fe fe-trash-2 text-danger me-2"></i>
                                                 <span class="text-danger">Delete</span>
                                             </a>
@@ -197,9 +250,9 @@
     <!-- Footer / Pagination -->
     <div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
         <small class="text-muted">
-            Showing {{ pageFiles.length ? ((page-1)*currentSize + 1) : 0 }}
+            Showing {{ files.length ? ((page-1)*currentSize + 1) : 0 }}
             -
-            {{ (page-1)*currentSize + pageFiles.length }}
+            {{ (page-1)*currentSize + files.length }}
             of {{ totalCount }} files
         </small>
 

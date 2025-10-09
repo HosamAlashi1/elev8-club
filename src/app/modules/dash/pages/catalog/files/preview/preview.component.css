@@ -47,7 +47,7 @@
 .btns{ display:flex; flex-direction:column; gap:12px; }
 .btn-custom{
   /* height:48px; */
-  padding-top:7px;
+  /* padding-top:7px; */
   /* padding-bottom:12px; */
   /* border-radius:8px; */
   font-weight:400;

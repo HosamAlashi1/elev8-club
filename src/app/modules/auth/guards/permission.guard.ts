@@ -15,30 +15,29 @@ export class PermissionGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const requiredPermission = route.data['permission'] as string | string[];
 
-    // لو ما في يوزر أو توكن → logout
+    // 🔹 لو ما في توكن → سجل خروج
     const token = this.publicService.getToken();
     if (!token) {
       this.authService.logout();
       return false;
     }
 
-    // لو permission undefined → اعتبره مفتوح
+    // 🔹 لو ما في صلاحية مطلوبة، اعتبرها مفتوحة
     if (!requiredPermission) {
       return true;
     }
 
-    // فحص الصلاحيات
+    // 🔹 لو كانت مصفوفة → لازم يملك واحدة منها على الأقل
     if (Array.isArray(requiredPermission)) {
-      if (this.publicService.hasAnyPermission(requiredPermission)) {
-        return true;
-      }
-    } else {
-      if (this.publicService.hasPermission(requiredPermission)) {
-        return true;
-      }
+      const hasAny = this.publicService.hasAnyPermission(requiredPermission);
+      if (hasAny) return true;
+    }
+    // 🔹 لو قيمة مفردة
+    else if (this.publicService.hasPermission(requiredPermission)) {
+      return true;
     }
 
-    // لو ما عنده صلاحية → رجعه على dashboard
+    // 🔹 لو ما عنده أي صلاحية مطلوبة → رجعه للداشبورد
     this.router.navigate(['/dashboard']);
     return false;
   }

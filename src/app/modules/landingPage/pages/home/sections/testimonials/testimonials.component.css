@@ -37,6 +37,15 @@
   font-size: .95rem;
 }
 
+.bi {
+  color: #FFC107;
+}
+
+.bi-star {
+  color: #E5E7EB;
+  /* رمادي فاتح */
+}
+
 /* موبايل */
 @media (max-width: 575.98px) {
   .testimonial-card { padding: 1.25rem; }

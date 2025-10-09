@@ -4,7 +4,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PublicService } from '../../../services/public.service';
 import { HttpService } from '../../../services/http.service';
-import { ApiService } from '../../../services/api.service';
+import { ApiAdminService } from '../../../services/api.admin.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -37,7 +37,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       label: 'Catalog',
       icon: 'package',
       route: '/dashboard/catalog',
-      permissions: ['VIEW_BOOKS', 'VIEW_CATEGORIES'] // لازم واحدة منهم على الأقل
+      permissions: ['VIEW_BOOKS', 'VIEW_CATEGORIES', 'VIEW_FILES'] // لازم واحدة منهم على الأقل
     },
     {
       label: 'Orders',
@@ -49,7 +49,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       label: 'Users',
       icon: 'users',
       route: '/dashboard/users',
-      permissions: ['VIEW_USERS']
+      permissions: ['VIEW_AUTHORS', 'VIEW_EDITORS', 'VIEW_CUSTOMERS'] // لازم واحدة منهم على الأقل
     },
     {
       label: 'Reports',
@@ -71,7 +71,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     public publicService: PublicService,
     private router: Router,
     private httpService: HttpService,
-    private api: ApiService
+    private api: ApiAdminService
   ) { }
 
   ngOnInit(): void {

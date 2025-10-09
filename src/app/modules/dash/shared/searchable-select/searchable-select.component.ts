@@ -35,9 +35,11 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
   @Input() valueField: string = 'id';
   @Input() clearable: boolean = true;
   @Input() maxHeight: string = '200px';
+  @Input() inputHeight: string = '38px'; // ارتفاع المدخل
 
   @Output() selectionChange = new EventEmitter<any>();
   @Output() searchChange = new EventEmitter<string>(); // إضافة event للبحث
+  @Output() dropdownOpen = new EventEmitter<void>(); // إضافة event لفتح القائمة
 
   @ViewChild('selectButton') selectButton!: ElementRef<HTMLDivElement>;
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
@@ -53,6 +55,7 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
   isOpen = false;
   highlightedIndex = -1;
   displayText = '';
+  currentSearchQuery = ''; // لتتبع قيمة البحث الحالية
 
   private destroy$ = new Subject<void>();
   private onChange = (value: any) => {};
@@ -187,13 +190,21 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
 
   private openDropdown(): void {
     this.highlightedIndex = -1;
+    this.currentSearchQuery = ''; // تفريغ قيمة البحث
     this.createDropdownPortal();
     this.calculateDropdownPosition();
+    
+    // إرسال حدث فتح القائمة لتحميل البيانات الأولية
+    this.dropdownOpen.emit();
     
     // Add class to body to manage overflow if needed
     document.body.classList.add('dropdown-open');
     
     setTimeout(() => {
+      // تفريغ مدخل البحث بدون إرسال event
+      if (this.searchInput?.nativeElement) {
+        this.searchInput.nativeElement.value = '';
+      }
       this.searchInput?.nativeElement.focus();
     }, 100);
   }
@@ -201,7 +212,8 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
   closeDropdown(): void {
     this.isOpen = false;
     this.highlightedIndex = -1;
-    this.searchQuery$.next('');
+    // لا نرسل searchQuery فارغ لتجنب إرسال طلب جديد
+    // this.searchQuery$.next('');
     this.destroyDropdownPortal();
     
     // Remove class from body
@@ -258,6 +270,7 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
 
   onSearchInput(event: Event): void {
     const target = event.target as HTMLInputElement;
+    this.currentSearchQuery = target.value;
     this.searchQuery$.next(target.value);
     this.highlightedIndex = -1;
   }
@@ -402,11 +415,27 @@ export class SearchableSelectComponent implements ControlValueAccessor, OnInit, 
   }
 
   get searchQuery(): string {
-    return this.searchQuery$.value;
+    return this.currentSearchQuery;
   }
 
   get isValid(): boolean {
     return !this.required || !!this.selectedOption;
+  }
+
+  get dynamicInputStyles(): any {
+    return {
+      'min-height': this.inputHeight,
+      'height': this.inputHeight,
+      'display': 'flex',
+      'align-items': 'center'
+    };
+  }
+
+  get dynamicButtonStyles(): any {
+    return {
+      'min-height': this.inputHeight,
+      'height': this.inputHeight
+    };
   }
 
   trackByFn(index: number, option: SearchableOption): any {

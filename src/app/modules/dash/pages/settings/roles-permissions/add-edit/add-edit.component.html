@@ -1,13 +1,13 @@
 <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <!-- Header -->
-  <div class="modal-header">
+  <div class="modal-header" data-aos="fade-down">
     <h4 class="modal-title">{{ isEdit ? 'Edit Role' : 'Add New Role' }}</h4>
     <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
   </div>
 
   <div class="modal-body">
     <!-- Role Name -->
-    <div class="mb-3">
+    <div class="mb-3" data-aos="fade-up" data-aos-delay="100">
       <label class="form-label">Role Name</label>
       <input
         class="form-control"
@@ -24,59 +24,70 @@
     </div>
 
     <!-- Permissions -->
-    <div class="mb-3">
+    <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
       <label class="form-label d-flex justify-content-between align-items-center">
         Permissions
-        <a class="small" (click)="toggleSelectAll(!allSelected)"  [style.color]="'#5BBDB7'">
+        <a class="small" (click)="toggleSelectAll(!allSelected)" [style.color]="'#5BBDB7'">
           {{ allSelected ? 'Unselect All' : 'Select All' }}
         </a>
       </label>
 
-      <div class="permissions-container border rounded p-3" style="max-height: 420px; overflow-y: auto;">
-        <!-- ما في صلاحيات -->
-        <div *ngIf="!groups?.length" class="text-center text-muted py-4">
+      <div
+        class="permissions-container border rounded p-3"
+        style="max-height: 420px; overflow-y: auto; position: relative;"
+      >
+        <!-- 🔹 Spinner أثناء تحميل الصلاحيات -->
+        <div *ngIf="isLoading$ | async" class="loader-overlay d-flex justify-content-center align-items-center">
+          <div class="spinner-border" role="status" [style.color]="'#5BBDB7'">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <!-- 🔹 ما في صلاحيات -->
+        <div *ngIf="!(isLoading$ | async) && !groups?.length" class="text-center text-muted py-4">
           <i class="fe fe-shield fs-3 d-block mb-2"></i>
           No permissions available.
         </div>
 
-        <!-- مجموعات الصلاحيات -->
-        <ng-container *ngFor="let g of groups">
-          <!-- عنوان الجروب -->
-          <div class="fw-bold text-uppercase small text-secondary border-bottom pb-2 mt-3 mb-2 d-flex justify-content-between align-items-center">
-            <span>{{ g.name }}</span>
-            <a class="small"
-               (click)="toggleGroup(g, !isGroupAllChecked(g))"
-               [style.color]="'#5BBDB7'">
-               {{ isGroupAllChecked(g) ? 'Unselect group' : 'Select group' }}
-            </a>
-          </div>
+        <!-- 🔹 مجموعات الصلاحيات -->
+        <ng-container *ngIf="!(isLoading$ | async)">
+          <ng-container *ngFor="let g of groups; let i = index">
+            <div
+              data-aos="fade-up"
+              [attr.data-aos-delay]="(i + 1) * 100"
+              class="fw-bold text-uppercase small text-secondary border-bottom pb-2 mt-3 mb-2 d-flex justify-content-between align-items-center"
+            >
+              <span>{{ g.name }}</span>
+              <a class="small" (click)="toggleGroup(g, !isGroupAllChecked(g))" [style.color]="'#5BBDB7'">
+                {{ isGroupAllChecked(g) ? 'Unselect group' : 'Select group' }}
+              </a>
+            </div>
 
-          <!-- عناصر الصلاحيات -->
-          <div class="row">
-            <div class="col-md-6 mb-2" *ngFor="let sp of g.sub_permissions">
-              <div class="form-check form-switch custom-switch-pink">
-                <input
-                  #permCbx
-                  type="checkbox"
-                  class="form-check-input"
-                  [checked]="isChecked(sp.id)"
-                  (change)="toggleChild(g, sp, permCbx.checked)"
-                  id="perm_{{ sp.id }}"
-                />
-                <label class="form-check-label text-capitalize" for="perm_{{ sp.id }}">
-                  {{ sp.name }}
-                  <!-- <span class="text-muted">(<code>{{ sp.code }}</code>)</span> -->
-                </label>
+            <div class="row">
+              <div class="col-md-6 mb-2" *ngFor="let sp of g.sub_permissions">
+                <div class="form-check form-switch custom-switch-pink">
+                  <input
+                    #permCbx
+                    type="checkbox"
+                    class="form-check-input"
+                    [checked]="isChecked(sp.id)"
+                    (change)="toggleChild(g, sp, permCbx.checked)"
+                    id="perm_{{ sp.id }}"
+                  />
+                  <label class="form-check-label text-capitalize" for="perm_{{ sp.id }}">
+                    {{ sp.name }}
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
+          </ng-container>
         </ng-container>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-  <div class="modal-footer">
+  <div class="modal-footer" data-aos="fade-up" data-aos-delay="300">
     <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
       <i class="fe fe-x me-2"></i> Close
     </button>

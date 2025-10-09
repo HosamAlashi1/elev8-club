@@ -21,6 +21,7 @@ import { EditorsComponent } from './editors/editors.component';
 import { AddEditCustomerComponent } from './customers/add-edit/add-edit.component';
 import { AddEditAuthorComponent } from './authors/add-edit/add-edit.component';
 import { AddEditEditorComponent } from './editors/add-edit/add-edit.component';
+import { AdvancedFiltersComponent } from './customers/advanced-filters/advanced-filters.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { AddEditEditorComponent } from './editors/add-edit/add-edit.component';
     EditorsComponent,
     AddEditCustomerComponent,
     AddEditAuthorComponent,
-    AddEditEditorComponent
+    AddEditEditorComponent,
+    AdvancedFiltersComponent
   ],
   imports: [
     CommonModule,

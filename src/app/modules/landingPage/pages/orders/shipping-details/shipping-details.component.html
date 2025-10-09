@@ -1,88 +1,27 @@
 <div class="container py-5 mt-5">
-  <h2 class="page-title mb-4 mt-5" data-aos="fade-down" data-aos-duration="800" data-aos-once="true">Shipping Details</h2>
+  <h2 class="page-title mb-4 mt-5" data-aos="fade-down" data-aos-duration="800" data-aos-once="true">
+    Shipping Details
+  </h2>
 
   <div class="row g-4">
     <!-- اليسار -->
     <div class="col-lg-8">
       <form [formGroup]="form" novalidate>
-
         <!-- الكارد الكبير -->
         <div class="shipping-card" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200" data-aos-once="true">
           <div class="card-body">
 
-            <!-- (1) Create Your Account -->
-            <div class="section" formGroupName="account" data-aos="fade-right" data-aos-duration="600" data-aos-delay="400" data-aos-once="true">
-              <button type="button" class="section-header" (click)="openAccount = !openAccount">
-                <h5 class="section-title">1. Create Your Account</h5>
-                <i class="chev" [class.open]="openAccount"></i>
-              </button>
-
-              <div class="section-body" [@slideAnimation]="openAccount ? 'open' : 'closed'">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <input class="form-control" [class.is-invalid]="fA['username'].touched && fA['username'].invalid" placeholder="Enter username" formControlName="username">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['username'].touched && fA['username'].invalid">
-                      <span *ngIf="fA['username'].errors?.['required']">Username is required</span>
-                      <span *ngIf="fA['username'].errors?.['minlength']">Username must be at least 3 characters</span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <input class="form-control" [class.is-invalid]="fA['email'].touched && fA['email'].invalid" placeholder="Email" type="email" formControlName="email">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['email'].touched && fA['email'].invalid">
-                      <span *ngIf="fA['email'].errors?.['required']">Email is required</span>
-                      <span *ngIf="fA['email'].errors?.['email']">Please enter a valid email</span>
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <input class="form-control" [class.is-invalid]="fA['password'].touched && fA['password'].invalid" type="password" placeholder="Enter password" formControlName="password">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['password'].touched && fA['password'].invalid">
-                      <span *ngIf="fA['password'].errors?.['required']">Password is required</span>
-                      <span *ngIf="fA['password'].errors?.['minlength']">Password must be at least 6 characters</span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <input class="form-control" [class.is-invalid]="fA['confirmPassword'].touched && fA['confirmPassword'].invalid" type="password" placeholder="Confirm password" formControlName="confirmPassword">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['confirmPassword'].touched && fA['confirmPassword'].invalid">
-                      <span *ngIf="fA['confirmPassword'].errors?.['required']">Please confirm your password</span>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <input class="form-control" [class.is-invalid]="fA['phoneNumber'].touched && fA['phoneNumber'].invalid" placeholder="Phone Number" formControlName="phoneNumber">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['phoneNumber'].touched && fA['phoneNumber'].invalid">
-                      <span *ngIf="fA['phoneNumber'].errors?.['required']">Phone number is required</span>
-                      <span *ngIf="fA['phoneNumber'].errors?.['pattern']">Please enter a valid phone number</span>
-                    </div>
-                  </div>
-
-                  <div class="col-12 d-flex gap-2">
-                    <input id="agree" type="checkbox" class="form-check-input" formControlName="agree">
-                    <label for="agree" class="form-check-label small text-muted">
-                      I agree to the Terms &amp; Conditions
-                    </label>
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fA['agree'].touched && fA['agree'].invalid">
-                      <span *ngIf="fA['agree'].errors?.['required']">You must agree to the terms</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="text-danger small mt-2" [@errorAnimation] *ngIf="form.errors?.['passwordMismatch']">
-                Password and confirmation do not match.
-              </div>
-            </div>
-
-            <!-- Divider -->
-            <hr class="divider" data-aos="fade" data-aos-duration="400" data-aos-delay="600" data-aos-once="true">
-
-            <!-- (2) Shipping -->
-            <div class="section" formGroupName="shipping" data-aos="fade-left" data-aos-duration="600" data-aos-delay="800" data-aos-once="true">
+            <!-- (1) Shipping -->
+            <div class="section" formGroupName="shipping" data-aos="fade-left" data-aos-duration="600"
+              data-aos-delay="400" data-aos-once="true">
               <button type="button" class="section-header" (click)="openShipping = !openShipping">
-                <h5 class="section-title">2. Shipping</h5>
+                <h5 class="section-title">Shipping</h5>
                 <i class="chev" [class.open]="openShipping"></i>
               </button>
-              <!-- طرق الشحن -->
+
               <div class="section-body" [@slideAnimation]="openShipping ? 'open' : 'closed'">
+
+                <!-- طرق الشحن -->
                 <div class="method-grid mb-3">
                   <button type="button" class="method-card" [class.active]="method==='delivery'"
                     (click)="setMethod('delivery')">
@@ -121,7 +60,7 @@
                   </button>
                 </div>
 
-                <!-- Delivery options -->
+                <!-- خيارات السرعة -->
                 <h6 class="section-subtitle">Delivery options</h6>
                 <div class="delivery-options-grid mb-4" [class.disabled]="method==='pickup'">
                   <label class="opt">
@@ -148,19 +87,30 @@
                 <h6 class="section-subtitle">Delivery information</h6>
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <label class="form-label">First name*</label>
-                    <input class="form-control" [class.is-invalid]="fS['firstName'].touched && fS['firstName'].invalid" placeholder="John" formControlName="firstName">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['firstName'].touched && fS['firstName'].invalid">Required</div>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Last name*</label>
-                    <input class="form-control" [class.is-invalid]="fS['lastName'].touched && fS['lastName'].invalid" placeholder="Doe" formControlName="lastName">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['lastName'].touched && fS['lastName'].invalid">Required</div>
+                    <label class="form-label">First Name*</label>
+                    <input class="form-control"
+                      [class.is-invalid]="fS['first_name'].touched && fS['first_name'].invalid" placeholder="John"
+                      formControlName="first_name">
+                    <div class="invalid-hint" [@errorAnimation]
+                      *ngIf="fS['first_name'].touched && fS['first_name'].invalid">
+                      Required
+                    </div>
                   </div>
 
+                  <div class="col-md-6">
+                    <label class="form-label">Last Name*</label>
+                    <input class="form-control" [class.is-invalid]="fS['last_name'].touched && fS['last_name'].invalid"
+                      placeholder="Doe" formControlName="last_name">
+                    <div class="invalid-hint" [@errorAnimation]
+                      *ngIf="fS['last_name'].touched && fS['last_name'].invalid">
+                      Required
+                    </div>
+                  </div>
+                  
                   <div class="col-12">
                     <label class="form-label">Phone Number*</label>
-                    <input class="form-control" [class.is-invalid]="fS['phone'].touched && fS['phone'].invalid" placeholder="+1 (555) 123-4567" formControlName="phone">
+                    <input class="form-control" [class.is-invalid]="fS['phone'].touched && fS['phone'].invalid"
+                      placeholder="+1 (555) 123-4567" formControlName="phone">
                     <div class="invalid-hint" [@errorAnimation] *ngIf="fS['phone'].touched && fS['phone'].invalid">
                       <span *ngIf="fS['phone'].errors?.['required']">Phone number is required</span>
                       <span *ngIf="fS['phone'].errors?.['pattern']">Please enter a valid phone number</span>
@@ -169,20 +119,27 @@
 
                   <div class="col-12">
                     <label class="form-label">Address*</label>
-                    <input class="form-control" [class.is-invalid]="fS['address1'].touched && fS['address1'].invalid" placeholder="1234 Main Street" formControlName="address1">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['address1'].touched && fS['address1'].invalid">Required</div>
+                    <input class="form-control" [class.is-invalid]="fS['address1'].touched && fS['address1'].invalid"
+                      placeholder="1234 Main Street" formControlName="address1">
+                    <div class="invalid-hint" [@errorAnimation]
+                      *ngIf="fS['address1'].touched && fS['address1'].invalid">Required</div>
                     <a class="add-line small text-decoration-none d-block mt-1">Add address line</a>
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">City*</label>
-                    <input class="form-control" [class.is-invalid]="fS['city'].touched && fS['city'].invalid" placeholder="New York" formControlName="city">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['city'].touched && fS['city'].invalid">Required</div>
+                    <input class="form-control" [class.is-invalid]="fS['city'].touched && fS['city'].invalid"
+                      placeholder="New York" formControlName="city">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['city'].touched && fS['city'].invalid">
+                      Required</div>
                   </div>
+
                   <div class="col-md-6">
                     <label class="form-label">Zip code*</label>
-                    <input class="form-control" [class.is-invalid]="fS['zip'].touched && fS['zip'].invalid" placeholder="12345" formControlName="zip">
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['zip'].touched && fS['zip'].invalid">Required</div>
+                    <input class="form-control" [class.is-invalid]="fS['zip'].touched && fS['zip'].invalid"
+                      placeholder="12345" formControlName="zip">
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['zip'].touched && fS['zip'].invalid">Required
+                    </div>
                   </div>
 
                   <div class="col-md-6">
@@ -192,13 +149,16 @@
                       <option *ngFor="let st of states" [value]="st">{{ st }}</option>
                     </select>
                   </div>
+
                   <div class="col-md-6">
                     <label class="form-label">Country*</label>
-                    <select class="form-control" [class.is-invalid]="fS['country'].touched && fS['country'].invalid" formControlName="country">
+                    <select class="form-control" [class.is-invalid]="fS['country'].touched && fS['country'].invalid"
+                      formControlName="country">
                       <option value="" disabled selected>Select country...</option>
                       <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
                     </select>
-                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['country'].touched && fS['country'].invalid">Required</div>
+                    <div class="invalid-hint" [@errorAnimation] *ngIf="fS['country'].touched && fS['country'].invalid">
+                      Required</div>
                   </div>
                 </div>
 
@@ -207,7 +167,6 @@
 
           </div><!-- end card-body -->
         </div><!-- end card -->
-
       </form>
     </div>
 

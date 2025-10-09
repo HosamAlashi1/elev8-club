@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { HttpService } from '../../../services/http.service';
-import { ApiService } from '../../../services/api.service';
+import { ApiAdminService } from '../../../services/api.admin.service';
 import { PublicService } from '../../../services/public.service';
 import { ToastrsService } from '../../../services/toater.service';
 import { DeleteComponent } from '../../shared/delete/delete.component';
@@ -49,7 +49,7 @@ export class AdminsComponent implements OnInit {
 
   constructor(
     private http: HttpService,
-    private api: ApiService,
+    private api: ApiAdminService,
     public publicService: PublicService,
     private modalService: NgbModal,
     private toastr: ToastrsService

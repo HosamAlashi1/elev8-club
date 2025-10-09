@@ -1,22 +1,49 @@
 import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpInterceptor, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpInterceptor,
+  HttpEvent,
+  HttpErrorResponse
+} from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AuthService } from '../modules/auth/services/auth.service';
 import { Router } from '@angular/router';
-import { PublicService } from '../modules/services/public.service'; // استدعاء السيرفس
+import * as CryptoJS from 'crypto-js';
+import { environment } from 'src/environments/environment';
+import { AuthService } from '../modules/auth/services/auth.service';
+import { PublicService } from '../modules/services/public.service';
+import { LandingAuthSessionService } from '../modules/services/auth-session.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
-    private authService: AuthService,
     private router: Router,
-    private publicService: PublicService
+    private authService: AuthService,
+    private publicService: PublicService,
+    private landingSession: LandingAuthSessionService
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // جلب التوكن المفكوك
-    const token = this.publicService.getToken();
+    let token: string | null = null;
+
+    const currentUrl = this.router.url;
+
+    const isDashboard = currentUrl.startsWith('/dashboard') || currentUrl.startsWith('/auth');
+
+    const isLanding = currentUrl === '/' ||
+                      currentUrl.startsWith('/shop') ||
+                      currentUrl.startsWith('/cart') ||
+                      currentUrl.startsWith('/shipping') ||
+                      currentUrl.startsWith('/become-author') ||
+                      currentUrl.startsWith('/featured-author') ||
+                      currentUrl.startsWith('/author-events');
+
+    if (isLanding) {
+      token = this.landingSession.token ?? this.getLandingTokenFromStorage();
+    } else if (isDashboard) {
+      token = this.publicService.getToken();
+    }
 
     if (token) {
       req = req.clone({
@@ -28,33 +55,36 @@ export class AuthInterceptor implements HttpInterceptor {
       tap({
         next: () => {},
         error: (err: HttpErrorResponse) => {
-          // 1. تجاهل أخطاء logout نفسه
-          if (req.url.includes('/Auth/logout')) {
-            return;
-          }
+          if (req.url.includes('/Auth/logout')) return;
 
-          // 2. لو 401 → اعمل logout بشرط ما أكون في صفحة login
-          if (err.status === 401 && this.router.url !== '/auth/login') {
-            this.authService.logout();
-            return;
-          }
-
-          // 3. backend response الجديد (success + msg)
-          const backendSuccess = err?.error?.success;
-          const backendMsg = err?.error?.msg;
-
-          if (backendSuccess === false && backendMsg?.toLowerCase().includes('unauth') && this.router.url !== '/auth/login') {
-            this.authService.logout();
-            return;
-          }
-
-          // 4. دعم statusCode القديم لو موجود
-          const backendStatusCode = err?.error?.statusCode;
-          if (backendStatusCode === 401 && this.router.url !== '/auth/login') {
-            this.authService.logout();
+          if (err.status === 401) {
+            if (isLanding) {
+              // 🧭 الزبون في واجهة الموقع
+              this.landingSession.logout();
+              // بإمكانك بدل الرجوع للصفحة الرئيسية تفتح مودال تسجيل دخول
+              this.router.navigate(['/']);
+            } else if (isDashboard) {
+              // 🧭 موظف / مسؤول في لوحة التحكم
+              this.authService.logout();
+              this.router.navigate(['/auth/login']);
+            }
           }
         }
       })
     );
+  }
+
+  private getLandingTokenFromStorage(): string | null {
+    const key = `${environment.prefix}-landing-data`;
+    const encrypted = localStorage.getItem(key);
+    if (!encrypted) return null;
+
+    try {
+      const decrypted = CryptoJS.AES.decrypt(encrypted, environment.cryptoKey).toString(CryptoJS.enc.Utf8);
+      const data = JSON.parse(decrypted);
+      return data?.token ?? null;
+    } catch {
+      return null;
+    }
   }
 }

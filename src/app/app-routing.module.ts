@@ -15,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'error',
-    loadChildren: () => import('./modules/error/error.module').then((m) => m.ErrorModule), 
+    loadChildren: () => import('./modules/error/error.module').then((m) => m.ErrorModule),
     data: { animation: 'error' }
   },
   {
@@ -24,6 +24,14 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/dash/dash.module').then((m) => m.DashModule),
     data: { animation: 'dashboard' }
   },
+  
+  // coming soon 
+  // {
+  //   path: 'audio-portal',
+  //   canActivate: [AudioPoralAuthGuard],
+  //   loadChildren: () => import('./modules/audioPortal/audioPortal.module').then((m) => m.DashModule),
+  //   data: { animation: 'dashboard' }
+  // },
 
   { path: '**', redirectTo: 'error/404' },
 ];

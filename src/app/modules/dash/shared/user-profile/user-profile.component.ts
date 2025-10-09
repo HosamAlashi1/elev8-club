@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PublicService } from '../../../services/public.service';
 import { HttpService } from '../../../services/http.service';
-import { ApiService } from '../../../services/api.service';
+import { ApiAdminService } from '../../../services/api.admin.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteComponent } from '../delete/delete.component';
 
@@ -15,7 +15,7 @@ export class UserProfileComponent {
   public userId: any = {};
   userData: any = {};
   constructor(public activeModal: NgbActiveModal, public publicService: PublicService, public httpService: HttpService,
-    private api: ApiService, private modalService: NgbModal) { }
+    private api: ApiAdminService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.getUser();

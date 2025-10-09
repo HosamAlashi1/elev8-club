@@ -14,7 +14,8 @@
         <i class="fe fe-layers me-2"></i> Categories
       </button>
 
-      <button #tabBtn class="tab-btn" [class.active]="activeTab === 'files'" (click)="setTab('files')" data-aos="fade-up" data-aos-delay="300">
+      <button #tabBtn *ngIf="publicService.hasPermission('VIEW_FILES')"
+        class="tab-btn" [class.active]="activeTab === 'files'" (click)="setTab('files')" data-aos="fade-up" data-aos-delay="300">
         <i class="fe fe-folder me-2"></i> Files & Assets
       </button>
 

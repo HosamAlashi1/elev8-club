@@ -64,7 +64,7 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
   @Input() clearable: boolean = false;
   @Input() searchable: boolean = false;
   @Input() minWidth: string = '160px';
-  
+
   // خصائص التخصيص الجديدة
   @Input() customWidth?: string;
   @Input() backgroundColor?: string = '#EFEFEF'; // الخلفية الافتراضية
@@ -80,13 +80,13 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
   selectedOption: SelectOption | null = null;
   searchTerm = '';
   filteredOptions: SelectOption[] = [];
-  
+
   // معرف فريد لكل instance
   private componentId: string;
   private closeAllSubscription: Subscription;
 
-  private onChange = (value: any) => {};
-  private onTouched = () => {};
+  private onChange = (value: any) => { };
+  private onTouched = () => { };
 
   constructor(private modernSelectService: ModernSelectService) {
     // إنشاء معرف فريد لكل كومبوننت
@@ -95,7 +95,7 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
 
   ngOnInit() {
     this.filteredOptions = [...this.options];
-    
+
     // الاشتراك في خدمة إغلاق جميع الـ selects
     this.closeAllSubscription = this.modernSelectService.closeAll$.subscribe((excludeId: string) => {
       // إذا كان الـ ID المستثنى مختلف عن ID هذا الكومبوننت، أغلق الـ dropdown
@@ -104,7 +104,15 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
       }
     });
   }
-  
+
+  ngOnChanges() {
+    // إذا تغيّرت الخيارات بعد ما يكون عندي selectedValue
+    if (this.options?.length && this.selectedValue !== null && this.selectedValue !== undefined) {
+      this.selectedOption = this.options.find(opt => opt.value === this.selectedValue) || null;
+    }
+  }
+
+
   ngOnDestroy() {
     // إلغاء الاشتراك لتجنب memory leaks
     if (this.closeAllSubscription) {
@@ -121,9 +129,9 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
   }
 
   get hasSelection(): boolean {
-    return this.selectedValue !== null && 
-           this.selectedValue !== undefined && 
-           this.selectedValue !== '';
+    return this.selectedValue !== null &&
+      this.selectedValue !== undefined &&
+      this.selectedValue !== '';
   }
 
   // دالة للتحقق من وجود قيمة حقيقية (ليس "All" أو أول خيار)
@@ -131,14 +139,14 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
     if (!this.hasSelection || !this.selectedOption?.label) {
       return false;
     }
-    
+
     const label = this.selectedOption.label.toLowerCase();
     // التحقق من أن الخيار ليس "الكل" أو "جميع" أو "All" أو القيمة الفارغة
-    return this.selectedValue !== '' && 
-           !label.includes('الكل') && 
-           !label.includes('جميع') && 
-           !label.startsWith('all') &&
-           !label.startsWith('كل');
+    return this.selectedValue !== '' &&
+      !label.includes('الكل') &&
+      !label.includes('جميع') &&
+      !label.startsWith('all') &&
+      !label.startsWith('كل');
   }
 
   // دالة للتحقق من وجود أيقونة
@@ -151,12 +159,12 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
     if (!option || option.value === '' || option.value === null || option.value === undefined) {
       return false;
     }
-    
+
     const label = option.label.toLowerCase();
-    return !label.includes('الكل') && 
-           !label.includes('جميع') && 
-           !label.startsWith('all') &&
-           !label.startsWith('كل');
+    return !label.includes('الكل') &&
+      !label.includes('جميع') &&
+      !label.startsWith('all') &&
+      !label.startsWith('كل');
   }
 
   // دالة للحصول على الستايلات المخصصة
@@ -176,21 +184,21 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
       event.preventDefault();
       event.stopPropagation();
     }
-    
+
     if (this.disabled) return;
-    
+
     // إذا كان سيفتح، أغلق جميع الـ selects الأخرى أولاً
     if (!this.isOpen) {
       this.modernSelectService.closeAllExcept(this.componentId);
     }
-    
+
     this.isOpen = !this.isOpen;
     this.onTouched();
-    
+
     if (this.isOpen) {
       this.searchTerm = '';
       this.filteredOptions = [...this.options];
-      
+
       // Focus search input if searchable
       setTimeout(() => {
         if (this.searchable) {
@@ -208,13 +216,13 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
       event.preventDefault();
       event.stopPropagation();
     }
-    
+
     if (option.disabled) return;
-    
+
     this.selectedValue = option.value;
     this.selectedOption = option;
     this.isOpen = false;
-    
+
     this.onChange(this.selectedValue);
     this.selectionChange.emit(this.selectedValue);
   }
@@ -224,10 +232,10 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
       event.preventDefault();
       event.stopPropagation();
     }
-    
+
     this.selectedValue = null;
     this.selectedOption = null;
-    
+
     this.onChange(null);
     this.selectionChange.emit(null);
   }
@@ -244,17 +252,17 @@ export class ModernSelectComponent implements OnInit, OnDestroy, ControlValueAcc
 
   onDocumentClick(event: Event) {
     const target = event.target as HTMLElement;
-    
+
     // البحث عن الـ container الخاص بهذا الكومبوننت تحديداً
     const allSelectContainers = document.querySelectorAll('.modern-select-container');
     let clickedInsideAnySelect = false;
-    
+
     allSelectContainers.forEach(container => {
       if (container.contains(target)) {
         clickedInsideAnySelect = true;
       }
     });
-    
+
     // إذا ما انضغط جوا أي select، أغلق الكل
     if (!clickedInsideAnySelect) {
       this.modernSelectService.closeAll();

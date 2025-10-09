@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ApiLandingService } from '../../../services/api.landing.service';
+import { HttpService } from 'src/app/modules/services/http.service';
 
 interface Author {
   name: string;
   book: string;
   description: string;
   image: string;
-  link?: string;   // الرابط
   reverse?: boolean;
+  link?: string;
 }
 
 @Component({
@@ -14,32 +16,47 @@ interface Author {
   templateUrl: './authors.component.html',
   styleUrls: ['./authors.component.css']
 })
-export class AuthorsComponent {
+export class AuthorsComponent implements OnInit {
   title = 'Featured Authors';
   subtitle = 'Discover Our Most Notable Writers';
 
-  authors: Author[] = [
-    {
-      name: 'Elizabeth Morgan',
-      book: 'The Silent Garden',
-      description: `Award-winning novelist Elizabeth Morgan brings forth a compelling tale of mystery and intrigue set in the lush gardens of Victorian England. Her masterful storytelling has earned her critical acclaim worldwide.`,
-      image: 'assets/img/landing/featured-author/author1.png',
-      link: '' // حاليًا فاضي
-    },
-    {
-      name: 'James Harrison',
-      book: 'Quantum Horizons',
-      description: `Bestselling science fiction author James Harrison explores the boundaries of human consciousness in his groundbreaking new novel. A perfect blend of scientific accuracy and imaginative storytelling.`,
-      image: 'assets/img/landing/featured-author/author2.png',
-      reverse: true,
-      link: '' // حاليًا فاضي
-    },
-    {
-      name: 'Sarah Chen',
-      book: 'The Paper Lantern',
-      description: `Drawing from her rich cultural heritage, Sarah Chen weaves a beautiful narrative of family, tradition, and modern life in her debut novel that has captured readers’ hearts globally.`,
-      image: 'assets/img/landing/featured-author/author3.png',
-      link: '' // حاليًا فاضي
-    }
-  ];
+  authors: Author[] = [];
+  isLoading = false;
+  errorMsg = '';
+
+  constructor(
+    private api: ApiLandingService,
+    private http: HttpService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadFeaturedAuthors();
+  }
+
+  loadFeaturedAuthors(): void {
+    this.isLoading = true;
+    this.http.listGet(this.api.featured_author.list, 'featured_author').subscribe({
+      next: (res) => {
+        if (res?.success && Array.isArray(res?.data)) {
+          // 🧠 تحويل الـ response إلى الـ interface المحلي
+          this.authors = res.data.map((item: any, index: number) => ({
+            name: item.author?.full_name ?? 'Unknown Author',
+            book: item.title,
+            description: item.description,
+            image: item.author?.image || 'assets/img/landing/featured-author/default.png',
+            reverse: index % 2 !== 0, // قلب التصميم كل ثاني كارد
+            link: `/author/${item.author?.id ?? 0}`
+          }));
+        } else {
+          this.errorMsg = 'No featured authors found.';
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching featured authors:', err);
+        this.errorMsg = 'Failed to load featured authors.';
+        this.isLoading = false;
+      }
+    });
+  }
 }

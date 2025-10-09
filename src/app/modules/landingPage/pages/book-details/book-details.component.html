@@ -1,5 +1,5 @@
 <!-- Book Details Page Content -->
-<div class="book-details-content animate-route">
+<div class="book-details-content animate-route px-4">
   <div class="lp-section container mt-5 py-5" *ngIf="book as b">
     <div class="row g-4">
       <!-- الصور -->
@@ -72,8 +72,14 @@
             <button class="qty-btn" (click)="inc()" [disabled]="qty>=99" aria-label="Increase">+</button>
           </div>
 
-          <button type="button" class="btn btn-custom" [class.loading]="isAddingToCart" [class.success]="showSuccess"
-            [disabled]="isAddingToCart" (click)="addToCart()" data-aos="zoom-in" data-aos-delay="600">
+          <button type="button" class="btn btn-custom" 
+            [class.loading]="isAddingToCart" 
+            [class.success]="showSuccess"
+            [disabled]="isAddingToCart" 
+            (click)="addToCart()" 
+            data-aos="zoom-in" 
+            data-aos-delay="600"
+            [title]="!authSession.isLoggedIn ? 'Sign in to add items to your cart' : 'Add to cart'">
 
             <!-- أيقونة التحميل -->
             <div *ngIf="isAddingToCart" class="spinner"></div>
@@ -89,6 +95,17 @@
               {{ isAddingToCart ? 'Adding...' : (showSuccess ? 'Added!' : 'Add to Cart') }}
             </span>
           </button>
+        </div>
+
+        <!-- Auth Notice (if not logged in) -->
+        <div *ngIf="!authSession.isLoggedIn" class="auth-notice mb-3" data-aos="fade-up" data-aos-delay="550">
+          <i class="bi bi-info-circle"></i>
+          <span>
+            <a href (click)="openLoginModal(); $event.preventDefault()" class="auth-link">Sign in</a> 
+            or 
+            <a href (click)="openLoginModal(); $event.preventDefault()" class="auth-link">create an account</a> 
+            to add items to your cart
+          </span>
         </div>
 
         <!-- Share -->

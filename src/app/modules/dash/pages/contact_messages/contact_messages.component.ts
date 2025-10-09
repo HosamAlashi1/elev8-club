@@ -5,7 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { PublicService } from '../../../services/public.service';
 import { ToastrsService } from '../../../services/toater.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ApiService } from '../../../services/api.service';
+import { ApiAdminService } from '../../../services/api.admin.service';
 import { HttpService } from '../../../services/http.service';
 import { DeleteComponent } from '../../shared/delete/delete.component';
 import { filter } from 'rxjs/operators';
@@ -30,7 +30,7 @@ export class ContactMessagesComponent implements OnInit {
     private publicService: PublicService,
     private toastr: ToastrsService,
     private modalService: NgbModal,
-    private api: ApiService,
+    private api: ApiAdminService,
     private httpService: HttpService,
     private router: Router
   ) {

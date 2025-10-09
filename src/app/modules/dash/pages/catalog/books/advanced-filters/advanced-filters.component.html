@@ -1,0 +1,64 @@
+<div class="modal-header">
+    <h5 class="modal-title">Advanced Filters</h5>
+    <button type="button" class="btn-close" (click)="close()" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+    <div class="row g-3">
+        <!-- Author Filter (Searchable Select) -->
+        <div class="col-md-6">
+            <label class="form-label">Author</label>
+            <app-searchable-select
+                [(ngModel)]="author_id"
+                [options]="authors"
+                [loading]="authorsLoading"
+                [inputHeight]="'38px'"
+                placeholder="Search for authors..."
+                displayField="full_name"
+                valueField="id"
+                [searchFields]="['full_name']"
+                (dropdownOpen)="loadInitialAuthors()"
+                (searchChange)="onAuthorSearch($event)">
+            </app-searchable-select>
+        </div>
+
+        <!-- Category Filter (Modern Select) -->
+        <div class="col-md-6">
+            <label class="form-label">Category</label>
+            <app-modern-select
+                [(ngModel)]="category_id"
+                [options]="categoriesOptions"
+                placeholder2="Select Category"
+                [minWidth]="'100%'"
+                [customWidth]="'100%'"
+                [backgroundColor]="'#fafbfc'"
+                [textColor]="'#2d3436'"
+                (ngModelChange)="updateCategoryValue($event)">
+            </app-modern-select>
+        </div>
+
+        <!-- Lowest Price -->
+        <div class="col-md-6">
+            <label class="form-label">Lowest Price ($)</label>
+            <input type="number" class="form-control" [(ngModel)]="lowestPrice" min="0" step="0.01" placeholder="0.00" />
+        </div>
+
+        <!-- Highest Price -->
+        <div class="col-md-6">
+            <label class="form-label">Highest Price ($)</label>
+            <input type="number" class="form-control" [(ngModel)]="highestPrice" min="0" step="0.01" placeholder="0.00" />
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary me-2" (click)="clearAll()">
+        Clear All
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="close()">
+        Close
+    </button>
+    <button type="button" class="btn btn-custom" (click)="applyFilters()">
+        Apply Filters
+    </button>
+</div>

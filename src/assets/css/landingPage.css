@@ -216,3 +216,7 @@ h6 {
 [data-aos][data-aos][data-aos-delay="600"] {
   transition-delay: 600ms;
 }
+
+.modal-content{
+    border-radius: 30px;
+}

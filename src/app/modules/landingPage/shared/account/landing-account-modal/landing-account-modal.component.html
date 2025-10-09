@@ -1,0 +1,403 @@
+<form novalidate (ngSubmit)="activeTab==='login' ? submitLogin() : submitSignup()" class="auth-form">
+
+  <!-- Close button (floating) -->
+  <button type="button" class="btn-close-cinematic" (click)="activeModal.dismiss('close')" aria-label="Close">
+    <i class="fas fa-times"></i>
+  </button>
+
+  <!-- Main Body -->
+  <div class="modal-body p-0">
+    <div class="cinematic-split">
+
+      <!-- LEFT PANEL: Visual / Atmospheric -->
+      <aside class="visual-panel" [class.amber-glow]="activeTab==='login'"
+        [class.turquoise-glow]="activeTab==='signup'">
+
+        <!-- Animated background layers -->
+        <div class="bg-layer bg-layer-1"></div>
+        <div class="bg-layer bg-layer-2"></div>
+        <div class="bg-layer bg-layer-3"></div>
+
+        <!-- Floating particles -->
+        <div class="particles-container">
+          <span class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8,9,10,11,12]" [style.--delay]="p * 0.5 + 's'"></span>
+        </div>
+
+        <!-- Audio waves (subtle) -->
+        <div class="audio-waves">
+          <span class="wave" *ngFor="let w of [1,2,3,4,5]" [style.--wave-delay]="w * 0.2 + 's'"></span>
+        </div>
+
+        <!-- Quote Carousel (top) -->
+        <div class="quote-carousel">
+          <div class="quote-content" [attr.data-index]="currentQuoteIndex">
+            <p class="quote-text">
+              "<span class="typewriter-text">{{ displayedQuoteText }}</span><span class="cursor-blink"
+                *ngIf="displayedQuoteText.length < currentQuote.text.length">|</span>"
+            </p>
+            <p class="quote-author" *ngIf="displayedAuthorText">
+              — <span class="typewriter-text">{{ displayedAuthorText }}</span><span class="cursor-blink"
+                *ngIf="displayedAuthorText.length < currentQuote.author.length">|</span>
+            </p>
+          </div>
+          <!-- Quote indicators (dots) -->
+          <div class="quote-indicators">
+            <span *ngFor="let quote of quotes; let i = index" class="indicator-dot"
+              [class.active]="i === currentQuoteIndex"></span>
+          </div>
+        </div>
+
+        <!-- Brand Badge (bottom-left, glassmorphism) -->
+        <div class="brand-badge-glass" data-aos="fade-up" data-aos-delay="300" data-aos-duration="900"
+          data-aos-easing="ease-out-cubic">
+
+          <div class="logo-glow" data-aos="zoom-in" data-aos-delay="500" data-aos-duration="800">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 4h16a4 4 0 014 4v16a4 4 0 01-4 4H8a4 4 0 01-4-4V8a4 4 0 014-4z" fill="url(#logoGradient)" />
+              <path d="M12 10h8v2h-8v-2zm0 4h8v2h-8v-2zm0 4h6v2h-6v-2z" fill="white" opacity="0.9" />
+              <defs>
+                <linearGradient id="logoGradient" x1="4" y1="4" x2="28" y2="28">
+                  <stop offset="0%" stop-color="#5BBDB7" />
+                  <stop offset="100%" stop-color="#34D399" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <div class="brand-text" data-aos="fade-left" data-aos-delay="700" data-aos-duration="1000">
+            <span class="brand-name">Literary Haven</span>
+            <span class="brand-tagline" data-aos="fade-up" data-aos-delay="800">Where stories come alive</span>
+          </div>
+        </div>
+
+
+        <!-- Central illustration (library at night) -->
+        <div class="central-illustration">
+          <div class="library-scene">
+            <!-- Book stack with glow -->
+            <div class="book-stack">
+              <div class="book book-1"></div>
+              <div class="book book-2"></div>
+              <div class="book book-3"></div>
+            </div>
+            <!-- Glowing orb/light source -->
+            <div class="glow-orb"></div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- RIGHT PANEL: Glassmorphism Form Card -->
+      <section class="form-panel">
+
+        <!-- Glass Card Container -->
+        <div class="glass-card" [class.show-signup]="activeTab==='signup'">
+
+          <!-- Header with tab toggle -->
+          <div class="card-header">
+            <h2 class="form-title" data-aos="fade-right" data-aos-duration="400">
+              {{ activeTab === 'login' ? 'Your Story Begins Here' : 'Join Literary Haven' }}
+            </h2>
+            <p data-aos="fade-left" data-aos-duration="800" class="form-subtitle">
+              {{ activeTab === 'login'
+              ? 'Continue your reading journey'
+              : 'Start exploring thousands of stories' }}
+            </p>
+
+            <!-- Glowing pill toggle -->
+            <div class="tab-toggle-pill" data-aos="fade-down" data-aos-duration="600">
+              <button type="button" class="tab-btn" [class.active]="activeTab==='login'" (click)="switch('login')">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In
+              </button>
+              <button type="button" class="tab-btn" [class.active]="activeTab==='signup'" (click)="switch('signup')">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+              </button>
+              <span class="pill-indicator" [class.move-right]="activeTab==='signup'"></span>
+            </div>
+          </div>
+
+          <!-- Alert Messages -->
+          <div class="alerts-zone px-4">
+            <div *ngIf="serverMsg" class="alert-glass alert-danger">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ serverMsg }}
+            </div>
+            <div *ngIf="signupSuccessMsg" class="alert-glass alert-success">
+              <i class="fas fa-check-circle"></i>
+              {{ signupSuccessMsg }}
+              <small class="d-block mt-1 opacity-75">Check your email for the password.</small>
+            </div>
+          </div>
+
+          <!-- Scrollable Content Area -->
+          <div class="card-body-scrollable" [class.overflow-hidden]="activeTab==='login'">
+            <!-- Form Panels Container -->
+            <div class="forms-container">
+
+              <!-- LOGIN PANEL -->
+              <div class="form-content login-panel" [class.active]="activeTab==='login'" [formGroup]="loginForm">
+
+                <!-- Email -->
+                <div class="input-group-custom" data-aos="fade-up" data-aos-delay="100">
+                  <label class="input-label">
+                    <i class="fas fa-envelope"></i>
+                    Email Address
+                  </label>
+                  <input type="email" class="input-field" placeholder="john.smith@example.com" formControlName="email"
+                    [class.error]="submittedLogin && lf['email'].invalid">
+                  <div *ngIf="submittedLogin && lf['email'].invalid" class="field-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Please enter a valid email address
+                  </div>
+                </div>
+
+                <!-- Password -->
+                <div class="input-group-custom" data-aos="fade-up" data-aos-delay="200">
+                  <label class="input-label">
+                    <i class="fas fa-lock"></i>
+                    Password
+                  </label>
+                  <input type="password" class="input-field" placeholder="Enter your password"
+                    formControlName="password" [class.error]="submittedLogin && lf['password'].invalid">
+                  <div *ngIf="submittedLogin && lf['password'].invalid" class="field-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Password must be at least 6 characters
+                  </div>
+                </div>
+
+                <!-- Footer Note -->
+                <div class="form-footer-note" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800"
+                  data-aos-easing="ease-out-cubic">
+                  New to Literary Haven?
+                  <a href (click)="switch('signup'); $event.preventDefault()" class="link-glow" data-aos="fade-down"
+                    data-aos-delay="600" data-aos-duration="700">
+                    Create an account
+                  </a>
+                </div>
+              </div>
+
+              <!-- SIGNUP PANEL -->
+              <div class="form-content signup-panel" [class.active]="activeTab==='signup'" [formGroup]="signupForm">
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-user"></i>
+                        First Name
+                      </label>
+                      <input class="input-field" placeholder="e.g., Michael" formControlName="first_name"
+                        [class.error]="submittedSignup && sf['first_name'].invalid">
+                      <div *ngIf="submittedSignup && sf['first_name'].invalid" class="field-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-user"></i>
+                        Last Name
+                      </label>
+                      <input class="input-field" placeholder="e.g., Johnson" formControlName="last_name"
+                        [class.error]="submittedSignup && sf['last_name'].invalid">
+                      <div *ngIf="submittedSignup && sf['last_name'].invalid" class="field-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-user"></i>
+                        Middle Name <span class="optional">(optional)</span>
+                      </label>
+                      <input class="input-field" placeholder="e.g., James" formControlName="middle_name">
+                    </div>
+                  </div>
+
+                  <div class="col-md-7">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                      </label>
+                      <input type="email" class="input-field" placeholder="michael.johnson@example.com"
+                        formControlName="email" [class.error]="submittedSignup && sf['email'].invalid">
+                      <div *ngIf="submittedSignup && sf['email'].invalid" class="field-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Valid email required
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-5">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-phone"></i>
+                        Phone <span class="optional">(optional)</span>
+                      </label>
+                      <input class="input-field" placeholder="(555) 123-4567" formControlName="phone">
+                    </div>
+                  </div>
+
+                  <!-- Profile Image Upload (Optional) -->
+                  <div class="col-12">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-image"></i>
+                        Profile Picture <span class="optional">(optional)</span>
+                      </label>
+                      <div class="upload-zone-improved" [class.drag-active]="isDragOver"
+                        [class.has-image]="imagePreview" (dragover)="onDragOver($event)"
+                        (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                        (click)="!imagePreview && fileInput.click()">
+
+                        <input type="file" class="file-input-hidden" #fileInput accept="image/*"
+                          (change)="onFileChange($event)" />
+
+                        <!-- Upload placeholder state -->
+                        <div *ngIf="!imagePreview" class="upload-placeholder-improved">
+                          <div class="upload-icon-improved">
+                            <i class="fas fa-camera"></i>
+                          </div>
+                          <p class="upload-text-main">Drop your image here or click to select</p>
+                          <p class="upload-text-sub">Drag and drop or browse your files</p>
+                          <p class="upload-hint-improved">PNG, JPG, GIF up to 5MB</p>
+                        </div>
+
+                        <!-- Image preview state -->
+                        <div *ngIf="imagePreview" class="image-preview-improved">
+                          <div class="preview-circle">
+                            <img [src]="imagePreview" alt="Profile Preview" class="preview-img-circle">
+                          </div>
+                          <div class="preview-actions">
+                            <button type="button" class="btn-change-image"
+                              (click)="fileInput.click(); $event.stopPropagation()">
+                              <i class="fas fa-edit"></i>
+                              Change
+                            </button>
+                            <button type="button" class="btn-remove-improved"
+                              (click)="removeImage(); $event.stopPropagation()">
+                              <i class="fas fa-trash-alt"></i>
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="info-note mb-3">
+                      <i class="fas fa-info-circle"></i>
+                      We'll email you a secure password after creating your account.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+          <!-- End Scrollable Content Area -->
+
+          <div class="card-actions">
+            <!-- Cancel Button -->
+            <button type="button" class="btn-glass btn-cancel" (click)="activeModal.dismiss('cancel')"
+              [disabled]="isLoading" data-aos="fade-right" data-aos-delay="200" data-aos-duration="700"
+              data-aos-easing="ease-out-cubic">
+              <i class="fas fa-times"></i>
+              Cancel
+            </button>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-gradient btn-submit" [disabled]="isLoading" data-aos="fade-left"
+              data-aos-delay="350" data-aos-duration="800" data-aos-easing="ease-out-cubic">
+              <span class="btn-glow"></span>
+              <span class="btn-content">
+                <ng-container *ngIf="isLoading; else normalState">
+                  <span class="spinner-glow"></span>
+                  {{ activeTab==='login' ? 'Signing in...' : 'Creating account...' }}
+                </ng-container>
+                <ng-template #normalState>
+                  <i class="fas" [class.fa-sign-in-alt]="activeTab==='login'"
+                    [class.fa-user-check]="activeTab==='signup'"></i>
+                  {{ activeTab==='login' ? 'Sign In' : 'Create Account' }}
+                </ng-template>
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- SUCCESS OVERLAY (after signup) -->
+  <div class="success-overlay" *ngIf="showSuccessOverlay" [@fadeSlideIn]>
+    <div class="success-card" [@bounceIn]>
+      
+      <!-- Animated Email Icon -->
+      <div class="success-icon-container">
+        <div class="email-sent-animation">
+          <i class="fas fa-envelope"></i>
+          <div class="checkmark-circle">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <h2 class="success-title">Account Created Successfully!</h2>
+      <p class="success-message">
+        Welcome to <strong>Literary Haven</strong>! 
+      </p>
+      
+      <!-- Email Info Box -->
+      <div class="email-info-box">
+        <div class="email-icon-inline">
+          <i class="fas fa-paper-plane"></i>
+        </div>
+        <div class="email-info-text">
+          <p class="email-sent-label">Password sent to:</p>
+          <p class="user-email">{{ userEmail }}</p>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="success-instructions">
+        <div class="instruction-item">
+          <i class="fas fa-inbox"></i>
+          <span>Check your inbox (and spam folder)</span>
+        </div>
+        <div class="instruction-item">
+          <i class="fas fa-key"></i>
+          <span>Use the password from the email to sign in</span>
+        </div>
+        <div class="instruction-item">
+          <i class="fas fa-book-reader"></i>
+          <span>Start exploring thousands of stories!</span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button type="button" class="btn-success-proceed" (click)="closeSuccessOverlay()">
+        <i class="fas fa-sign-in-alt"></i>
+        Continue to Sign In
+      </button>
+
+      <!-- Small note -->
+      <p class="success-footnote">
+        Didn't receive the email? Check your spam folder or contact support.
+      </p>
+    </div>
+  </div>
+
+</form>

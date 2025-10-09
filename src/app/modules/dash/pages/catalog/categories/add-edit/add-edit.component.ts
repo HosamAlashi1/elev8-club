@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../../../services/http.service';
-import { ApiService } from '../../../../../services/api.service';
+import { ApiAdminService } from '../../../../../services/api.admin.service';
 import { ToastrsService } from '../../../../../services/toater.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class AddEditCategoryComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     public httpService: HttpService,
-    private api: ApiService,
+    private api: ApiAdminService,
     private toastr: ToastrsService
   ) { }
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Subject, debounceTime } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../../services/http.service';
-import { ApiService } from '../../../../services/api.service';
+import { ApiAdminService } from '../../../../services/api.admin.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
 import { DeleteComponent } from '../../../shared/delete/delete.component';
@@ -37,7 +37,7 @@ export class RolesPermissionsComponent implements OnInit {
 
   constructor(
     private http: HttpService,
-    private api: ApiService,
+    private api: ApiAdminService,
     public publicService: PublicService,
     private modalService: NgbModal,
     private toastr: ToastrsService
@@ -135,7 +135,7 @@ export class RolesPermissionsComponent implements OnInit {
 
   // مبدئياً، للـ Permissions رح نعمل دالة تجيبهم عند فتح المودال أو الصفحة
   loadPermissions() {
-    this.http.listGet(this.api.permissions.list, 'permissions-list').subscribe({
+    this.http.listGet(this.api.common.permissions, 'permissions-list').subscribe({
       next: (res: any) => {
         if (res?.success && res?.data) {
           console.log('permissions', res.data);

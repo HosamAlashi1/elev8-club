@@ -1,8 +1,11 @@
 import { Component, HostListener, OnDestroy, OnInit, Input } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
-import { CartService } from 'src/app/modules/services/cart.service'; // عدّل المسار حسب مشروعك
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { CartService } from 'src/app/modules/services/cart.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LandingAuthSessionService } from '../../../services/auth-session.service';
+import { LandingAccountModalComponent } from '../../shared/account/landing-account-modal/landing-account-modal.component';
 
 type LinkItem =
   | { label: string; type: 'route'; route: string }
@@ -32,10 +35,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private io?: IntersectionObserver;
   private pendingScrollId: string | null = null;
 
-  // 🛒 خصائص السلة
+  // 🛒 Cart
   cartCount = 0;
   bumpAnim = false;
   private cartSub?: Subscription;
+
+  // 👤 Auth state
+  isLoggedIn = false;
+  user: any | null = null;
+  private destroy$ = new Subject<void>();
 
   navLinks: LinkItem[] = [
     { label: 'Home', type: 'scroll', targetId: 'home' },
@@ -47,12 +55,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
     { label: 'Contact Us', type: 'scroll', targetId: 'contact' },
   ];
 
-  constructor(private router: Router, private cartService: CartService) { }
+  constructor(
+    private router: Router,
+    private cartService: CartService,
+    private modal: NgbModal,
+    private session: LandingAuthSessionService
+  ) { }
 
   ngOnInit(): void {
     this.onScroll();
 
-    // مراقبة Section contact
+    // 👁️‍🗨️ مراقبة قسم الاتصال
     const contactEl = document.getElementById('contact');
     if (contactEl) {
       this.io = new IntersectionObserver(
@@ -65,9 +78,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.io.observe(contactEl);
     }
 
-    // معالجة Pending scroll
+    // تأجيل Scroll بعد الانتقال
     this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
+      .pipe(filter(e => e instanceof NavigationEnd), takeUntil(this.destroy$))
       .subscribe(() => {
         if (this.pendingScrollId) {
           setTimeout(() => {
@@ -77,19 +90,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
         }
       });
 
-    // 🛒 الاشتراك مع CartService
+    // 🛒 الاشتراك بالسلة
     this.cartSub = this.cartService.getCartObs().subscribe(cart => {
       const newCount = cart.lines.reduce((s, l) => s + l.qty, 0);
-      if (newCount > this.cartCount) {
-        this.triggerBump();
-      }
+      if (newCount > this.cartCount) this.triggerBump();
       this.cartCount = newCount;
+    });
+
+    // 👤 الاشتراك بحالة الحساب
+    this.session.auth$.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.isLoggedIn = state.isLoggedIn;
+      this.user = state.user;
     });
   }
 
   ngOnDestroy(): void {
     this.io?.disconnect();
     this.cartSub?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   @HostListener('window:scroll')
@@ -119,7 +138,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const el = document.getElementById(id);
     if (!el) return;
     const nav = document.querySelector('.lp-navbar') as HTMLElement | null;
-    const offset = (nav?.offsetHeight ?? 64) + 8;
+    const offset = (nav?.offsetHeight ?? 64) + 40;
     const top = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top, behavior: 'smooth' });
   }
@@ -129,18 +148,58 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   isActive(link: LinkItem): boolean {
-    if (link.type === 'route') {
-      return this.router.url === link.route;
-    }
-    if (link.type === 'scroll') {
-      return this.activeSection === link.targetId;
-    }
+    if (link.type === 'route') return this.router.url === link.route;
+    if (link.type === 'scroll') return this.activeSection === link.targetId;
     return false;
   }
 
-  // 🛒 أنيميشن الـ bump
+  // 🛒 bump animation
   private triggerBump() {
     this.bumpAnim = true;
     setTimeout(() => this.bumpAnim = false, 500);
+  }
+
+  // 👤 Account modal
+  openAccountModal(initialTab: 'login' | 'signup' = 'login', ev?: Event) {
+    ev?.preventDefault();
+    const ref = this.modal.open(LandingAccountModalComponent, {
+      centered: true,
+      size: 'xl',
+    });
+    ref.componentInstance.defaultAuthType = 4;     // Customer
+    ref.componentInstance.initialTab = initialTab; // login or signup
+  }
+
+  // ✅ دالة التنقل الذكي (يفتح المودال إذا مش مسجل)
+  navigateIfLogged(target: string, event?: Event) {
+    event?.preventDefault();
+
+    if (!this.isLoggedIn) {
+      this.openAccountModal('login', event);
+      return;
+    }
+
+    switch (target) {
+      case 'books':
+        this.router.navigate(['/my-books']);
+        break;
+      case 'cart':
+        this.router.navigate(['/cart']);
+        break;
+      case 'settings':
+        this.router.navigate(['/settings']);
+        break;
+      default:
+        this.router.navigate(['/']);
+        break;
+    }
+
+    this.isCollapsed = true;
+  }
+
+  // 👤 Logout
+  logout() {
+    this.session.logout();
+    this.router.navigate(['/']);
   }
 }

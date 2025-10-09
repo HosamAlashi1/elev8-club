@@ -6,7 +6,7 @@ import { AddEditCategoryComponent } from './add-edit/add-edit.component';
 import { DeleteComponent } from '../../../shared/delete/delete.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../../services/http.service';
-import { ApiService } from '../../../../services/api.service';
+import { ApiAdminService } from '../../../../services/api.admin.service';
 import { ToastrsService } from '../../../../services/toater.service';
 
 type CategoryStatus = 'active' | 'inactive';
@@ -47,7 +47,7 @@ export class CategoriesComponent implements OnInit {
     public publicService: PublicService,
     private modalService: NgbModal,
     private http: HttpService,
-    private api: ApiService,
+    private api: ApiAdminService,
     private toastr: ToastrsService
   ) {
     this.size = this.publicService.getNumOfRows(505, 61);

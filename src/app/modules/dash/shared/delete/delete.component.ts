@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
-import { ApiService } from '../../../services/api.service';
+import { ApiAdminService } from '../../../services/api.admin.service';
 
 @Component({
   selector: 'app-delete',
@@ -10,16 +10,18 @@ import { ApiService } from '../../../services/api.service';
 })
 export class DeleteComponent {
 
-  public id: number;
-  public type: string;
-  public message: string;
+  @Input() id: number;
+  @Input() type: string;
+  @Input() message: string;
+  @Input() extraData: any; // ✅ إضافة جديدة
+
   alertMessage: string;
   messageType: string;
 
   constructor(
     public activeModal: NgbActiveModal,
     public httpService: HttpService,
-    private api: ApiService,
+    private api: ApiAdminService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -28,6 +30,7 @@ export class DeleteComponent {
     this.messageType = success ? 'success' : 'danger';
     this.changeDetectorRef.detectChanges();
   }
+
   delete() {
     let url: string = '';
     let data: any = {};
@@ -36,8 +39,21 @@ export class DeleteComponent {
       case 'admin':
         url = this.api.admins.delete(this.id);
         break;
-        case 'category':
+      case 'category':
         url = this.api.categories.delete(this.id);
+        break;
+      case 'book':
+        url = this.api.books.delete(this.id);
+        break;
+      case 'book-delete-all':
+        url = this.api.books.delete_all;
+        data = this.extraData || {};
+        break;
+      case 'user':
+        url = this.api.users.delete(this.id);
+        break;
+      case 'files':
+        url = this.api.files.delete(this.id);
         break;
       case 'testimonials':
         url = this.api.testimonials.delete(this.id);
@@ -64,5 +80,4 @@ export class DeleteComponent {
       error: () => this.showMsg(false, 'Error occurred. Please try again.')
     });
   }
-
 }
