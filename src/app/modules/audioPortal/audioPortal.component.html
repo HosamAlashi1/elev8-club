@@ -1,0 +1,10 @@
+<!-- Landing Page Layout -->
+<div class="content-container" >
+  <app-header></app-header>
+
+  <!-- Main Content Area with Router Outlet -->
+  <main [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet"></router-outlet>
+  </main>
+
+</div>

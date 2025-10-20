@@ -6,15 +6,15 @@
   <!-- Navbar (ثابت لكل الصفحات) -->
   <app-navbar 
     [logoUrl]="pre?.navbar?.logo || 'assets/img/landing/home/logo.png'"
-    [phone]="settings['phone']"
-    [email]="settings['email']"
+    [phone]="settings['contact_phone']"
+    [email]="settings['contact_email']"
     [socials]="{
-      facebook: settings['facebook'],
-      twitter: settings['twitter'],
-      instagram: settings['instagram'],
-      pinterest: settings['pinterest'],
-      youtube: settings['youtube'],
-      tiktok: settings['tiktok']
+      facebook: settings['social_facebook'],
+      twitter: settings['social_twitter'],
+      instagram: settings['social_instagram'],
+      pinterest: settings['social_pinterest'],
+      youtube: settings['social_youtube'],
+      tiktok: settings['social_tiktok']
     }">
   </app-navbar>
 
@@ -26,12 +26,12 @@
   <!-- Footer (ثابت لكل الصفحات) -->
   <app-footer 
     [description]="settings['footer_title']"
-    [facebook]="settings['facebook']"
-    [twitter]="settings['twitter']"
-    [instagram]="settings['instagram']"
-    [pinterest]="settings['pinterest']"
-    [youtube]="settings['youtube']"
-    [tiktok]="settings['tiktok']">
+    [facebook]="settings['social_facebook']"
+    [twitter]="settings['social_twitter']"
+    [instagram]="settings['social_instagram']"
+    [pinterest]="settings['social_pinterest']"
+    [youtube]="settings['social_youtube']"
+    [tiktok]="settings['social_tiktok']">
     <img brand src="assets/img/landing/home/logo.svg" alt="Dorrance" height="28" />
   </app-footer>
 

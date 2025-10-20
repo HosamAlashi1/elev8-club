@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
 import { ApiAdminService } from '../../../services/api.admin.service';
+import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 
 @Component({
   selector: 'app-delete',
@@ -21,7 +22,8 @@ export class DeleteComponent {
   constructor(
     public activeModal: NgbActiveModal,
     public httpService: HttpService,
-    private api: ApiAdminService,
+    private apiAdmin: ApiAdminService,
+    private apiPortal: ApiPortalService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -37,29 +39,38 @@ export class DeleteComponent {
 
     switch (this.type) {
       case 'admin':
-        url = this.api.admins.delete(this.id);
+        url = this.apiAdmin.admins.delete(this.id);
         break;
       case 'category':
-        url = this.api.categories.delete(this.id);
+        url = this.apiAdmin.categories.delete(this.id);
         break;
       case 'book':
-        url = this.api.books.delete(this.id);
+        url = this.apiAdmin.books.delete(this.id);
         break;
       case 'book-delete-all':
-        url = this.api.books.delete_all;
+        url = this.apiAdmin.books.delete_all;
         data = this.extraData || {};
         break;
       case 'user':
-        url = this.api.users.delete(this.id);
+        url = this.apiAdmin.users.delete(this.id);
         break;
       case 'files':
-        url = this.api.files.delete(this.id);
+        url = this.apiAdmin.files.delete(this.id);
         break;
       case 'testimonials':
-        url = this.api.testimonials.delete(this.id);
+        url = this.apiAdmin.testimonials.delete(this.id);
+        break;
+      case 'chapter':
+        url = this.apiPortal.chapters.delete(this.id);
+        break;
+      case 'paragraph':
+        url = this.apiPortal.paragraphs.delete(this.id);
+        break;
+      case 'note':
+        url = this.apiPortal.notes.delete(this.id);
         break;
       default:
-        this.showMsg(false, 'نوع غير مدعوم!');
+        this.showMsg(false, 'Invalid delete type');
         return;
     }
 

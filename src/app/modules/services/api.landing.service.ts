@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 const API_BASE_URL = `${environment.apiUrl}/`;
 
 @Injectable({
-	providedIn: 'root'
+  providedIn: 'root'
 })
 // Landing Page  APIs
 export class ApiLandingService {
@@ -12,6 +12,8 @@ export class ApiLandingService {
 
   public home = {
     content: this.base + 'home',
+    subscribe: this.base + 'subscribe', // POST
+    contact: this.base + 'contact' // POST
   };
 
   public contact = {

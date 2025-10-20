@@ -27,36 +27,14 @@ export class ContactComponent implements OnInit, AfterViewInit {
 
   formModel = { name: '', email: '', message: '' };
   sending = false;
-  formSubmitted = false; // متغير للتحكم في عرض رسائل الخطأ
+  formSubmitted = false; // flag to control validation error display
   info: ContactInfo[] = [];
-
-ngOnInit(): void {
-  this.updateContactInfo();
-
-  if (this.business_hours) {
-    // تقسيم حسب new line أو الفواصل
-    this.businessHoursArray = this.business_hours
-      .split(/\r?\n|;/) // يقسم على الأسطر أو الفاصلة المنقوطة
-      .map(x => x.trim())
-      .filter(x => x.length > 0); // يشيل الأسطر الفارغة
-  }
-}
-
-
-  updateContactInfo(): void {
-    this.info = [
-      { icon: 'fas fa-map-marker-alt', label: 'Address', value: this.address },
-      { icon: 'fas fa-phone', label: 'Phone', value: this.phone, href: `tel:${this.phone.replace(/\s|-|\(|\)/g, '')}` },
-      { icon: 'fas fa-envelope', label: 'Email', value: this.email, href: `mailto:${this.email}` }
-    ];
-  }
-
-  /** خريطة الشرق الأوسط بدون ماركر */
-  private mapKey = 'AIzaSyDh2LLr-gtCTlFpvj10jtg-_W6gWP4LqCE'; // اللي عطيتني إياه
-  private center = { lat: 26, lng: 44 };  // وسط الشرق الأوسط تقريبًا
-  private zoom = 4;                       // زوم واسع
-  safeMapUrl: SafeResourceUrl;
   businessHoursArray: string[] = [];
+
+  private mapKey = 'AIzaSyDh2LLr-gtCTlFpvj10jtg-_W6gWP4LqCE'; // your provided API key
+  private center = { lat: 26, lng: 44 }; // Middle East center
+  private zoom = 4;                      // wide zoom
+  safeMapUrl: SafeResourceUrl;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -67,40 +45,57 @@ ngOnInit(): void {
     this.safeMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
+  ngOnInit(): void {
+    this.updateContactInfo();
+
+    if (this.business_hours) {
+      // Split by newline or semicolon
+      this.businessHoursArray = this.business_hours
+        .split(/\r?\n|;/)
+        .map(x => x.trim())
+        .filter(x => x.length > 0);
+    }
+  }
+
+  updateContactInfo(): void {
+    this.info = [
+      { icon: 'fas fa-map-marker-alt', label: 'Address', value: this.address },
+      { icon: 'fas fa-phone', label: 'Phone', value: this.phone, href: `tel:${this.phone.replace(/\s|-|\(|\)/g, '')}` },
+      { icon: 'fas fa-envelope', label: 'Email', value: this.email, href: `mailto:${this.email}` }
+    ];
+  }
+
   ngAfterViewInit(): void {
-    try { if (typeof AOS !== 'undefined' && AOS?.refresh) AOS.refresh(); } catch { }
+    try {
+      if (typeof AOS !== 'undefined' && AOS?.refresh) AOS.refresh();
+    } catch { }
   }
 
   submit(form: NgForm) {
-    // تحديد أن المستخدم حاول الإرسال لإظهار رسائل الخطأ
     this.formSubmitted = true;
 
-    // تحديد جميع الحقول كـ touched لإظهار رسائل الخطأ
-    Object.values(form.controls).forEach(control => {
-      control.markAsTouched();
-    });
+    // Mark all controls as touched to show validation messages
+    Object.values(form.controls).forEach(control => control.markAsTouched());
 
-    // التحقق من صحة النموذج
+    // Validate form
     if (!form.valid) {
-      this.toastr.warning('يرجى تصحيح الأخطاء في النموذج قبل الإرسال', 'بيانات غير صحيحة');
+      this.toastr.warning('Please fix the form errors before submitting.', 'Invalid Data');
       return;
     }
 
-    // التحقق الإضافي من البيانات
     if (this.formModel.name.trim().length < 2) {
-      this.toastr.warning('الاسم يجب أن يكون أكثر من حرف واحد', 'اسم غير صحيح');
+      this.toastr.warning('Name must be at least 2 characters long.', 'Invalid Name');
       return;
     }
 
     if (this.formModel.message.trim().length < 10) {
-      this.toastr.warning('الرسالة يجب أن تكون أكثر من 10 أحرف', 'رسالة قصيرة');
+      this.toastr.warning('Message must be at least 10 characters long.', 'Too Short');
       return;
     }
 
-    // التحقق من صيغة البريد الإلكتروني
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(this.formModel.email)) {
-      this.toastr.warning('صيغة البريد الإلكتروني غير صحيحة', 'بريد إلكتروني غير صحيح');
+      this.toastr.warning('Invalid email format.', 'Invalid Email');
       return;
     }
 
@@ -115,9 +110,9 @@ ngOnInit(): void {
     this.landingService.sendContactMessage(contactData).subscribe({
       next: (response) => {
         console.log('Contact message sent successfully:', response);
-        this.toastr.success('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.', 'تم الإرسال');
+        this.toastr.success('Your message has been sent successfully! We will contact you soon.', 'Message Sent');
 
-        // إعادة تعيين النموذج وإخفاء رسائل الخطأ
+        // Reset form and flags
         form.resetForm();
         this.formModel = { name: '', email: '', message: '' };
         this.formSubmitted = false;
@@ -125,7 +120,7 @@ ngOnInit(): void {
       },
       error: (error) => {
         console.error('Error sending contact message:', error);
-        this.toastr.error('عذراً، حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.', 'خطأ في الإرسال');
+        this.toastr.error('Sorry, an error occurred while sending your message. Please try again later.', 'Sending Failed');
         this.sending = false;
       }
     });

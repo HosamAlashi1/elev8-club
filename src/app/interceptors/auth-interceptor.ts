@@ -31,6 +31,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
     const isDashboard = currentUrl.startsWith('/dashboard') || currentUrl.startsWith('/auth');
 
+    const isAudioPortal = currentUrl.startsWith('/audio-portal');
+
     const isLanding = currentUrl === '/' ||
                       currentUrl.startsWith('/shop') ||
                       currentUrl.startsWith('/cart') ||
@@ -39,7 +41,7 @@ export class AuthInterceptor implements HttpInterceptor {
                       currentUrl.startsWith('/featured-author') ||
                       currentUrl.startsWith('/author-events');
 
-    if (isLanding) {
+    if (isLanding || isAudioPortal) {
       token = this.landingSession.token ?? this.getLandingTokenFromStorage();
     } else if (isDashboard) {
       token = this.publicService.getToken();
@@ -58,13 +60,12 @@ export class AuthInterceptor implements HttpInterceptor {
           if (req.url.includes('/Auth/logout')) return;
 
           if (err.status === 401) {
-            if (isLanding) {
+            if (isLanding  || isAudioPortal) {
               // 🧭 الزبون في واجهة الموقع
               this.landingSession.logout();
               // بإمكانك بدل الرجوع للصفحة الرئيسية تفتح مودال تسجيل دخول
               this.router.navigate(['/']);
             } else if (isDashboard) {
-              // 🧭 موظف / مسؤول في لوحة التحكم
               this.authService.logout();
               this.router.navigate(['/auth/login']);
             }

@@ -7,7 +7,7 @@
       [background]="pre?.hero?.background" 
       [slides]="pre?.hero?.slides"
       [title]="settings['hero_title']" 
-      [subtitle]="settings['hero_desc']" 
+      [subtitle]="settings['hero_subtitle']" 
       [buttonText]="'Shop Now'"
       [buttonLink]="'/shop'">
     </app-hero>
@@ -16,8 +16,8 @@
   <!-- Intro / Trust -->
   <section class="lp-section" @cardAnimation>
     <app-intro-trust class="card-animate" 
-      [sectionTitle]="settings['intro_trust_title']" 
-      [sectionDescription]="settings['intro_trust_description']" 
+      [sectionTitle]="settings['services_title']" 
+      [sectionDescription]="settings['services_subtitle']" 
       [items]="pre?.introTrust">
     </app-intro-trust>
   </section>
@@ -25,7 +25,7 @@
   <!-- Featured Books (سلايدر) -->
   <section class="lp-section bg-light" @cardAnimation>
     <app-featured-books class="card-animate" 
-      [title]="settings['featured_books_title']" 
+      [title]="settings['featured_title']" 
       [items]="pre?.featuredBooks">
     </app-featured-books>
   </section>
@@ -33,7 +33,7 @@
   <!-- Categories -->
   <section class="lp-section bg-light" @cardAnimation>
     <app-categories class="card-animate" 
-      [title]="settings['categories_title']" 
+      [title]="settings['category_title']" 
       [items]="pre?.categories">
     </app-categories>
   </section>
@@ -41,7 +41,7 @@
   <!-- Bestselling -->
   <section id="best-sellers" class="lp-section " @cardAnimation>
     <app-bestselling class="card-animate" 
-      [title]="settings['bestselling_books_title']" 
+      [title]="settings['bestselling_title']" 
       [items]="pre?.bestsellingBooks">
     </app-bestselling>
   </section>
@@ -49,7 +49,7 @@
   <!-- Staff Picks -->
   <section class="lp-section" @cardAnimation>
     <app-staff-picks class="card-animate" 
-      [title]="settings['staff_picks_title']" 
+      [title]="settings['staff_title']" 
       [staff]="pre?.staffPicks?.staff"
       [books]="pre?.staffPicks?.books">
     </app-staff-picks>
@@ -58,7 +58,7 @@
   <!-- Award Winners -->
   <section class="lp-section bg-light" @cardAnimation>
     <app-award-winners class="card-animate" 
-      [title]="settings['award_winners_title']"
+      [title]="settings['awards_title']"
       [firstRow]="pre?.awardWinners?.firstRow" 
       [secondRow]="pre?.awardWinners?.secondRow">
     </app-award-winners>
@@ -67,7 +67,7 @@
   <!-- Testimonials -->
   <section class="lp-section" @cardAnimation>
     <app-testimonials class="card-animate"
-      [title]="settings['testimonials_title'] || settings['testimonials_title'] || 'What Our Readers Say'"
+      [title]="settings['testimonials_title']"
       [testimonials]="pre?.testimonials">
     </app-testimonials>
   </section>
@@ -75,15 +75,15 @@
   <!-- Newsletter -->
   <section class="lp-section bg-light" @cardAnimation>
     <app-newsletter class="card-animate" 
-      [title]="settings['newsletter_title'] || 'Join Our Literary Community'"
-      [subtitle]="settings['newsletter_subtitle'] || 'Subscribe to receive new releases, author events, special offers, and exclusive content.'">
+      [title]="settings['subscribe_title'] || 'Join Our Literary Community'"
+      [subtitle]="settings['subscribe_subtitle'] || 'Subscribe to receive new releases, author events, special offers, and exclusive content.'">
     </app-newsletter>
   </section>
 
   <!-- Blog -->
   <section class="lp-section" @cardAnimation>
     <app-blog class="card-animate" 
-      [title]="settings['blogs_title']" 
+      [title]="settings['blog_title']" 
       [items]="pre?.blogs">
     </app-blog>
   </section>
@@ -91,11 +91,11 @@
   <!-- Contact -->
   <section id="contact" class="lp-section bg-light" @cardAnimation>
     <app-contact class="card-animate" 
-      [title]="settings['contact_us_title']" 
-      [phone]="settings['phone']"
-      [email]="settings['email']" 
-      [address]="settings['address']" 
-      [business_hours]="settings['business_hours']">
+      [title]="settings['contact_title']" 
+      [phone]="settings['contact_phone']"
+      [email]="settings['contact_email']" 
+      [address]="settings['contact_address']" 
+      [business_hours]="(settings['contact_hours_weekdays'] || '') + '\n' + (settings['contact_hours_saturday'] || '') + '\n' + (settings['contact_hours_sunday'] || '')">
     </app-contact>
   </section>
 

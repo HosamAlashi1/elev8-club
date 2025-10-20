@@ -1,10 +1,13 @@
-<div class="featured-event card shadow-sm m-4 border-0" data-aos="fade-up" data-aos-duration="1000">
+<div class="container">
+  <div class="featured-event card shadow-sm my-4 border-0" data-aos="fade-up" data-aos-duration="1000">
 
   <div class="row g-4 align-items-center flex-column flex-md-row">
 
     <!-- صورة -->
     <div class="col-12 col-md-4 pe-md-2 text-center text-md-start" data-aos="fade-right" data-aos-duration="1200">
-      <img [src]="event?.image" [alt]="event?.title" class="img-fluid rounded-3 w-100 h-auto">
+      <img [src]="event?.image" [alt]="event?.title" class="img-fluid rounded-3 w-100 h-auto"
+        style=" max-height: 266px; min-height: 266px; border-top-right-radius:0px !important ; border-bottom-right-radius:0px !important ;">
+
     </div>
 
     <!-- تفاصيل -->
@@ -50,4 +53,5 @@
       </a>
     </div>
   </div>
+</div>
 </div>

@@ -11,14 +11,34 @@
 
     <!-- فورم الاشتراك -->
     <form class="newsletter-form d-flex justify-content-center flex-wrap gap-2"
+          (ngSubmit)="subscribe()"
+          novalidate
           data-aos="zoom-in" data-aos-delay="300" data-aos-duration="1000">
+
       <input type="email" 
              class="form-control w-auto flex-grow-1"
-             placeholder="Enter your email address" 
+             placeholder="Enter your email address"
+             [(ngModel)]="email"
+             name="email"
              required>
-      <button type="submit" class="btn btn-custom px-4">
-        Subscribe
+
+      <button type="submit"
+              class="btn btn-custom px-4"
+              [disabled]="isLoading">
+        <ng-container *ngIf="!isLoading; else loading">
+          Subscribe
+        </ng-container>
+        <ng-template #loading>
+          <span class="spinner-border spinner-border-sm me-1"></span> Subscribing...
+        </ng-template>
       </button>
     </form>
+
+    <!-- رسالة النجاح أو الخطأ -->
+    <div class="mt-3" *ngIf="message">
+      <p [class.text-success]="isSuccess" [class.text-danger]="!isSuccess" class="mb-0">
+        {{ message }}
+      </p>
+    </div>
   </div>
 </section>

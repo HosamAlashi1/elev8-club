@@ -76,11 +76,21 @@ export class HomeComponent implements OnInit, OnDestroy {
       // حد أدنى من القيم لو لا يوجد أي داتا
       this.settings = {
         'hero_title': 'Discover Your Next Literary Adventure',
-        'hero_desc': 'Curated collection of finest literature',
-        'contact_us_title': 'Contact Us',
-        'footer_title': 'America’s Oldest Publishing Services Company — Trusted for 100+ Years.'
+        'hero_subtitle': 'Curated collection of finest literature',
+        'contact_title': 'Contact Us',
+        'footer_title': 'America\'s Oldest Publishing Services Company — Trusted for 100+ Years.'
       };
-      this.pre = { hero: {}, navbar: {}, introTrust: [], featuredBooks: [], categories: [], bestsellingBooks: [], staffPicks: {}, awardWinners: {}, testimonials: [], blogs: [] };
+      this.pre = { 
+        hero: {}, 
+        introTrust: [], 
+        featuredBooks: [], 
+        categories: [], 
+        bestsellingBooks: [], 
+        staffPicks: {}, 
+        awardWinners: {}, 
+        testimonials: [], 
+        blogs: [] 
+      };
       this.showContent = true;
       this.cd.detectChanges();
       return;
@@ -89,9 +99,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     // احتفظ بالداتا الجديدة كما هي
     this.pre = preloaded;
 
-    // settings في AppInitializer مخزّنة كآراي داخل المفتاح '' – نحولها لأوبجكت
-    if (preloaded.settings && preloaded.settings[''] && Array.isArray(preloaded.settings[''])) {
-      this.settings = this.landingService.parseSettings(preloaded.settings['']);
+    // تحويل settings من array إلى object
+    if (preloaded.settings && Array.isArray(preloaded.settings)) {
+      this.settings = this.landingService.parseSettings(preloaded.settings);
     } else {
       this.settings = {};
     }

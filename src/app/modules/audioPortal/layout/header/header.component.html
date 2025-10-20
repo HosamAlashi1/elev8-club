@@ -1,0 +1,107 @@
+<!-- 🔹 Modern Header with Glass Effect -->
+<header class="audio-header">
+  <div class="header-container">
+    
+    <!-- 🔸 Left: Logo with Glow -->
+    <div class="brand-section">
+      <a routerLink="/audio-portal" class="logo-link">
+        <div class="logo-wrapper">
+          <img src="assets/img/landing/logo.svg" alt="Dorrance" class="brand-logo" />
+          <div class="logo-glow"></div>
+        </div>
+      </a>
+    </div>
+
+    <!-- 🔸 Center: Premium Pill Tabs -->
+    <nav class="tabs-container">
+      <div class="tabs-wrapper">
+        <a
+          class="tab-pill"
+          routerLink="/audio-portal/my-books"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <div class="tab-icon">
+            <i class="bi bi-book-fill"></i>
+          </div>
+          <span class="tab-text">My Books</span>
+          <div class="tab-shine"></div>
+        </a>
+
+        <!-- فقط للمؤلف -->
+        <a
+          *ngIf="user?.auth_type === 2"
+          class="tab-pill"
+          routerLink="/audio-portal/my-projects"
+          routerLinkActive="active"
+        >
+          <div class="tab-icon">
+            <i class="bi bi-mic-fill"></i>
+          </div>
+          <span class="tab-text">My Projects</span>
+          <div class="tab-shine"></div>
+        </a>
+      </div>
+    </nav>
+
+    <!-- 🔸 Right: User Profile -->
+    <div class="user-section">
+      <div class="dropdown">
+        <button
+          class="user-profile-btn"
+          id="userDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <div class="avatar-wrapper">
+            <img
+              [src]="user?.image || 'assets/img/blank.png'"
+              alt="User Avatar"
+              class="user-avatar"
+            />
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ user?.first_name }} {{ user?.last_name }}</span>
+            <span class="user-role">{{ getUserRoleLabel() }}</span>
+          </div>
+          <i class="bi bi-chevron-down dropdown-arrow"></i>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="userDropdown">
+          <li class="dropdown-header">
+            <div class="header-avatar">
+              <img [src]="user?.image || 'assets/img/blank.png'" alt="Avatar" />
+            </div>
+            <div class="header-info">
+              <strong>{{ user?.first_name }} {{ user?.last_name }}</strong>
+              <small>{{ user?.email }}</small>
+            </div>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item" routerLink="/profile">
+              <i class="bi bi-person"></i>
+              <span>My Profile</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/settings">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item logout-item" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</header>
+<!-- 🔹 End Header -->

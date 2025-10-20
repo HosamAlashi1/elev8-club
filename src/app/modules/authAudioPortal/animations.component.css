@@ -1,0 +1,546 @@
+
+/* 🎵 عناصر متحركة هادئة للكتاب الصوتي */
+.floating-audio-elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 🎶 موجات صوتية متحركة بنعومة خيالية */
+.sound-wave {
+  position: absolute;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.15) 25%, 
+    rgba(255, 255, 255, 0.25) 50%, 
+    rgba(255, 255, 255, 0.15) 75%, 
+    transparent 100%);
+  border-radius: 50px;
+  animation: soundPulse 6s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  filter: blur(0.5px);
+}
+
+.wave-1 {
+  width: 80px;
+  height: 4px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 5s;
+}
+
+.wave-2 {
+  width: 120px;
+  height: 6px;
+  top: 30%;
+  right: 15%;
+  animation-delay: 1.5s;
+  animation-duration: 7s;
+}
+
+.wave-3 {
+  width: 60px;
+  height: 3px;
+  bottom: 40%;
+  left: 20%;
+  animation-delay: 3s;
+  animation-duration: 8s;
+}
+
+.wave-4 {
+  width: 100px;
+  height: 5px;
+  bottom: 25%;
+  right: 25%;
+  animation-delay: 0.8s;
+  animation-duration: 6.5s;
+}
+
+/* 📖 كتب عائمة بهدوء وجمال */
+.floating-book {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 3px;
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  animation: bookFloat 12s ease-in-out infinite;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+}
+
+.floating-book::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  width: 18px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 1px;
+}
+
+.floating-book::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 6px;
+  width: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5px;
+}
+
+.book-1 {
+  top: 15%;
+  left: 5%;
+  animation-delay: 0s;
+  transform: rotate(-15deg);
+  animation-duration: 10s;
+}
+
+.book-2 {
+  top: 60%;
+  right: 8%;
+  animation-delay: 4s;
+  transform: rotate(20deg);
+  animation-duration: 14s;
+}
+
+.book-3 {
+  bottom: 20%;
+  left: 15%;
+  animation-delay: 8s;
+  transform: rotate(-10deg);
+  animation-duration: 16s;
+}
+
+/* 🎧 أيقونات سماعات عائمة بتصميم رايق */
+.floating-headphone {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50% 50% 0 0;
+  animation: headphoneFloat 15s ease-in-out infinite;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.floating-headphone::before {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.floating-headphone::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 20px;
+  height: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.08) 0%, 
+    transparent 100%);
+}
+
+.headphone-1 {
+  top: 25%;
+  right: 10%;
+  animation-delay: 2s;
+  animation-duration: 12s;
+}
+
+.headphone-2 {
+  bottom: 35%;
+  right: 20%;
+  animation-delay: 6s;
+  animation-duration: 18s;
+}
+
+/* 🌟 نجوم لامعة صغيرة حلوة كتير */
+.twinkling-star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(255, 255, 255, 0.3) 70%, 
+    transparent 100%);
+  border-radius: 50%;
+  animation: twinkle 4s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+.twinkling-star::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  width: 1px;
+  height: 8px;
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    transparent 100%);
+  transform: translateX(-50%);
+}
+
+.twinkling-star::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -2px;
+  width: 8px;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    transparent 100%);
+  transform: translateY(-50%);
+}
+
+.star-small-1 {
+  top: 18%;
+  left: 25%;
+  animation-delay: 0s;
+  animation-duration: 3.5s;
+}
+
+.star-small-2 {
+  top: 45%;
+  left: 8%;
+  animation-delay: 2s;
+  animation-duration: 4.5s;
+}
+
+.star-small-3 {
+  top: 70%;
+  right: 12%;
+  animation-delay: 1.2s;
+  animation-duration: 3.8s;
+}
+
+.star-small-4 {
+  bottom: 15%;
+  right: 30%;
+  animation-delay: 3.1s;
+  animation-duration: 4.2s;
+}
+
+.star-small-5 {
+  top: 35%;
+  right: 35%;
+  animation-delay: 1.8s;
+  animation-duration: 3.2s;
+}
+
+/* 🌊 دوائر متموجة ناعمة بجمال خيالي */
+.soft-circle {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  animation: softRipple 9s ease-in-out infinite;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.03) 0%, 
+    rgba(255, 255, 255, 0.01) 50%, 
+    transparent 100%);
+  backdrop-filter: blur(1px);
+}
+
+.soft-circle::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: gentleBreath 12s ease-in-out infinite;
+}
+
+.soft-circle::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  right: 30%;
+  bottom: 30%;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.05) 0%, 
+    transparent 70%);
+  border-radius: 50%;
+  animation: floatingDance 15s ease-in-out infinite;
+}
+
+.circle-soft-1 {
+  width: 100px;
+  height: 100px;
+  top: 10%;
+  left: 30%;
+  animation-delay: 0s;
+  animation-duration: 8s;
+}
+
+.circle-soft-2 {
+  width: 150px;
+  height: 150px;
+  bottom: 20%;
+  right: 15%;
+  animation-delay: 3s;
+  animation-duration: 12s;
+}
+
+.circle-soft-3 {
+  width: 80px;
+  height: 80px;
+  top: 50%;
+  left: 5%;
+  animation-delay: 6s;
+  animation-duration: 10s;
+}
+
+/* 🎵 خطوط موسيقية متحركة */
+.music-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  height: 1px;
+  animation: musicFlow 8s linear infinite;
+}
+
+.line-music-1 {
+  width: 200px;
+  top: 40%;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.line-music-2 {
+  width: 150px;
+  top: 55%;
+  right: 0;
+  animation-delay: 3s;
+  animation-direction: reverse;
+}
+
+/* 📻 موجات راديو دائرية */
+.radio-wave {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: radioExpand 5s ease-out infinite;
+}
+
+.radio-1 {
+  width: 50px;
+  height: 50px;
+  top: 30%;
+  left: 40%;
+  animation-delay: 0s;
+}
+
+.radio-2 {
+  width: 30px;
+  height: 30px;
+  bottom: 40%;
+  left: 35%;
+  animation-delay: 1.5s;
+}
+
+/* 🎭 أنيميشنات ناعمة وحلوة كثير */
+@keyframes soundPulse {
+  0%, 100% {
+    transform: scaleX(1) translateY(0);
+    opacity: 0.2;
+  }
+  25% {
+    transform: scaleX(1.2) translateY(-3px);
+    opacity: 0.5;
+  }
+  75% {
+    transform: scaleX(1.4) translateY(2px);
+    opacity: 0.7;
+  }
+}
+
+@keyframes bookFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateZ(-15deg) rotateX(0deg);
+    opacity: 0.4;
+  }
+  33% {
+    transform: translateY(-12px) rotateZ(-10deg) rotateX(5deg);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translateY(-8px) rotateZ(-18deg) rotateX(-3deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes headphoneFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translateY(-10px) rotate(3deg) scale(1.05);
+    opacity: 0.6;
+  }
+  80% {
+    transform: translateY(-5px) rotate(-2deg) scale(0.98);
+    opacity: 0.5;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8) rotate(0deg);
+  }
+  25% {
+    opacity: 0.6;
+    transform: scale(1.1) rotate(90deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.3) rotate(180deg);
+  }
+  75% {
+    opacity: 0.7;
+    transform: scale(1.0) rotate(270deg);
+  }
+}
+
+@keyframes softRipple {
+  0% {
+    transform: scale(0.9) rotate(0deg);
+    opacity: 0.15;
+  }
+  30% {
+    transform: scale(1.05) rotate(120deg);
+    opacity: 0.3;
+  }
+  70% {
+    transform: scale(1.15) rotate(240deg);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(0.95) rotate(360deg);
+    opacity: 0.1;
+  }
+}
+
+@keyframes musicFlow {
+  0% {
+    transform: translateX(-150px) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(50vw) rotate(180deg);
+  }
+  85% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(calc(100vw + 150px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes radioExpand {
+  0% {
+    transform: scale(0.5) rotate(0deg);
+    opacity: 0.6;
+    border-width: 2px;
+  }
+  50% {
+    transform: scale(2) rotate(180deg);
+    opacity: 0.3;
+    border-width: 1px;
+  }
+  100% {
+    transform: scale(3.5) rotate(360deg);
+    opacity: 0;
+    border-width: 0.5px;
+  }
+}
+
+/* 🌈 إضافة أنيميشنات جديدة للنعومة الإضافية */
+@keyframes gentleBreath {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+@keyframes floatingDance {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(8px) translateY(-5px) rotate(2deg);
+  }
+  50% {
+    transform: translateX(0) translateY(-10px) rotate(0deg);
+  }
+  75% {
+    transform: translateX(-8px) translateY(-5px) rotate(-2deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+/* 📱 تحسينات للموبايل */
+@media (max-width: 768px) {
+  .floating-book,
+  .floating-headphone {
+    transform: scale(0.8);
+  }
+  
+  .sound-wave {
+    opacity: 0.5;
+  }
+  
+  .soft-circle {
+    opacity: 0.3;
+  }
+}
+

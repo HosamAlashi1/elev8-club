@@ -181,7 +181,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     switch (target) {
       case 'books':
-        this.router.navigate(['/my-books']);
+        this.router.navigate(['/audio-portal/my-books']);
         break;
       case 'cart':
         this.router.navigate(['/cart']);

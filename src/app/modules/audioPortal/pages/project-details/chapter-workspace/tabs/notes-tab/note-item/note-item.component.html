@@ -1,0 +1,87 @@
+<!-- ========================================
+     📌 Note Item Component - Chat Bubble Style
+     ======================================== -->
+
+<div class="chat-message" [class.is-editing]="isEditing">
+
+  <!-- ========================================
+       🔹 Message Bubble
+       ======================================== -->
+  <div class="message-bubble">
+
+    <!-- User Badge + Name -->
+    <div class="message-header">
+      <span [ngClass]="getUserBadgeClass()">
+        {{ getUserTypeLabel() }}
+      </span>
+      <span class="user-name">{{ note.insert_user }}</span>
+      <span class="message-time" [title]="note.insert_date | utcToLocal">
+        {{ note.insert_date | utcToLocal | timeAgo }}
+      </span>
+    </div>
+    <!-- ========================================
+         🔹 Message Content (Display Mode)
+         ======================================== -->
+    <div class="message-content" *ngIf="!isEditing">
+      <p class="message-text">{{ note.text }}</p>
+    </div>
+
+    <!-- ========================================
+         🔹 Edit Mode (Inline Textarea)
+         ======================================== -->
+    <div class="message-edit-form" *ngIf="isEditing">
+      <textarea class="form-control edit-textarea" [id]="'edit-note-' + note.id" [(ngModel)]="editText" rows="3"
+        [disabled]="isSubmitting" placeholder="Edit your note..."></textarea>
+
+      <div class="edit-actions">
+        <button class="btn btn-sm btn-secondary" (click)="cancelEdit()" [disabled]="isSubmitting">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Cancel
+        </button>
+
+        <button class="btn btn-sm btn-primary" (click)="submitEdit()" [disabled]="!editText.trim() || isSubmitting">
+          <span *ngIf="!isSubmitting">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Save
+          </span>
+          <span *ngIf="isSubmitting">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Saving...
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================
+         🔹 Message Actions (Edit, Delete)
+         ======================================== -->
+    <div class="message-actions" *ngIf="!isEditing">
+      <button class="btn-action btn-edit" (click)="startEdit()" aria-label="Edit note">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </button>
+
+      <button class="btn-action btn-delete" (click)="openDeleteModal()" aria-label="Delete note">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+</div>

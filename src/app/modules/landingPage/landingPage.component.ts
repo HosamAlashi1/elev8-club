@@ -23,14 +23,14 @@ import { AppInitializerService } from '../../core/services/app-initializer.servi
 export class LandingPageComponent implements OnInit {
   currentYear: number;
   lottieConfig: LottieOverlayConfig = { visible: false, options: { path: '' } };
-  
+
   // Properties for layout data
   pre: any = null;
   settings: { [key: string]: string } = {};
   showContent = false;
 
   constructor(
-    private lottieService: LottieOverlayService, 
+    private lottieService: LottieOverlayService,
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
     private appInitializer: AppInitializerService
@@ -42,13 +42,13 @@ export class LandingPageComponent implements OnInit {
   ngOnInit(): void {
     // فرض اتجاه LTR للوحة التحكم
     this.enforceDashboardDirection();
-    
+
     // تحميل البيانات المطلوبة للـ layout
     this.loadLayoutData();
   }
 
   ngAfterViewInit(): void {
-    this.cd.detectChanges(); 
+    this.cd.detectChanges();
   }
 
   prepareRoute(outlet: RouterOutlet) {
@@ -61,7 +61,7 @@ export class LandingPageComponent implements OnInit {
   private enforceDashboardDirection(): void {
     const htmlElement = document.documentElement;
     const bodyElement = document.body;
-    
+
     htmlElement.dir = 'ltr';
     htmlElement.lang = 'en';
     bodyElement.classList.remove('rtl-mode', 'arabic-font');
@@ -98,9 +98,9 @@ export class LandingPageComponent implements OnInit {
     // تحميل البيانات
     this.pre = preloaded;
 
-    // تحويل الـ settings من array إلى object
-    if (preloaded.settings && preloaded.settings[''] && Array.isArray(preloaded.settings[''])) {
-      this.settings = this.landingService.parseSettings(preloaded.settings['']);
+    // تحويل settings من array إلى object
+    if (preloaded.settings && Array.isArray(preloaded.settings)) {
+      this.settings = this.landingService.parseSettings(preloaded.settings);
     } else {
       this.settings = {};
     }

@@ -1,0 +1,363 @@
+/* ========================================
+   📌 Note Item Styles - Chat Bubble Style
+   ======================================== */
+
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  animation: slideInUp 0.3s ease-out;
+}
+
+/* ========================================
+   🔹 Message Bubble
+   ======================================== */
+.message-bubble {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  padding: 1rem 1.25rem;
+  max-width: 85%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-bubble:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  border-color: #5BBDB7;
+  transform: translateX(2px);
+}
+
+.chat-message.is-editing .message-bubble {
+  background: #f8f9fa;
+  border-color: #5BBDB7;
+  box-shadow: 0 4px 16px rgba(91, 189, 183, 0.2);
+  max-width: 100%;
+}
+
+/* ========================================
+   🔹 Message Header (User + Badge + Time)
+   ======================================== */
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.message-header .badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  letter-spacing: 0.3px;
+  border-radius: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #495057;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-left: auto;
+  cursor: help;
+}
+
+/* ========================================
+   🔹 Message Content (Display Mode)
+   ======================================== */
+.message-content {
+  margin-bottom: 0.25rem;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #212529;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ========================================
+   🔹 Edit Mode
+   ======================================== */
+.message-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  border-color: #5BBDB7;
+  border-radius: 0.5rem;
+}
+
+.edit-textarea:focus {
+  border-color: #5BBDB7;
+  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.1);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.edit-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edit-actions .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.edit-actions .btn-secondary {
+  background: #fff;
+  border: 2px solid #e9ecef;
+  color: #6c757d;
+}
+
+.edit-actions .btn-secondary:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #dc3545;
+  color: #dc3545;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+}
+
+.edit-actions .btn-primary {
+  background: linear-gradient(135deg, #5BBDB7 0%, #4aa9a3 100%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91, 189, 183, 0.3);
+}
+
+.edit-actions .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(91, 189, 183, 0.4);
+}
+
+/* ========================================
+   🔹 Message Actions (Edit, Delete)
+   ======================================== */
+.message-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.message-bubble:hover .message-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: #fff;
+  border: 2px solid #e9ecef;
+  border-radius: 0.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-action::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 0;
+}
+
+.btn-action svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.25s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.btn-action:hover::before {
+  opacity: 1;
+}
+
+.btn-action:hover svg {
+  transform: scale(1.15) rotate(3deg);
+}
+
+.btn-action:active {
+  transform: translateY(-1px);
+}
+
+/* Edit Button Styles */
+.btn-edit::before {
+  background: linear-gradient(135deg, #e7f9f8 0%, #d4f4f2 100%);
+}
+
+.btn-edit:hover {
+  border-color: #5BBDB7;
+  color: #5BBDB7;
+}
+
+.btn-edit:hover svg {
+  transform: scale(1.2) rotate(-5deg);
+  filter: drop-shadow(0 2px 4px rgba(91, 189, 183, 0.3));
+}
+
+/* Delete Button Styles */
+.btn-delete::before {
+  background: linear-gradient(135deg, #ffe5e5 0%, #ffd4d4 100%);
+}
+
+.btn-delete:hover {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.btn-delete:hover svg {
+  transform: scale(1.2) rotate(5deg);
+  filter: drop-shadow(0 2px 4px rgba(220, 53, 69, 0.3));
+}
+
+/* ========================================
+   🔹 User Badge Colors
+   ======================================== */
+.badge.bg-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+}
+
+.badge.bg-primary {
+  background: linear-gradient(135deg, #5BBDB7 0%, #4aa9a3 100%) !important;
+}
+
+.badge.bg-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+}
+
+.badge.bg-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}
+
+/* ========================================
+   🔹 Animations
+   ======================================== */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   🔹 Responsive Design
+   ======================================== */
+@media (max-width: 768px) {
+  .message-bubble {
+    max-width: 95%;
+    padding: 0.75rem 0.875rem;
+  }
+
+  .message-actions {
+    opacity: 1;
+    position: static;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e9ecef;
+    justify-content: center;
+  }
+
+  .btn-action {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn-action .feather {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .message-bubble {
+    max-width: 100%;
+  }
+
+  .message-header {
+    font-size: 0.8rem;
+  }
+
+  .message-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* ========================================
+   🔹 Accessibility
+   ======================================== */
+.btn-action:focus-visible {
+  outline: 2px solid #5BBDB7;
+  outline-offset: 2px;
+}
+
+.edit-textarea:focus-visible {
+  outline: none;
+}
+
+/* ========================================
+   🔹 Print Styles
+   ======================================== */
+@media print {
+  .message-actions {
+    display: none !important;
+  }
+
+  .message-bubble {
+    border: 1px solid #000;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}

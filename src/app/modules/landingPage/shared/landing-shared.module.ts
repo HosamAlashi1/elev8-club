@@ -16,7 +16,7 @@ register();
     imports: [
      CommonModule,
            RouterModule,
-           ReactiveFormsModule,
+           ReactiveFormsModule, 
            FormsModule,
            NgbModule,
     ],

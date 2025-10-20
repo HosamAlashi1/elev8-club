@@ -77,10 +77,9 @@ export interface LandingPageData {
   awardWinners: AwardWinners;
   testimonials: Testimonial[];
   blogs: Blog[];
-  settings: {
-    '': Setting[];
-  };
+  settings: Setting[]; // ✅ مصفوفة، مش object
 }
+
 
 // ✅ Models for Contact
 export interface ContactMessage {
@@ -101,10 +100,10 @@ export interface ContactResponse {
   message: string;
 }
 
-export interface ApiResponse {
-  status: boolean;
-  data: LandingPageData;
-  message: string;
+export interface ApiResponse<T = any> {
+  success: boolean;   
+  msg?: string;
+  data: T;
 }
 
 @Injectable({
@@ -113,16 +112,16 @@ export interface ApiResponse {
 export class LandingService {
   private readonly API_BASE_URL = `${environment.apiUrl}`;
 
-  constructor(private httpService: HttpService) {}
+  constructor(private httpService: HttpService) { }
 
   /**
    * جلب بيانات الصفحة الرئيسية من الـ API
-   * (حاليا ممكن ما تستخدم لأنه بنشتغل بالـ fallbackData)
    */
-  getHomeData(): Observable<ApiResponse> {
-    const url = `${this.API_BASE_URL}/home`;
+  getHomeData(): Observable<ApiResponse<LandingPageData>> {
+    const url = `${this.API_BASE_URL}/website/home`;
     return this.httpService.listGet(url, 'homeData');
   }
+
 
   /**
    * تحويل الـ settings array إلى object للوصول السهل

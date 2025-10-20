@@ -26,7 +26,7 @@ export class AuthService {
     this.isAuthLoading$ = this.isAuthLoadingSubject.asObservable();
   }
 
-  login(email: string, password: string, auth_type: string, fcm_token: string = '', device_id: string = ''): Observable<any> {
+  login(email: string, password: string, auth_type: number, fcm_token: string = '', device_id: string = ''): Observable<any> {
     this.isAuthLoadingSubject.next(true);
     return this.http.post<any>(`${API_BASE_URL}/Auth/login`, { email, password, auth_type, fcm_token, device_id }).pipe(
       tap({

@@ -33,14 +33,11 @@ export class AppComponent implements OnInit {
   constructor(private publicService: PublicService, private router: Router) { }
 
   ngOnInit(): void {
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 0,                     // أخّر التريغر شوي
-      anchorPlacement: 'top-center',   // أدقّ من الافتراضي
-      startEvent: 'load',              // بعد ما يجهز كلشي
-      mirror: false
+   AOS.init({
+      duration: 1000, // مدة الأنيميشن
+      once: true,     // يشتغل مرة وحدة فقط
     });
+
 
     // بعد كل ناڤيجيشن + بعد انتهاء ترانزيشن الراوتر
     this.router.events.pipe(filter(e => e instanceof NavigationEnd))
@@ -67,7 +64,7 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/auth/') || event.urlAfterRedirects.startsWith('/error')) {
+        if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/audio-portal') || event.urlAfterRedirects.startsWith('/auth') || event.urlAfterRedirects.startsWith('/error')) {
           this.loadCSS('/assets/css/dashboard.css');
           this.loadCSS('/assets/css/theme.bundle.css');
           this.removeCSS('/assets/css/landingPage.css');
@@ -78,6 +75,22 @@ export class AppComponent implements OnInit {
         }
       });
   }
+
+  ngAfterViewInit(): void {
+  document.body.classList.add('aos-loading'); // البداية
+  setTimeout(() => {
+    (AOS as any).init({
+      duration: 800,
+      once: true,
+      offset: 0,
+      anchorPlacement: 'top-center',
+      mirror: false
+    });
+    document.body.classList.remove('aos-loading'); // رجّع السلوك الطبيعي
+    window.dispatchEvent(new Event('scroll'));
+  }, 0);
+}
+
 
   prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];

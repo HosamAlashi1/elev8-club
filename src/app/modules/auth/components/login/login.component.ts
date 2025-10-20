@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
       const { email, password } = this.form.value;
       this.showMsg(false, '');
 
-      this.authService.login(email, password ,'1').subscribe({ // 1 for admin login , 2 for author , 3 for editor , 4 for customer login
+      this.authService.login(email, password ,1).subscribe({ // 1 for admin login , 2 for author , 3 for editor , 4 for customer login
         next: (res: any) => {
           if (res?.success === true && res?.data?.access_token) {
             // Prepare data

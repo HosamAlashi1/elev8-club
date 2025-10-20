@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import * as CryptoJS from 'crypto-js';
 import { environment } from 'src/environments/environment';
 import { LandingAuthApiService, SignupRequest } from './landing-auth-api.service';
+import { AuthType } from 'src/app/core/enums/auth-type.enum';
 
 export interface LandingAuthUser {
   id: number;
@@ -11,14 +12,13 @@ export interface LandingAuthUser {
   last_name: string;
   email: string;
   phone?: string;
-  auth_type: number; // 4
+  auth_type: AuthType; // الآن Enum بدل رقم
   image?: string;
 }
 
 export interface LandingAuthPayload {
   user: LandingAuthUser;
   token: string;
-  // permissions: not used for customer;
   device_id?: string;
 }
 
@@ -42,7 +42,7 @@ export class LandingAuthSessionService {
     // مزامنة بين التبويبات
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY) {
-        this.loadFromStorage(/*silent*/ false);
+        this.loadFromStorage(false);
       }
     });
   }
@@ -54,8 +54,12 @@ export class LandingAuthSessionService {
   get token(): string | null { return this.state.token; }
   get user(): LandingAuthUser | null { return this.state.user; }
 
-  // --- Public API ---
+  // Getter خاص للنوع كـ Enum
+  get userRole(): AuthType | null {
+    return this.state.user?.auth_type ?? null;
+  }
 
+  // --- Public API ---
   login(
     email: string,
     password: string,
@@ -77,24 +81,19 @@ export class LandingAuthSessionService {
     );
   }
 
-  /** Generic signup for any role */
- signup(form: SignupRequest, file?: File): Observable<any> {
-    const body = { ...form, auth_type: form.auth_type ?? 4 };
+  signup(form: SignupRequest, file?: File): Observable<any> {
+    const body = { ...form, auth_type: form.auth_type ?? AuthType.Customer };
     return this.api.signup(body, file);
   }
 
-  /** Logout: clears landing storage and calls backend logout if we have device_id */
   logout() {
     const device_id = this.state.device_id ?? undefined;
-    this.clearSession(); // امسح أولًا محليًا
-    // نادِ الـ API بشكل لطيف (لو فيه device_id)
-    if (device_id) this.api.logout(device_id).subscribe({ next: () => { }, error: () => { } });
+    this.clearSession();
+    if (device_id) this.api.logout(device_id).subscribe({ next: () => {}, error: () => {} });
   }
 
   // --- Internals ---
-
   private setSession(payload: LandingAuthPayload) {
-    // تخزين مشفّر مستقل عن لوحة التحكم
     const encrypted = CryptoJS.AES.encrypt(JSON.stringify(payload), environment.cryptoKey).toString();
     localStorage.setItem(STORAGE_KEY, encrypted);
 
@@ -129,7 +128,6 @@ export class LandingAuthSessionService {
         device_id: payload?.device_id ?? null
       };
     } catch {
-      // بيانات تالفة؟ صفّر وخلاص
       this.state = { isLoggedIn: false, user: null, token: null, device_id: null };
     }
     this.state$.next({ ...this.state });
