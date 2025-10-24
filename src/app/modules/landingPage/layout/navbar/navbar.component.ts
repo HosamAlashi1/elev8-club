@@ -170,7 +170,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ref.componentInstance.initialTab = initialTab; // login or signup
   }
 
-  // ✅ دالة التنقل الذكي (يفتح المودال إذا مش مسجل)
+  //  دالة التنقل الذكي (يفتح المودال إذا مش مسجل)
   navigateIfLogged(target: string, event?: Event) {
     event?.preventDefault();
 

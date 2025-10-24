@@ -1,7 +1,7 @@
 <!-- 🔹 Modern Header with Glass Effect -->
 <header class="audio-header">
   <div class="header-container">
-    
+
     <!-- 🔸 Left: Logo with Glow -->
     <div class="brand-section">
       <a routerLink="/audio-portal" class="logo-link">
@@ -13,52 +13,35 @@
     </div>
 
     <!-- 🔸 Center: Premium Pill Tabs -->
-    <nav class="tabs-container">
+    <nav class="tabs-container" *ngIf="user?.auth_type === 2">
       <div class="tabs-wrapper">
-        <a
-          class="tab-pill"
-          routerLink="/audio-portal/my-books"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <div class="tab-icon">
-            <i class="bi bi-book-fill"></i>
-          </div>
-          <span class="tab-text">My Books</span>
-          <div class="tab-shine"></div>
-        </a>
-
         <!-- فقط للمؤلف -->
-        <a
-          *ngIf="user?.auth_type === 2"
-          class="tab-pill"
-          routerLink="/audio-portal/my-projects"
-          routerLinkActive="active"
-        >
+        <a class="tab-pill" routerLink="/audio-portal/my-projects" routerLinkActive="active">
           <div class="tab-icon">
             <i class="bi bi-mic-fill"></i>
           </div>
           <span class="tab-text">My Projects</span>
           <div class="tab-shine"></div>
         </a>
+
+        <a class="tab-pill" routerLink="/audio-portal/my-books" routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }">
+          <div class="tab-icon">
+            <i class="bi bi-book-fill"></i>
+          </div>
+          <span class="tab-text">My Books</span>
+          <div class="tab-shine"></div>
+        </a>
+        
       </div>
     </nav>
 
     <!-- 🔸 Right: User Profile -->
     <div class="user-section">
       <div class="dropdown">
-        <button
-          class="user-profile-btn"
-          id="userDropdown"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
+        <button class="user-profile-btn" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <div class="avatar-wrapper">
-            <img
-              [src]="user?.image || 'assets/img/blank.png'"
-              alt="User Avatar"
-              class="user-avatar"
-            />
+            <img [src]="user?.image || 'assets/img/blank.png'" alt="User Avatar" class="user-avatar" />
             <div class="avatar-ring"></div>
           </div>
           <div class="user-info">
@@ -78,7 +61,9 @@
               <small>{{ user?.email }}</small>
             </div>
           </li>
-          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
           <li>
             <a class="dropdown-item" routerLink="/profile">
               <i class="bi bi-person"></i>
@@ -91,7 +76,9 @@
               <span>Settings</span>
             </a>
           </li>
-          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
           <li>
             <a class="dropdown-item logout-item" (click)="logout()">
               <i class="bi bi-box-arrow-right"></i>

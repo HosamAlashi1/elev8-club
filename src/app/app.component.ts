@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
 
     // لو عندك تحميل أولي للصور/الخطوط: رجّح حسابات AOS بعد التحميل
     window.addEventListener('load', () => AOS.refreshHard());
-    // ✅ كود التحقق من الاتصال
+    //  كود التحقق من الاتصال
     this.publicService.onlineStatus.subscribe((isOnline) => {
       if (!isOnline) {
         this.previousUrl = this.router.url;
@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // ✅ تحميل CSS حسب الـ route
+    //  تحميل CSS حسب الـ route
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
@@ -96,7 +96,7 @@ export class AppComponent implements OnInit {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 
-  // ✅ دوال لإضافة/إزالة CSS
+  //  دوال لإضافة/إزالة CSS
   private loadCSS(href: string) {
     if (!document.querySelector(`link[href="${href}"]`)) {
       const link = document.createElement('link');

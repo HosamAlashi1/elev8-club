@@ -1,6 +1,6 @@
 /* 🎨 Page Background with Gradient */
 .my-books-page {
-    background: linear-gradient(135deg, #f8fafc 0%, #eef5f7 100%);
+    /* background: linear-gradient(135deg, #f8fafc 0%, #eef5f7 100%); */
     min-height: 100vh;
     position: relative;
 }
@@ -239,6 +239,14 @@
     padding: 0 16px;
 }
 
+/* ==== Action Buttons - Dynamic Colors Based on Book Type ==== */
+/* 
+    الفلسفة: كل زر يأخذ لون نوع الكتاب (book.type) للتناسق مع الـ Badge
+   - Audio Books    → Turquoise/Cyan  (#21d1c5, #5bbdb7)
+   - eBooks         → Orange/Amber    (#f59e0b, #f97316)
+   - Hybrid Books   → Purple/Indigo  (#8b5cf6, #6366f1)
+*/
+
 /* Base Action Button Style */
 .action-btn {
     border: none;
@@ -260,7 +268,69 @@
     transform: translateY(0);
 }
 
-/* Listen Button - للكتب الصوتية */
+/* === زر الكتب الصوتية (Audio) - نفس لون الـ badge-audio === */
+.btn-audio {
+    background: linear-gradient(90deg, #21d1c5, #5bbdb7);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(91, 189, 183, 0.4);
+}
+
+.btn-audio:hover {
+    background: linear-gradient(90deg, #1ab8ad, #4da9a4);
+    box-shadow: 0 6px 16px rgba(91, 189, 183, 0.5);
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* === زر الكتب الإلكترونية (eBook) - نفس لون الـ badge-ebook === */
+.btn-ebook {
+    background: linear-gradient(90deg, #f59e0b, #f97316);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.btn-ebook:hover {
+    background: linear-gradient(90deg, #ea8c0b, #e86205);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5);
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* === زر الكتب الهايبرد (Hybrid) - نفس لون الـ badge-hybrid === */
+.btn-hybrid {
+    background: linear-gradient(90deg, #8b5cf6, #6366f1);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hybrid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.btn-hybrid:hover::before {
+    left: 100%;
+}
+
+.btn-hybrid:hover {
+    background: linear-gradient(90deg, #7c3aed, #5855e6);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px) scale(1.02);
+}
+
+/* === أسماء قديمة للتوافق (نفس الأنماط) === */
+/* ⚠️ هذه للتوافق مع الكود القديم - استخدم btn-audio, btn-ebook, btn-hybrid بدلاً منها */
 .listen-btn {
     background: linear-gradient(90deg, #21d1c5, #5bbdb7);
     color: #fff;
@@ -273,7 +343,6 @@
     transform: translateY(-2px) scale(1.02);
 }
 
-/* Read Button - للكتب الإلكترونية */
 .read-btn {
     background: linear-gradient(90deg, #f59e0b, #f97316);
     color: #fff;
@@ -286,7 +355,6 @@
     transform: translateY(-2px) scale(1.02);
 }
 
-/* Open Button - للكتب الهايبرد */
 .open-btn {
     background: linear-gradient(90deg, #8b5cf6, #6366f1);
     color: #fff;

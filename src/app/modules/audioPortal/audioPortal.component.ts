@@ -1,11 +1,17 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { trigger, transition, style, animate } from '@angular/animations';
+import {
+  trigger,
+  transition,
+  style,
+  animate,
+  query,
+  group
+} from '@angular/animations';
 import { AnimationOptions } from 'ngx-lottie';
 import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOverlayService.service';
 import { LandingService } from '../services/landing.service';
 import { AppInitializerService } from '../../core/services/app-initializer.service';
-
 
 @Component({
   selector: 'app-landing-page',
@@ -14,8 +20,26 @@ import { AppInitializerService } from '../../core/services/app-initializer.servi
   animations: [
     trigger('routeAnimations', [
       transition('* <=> *', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+        // العناصر الداخلية فقط، بدون تغييرات على main نفسه
+        group([
+          query(':leave', [
+            animate('300ms ease', style({
+              opacity: 0,
+              transform: 'translateY(10px)'
+            }))
+          ], { optional: true }),
+
+          query(':enter', [
+            style({
+              opacity: 0,
+              transform: 'translateY(10px)'
+            }),
+            animate('300ms ease-out', style({
+              opacity: 1,
+              transform: 'translateY(0)'
+            }))
+          ], { optional: true })
+        ])
       ])
     ])
   ]
@@ -24,7 +48,6 @@ export class AudioPortalPageComponent implements OnInit {
   currentYear: number;
   lottieConfig: LottieOverlayConfig = { visible: false, options: { path: '' } };
 
-  // Properties for layout data
   pre: any = null;
   settings: { [key: string]: string } = {};
   showContent = false;
@@ -40,7 +63,6 @@ export class AudioPortalPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // فرض اتجاه LTR للوحة التحكم
     this.enforceDashboardDirection();
   }
 
@@ -52,9 +74,6 @@ export class AudioPortalPageComponent implements OnInit {
     return outlet?.activatedRouteData?.['animation'];
   }
 
-  /**
-   * Force LTR direction for dashboard
-   */
   private enforceDashboardDirection(): void {
     const htmlElement = document.documentElement;
     const bodyElement = document.body;
@@ -63,7 +82,6 @@ export class AudioPortalPageComponent implements OnInit {
     htmlElement.lang = 'en';
     bodyElement.classList.remove('rtl-mode', 'arabic-font');
   }
-
 
   private hideInitialLoader(): void {
     const loader = document.getElementById('lottie-loader');

@@ -1,0 +1,23 @@
+.book-reader {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+}
+
+.chapters-sidebar {
+  padding: 12px;
+  border-inline-end: 1px solid #eee;
+}
+
+.chapters-sidebar ul {
+  list-style: none;
+  margin: 0; padding: 0; display: grid; gap: 6px;
+}
+.chapters-sidebar li {
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+}
+.chapters-sidebar li.active, .chapters-sidebar li:hover {
+  background: #f0fbfa; outline: 1px solid #21d1c5;
+}
+
+.loading { text-align: center; padding: 2rem; color: #666; }

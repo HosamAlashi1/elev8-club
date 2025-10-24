@@ -1,0 +1,210 @@
+<!-- ========================================
+     📝 Chapter Workspace - Split Layout (No Tabs)
+     ======================================== -->
+<div class="workspace" *ngIf="!isLoadingChapter && chapter">
+
+  <!-- ========================================
+       🔹 Chapter Header
+       ======================================== -->
+  <div class="chapter-header" hidden>
+    <div class="header-left">
+      <!-- Normal View -->
+      <h5 class="chapter-title" *ngIf="!isRenamingChapter">
+        {{ chapter.title }}
+      </h5>
+
+      <!-- Rename View -->
+      <!-- <div class="rename-wrapper" *ngIf="isRenamingChapter">
+        <input 
+          type="text" 
+          class="form-control chapter-rename-input"
+          [(ngModel)]="renameTitle"
+          (keydown.enter)="submitRename()"
+          (keydown.escape)="cancelRename()"
+          [disabled]="isSubmittingRename"
+        />
+        <div class="rename-actions">
+          <button 
+            class="btn btn-sm btn-success"
+            (click)="submitRename()"
+            [disabled]="!renameTitle.trim() || isSubmittingRename"
+          >
+            <i class="bi bi-check-lg"></i>
+          </button>
+          <button 
+            class="btn btn-sm btn-secondary"
+            (click)="cancelRename()"
+            [disabled]="isSubmittingRename"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div> -->
+    </div>
+
+    <!-- <div class="header-actions" *ngIf="!isRenamingChapter">
+      <button 
+        class="btn btn-sm btn-outline-secondary"
+        (click)="startRenaming()"
+        title="Rename Chapter"
+      >
+        <i class="bi bi-pencil me-1"></i>
+        Rename
+      </button>
+      <button 
+        class="btn btn-sm btn-outline-danger"
+        (click)="deleteChapter()"
+        title="Delete Chapter"
+      >
+        <i class="bi bi-trash me-1"></i>
+        Delete
+      </button>
+      
+      <button 
+        class="btn btn-sm btn-outline-primary d-lg-none"
+        (click)="toggleNotesSidebar()"
+        title="Toggle Notes"
+      >
+        <i class="bi bi-chat-dots me-1"></i>
+        Notes
+      </button>
+    </div> -->
+  </div>
+
+  <!-- ========================================
+       🎙️ Chapter Voice - Glass Card (Clean & Premium) - Visible Only for Editors
+       ======================================== -->
+  <div class="chapter-voice-card pb-0" *ngIf="authType === AuthType.Editor">
+
+    <!-- Idle/Retry State: Generate or Regenerate Button -->
+    <button class="btn-generate-voice mb-3" [disabled]="!canGenerate || isProjectGenerating || isAnyParagraphGenerating"
+      (click)="hasFailed ? regenerateVoice() : generateVoice()" [title]="getVoiceTooltip()">
+
+      <!-- Idle State: Microphone Icon -->
+      <svg *ngIf="voiceState === 'idle'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+        <line x1="12" y1="19" x2="12" y2="23"></line>
+        <line x1="8" y1="23" x2="16" y2="23"></line>
+      </svg>
+
+      <!-- Generating State: Audio Waves -->
+      <span *ngIf="voiceState === 'generating'" class="audio-waves">
+        <span class="wave"></span>
+        <span class="wave"></span>
+        <span class="wave"></span>
+      </span>
+
+      <!-- Regenerate Icon -->
+      <svg *ngIf="voiceState === 'ready'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"></path>
+        <path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"></path>
+      </svg>
+
+      <span>
+        <ng-container [ngSwitch]="voiceState">
+          <span *ngSwitchCase="'idle'">{{ hasFailed ? 'Regenerate Chapter Voice' : 'Generate Chapter Voice' }}</span>
+          <span *ngSwitchCase="'generating'">Generating...</span>
+          <span *ngSwitchCase="'ready'">Regenerate Chapter Voice</span>
+          <!-- لا نعرض Failed نهائيًا -->
+          <span *ngSwitchDefault>Generate Chapter Voice</span>
+        </ng-container>
+      </span>
+    </button>
+
+    <!-- آخر رسالة خطأ (اختياري/مفيد) -->
+    <div *ngIf="lastFailureMessage && voiceState === 'idle'" class="last-error-hint">
+      <small class="text-muted">
+        Last attempt failed: {{ lastFailureMessage }}
+        • <button class="btn btn-link p-0 align-baseline" (click)="regenerateVoice()">Try again</button>
+      </small>
+    </div>
+
+    <!-- Generating State: Loading with Spinner -->
+    <div *ngIf="voiceState === 'generating'" class="voice-generating">
+      <!-- Generating State: Spinner -->
+      <span *ngIf="voiceState === 'generating'" class="audio-waves">
+        <span class="wave"></span>
+        <span class="wave"></span>
+        <span class="wave"></span>
+      </span>
+      <span class="generating-text">Generating Chapter Voice...</span>
+    </div>
+
+    <!-- Ready State: Glass Card Player -->
+    <div *ngIf="voiceState === 'ready' && chapter?.voice_url" class="glass-player" style="margin-bottom: .85rem !important;">
+      <div class="player-header">
+        <span class="audio-title">Chapter Voice</span>
+        <span class="time-meta">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
+      </div>
+
+      <!-- Play/Pause Button -->
+      <button class="btn-play" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'">
+        <!-- Play Icon -->
+        <svg *ngIf="!isPlaying" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <!-- Pause Icon -->
+        <svg *ngIf="isPlaying" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="currentColor">
+          <rect x="6" y="4" width="4" height="16"></rect>
+          <rect x="14" y="4" width="4" height="16"></rect>
+        </svg>
+      </button>
+
+      <!-- Progress Bar -->
+      <div class="wave-container" [class.is-playing]="isPlaying">
+        <div class="simple-progress-track cursor-pointer" (click)="seekAudio($event)">
+          <div class="simple-progress-fill" [style.width.%]="audioProgress"></div>
+        </div>
+      </div>
+
+      <!-- Hidden Audio Element -->
+      <audio #chapterAudio [src]="chapter.voice_url" (timeupdate)="onTimeUpdate($event)"
+        (loadedmetadata)="onMetadataLoaded($event)" (ended)="onAudioEnded()" preload="metadata">
+      </audio>
+
+      <!-- Accessibility -->
+      <div class="sr-only" aria-live="polite" aria-atomic="true">
+        {{ isPlaying ? 'Playing' : 'Paused' }}: Chapter Voice
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================
+       🔹 Split Content Layout (Paragraphs + Notes)
+       ======================================== -->
+  <div class="split-content-layout pt-0">
+
+    <!-- Left Side: Paragraphs -->
+    <div class="content-main">
+      <app-paragraphs-tab [chapterId]="chapterId" [authType]="authType" [isProjectGenerating]="isProjectGenerating"
+        [isChapterGenerating]="isGenerating">
+      </app-paragraphs-tab>
+    </div>
+
+    <!-- Right Side: Notes Chat -->
+    <div class="notes-sidebar" [class.mobile-visible]="notesVisible">
+      <div class="notes-sidebar-header">
+        <div class="notes-header-title">
+          <i class="bi bi-chat-dots"></i>
+          <h6>Discussion</h6>
+        </div>
+        <button class="btn-close-sidebar d-lg-none" (click)="toggleNotesSidebar()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <app-notes-tab [chapterId]="chapterId">
+      </app-notes-tab>
+    </div>
+
+  </div>
+
+</div>

@@ -10,7 +10,7 @@ img {
   overflow: hidden;
 }
 
-/* 🎵 عناصر متحركة هادئة للكتاب الصوتي */
+/*  عناصر متحركة هادئة للكتاب الصوتي */
 .floating-audio-elements {
   position: absolute;
   top: 0;
@@ -339,7 +339,7 @@ img {
   animation-duration: 10s;
 }
 
-/* 🎵 خطوط موسيقية متحركة */
+/*  خطوط موسيقية متحركة */
 .music-line {
   position: absolute;
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);

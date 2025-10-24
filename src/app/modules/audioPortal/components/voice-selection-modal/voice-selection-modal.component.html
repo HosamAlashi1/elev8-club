@@ -1,0 +1,102 @@
+<div class="voice-selection-modal">
+  <!-- Close Button -->
+  <button type="button" class="btn-close-modal" (click)="close()" [disabled]="isLoading" aria-label="Close">
+    <i class="bi bi-x-lg"></i>
+  </button>
+
+  <!-- Modal Header -->
+  <div class="modal-header-custom">
+    <div class="header-icon">
+      <i class="bi bi-mic-fill"></i>
+    </div>
+    <h2 class="modal-title">Select Voice</h2>
+    <p class="modal-subtitle">Choose a voice for {{ entityTypeLabel }}</p>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body-custom">
+
+    <div class="format-bar">
+      <label class="format-label" for="voiceFormat">Format</label>
+
+      <div class="format-toggle" role="group" aria-label="Audio format">
+        <button type="button" class="format-btn" [class.active]="selectedFormat === 'mp3'"
+          (click)="selectedFormat = 'mp3'">
+          MP3
+        </button>
+
+        <button type="button" class="format-btn" [class.active]="selectedFormat === 'wav'"
+          (click)="selectedFormat = 'wav'">
+          WAV
+        </button>
+      </div>
+    </div>
+
+
+    <!-- Skeleton Loader -->
+    <div class="voices-grid" *ngIf="isLoadingVoices">
+      <div class="voice-card skeleton-card" *ngFor="let item of [1,2,3,4,5,6]">
+        <div class="voice-avatar skeleton-avatar">
+          <div class="skeleton-circle"></div>
+        </div>
+        <div class="voice-info">
+          <div class="skeleton-line skeleton-name voice-info"></div>
+          <div class="skeleton-line skeleton-gender voice-info"></div>
+        </div>
+        <div class="voice-actions">
+          <div class="skeleton-line h-100"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voices Grid -->
+    <div class="voices-grid" *ngIf="!isLoadingVoices">
+      <div class="voice-card" *ngFor="let voice of voices; let i = index" [class.selected]="isVoiceSelected(voice)"
+        (click)="selectVoice(voice)" [style.animation-delay]="(i * 80) + 'ms'">
+
+        <div class="voice-avatar">
+          <img class="voice-img" [src]="voice.image || 'assets/img/blank.png'" alt="{{ voice.name }} avatar"
+            loading="lazy" decoding="async" (error)="onVoiceImageError($event)" />
+          <span class="gender-badge" [class.male]="voice.gender === 'Male'" [class.female]="voice.gender === 'Female'">
+            {{ voice.gender === 'Male' ? '♂' : '♀' }}
+          </span>
+        </div>
+
+        <div class="voice-info">
+          <h6 class="voice-name">{{ voice.name }}</h6>
+          <p class="voice-gender">{{ voice.gender | titlecase }}</p>
+        </div>
+
+        <div class="voice-actions">
+          <button class="btn-play-sample" [class.playing]="isVoicePlaying(voice)" (click)="playSample(voice, $event)"
+            type="button">
+            <i class="bi" [ngClass]="isVoicePlaying(voice) ? 'bi-stop-fill' : 'bi-play-fill'"></i>
+            <small>
+              {{ isVoicePlaying(voice) ? 'Pause' : 'Play' }}
+            </small>
+          </button>
+          <div class="selected-indicator" *ngIf="isVoiceSelected(voice)">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer-custom">
+    <button class="btn-secondary" (click)="close()" [disabled]="isLoading">
+      <i class="bi bi-x-circle"></i>
+      Cancel
+    </button>
+
+    <button class="btn-primary" (click)="confirm()" [disabled]="!selectedVoice || isLoading">
+      <span class="btn-content">
+        <i class="bi bi-check-circle"></i>
+        {{ isLoading ? 'Processing...' : 'Confirm Selection' }}
+      </span>
+    </button>
+  </div>
+
+</div>

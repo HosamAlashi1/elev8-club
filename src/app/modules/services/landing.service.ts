@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment';
 
-// ✅ Interfaces بناءً على الداتا الجديدة
+//  Interfaces بناءً على الداتا الجديدة
 export interface Hero {
   background: string;
   slides: { img: string; alt: string }[];
@@ -77,11 +77,11 @@ export interface LandingPageData {
   awardWinners: AwardWinners;
   testimonials: Testimonial[];
   blogs: Blog[];
-  settings: Setting[]; // ✅ مصفوفة، مش object
+  settings: Setting[]; //  مصفوفة، مش object
 }
 
 
-// ✅ Models for Contact
+//  Models for Contact
 export interface ContactMessage {
   name: string;
   email: string;

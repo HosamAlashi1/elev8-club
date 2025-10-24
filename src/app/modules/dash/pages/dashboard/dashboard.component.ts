@@ -22,13 +22,13 @@ export class DashboardComponent implements OnInit {
   categoryChart = {
     series: [44, 33, 23], // Fiction, Children’s, Academic
     chart: {
-      type: 'donut' as const,   // ✅ cast to literal
+      type: 'donut' as const,   //  cast to literal
       height: 240
     } as ApexChart,
     labels: ['Fiction', "Children's", 'Academic'],
     colors: ['#34d399', '#fbbf24', '#3b82f6', '#ef4444'],
     legend: {
-      position: 'bottom' as const,  // ✅ cast to literal
+      position: 'bottom' as const,  //  cast to literal
       labels: { colors: '#6b7280' }
     } as ApexLegend
   };

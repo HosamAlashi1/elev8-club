@@ -69,7 +69,7 @@ export class CartService {
   /**
    * ➕ إضافة كتاب للسلة
    *
-   * ✅ API المقابل (Backend):
+   *  API المقابل (Backend):
    * POST /cart/add
    * Body: { bookId: string, qty: number }
    * Response: { success: boolean, cart: {...} }
@@ -87,7 +87,7 @@ export class CartService {
   /**
    * ✏️ تحديث الكمية
    *
-   * ✅ API المقابل:
+   *  API المقابل:
    * PATCH /cart/{bookId}
    * Body: { qty: number }
    * Response: { success: boolean, cart: {...} }
@@ -107,7 +107,7 @@ export class CartService {
   /**
    * 🗑️ حذف كتاب من السلة
    *
-   * ✅ API المقابل:
+   *  API المقابل:
    * DELETE /cart/{bookId}
    * Response: { success: boolean, cart: {...} }
    */
@@ -119,7 +119,7 @@ export class CartService {
   /**
    * 🧹 تفريغ السلة بالكامل
    *
-   * ✅ API المقابل:
+   *  API المقابل:
    * DELETE /cart
    * Response: { success: boolean, cart: { items: [], total: 0 } }
    */
@@ -137,7 +137,7 @@ export class CartService {
   /**
    * 📂 تحميل من localStorage
    *
-   * ✅ API المقابل:
+   *  API المقابل:
    * GET /cart
    * Response: {
    *   items: [

@@ -1,3 +1,10 @@
+import { NoteItemComponent } from './pages/my-projects/project-details/chapter-workspace/tabs/notes-tab/note-item/note-item.component';
+import { NotesTabComponent } from './pages/my-projects/project-details/chapter-workspace/tabs/notes-tab/notes-tab.component';
+import { ParagraphItemComponent } from './pages/my-projects/project-details/chapter-workspace/tabs/paragraphs-tab/paragraph-item/paragraph-item.component';
+import { ParagraphsTabComponent } from './pages/my-projects/project-details/chapter-workspace/tabs/paragraphs-tab/paragraphs-tab.component';
+import { ChapterWorkspaceComponent } from './pages/my-projects/project-details/chapter-workspace/chapter-workspace.component';
+import { ChaptersSidebarComponent } from './pages/my-projects/project-details/chapters-sidebar/chapters-sidebar.component';
+import { ProjectDetailsComponent } from './pages/my-projects/project-details/project-details.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -17,14 +24,10 @@ import { HeaderComponent } from './layout/header/header.component';
 import { AudioSetupModalComponent } from './components/audio-setup-modal/audio-setup-modal.component';
 import { MyProjectsComponent } from './pages/my-projects/my-projects.component';
 import { AddProjectModalComponent } from './pages/my-projects/add-project-modal/add-project-modal.component';
-import { ProjectDetailsComponent } from './pages/project-details/project-details.component';
-import { ChaptersSidebarComponent } from './pages/project-details/chapters-sidebar/chapters-sidebar.component';
-import { ChapterWorkspaceComponent } from './pages/project-details/chapter-workspace/chapter-workspace.component';
-import { ParagraphsTabComponent } from './pages/project-details/chapter-workspace/tabs/paragraphs-tab/paragraphs-tab.component';
-import { ParagraphItemComponent } from './pages/project-details/chapter-workspace/tabs/paragraphs-tab/paragraph-item/paragraph-item.component';
-import { NotesTabComponent } from './pages/project-details/chapter-workspace/tabs/notes-tab/notes-tab.component';
-import { NoteItemComponent } from './pages/project-details/chapter-workspace/tabs/notes-tab/note-item/note-item.component';
 import { AudioDockComponent } from './shared/audio-dock/audio-dock.component';
+import { VoiceSelectionModalComponent } from './components/voice-selection-modal/voice-selection-modal.component';
+import { BookReaderComponent } from './pages/my-books/book-reader/book-reader.component';
+import { BookFlipComponent } from './pages/my-books/book-reader/components/book-flip/book-flip.component';
 
 
 export function playerFactory() {
@@ -38,6 +41,7 @@ export function playerFactory() {
     MyBooksComponent,
     AudioPortalPageComponent,
     AudioSetupModalComponent,
+    VoiceSelectionModalComponent,
     MyProjectsComponent,
     AddProjectModalComponent,
     ProjectDetailsComponent,
@@ -47,7 +51,9 @@ export function playerFactory() {
     ParagraphItemComponent,
     NotesTabComponent,
     NoteItemComponent,
-    AudioDockComponent
+    AudioDockComponent,
+    BookReaderComponent,
+    BookFlipComponent
   ],
   imports: [
     CommonModule,

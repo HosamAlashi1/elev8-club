@@ -17,7 +17,7 @@ export class CartGuard implements CanActivate {
       return false;
     }
 
-    // ✅ في داتا → اسمح بالوصول
+    //  في داتا → اسمح بالوصول
     return true;
   }
 }

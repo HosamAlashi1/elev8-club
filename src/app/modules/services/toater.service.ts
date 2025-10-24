@@ -19,7 +19,7 @@ export class ToastrsService {
 
   showSuccess(message: string) {
     this.toast.success(
-      `✅ ${message}`,
+      ` ${message}`,
       '',
       { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast success-toast' }
     );
@@ -27,7 +27,7 @@ export class ToastrsService {
 
   showError(message: string) {
     this.toast.error(
-      `❌ ${message}`,
+      ` ${message}`,
       '',
       { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast error-toast', timeOut: 5000 }
     );

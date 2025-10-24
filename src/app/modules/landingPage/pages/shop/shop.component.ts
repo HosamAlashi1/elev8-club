@@ -282,7 +282,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchBooks(nextPage).then(({ items }) => {
       // لو مافي عناصر جديدة، وقف
       if (items.length === 0) {
-        console.log('✅ No more items returned from API');
+        console.log(' No more items returned from API');
         this.isLoadingMore = false;
         this.observer?.disconnect();
         return;
@@ -306,7 +306,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // إذا وصلنا للنهاية، افصل الـ observer
       if (!this.hasNextPage()) {
-        console.log('✅ All books loaded, disconnecting observer');
+        console.log(' All books loaded, disconnecting observer');
         this.observer?.disconnect();
       } else {
         // تحقق إذا محتاجين نحمل أكثر

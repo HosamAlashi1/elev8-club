@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { LandingAuthSessionService } from 'src/app/modules/services/auth-session.service';
 
@@ -52,7 +53,7 @@ export class MyBooksComponent implements OnInit {
   BookType = BookType;
   AuthType = AuthType; // لتستخدمه في القالب
 
-  constructor(private session: LandingAuthSessionService) { }
+  constructor(private session: LandingAuthSessionService, private router: Router) { }
 
   ngOnInit(): void {
     const user = this.session.user;
@@ -216,7 +217,7 @@ export class MyBooksComponent implements OnInit {
         this.greetingMessage = [
           `${baseGreeting}, let's dive into your next audio adventure 🎧`,
           `A perfect time to explore new voices and stories 📚`,
-          `Relax and listen — your next favorite book is waiting 🎵`
+          `Relax and listen — your next favorite book is waiting `
         ][Math.floor(Math.random() * 3)];
         break;
 
@@ -254,41 +255,17 @@ export class MyBooksComponent implements OnInit {
 
     switch (this.userRole) {
       case AuthType.Customer:
-        this.handleCustomerAction(book);
-        break;
       case AuthType.Author:
-        this.handleAuthorAction(book);
+        this.router.navigate(['/audio-portal/my-books', book.id, 'reader']);
         break;
+
       case AuthType.Editor:
-        this.handleEditorAction(book);
+        this.router.navigate(['/audio-portal/my-projects', book.id]);
         break;
-    }
-  }
 
-  private handleCustomerAction(book: AudioBook): void {
-    if (this.audioReady(book)) {
-      console.log(`🎧 Listening project #${book.project_id}`);
-    } else if (book.type === BookType.EBOOK) {
-      console.log(`📖 Reading book #${book.id}`);
-    } else {
-      console.log('🛒 Redirect to shop (book not owned)');
-    }
-  }
-
-  private handleAuthorAction(book: AudioBook): void {
-    if (this.audioSetupRequired(book)) {
-      console.log(`🛠️ Open Audio Setup Modal for book #${book.id}`);
-      // هنا لاحقًا هنفتح المودال
-    } else if (this.audioReady(book)) {
-      console.log(`🎬 Open audio project page #${book.project_id}`);
-    } else {
-      console.log(`📘 Open eBook reader for book #${book.id}`);
-    }
-  }
-
-  private handleEditorAction(book: AudioBook): void {
-    if (this.audioReady(book)) {
-      console.log(`✏️ Open editor project #${book.project_id}`);
+      default:
+        console.warn('Unknown user role:', this.userRole);
+        break;
     }
   }
 

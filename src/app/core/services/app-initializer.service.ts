@@ -24,7 +24,7 @@ export class AppInitializerService {
       .pipe(
         timeout(15000),
         catchError((error) => {
-          console.error('❌ APP_INITIALIZER: Failed to load initial data:', error);
+          console.error(' APP_INITIALIZER: Failed to load initial data:', error);
           this.setFallbackData();
           return of({ success: false, data: null });
         }),
@@ -49,7 +49,7 @@ export class AppInitializerService {
           resolve(true);
         },
         complete: () => {
-          console.log('✅ APP_INITIALIZER: Observable completed');
+          console.log(' APP_INITIALIZER: Observable completed');
           resolve(true);
         }
       });

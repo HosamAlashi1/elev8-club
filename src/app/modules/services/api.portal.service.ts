@@ -29,12 +29,14 @@ export class ApiPortalService {
     create: environment.apiUrl + '/projects/add-chapter', // POST
     edit: (chapterId: string) => environment.apiUrl + `/projects/edit-chapter/${chapterId}`, // POST
     delete: (chapterId: number) => environment.apiUrl + `/projects/delete-chapter/${chapterId}`, // POST
+    reorder: (projectId: number) => environment.apiUrl + `/projects/reorder-chapters/${projectId}`, // POST
   }
 
   public paragraphs = {
     create: environment.apiUrl + '/projects/add-paragraph', // POST
     edit: (paragraphId: string) => environment.apiUrl + `/projects/edit-paragraph/${paragraphId}`, // POST
     delete: (paragraphId: number) => environment.apiUrl + `/projects/delete-paragraph/${paragraphId}`, // POST
+    reorder: (chapterId: number) => environment.apiUrl + `/projects/reorder-paragraphs/${chapterId}`, // POST
   }
 
    public notes = {
@@ -44,8 +46,11 @@ export class ApiPortalService {
   }
 
   public voices = {
-    generate: environment.apiUrl + '/voices/generate-voice', // POST
-    status: (taskId: string) => environment.apiUrl + `/voices/voice-status/${taskId}`, // GET
+    generateProject: environment.apiUrl + '/voices/generate-project', // POST
+    generateChapter: environment.apiUrl + '/voices/generate-chapter', // POST
+    generateParagraph: environment.apiUrl + '/voices/generate-paragraph', // POST
+    export: environment.apiUrl + '/voices/export', // POST
+    status: (taskId: string) => environment.apiUrl + `/voices/status/${taskId}`, // GET
   }
 }
 

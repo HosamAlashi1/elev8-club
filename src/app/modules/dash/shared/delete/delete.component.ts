@@ -14,7 +14,7 @@ export class DeleteComponent {
   @Input() id: number;
   @Input() type: string;
   @Input() message: string;
-  @Input() extraData: any; // ✅ إضافة جديدة
+  @Input() extraData: any; //  إضافة جديدة
 
   alertMessage: string;
   messageType: string;

@@ -112,13 +112,13 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         } else {
           this.hasError = true;
           this.isLoading = false;
-          console.error('❌ Invalid response for book details:', res);
+          console.error(' Invalid response for book details:', res);
         }
       },
       error: err => {
         this.hasError = true;
         this.isLoading = false;
-        console.error('❌ API Error loading book details:', err);
+        console.error(' API Error loading book details:', err);
       }
     });
   }
@@ -170,7 +170,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   async addToCart() {
     if (!this.book || this.isAddingToCart) return;
 
-    // ✅ فحص: هل المستخدم مسجل دخول؟
+    //  فحص: هل المستخدم مسجل دخول؟
     const isAuthenticated = this.authSession.isLoggedIn;
     
     if (!isAuthenticated) {
@@ -204,7 +204,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
       setTimeout(() => (this.showSuccess = false), 2000);
       setTimeout(() => this.hideToast(), 4000);
     } catch (err) {
-      console.error('❌ Error adding to cart:', err);
+      console.error(' Error adding to cart:', err);
       this.isAddingToCart = false;
     }
   }
@@ -214,7 +214,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     const modalRef = this.modalService.open(LandingAccountModalComponent, {
       size: 'xl',
       centered: true,
-      backdrop: 'static',
+      
       windowClass: 'auth-modal-window'
     });
     
@@ -225,11 +225,11 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (result) => {
         // Modal closed successfully (user logged in)
-        console.log('✅ User logged in, can now add to cart');
+        console.log(' User logged in, can now add to cart');
       },
       (reason) => {
         // Modal dismissed (user canceled)
-        console.log('❌ Login modal dismissed:', reason);
+        console.log(' Login modal dismissed:', reason);
       }
     );
   }

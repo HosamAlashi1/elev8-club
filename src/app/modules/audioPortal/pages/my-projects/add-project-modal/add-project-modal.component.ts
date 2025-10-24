@@ -30,7 +30,7 @@ export class AddProjectModalComponent implements OnInit {
   // ========================================
   // 🔹 File Upload Config
   // ========================================
-  acceptedFormats = '.pdf,.doc,.docx'; // ✅ Only PDF and Word
+  acceptedFormats = '.pdf,.doc,.docx'; //  Only PDF and Word
   maxFileSize = 50 * 1024 * 1024; // 50MB
 
   constructor(

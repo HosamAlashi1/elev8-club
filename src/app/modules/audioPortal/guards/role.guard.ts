@@ -41,7 +41,7 @@ export class RoleGuard implements CanActivate {
       }
     }
 
-    // ✅ إذا الدور صحيح، اسمح بالدخول
+    //  إذا الدور صحيح، اسمح بالدخول
     return true;
   }
 }

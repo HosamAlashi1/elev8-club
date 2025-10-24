@@ -170,13 +170,13 @@ export class AddEditBookComponent implements OnInit {
           );
 
           if (matchedAuthor) {
-            console.log('✅ Found matching author:', matchedAuthor);
+            console.log(' Found matching author:', matchedAuthor);
             this.form.patchValue({ author_id: matchedAuthor.id });
             
             // تحديث الحالة أن البيانات الأولية تم تحميلها
             this.initialAuthorsLoaded = true;
           } else {
-            console.log('❌ Author not found:', authorName, 'Available authors:', this.authors);
+            console.log(' Author not found:', authorName, 'Available authors:', this.authors);
           }
         }
       },
@@ -199,7 +199,7 @@ export class AddEditBookComponent implements OnInit {
     }
 
     // console.log للتصحيح - يمكن إزالته لاحقاً
-    console.log('✅ Updated Category:', {
+    console.log(' Updated Category:', {
       rawValue: value,
       parsedValue,
       controlValue: categoryControl?.value,

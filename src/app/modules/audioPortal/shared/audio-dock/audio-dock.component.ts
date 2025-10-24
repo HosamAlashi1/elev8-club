@@ -113,7 +113,7 @@ export class AudioDockComponent implements OnInit, OnDestroy {
    * Get cover letter (first letter of project/chapter for avatar)
    */
   public getCoverLetter(): string {
-    return this.playbackState.track?.coverLetter || '🎵';
+    return this.playbackState.track?.coverLetter || '';
   }
 
   /**

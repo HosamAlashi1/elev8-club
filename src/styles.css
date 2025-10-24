@@ -87,4 +87,14 @@
 }
 
 
+.modal-xxl .modal-dialog {
+  max-width: 90% !important;  /* أكبر من xl */
+  width: 90% !important;
+}
 
+@media (max-width: 768px) {
+  .modal-xxl .modal-dialog {
+    max-width: 100% !important;
+    margin: 10px;
+  }
+}

@@ -1,0 +1,19 @@
+<div class="book-reader" *ngIf="!isLoading; else loading">
+  <aside class="chapters-sidebar">
+    <ul>
+      <li *ngFor="let ch of chapters; trackBy: trackById"
+          [class.active]="ch.id === selectedChapterId"
+          (click)="selectChapter(ch.id, ch.title)">
+        {{ ch.title }}
+      </li>
+    </ul>
+  </aside>
+
+  <main class="book-content">
+    <app-book-flip [pages]="pages"></app-book-flip>
+  </main>
+</div>
+
+<ng-template #loading>
+  <div class="loading">Loading...</div>
+</ng-template>

@@ -26,7 +26,7 @@ export class PaymentGuard implements CanActivate {
       return false;
     }
 
-    // ✅ بيانات الشحن كاملة → اسمح بالدخول
+    //  بيانات الشحن كاملة → اسمح بالدخول
     return true;
   }
 }

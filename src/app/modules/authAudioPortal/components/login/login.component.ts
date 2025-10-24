@@ -15,7 +15,7 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   selectedRole = 4;
   isLoading = false;
-  rememberMe = false; // ✅ حالة التذكّر
+  rememberMe = false; //  حالة التذكّر
 
   uiState = signal({
     submitted: false,
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     public session: LandingAuthSessionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
       device_id: ['']
     });
 
-    // ✅ تحميل بيانات محفوظة لو كانت موجودة
+    //  تحميل بيانات محفوظة لو كانت موجودة
     const savedData = localStorage.getItem(`${environment.prefix}-remember-me`);
     if (savedData) {
       try {
@@ -103,7 +103,15 @@ export class LoginComponent implements OnInit {
           } else {
             localStorage.removeItem(`${environment.prefix}-remember-me`);
           }
-          this.router.navigate(['/audio-portal/my-books']);
+          const userType = res?.data?.data?.auth_type;
+          
+
+          if (userType == 3) { // Editor
+            this.router.navigate(['/audio-portal/my-projects']);
+          } else {
+            this.router.navigate(['/audio-portal/my-books']);
+          }
+
         } else {
           this.showMsg(false, res?.msg || 'Login failed');
         }

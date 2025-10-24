@@ -49,8 +49,8 @@ export class PreviewModalComponent {
     const fileName = this.file?.file_name || 'downloaded_file';
     const fileUrl = this.api.files.download(this.file.id);
 
-    // ✅ نستخدم fetch لتحميل الملف كـ blob
-    fetch(fileUrl, { method: 'GET' })
+    //  نستخدم fetch لتحميل الملف كـ blob
+    fetch(fileUrl, { method: 'POST' })
       .then(async (res) => {
         if (!res.ok) throw new Error('Failed to download file.');
         const blob = await res.blob();

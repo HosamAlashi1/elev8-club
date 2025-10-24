@@ -3,7 +3,7 @@
   <app-header></app-header>
 
   <!-- Main Content Area with Router Outlet -->
-  <main [@routeAnimations]="prepareRoute(outlet)">
+  <main [@routeAnimations]="prepareRoute(outlet)" class="overflow-y-hidden">
     <router-outlet #outlet="outlet"></router-outlet>
   </main>
 

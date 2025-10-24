@@ -40,8 +40,8 @@
                 <div class="hover-overlay">
                     <div class="action-buttons">
 
-                        <!-- ✅ Customer -->
-                        <ng-container *ngIf="userRole === AuthType.Customer">
+                        <!--  Customer -->
+                        <ng-container>
                             <button class="action-btn listen-btn" *ngIf="book.type === BookType.AUDIO"
                                 (click)="onBookPrimaryAction(book)">
                                 <i class="bi bi-play-circle-fill"></i> <span>Listen Now</span>
@@ -58,8 +58,8 @@
                             </button>
                         </ng-container>
 
-                        <!-- ✅ Author -->
-                        <ng-container *ngIf="userRole === AuthType.Author">
+                        <!--  Author -->
+                        <!-- <ng-container *ngIf="userRole === AuthType.Author">
                             <button class="action-btn listen-btn" *ngIf="audioSetupRequired(book)"
                                 (click)="onBookPrimaryAction(book)">
                                 <i class="bi bi-mic"></i> <span>Set up Audio</span>
@@ -74,9 +74,9 @@
                                 (click)="onBookPrimaryAction(book)">
                                 <i class="bi bi-book"></i> <span>Read Book</span>
                             </button>
-                        </ng-container>
+                        </ng-container> -->
 
-                        <!-- ✅ Editor -->
+                        <!--  Editor -->
                         <ng-container *ngIf="userRole === AuthType.Editor && audioReady(book)">
                             <button class="action-btn open-btn" (click)="onBookPrimaryAction(book)">
                                 <i class="bi bi-pencil-square"></i> <span>Open Project</span>

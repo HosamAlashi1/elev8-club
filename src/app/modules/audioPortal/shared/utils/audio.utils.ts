@@ -1,5 +1,5 @@
 /**
- * 🎵 Audio Utility Functions
+ *  Audio Utility Functions
  * Helper functions for audio handling across the application
  */
 

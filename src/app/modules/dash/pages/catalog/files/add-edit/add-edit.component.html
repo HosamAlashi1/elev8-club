@@ -14,7 +14,7 @@
       <input #fileInput type="file" class="file-input-overlay" [attr.accept]="acceptString"
         (change)="onFileChange($event)" />
 
-      <!-- ✅ عرض المحتوى حسب نوع الملف -->
+      <!--  عرض المحتوى حسب نوع الملف -->
       <ng-container *ngIf="selectedFile || hasExistingFile; else placeholder">
 
         <!-- صورة -->

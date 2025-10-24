@@ -6,7 +6,7 @@ import { LandingAuthSessionService } from 'src/app/modules/services/auth-session
 import { HttpService } from 'src/app/modules/services/http.service';
 import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 import { ProjectItem, ProjectsResponse } from './models/project.model';
-import { AddProjectModalComponent } from './add-project-modal/add-project-modal.component';
+import { AudioSetupModalComponent } from '../../components/audio-setup-modal/audio-setup-modal.component';
 
 @Component({
   selector: 'app-my-projects',
@@ -20,14 +20,15 @@ export class MyProjectsComponent implements OnInit {
   greetingMessage = '';
   userName = '';
   searchTerm = '';
-  
+
   isLoading$ = new BehaviorSubject<boolean>(true);
-  
+
   // ========================================
   // 🔹 Data State
   // ========================================
   projects: ProjectItem[] = [];
   filteredProjects: ProjectItem[] = [];
+  canCreateProject = true;
 
   constructor(
     private session: LandingAuthSessionService,
@@ -37,13 +38,19 @@ export class MyProjectsComponent implements OnInit {
     private modalService: NgbModal
   ) { }
 
+
   ngOnInit(): void {
     const user = this.session.user;
     this.userName = user ? user.first_name : '';
+
+    //  تحقّق من نوع المستخدم
+    if (user && user.auth_type === 3) { // 3 = Editor
+      this.canCreateProject = false;
+    }
+
     this.setGreeting();
     this.loadProjects();
   }
-
   // ========================================
   // 🔸 Greeting Message Logic
   // ========================================
@@ -69,16 +76,16 @@ export class MyProjectsComponent implements OnInit {
   // ========================================
   loadProjects(): void {
     this.isLoading$.next(true);
-    
+
     // Build query params
     const params = new URLSearchParams({
       q: '',
       size: '100',
       page: '1'
     });
-    
+
     const url = `${this.apiPortal.projects.list}?${params.toString()}`;
-    
+
     this.httpService.listGet(url, 'loadProjects').subscribe({
       next: (response: ProjectsResponse) => {
         if (response.success && response.data) {
@@ -101,7 +108,7 @@ export class MyProjectsComponent implements OnInit {
   // ========================================
   applyFilter(): void {
     const term = this.searchTerm.toLowerCase().trim();
-    
+
     if (!term) {
       this.filteredProjects = [...this.projects];
     } else {
@@ -122,18 +129,19 @@ export class MyProjectsComponent implements OnInit {
   // 🔸 Open Add Project Modal
   // ========================================
   openAddProjectModal(): void {
-    const modalRef = this.modalService.open(AddProjectModalComponent, {
-      size: 'lg',
-      centered: true
+    const modalRef = this.modalService.open(AudioSetupModalComponent, {
+      size: 'xl',
+      centered: true,
+      windowClass: 'modal-xxl'  // الكلاس السحري الجديد
     });
 
-    // Reload projects list when modal closes with success
     modalRef.closed.subscribe((success: boolean) => {
       if (success) {
         this.loadProjects();
       }
     });
   }
+
 
   // ========================================
   // 🔸 Navigate to Project Details
