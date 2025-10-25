@@ -469,6 +469,58 @@
 .btn-reorder:hover {
   background: rgba(91, 189, 183, .12);
 }
+.paragraphs-list-container {
+  max-height: calc(100vh - 260px);
+  overflow: auto;
+}
+
+.infinite-anchor { height: 1px; width: 100%; }
+.loading-more {
+  display: flex; align-items: center; justify-content: center;
+  color: #6b7280; padding: 8px 0 16px;
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f4;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #5BBDB7, #21D1C5);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #21D1C5, #189585);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #21D1C5 #f1f5f4;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.paragraph-card {
+  animation: fadeInUp 0.5s ease both;
+}
+
 
 .reorder-actions {
   display: flex;

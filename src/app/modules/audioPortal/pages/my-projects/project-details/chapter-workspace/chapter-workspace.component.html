@@ -77,7 +77,7 @@
   <div class="chapter-voice-card pb-0" *ngIf="authType === AuthType.Editor">
 
     <!-- Idle/Retry State: Generate or Regenerate Button -->
-    <button class="btn-generate-voice mb-3" [disabled]="!canGenerate || isProjectGenerating || isAnyParagraphGenerating"
+    <button class="btn-generate-voice mb-3" *ngIf="voiceState !== 'generating'" [disabled]="!canGenerate || isProjectGenerating || isAnyParagraphGenerating"
       (click)="hasFailed ? regenerateVoice() : generateVoice()" [title]="getVoiceTooltip()">
 
       <!-- Idle State: Microphone Icon -->
@@ -88,13 +88,6 @@
         <line x1="12" y1="19" x2="12" y2="23"></line>
         <line x1="8" y1="23" x2="16" y2="23"></line>
       </svg>
-
-      <!-- Generating State: Audio Waves -->
-      <span *ngIf="voiceState === 'generating'" class="audio-waves">
-        <span class="wave"></span>
-        <span class="wave"></span>
-        <span class="wave"></span>
-      </span>
 
       <!-- Regenerate Icon -->
       <svg *ngIf="voiceState === 'ready'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -125,7 +118,7 @@
     </div>
 
     <!-- Generating State: Loading with Spinner -->
-    <div *ngIf="voiceState === 'generating'" class="voice-generating">
+    <div *ngIf="voiceState === 'generating'" class="voice-generating mb-3">
       <!-- Generating State: Spinner -->
       <span *ngIf="voiceState === 'generating'" class="audio-waves">
         <span class="wave"></span>
@@ -136,7 +129,7 @@
     </div>
 
     <!-- Ready State: Glass Card Player -->
-    <div *ngIf="voiceState === 'ready' && chapter?.voice_url" class="glass-player" style="margin-bottom: .85rem !important;">
+    <div *ngIf="voiceState === 'ready' && chapter?.voice_url" class="glass-player">
       <div class="player-header">
         <span class="audio-title">Chapter Voice</span>
         <span class="time-meta">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
@@ -190,7 +183,7 @@
     </div>
 
     <!-- Right Side: Notes Chat -->
-    <div class="notes-sidebar" [class.mobile-visible]="notesVisible">
+    <div class="notes-sidebar" style="margin-top: .85rem !important;" [class.mobile-visible]="notesVisible">
       <div class="notes-sidebar-header">
         <div class="notes-header-title">
           <i class="bi bi-chat-dots"></i>

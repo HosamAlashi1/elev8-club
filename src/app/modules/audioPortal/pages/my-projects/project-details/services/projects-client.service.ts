@@ -34,6 +34,7 @@ export class ProjectsClientService {
   private chapterDetailsCache = new Map<number, Observable<ChapterDetails | null>>();
   private paragraphsCache = new Map<number, Observable<ParagraphItem[]>>();
   private notesCache = new Map<number, Observable<NoteItem[]>>();
+  private paragraphsPageCache = new Map<string, Observable<ParagraphItem[]>>();
 
   private http = inject(HttpService);
   private api = inject(ApiPortalService);
@@ -162,24 +163,35 @@ export class ProjectsClientService {
   /**
    * Get chapter paragraphs (up to 100 items, no pagination)
    */
-  getChapterParagraphs(chapterId: number, forceRefresh = false): Observable<ParagraphItem[]> {
-    if (forceRefresh || !this.paragraphsCache.has(chapterId)) {
-      const url = `${this.apiPortal.chapters.paragraphs(String(chapterId))}?size=100&page=1`;
+  // ✅ كاش لكل صفحة
+
+  getChapterParagraphs(
+    chapterId: number,
+    page = 1,
+    size = 20,
+    forceRefresh = false
+  ): Observable<ParagraphItem[]> {
+    const key = `${chapterId}:${page}:${size}`;
+
+    if (forceRefresh || !this.paragraphsPageCache.has(key)) {
+      const url = `${this.apiPortal.chapters.paragraphs(String(chapterId))}?size=${size}&page=${page}`;
 
       const observable = this.httpService.listGet(url, 'getChapterParagraphs').pipe(
-        map((response: ParagraphsResponse) => {
-          if (response.success && response.data) {
-            return response.data;
-          }
-          return [];
-        }),
+        map((response: ParagraphsResponse) => (response.success && response.data) ? response.data : []),
         shareReplay(1)
       );
 
-      this.paragraphsCache.set(chapterId, observable);
+      this.paragraphsPageCache.set(key, observable);
     }
 
-    return this.paragraphsCache.get(chapterId)!;
+    return this.paragraphsPageCache.get(key)!;
+  }
+
+  // (اختياري) تنظيف كاش فصل معيّن
+  clearChapterParagraphsCache(chapterId: number): void {
+    for (const key of Array.from(this.paragraphsPageCache.keys())) {
+      if (key.startsWith(`${chapterId}:`)) this.paragraphsPageCache.delete(key);
+    }
   }
 
   /**

@@ -1,0 +1,280 @@
+{
+  "book": {
+    "id": 22,
+    "title": "The Mountain's Secret",
+    "cover_url": "/assets/covers/22.jpg",
+    "language": "en",
+    "default_voice_key": "en-US-AvaMultilingualNeural",
+    "settings": {
+      "page": {
+        "width": 400,
+        "height": 550,
+        "gutter": 20,
+        "padding": 30
+      },
+      "typography": {
+        "font": "Georgia, serif",
+        "size": 15,
+        "lineHeight": 1.6
+      },
+      "theme": "light",
+      "spread": true,
+      "rtl": false
+    },
+    "sounds": {
+      "drag": "assets/sfx/page-drag.mp3",
+      "flip": "assets/sfx/page-flip.mp3",
+      "enabled": true,
+      "volume": 0.35
+    }
+  },
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Introduction",
+      "flowStart": 0,
+      "flowEnd": 7
+    },
+    {
+      "id": 2,
+      "title": "The Journey Begins",
+      "flowStart": 8,
+      "flowEnd": 15
+    },
+    {
+      "id": 3,
+      "title": "The Hidden Valley",
+      "flowStart": 16,
+      "flowEnd": 24
+    },
+    {
+      "id": 4,
+      "title": "Secrets Unveiled",
+      "flowStart": 25,
+      "flowEnd": 32
+    }
+  ],
+  "flow": [
+    {
+      "id": "b-1",
+      "type": "h1",
+      "text": "The Mountain's Secret"
+    },
+    {
+      "id": "c1-t",
+      "type": "h2",
+      "chapterId": 1,
+      "text": "Introduction"
+    },
+    {
+      "id": "p1",
+      "type": "p",
+      "chapterId": 1,
+      "text": "The morning mist rolled through the valley like a living thing, clinging to the ancient pines and wrapping the mountain in mystery. Sarah paused at the trailhead, her breath visible in the crisp autumn air, and looked up at the towering peaks that had haunted her dreams for months."
+    },
+    {
+      "id": "p2",
+      "type": "p",
+      "chapterId": 1,
+      "text": "Her grandmother's journal lay tucked safely in her backpack, its weathered leather cover hiding secrets that had been buried for over fifty years. The old woman's final words echoed in Sarah's mind: 'The mountain remembers everything. You just have to know how to listen.'"
+    },
+    {
+      "id": "p3",
+      "type": "p",
+      "chapterId": 1,
+      "text": "This is it, she whispered to herself, adjusting the straps of her pack. After years of research, countless hours poring over maps and documents in dusty archives, she was finally here. The mountain stood before her, silent and imposing, guarding whatever truth lay hidden within its stone heart."
+    },
+    {
+      "id": "p4",
+      "type": "p",
+      "chapterId": 1,
+      "text": "The ancient map in her hand trembled slightly—not from fear, but from anticipation. Every line, every marking on that yellowed parchment had led her to this moment. She took a deep breath of the pine-scented air and began her ascent, knowing that nothing would ever be the same again."
+    },
+    {
+      "id": "p5",
+      "type": "p",
+      "chapterId": 1,
+      "text": "The trail wound upward through dense forest, each step taking her deeper into the wilderness. Birds called overhead, their songs unfamiliar yet somehow welcoming. The ground beneath her boots was soft with decades of fallen needles, muffling her footsteps as if the mountain itself wanted to keep her presence a secret."
+    },
+    {
+      "id": "p6",
+      "type": "p",
+      "chapterId": 1,
+      "text": "As she climbed higher, the trees began to thin, and glimpses of the valley below appeared between the trunks. The small town where she'd spent the last three weeks preparing for this journey looked like a toy village from this height, its buildings reduced to mere specks against the landscape."
+    },
+    {
+      "id": "p7",
+      "type": "p",
+      "chapterId": 1,
+      "text": "Sarah checked her compass and consulted the map once more. According to her grandmother's notes, the entrance to the old mining complex should be just beyond the next ridge. Her heart raced with excitement and a touch of nervousness. Whatever she found up there would either confirm decades of family legend or prove it all to be nothing more than an old woman's fantasies."
+    },
+    {
+      "id": "c2-t",
+      "type": "h2",
+      "chapterId": 2,
+      "text": "The Journey Begins"
+    },
+    {
+      "id": "p8",
+      "type": "p",
+      "chapterId": 2,
+      "text": "They reached the ridge at dusk, just as the last rays of sunlight painted the western sky in shades of amber and rose. Sarah stood at the edge of a natural clearing, her eyes widening at the sight before her. The entrance her grandmother had described was real—a dark opening in the mountainside, partially hidden by overgrown vegetation and fallen rocks."
+    },
+    {
+      "id": "p9",
+      "type": "p",
+      "chapterId": 2,
+      "text": "She pulled out her flashlight and approached carefully, her archaeologist's training kicking in. This wasn't just some abandoned mine shaft—the stonework around the entrance showed craftsmanship that predated any mining operation she knew of in this region. Symbols were carved into the granite, worn smooth by time and weather but still visible."
+    },
+    {
+      "id": "p10",
+      "type": "p",
+      "chapterId": 2,
+      "text": "Each crease in the ancient parchment held a story, a clue to mysteries that had confounded historians for generations. Sarah traced the faded ink with her fingertip, feeling a connection across time to whoever had drawn these lines. The map showed not just geographical features, but something more—patterns and alignments that suggested a deeper understanding of the mountain's secrets."
+    },
+    {
+      "id": "p11",
+      "type": "p",
+      "chapterId": 2,
+      "text": "Making camp near the entrance, she set up her tent and started a small fire. The temperature was dropping rapidly as night approached, and she needed to conserve her energy for tomorrow's exploration. As she ate her simple dinner, she studied the symbols by firelight, comparing them to her grandmother's sketches."
+    },
+    {
+      "id": "p12",
+      "type": "p",
+      "chapterId": 2,
+      "text": "The old journal revealed more with each reading. Her grandmother had been here before, decades ago, as a young woman herself. The entries spoke of discoveries that challenged everything the scientific community believed about the region's history. But she had never revealed her findings, choosing instead to guard the secret until her dying day."
+    },
+    {
+      "id": "p13",
+      "type": "p",
+      "chapterId": 2,
+      "text": "Why? That question had driven Sarah here. Why would someone dedicate their life to protecting a secret rather than sharing a groundbreaking discovery? The journal's final pages suggested an answer: some knowledge, once revealed, could never be forgotten. Some doors, once opened, could never be closed."
+    },
+    {
+      "id": "p14",
+      "type": "p",
+      "chapterId": 2,
+      "text": "As she settled into her sleeping bag, Sarah's mind raced with possibilities. Tomorrow, she would enter the mountain. Tomorrow, she would learn the truth. The fire crackled and popped, sending sparks spiraling up into the star-filled sky, while the mountain loomed above her, eternal and mysterious."
+    },
+    {
+      "id": "p15",
+      "type": "p",
+      "chapterId": 2,
+      "text": "Sleep came fitfully, filled with dreams of underground chambers and ancient ceremonies. In those dreams, she walked through halls carved from living rock, lit by some source of light that had no flame. Voices echoed in languages she didn't recognize, yet somehow understood. When she woke with the dawn, she knew the dreams were more than mere fantasy—they were memories, inherited through generations, waiting to be reclaimed."
+    },
+    {
+      "id": "c3-t",
+      "type": "h2",
+      "chapterId": 3,
+      "text": "The Hidden Valley"
+    },
+    {
+      "id": "p16",
+      "type": "p",
+      "chapterId": 3,
+      "text": "The morning sun revealed details that had been hidden in the previous evening's twilight. Sarah approached the entrance with renewed purpose, her equipment ready and her camera prepared to document everything. The symbols around the opening were more extensive than she'd first thought, covering not just the immediate entrance but extending along the rock face for several meters in each direction."
+    },
+    {
+      "id": "p17",
+      "type": "p",
+      "chapterId": 3,
+      "text": "She traced the weathered inscriptions etched into the granite face, her fingers following patterns that seemed to tell a story. These weren't random decorations or simple markers—they formed a narrative, a warning, or perhaps an invitation. Her years of studying ancient languages helped her recognize elements from several different cultural traditions, all somehow woven together in this remote mountain location."
+    },
+    {
+      "id": "p18",
+      "type": "p",
+      "chapterId": 3,
+      "text": "Taking a deep breath, Sarah stepped through the opening and into the mountain. Her flashlight beam cut through the darkness, revealing a passage that descended gradually into the earth. The walls were smooth, too smooth to be natural, yet showing none of the tool marks typical of human excavation. It was as if the mountain had simply opened itself to create this space."
+    },
+    {
+      "id": "p19",
+      "type": "p",
+      "chapterId": 3,
+      "text": "The air inside was surprisingly fresh, suggesting some kind of ventilation system, though she couldn't identify any obvious shafts or openings. Her footsteps echoed softly as she descended, the sound creating an almost musical quality in the confined space. Every few meters, she paused to take photographs and make notes, documenting her progress."
+    },
+    {
+      "id": "p20",
+      "type": "p",
+      "chapterId": 3,
+      "text": "After what felt like an hour but was probably only twenty minutes, the passage opened into a larger chamber. Sarah's flashlight swept across the space, and she gasped at what she saw. The chamber was enormous, its ceiling lost in shadows far above. But what took her breath away were the walls—covered floor to ceiling in more of those mysterious symbols, these ones still vibrant with color."
+    },
+    {
+      "id": "p21",
+      "type": "p",
+      "chapterId": 3,
+      "text": "In the center of the chamber stood a circular platform, raised slightly above the floor level. As Sarah approached it, she noticed something strange—the air above the platform seemed to shimmer, like heat waves on a summer road. But the temperature here was cool, almost cold. She reached out tentatively, and her hand passed through the shimmer without resistance."
+    },
+    {
+      "id": "p22",
+      "type": "p",
+      "chapterId": 3,
+      "text": "Her grandmother's journal had mentioned something like this—a place where the veil was thin, she had called it. A point where the boundary between worlds became permeable. Sarah had dismissed it as poetic language, metaphor for some archaeological significance. But standing here now, feeling the strange energy in the air, she wasn't so sure."
+    },
+    {
+      "id": "p23",
+      "type": "p",
+      "chapterId": 3,
+      "text": "She spent hours in that chamber, photographing every surface, measuring distances, recording observations. The more she studied, the more convinced she became that this was no ordinary archaeological site. This was something older, something that predated recorded history in this region by thousands of years."
+    },
+    {
+      "id": "p24",
+      "type": "p",
+      "chapterId": 3,
+      "text": "As the day wore on and her flashlight batteries began to weaken, Sarah reluctantly made her way back to the surface. She emerged into late afternoon sunshine, blinking in the sudden brightness. The mountain looked the same as when she'd entered, but she was changed. She had found what her grandmother had found, and she now understood why the old woman had kept it secret. Some discoveries were too profound, too dangerous, to share with an unprepared world."
+    },
+    {
+      "id": "c4-t",
+      "type": "h2",
+      "chapterId": 4,
+      "text": "Secrets Unveiled"
+    },
+    {
+      "id": "p25",
+      "type": "p",
+      "chapterId": 4,
+      "text": "That night, sitting by her campfire, Sarah reviewed her photographs and notes. The evidence was overwhelming, yet she knew that presenting it would raise more questions than it answered. The scientific community would demand explanations she couldn't provide, proof she couldn't produce without revealing the location—something her grandmother's journal explicitly warned against."
+    },
+    {
+      "id": "p26",
+      "type": "p",
+      "chapterId": 4,
+      "text": "The symbols, when properly translated, told a story of migration and sanctuary, of a people who had come from somewhere else and found refuge in these mountains. They spoke of knowledge preserved, of responsibilities passed down through generations. And they contained a warning: that the world was not ready for what lay hidden here."
+    },
+    {
+      "id": "p27",
+      "type": "p",
+      "chapterId": 4,
+      "text": "Sarah understood now why her grandmother had waited until the end of her life to pass on this secret. It was both a gift and a burden, a trust that required wisdom to maintain. The mountain's secrets were meant to be guarded, not exploited. They were meant for those who would understand their significance and respect their power."
+    },
+    {
+      "id": "p28",
+      "type": "p",
+      "chapterId": 4,
+      "text": "Over the next several days, Sarah returned to the chamber multiple times, each visit revealing new details. She found additional passages leading to smaller rooms, each one containing artifacts and inscriptions that added to the story. The more she learned, the more she realized how little she truly understood."
+    },
+    {
+      "id": "p29",
+      "type": "p",
+      "chapterId": 4,
+      "text": "On her final day at the site, Sarah performed a ritual she had learned from her grandmother's journal. Standing on the central platform, she spoke words in an ancient language, acknowledging what she had found and promising to protect it. As she finished, the shimmer in the air seemed to intensify for a moment, and she felt a sense of acceptance, as if the mountain itself had recognized her vow."
+    },
+    {
+      "id": "p30",
+      "type": "p",
+      "chapterId": 4,
+      "text": "When she finally packed up her camp and began the descent back to civilization, Sarah carried with her far more than she had brought. She carried knowledge, responsibility, and a connection to something ancient and profound. The mountain had shared its secret with her, just as it had with her grandmother before her."
+    },
+    {
+      "id": "p31",
+      "type": "p",
+      "chapterId": 4,
+      "text": "In the years that followed, Sarah would return to these mountains many times, always respectful, always careful. She would add her own entries to her grandmother's journal, documenting her experiences for whoever came next. And when the time was right, when she was old and the world had changed enough to be ready, she would pass the journal on to someone she trusted."
+    },
+    {
+      "id": "p32",
+      "type": "p",
+      "chapterId": 4,
+      "text": "Because that was the real secret the mountain had taught her: that some knowledge must be earned through patience and respect, that some truths are meant to be discovered by each generation in their own time. The mountain's secret was not just what lay hidden within it, but the wisdom to know when to reveal what you've found and when to keep it safe for those who will come after."
+    }
+  ]
+}

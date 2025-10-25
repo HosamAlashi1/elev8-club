@@ -37,7 +37,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
   fileName: string = '';
   isDragOver: boolean = false;
   errorMessage = '';
-  
+
   // File Upload Config
   acceptedFormats = '.doc,.docx';
   maxFileSize = 50 * 1024 * 1024; // 50MB
@@ -61,7 +61,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastr: ToastrsService,
     private voicesService: VoicesService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -116,7 +116,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
     this.fileName = '';
     this.errorMessage = '';
     this.formSubmitted = false;
-    
+
     // إيقاف أي صوت يتم تشغيله
     this.stopCurrentAudio();
   }
@@ -148,9 +148,9 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
 
   // التحقق إذا الصوت يتم تشغيله حالياً
   isVoicePlaying(voice: Voice): boolean {
-    return !!(this.currentPlayingVoiceKey === voice.key && 
-           this.currentPlayingAudio && 
-           !this.currentPlayingAudio.paused);
+    return !!(this.currentPlayingVoiceKey === voice.key &&
+      this.currentPlayingAudio &&
+      !this.currentPlayingAudio.paused);
   }
 
   playSample(voice: Voice, event: Event): void {
@@ -168,7 +168,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
     // تشغيل العينة الجديدة
     this.currentPlayingAudio = new Audio(voice.sample);
     this.currentPlayingVoiceKey = voice.key;
-    
+
     this.currentPlayingAudio.play();
 
     // عند انتهاء الصوت، إعادة تعيين الحالة
@@ -217,7 +217,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver = false;
-    
+
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       this.handleFile(files[0]);
@@ -244,7 +244,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
     // Validate file type
     const extension = '.' + file.name.split('.').pop()?.toLowerCase();
     const allowedExtensions = this.acceptedFormats.split(',');
-    
+
     if (!allowedExtensions.includes(extension)) {
       this.errorMessage = `Invalid file type. Allowed: ${this.acceptedFormats}`;
       this.toastr.showError('Please upload a Word document (.doc, .docx) file');
@@ -253,6 +253,13 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
 
     this.selectedFile = file;
     this.fileName = file.name;
+
+    // 🧠 لو الاسم فاضي، استخدم اسم الملف كاسم المشروع
+    const projectNameControl = this.projectForm.get('name');
+    if (projectNameControl && !projectNameControl.value?.trim()) {
+      const fileBaseName = file.name.replace(/\.[^/.]+$/, ''); // بدون الامتداد
+      projectNameControl.setValue(fileBaseName);
+    }
   }
 
   removeFile(): void {
@@ -275,7 +282,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
   // ========================================
   getFileIcon(): string {
     if (!this.selectedFile) return 'bi-file-earmark';
-    
+
     const ext = this.selectedFile.name.split('.').pop()?.toLowerCase();
     switch (ext) {
       case 'pdf': return 'bi-file-earmark-pdf';
@@ -299,15 +306,15 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
   isSubmitDisabled(): boolean {
     // Form must be valid
     if (this.projectForm.invalid) return true;
-    
+
     // If method is AI, voice and file are required
     if (this.method === 'AI' && (!this.selectedVoice || !this.selectedFile)) {
       return true;
     }
-    
+
     // Cannot submit while already submitting
     if (this.isLoading) return true;
-    
+
     return false;
   }
 
@@ -362,7 +369,7 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
           // const projectId = response.data.id;
 
           this.toastr.showSuccess('Your audio project has been created successfully!');
-          
+
           // إغلاق المودال مع إرجاع نجاح
           this.activeModal.close(true);
 

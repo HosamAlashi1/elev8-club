@@ -180,6 +180,102 @@
     transform: scaleX(1);
 }
 
+
+/* 🩵 الحاوية العامة */
+.silence-sliders {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+/* 🩶 كل مجموعة */
+.silence-slider {
+  flex: 1 1 32%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* عنوان كل سلايدر */
+.silence-slider label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 0.4rem;
+  user-select: none;
+}
+
+/* سلايدر */
+.silence-slider input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #def8f6 0%, #a8fff9 100%);
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+/* النقطة (thumb) */
+.silence-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #21d1c5;
+  /* accent-color: #21d1c5; */
+  border: 2px solid white;
+  box-shadow: 0 0 6px rgba(33, 209, 197, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.silence-slider input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(33, 209, 197, 0.6);
+}
+
+/* القيمة */
+.silence-slider span {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #21d1c5;
+  background: #e5f8f7;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  min-width: 38px;
+}
+
+/* توزيع تلقائي حسب العدد */
+.silence-slider:nth-child(2):last-child {
+  flex: 1 1 48%;
+}
+.silence-slider:nth-child(3) {
+  flex: 1 1 32%;
+}
+
+/* شاشات صغيرة */
+@media (max-width: 700px) {
+  .silence-sliders {
+    flex-direction: column;
+  }
+  .silence-slider {
+    width: 100%;
+  }
+}
+
+
 .voice-info {
     display: flex;
     flex-direction: column;

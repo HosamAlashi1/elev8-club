@@ -461,6 +461,7 @@
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.5s ease-out forwards;
+  overflow: hidden;
 }
 
 .voice-card.disabled {
@@ -519,7 +520,8 @@
   transition: border-color 0.3s ease;
 }
 
-.voice-card.selected .voice-avatar img {
+.voice-card.selected .voice-avatar img,
+.voice-card.selected .voice-img {
   border-color: #5bbdb7;
 }
 

@@ -352,39 +352,71 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
       this.toastService.showWarning('Cannot generate chapter voice while project voice is generating');
       return;
     }
+
     if (this.isAnyParagraphGenerating) {
       this.toastService.showWarning('Cannot generate chapter voice while a paragraph is generating');
       return;
     }
 
-    // 🎤 Open voice selection modal
+    // 🎤 فتح مودال اختيار الصوت ومدد الصمت
     const modalRef = this.modalService.open(VoiceSelectionModalComponent, {
       centered: true,
       size: 'lg'
     });
 
     modalRef.componentInstance.entityType = 'chapter';
-    modalRef.componentInstance.defaultVoiceKey = this.chapter?.voice_key; // Pre-select current voice
-    modalRef.componentInstance.defaultFormat = this.chapter?.format; // Pre-select current format
-
+    modalRef.componentInstance.defaultVoiceKey = this.chapter?.voice_key;
 
     modalRef.result.then(
-      (result: string | { key: string; format?: 'mp3' | 'wav' }) => {
+      (result: any) => {
         if (!result) return;
 
-        // 🧠 يدعم حالتين: القديمة (string) أو الجديدة (object)
-        const key = typeof result === 'string' ? result : result.key;
-        const format = typeof result === 'string' ? 'mp3' : (result.format || 'mp3');
+        const voiceKey = result.key;
+        const silences = result.silences || {};
 
-        console.log(`[ChapterWorkspace] Selected voice: ${key} | format: ${format}`);
+        console.log(
+          `[ChapterWorkspace] Selected voice ${voiceKey} with silences:`,
+          silences
+        );
 
-        // أرسل المفتاح والفورمات إلى عملية التوليد
-        this.proceedWithVoiceGeneration(key, format);
+        this.proceedWithVoiceGeneration(voiceKey, silences);
       },
-      () => {
-        console.log('[ChapterWorkspace] Voice selection cancelled');
-      }
+      () => console.log('[ChapterWorkspace] Voice selection cancelled')
     );
+  }
+
+  private proceedWithVoiceGeneration(
+    voiceKey: string,
+    silences: { paragraph?: number; chapterTitle?: number } = {}
+  ): void {
+    if (!this.chapter) return;
+
+    // إعادة التهيئة
+    this.lastFailureMessage = null;
+    this.isGenerating = true;
+    this.voiceState = 'generating';
+    this.cdr.markForCheck();
+
+    this.toastService.showInfo(`Generating chapter voice... ⏳`);
+
+    this.voiceService
+      .generateVoice(VoiceEntityType.Chapter, this.chapterId, voiceKey, silences)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (processId) => {
+          if (this.chapter) {
+            if (!this.chapter.process) {
+              this.chapter.process = { id: processId, status: VoiceStatus.Pending };
+            }
+            this.trackVoiceGeneration(processId);
+          }
+        },
+        error: (error) => {
+          this.toastService.showError('Failed to start generation. Please try again.');
+          this.handleProcessFailure(error?.message || 'Failed to start generation');
+          this.showToast.emit({ message: 'Failed to generate voice. Please try again.', type: 'error' });
+        }
+      });
   }
 
 
@@ -407,40 +439,6 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
     this.currentTime = newTime;
     this.audioProgress = percentage * 100;
     this.cdr.markForCheck();
-  }
-
-
-  private proceedWithVoiceGeneration(voiceKey: string, format: 'mp3' | 'wav' = 'mp3'): void {
-    if (!this.chapter) return;
-
-    // أي محاولة توليد جديدة تلغي رسالة الفشل السابقة
-    this.lastFailureMessage = null;
-
-    this.isGenerating = true;
-    this.voiceState = 'generating';
-    this.cdr.markForCheck();
-
-    this.toastService.showInfo(`Generating chapter voice as ${format.toUpperCase()}... ⏳`);
-
-    // تمرير الفورمات مع البيانات
-    this.voiceService.generateVoice(VoiceEntityType.Chapter, this.chapterId, voiceKey, format)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (processId) => {
-          if (this.chapter) {
-            if (!this.chapter.process) {
-              this.chapter.process = { id: processId, status: VoiceStatus.Pending };
-            }
-            this.trackVoiceGeneration(processId);
-          }
-        },
-        error: (error) => {
-          this.toastService.showError('Failed to start generation. Please try again.');
-          // 👇 بدل failed، ننظّف ونرجّع لـ idle مع حفظ الخطأ
-          this.handleProcessFailure(error?.message || 'Failed to start generation');
-          this.showToast.emit({ message: 'Failed to generate voice. Please try again.', type: 'error' });
-        }
-      });
   }
 
   private trackVoiceGeneration(processId: number): void {

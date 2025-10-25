@@ -112,7 +112,7 @@ export class VoiceService {
     type: VoiceEntityType,
     entityId: number,
     voiceKey?: string,
-    format: 'mp3' | 'wav' = 'mp3'
+    silences?: { paragraph?: number; chapterTitle?: number; chapter?: number }
   ): Observable<number> {
     if (!this.hasVoicePermission()) {
       return throwError(() => new Error('Unauthorized: Only Editors can generate voice'));
@@ -125,20 +125,22 @@ export class VoiceService {
       return of(existingProcessId);
     }
 
-    const request: GenerateVoiceRequest = {
+    const request: any = {
       id: entityId,
       type,
       ...(voiceKey && { voice_key: voiceKey }),
-      format
+      ...(silences?.paragraph && { paragraph_silence: silences.paragraph }),
+      ...(silences?.chapterTitle && { chapter_title_silence: silences.chapterTitle }),
+      ...(silences?.chapter && { chapter_silence: silences.chapter })
     };
 
-    // choose correct endpoint based on numeric enum
+    // اختر endpoint المشروع
     return this.projectsClient.generateVoice(request).pipe(
-      tap(processId => {
+      tap((processId) => {
         console.log(`[VoiceService] Voice generation started: process ${processId} for ${key}`);
         this.entityProcesses.set(key, processId);
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error(`[VoiceService] Failed to generate voice for ${key}:`, error);
         return throwError(() => error);
       })

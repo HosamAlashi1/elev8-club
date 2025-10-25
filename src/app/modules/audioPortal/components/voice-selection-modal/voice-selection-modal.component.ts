@@ -4,6 +4,16 @@ import { VoicesService } from 'src/app/core/services/voices.service';
 import { Voice } from 'src/app/core/models/voice.model';
 import { ToastrService } from 'ngx-toastr';
 
+
+export interface VoiceSelectionResult {
+  key: string;
+  silences?: {
+    paragraph?: number;
+    chapterTitle?: number;
+    chapter?: number;
+  };
+}
+
 @Component({
   selector: 'app-voice-selection-modal',
   templateUrl: './voice-selection-modal.component.html',
@@ -25,16 +35,24 @@ export class VoiceSelectionModalComponent implements OnInit, OnDestroy {
   selectedVoice: Voice | null = null;
   isLoading: boolean = false;
 
-  @Input() defaultFormat: 'mp3' | 'wav' = 'mp3';   // اختياري: فورمات افتراضي من الأب
-  voiceFormats: Array<'mp3' | 'wav'> = ['mp3', 'wav'];
-  selectedFormat: 'mp3' | 'wav' = 'mp3';
+  // 👇 افتراضيات تُمرّر من الأب (لو متوفّرة)
+  @Input() defaultParagraphSilence: number = 1;
+  @Input() defaultChapterTitleSilence: number = 2;
+  @Input() defaultChapterSilence: number = 3;
 
+  readonly silenceOptions: number[] = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5];
 
-  // ========================================
-  // 🔹 Audio Player State
-  // ========================================
+  // القيم المختارة
+  selectedParagraphSilence: number = 1;
+  selectedChapterTitleSilence: number = 2;
+  selectedChapterSilence: number = 3;
+
+  // مشغل العيّنة
   currentPlayingAudio: HTMLAudioElement | null = null;
   currentPlayingVoiceKey: string | null = null;
+
+  voiceFormats: Array<'mp3' | 'wav'> = ['mp3', 'wav'];
+  selectedFormat: 'mp3' | 'wav' = 'mp3';
 
   // ========================================
   // 🔹 Computed
@@ -55,7 +73,10 @@ export class VoiceSelectionModalComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.selectedFormat = this.defaultFormat || 'mp3';
+    this.selectedParagraphSilence = this.defaultParagraphSilence ?? 1;
+    this.selectedChapterTitleSilence = this.defaultChapterTitleSilence ?? 2;
+    this.selectedChapterSilence = this.defaultChapterSilence ?? 3;
+
     this.loadVoices();
   }
 
@@ -167,11 +188,24 @@ export class VoiceSelectionModalComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // رجّع key + format بدل string فقط
-    this.activeModal.close({
+    // جهّز السايلنس حسب نوع الكيان
+    const silences: VoiceSelectionResult['silences'] = {};
+    if (this.entityType === 'project') {
+      silences.paragraph = this.selectedParagraphSilence;
+      silences.chapterTitle = this.selectedChapterTitleSilence;
+      silences.chapter = this.selectedChapterSilence;
+    } else if (this.entityType === 'chapter') {
+      silences.paragraph = this.selectedParagraphSilence;
+      silences.chapterTitle = this.selectedChapterTitleSilence;
+      // لا نرسل chapter
+    } // paragraph: لا شيء
+
+    const payload: VoiceSelectionResult = {
       key: this.selectedVoice.key,
-      format: this.selectedFormat
-    });
+      silences: Object.keys(silences).length ? silences : undefined
+    };
+
+    this.activeModal.close(payload);
   }
 
   close(): void {

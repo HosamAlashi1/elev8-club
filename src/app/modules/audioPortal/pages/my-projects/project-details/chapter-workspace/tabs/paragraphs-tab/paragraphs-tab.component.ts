@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { ProjectsClientService } from '../../../services/projects-client.service';
@@ -25,7 +25,7 @@ interface TocItem {
         style({ opacity: 0, transform: 'translateY(-10px)' }),
         animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
       ]),
-      
+
     ]),
   ],
 })
@@ -41,6 +41,20 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   // ========================================
   paragraphs: ParagraphItem[] = [];
   filteredParagraphs: ParagraphItem[] = [];
+  @ViewChild('infiniteAnchor') infiniteAnchor!: ElementRef<HTMLDivElement>;
+  @ViewChild('listContainer') listContainer!: ElementRef<HTMLElement>;
+
+  pageSize = 20;
+  page = 1;
+  hasMore = true;
+  loadingMore = false;
+
+  // نخزن ما تم تحميله حتى الآن
+  private loadedParagraphs: ParagraphItem[] = [];
+
+  // تبقى واجهتك تستخدم filteredParagraphs للعرض
+
+  private infiniteObserver?: IntersectionObserver;
   isLoading = true;
 
   // Search
@@ -98,6 +112,7 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     this.destroy$.next();
     this.destroy$.complete();
     this.intersectionObserver?.disconnect();
+    this.infiniteObserver?.disconnect();
   }
 
   // ========================================
@@ -107,31 +122,91 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     this.isLoading = true;
     this.cdr.markForCheck();
 
-    // مهم: عند إعادة التحميل، أخرج من وضع الري أوردر وأصفّر الباك أب
     this.isReorderMode = false;
     this.isSavingOrder = false;
     this.originalOrderIds = [];
 
-    this.projectsClient.getChapterParagraphs(this.chapterId, true)
+    this.page = 1;
+    this.hasMore = true;
+    this.loadedParagraphs = [];
+    this.filteredParagraphs = [];
+
+    // (اختياري) نظّف كاش الفصل
+    // this.projectsClient.clearChapterParagraphsCache(this.chapterId);
+
+    this.projectsClient.getChapterParagraphs(this.chapterId, this.page, this.pageSize, true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (paragraphs) => {
-          this.paragraphs = paragraphs.map(p => ({ ...p, isExpanded: false, isEditing: false }));
-          this.filteredParagraphs = [...this.paragraphs];
+        next: (rows) => {
+          this.loadedParagraphs = rows.map(p => ({ ...p, isExpanded: false, isEditing: false }));
+          this.applyFilter(this.searchQuery); // تبني filteredParagraphs من المحمّل
           this.buildTOC();
           this.isLoading = false;
+
+          // لو الدفعة أقل من 20 → ما في صفحات لاحقة
+          this.hasMore = rows.length === this.pageSize;
+
           this.cdr.markForCheck();
 
-          // Re-setup observer after DOM update
-          setTimeout(() => this.setupScrollSpy(), 100);
+          // فعّل مراقب الانفينتي سكروول بعد تحديث DOM
+          setTimeout(() => this.setupInfiniteScroll(), 100);
+          setTimeout(() => this.setupScrollSpy(), 150); // الموجود عندك للـ TOC
         },
-        error: (error) => {
-          console.error('Failed to load paragraphs:', error);
+        error: (err) => {
+          console.error('Failed to load paragraphs:', err);
           this.isLoading = false;
           this.cdr.markForCheck();
         }
       });
   }
+
+  private setupInfiniteScroll(): void {
+    this.infiniteObserver?.disconnect();
+
+    const root = this.listContainer?.nativeElement || document.querySelector('.paragraphs-list-container');
+    if (!root || !this.infiniteAnchor) return;
+
+    this.infiniteObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && this.hasMore && !this.loadingMore && !this.isReorderMode) {
+        this.loadMore();
+      }
+    }, {
+      root: root,
+      rootMargin: '300px 0px',  // نحمّل قبل الوصول للقاع بقليل
+      threshold: 0.01
+    });
+
+    this.infiniteObserver.observe(this.infiniteAnchor.nativeElement);
+  }
+
+  private loadMore(): void {
+    if (!this.hasMore || this.loadingMore) return;
+
+    this.loadingMore = true;
+    const nextPage = this.page + 1;
+
+    this.projectsClient.getChapterParagraphs(this.chapterId, nextPage, this.pageSize)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (rows) => {
+          this.loadedParagraphs = [...this.loadedParagraphs, ...rows];
+          this.applyFilter(this.searchQuery);     // تحدّث العرض والـ TOC
+          this.buildTOC();
+
+          this.page = nextPage;
+          this.hasMore = rows.length === this.pageSize;
+          this.loadingMore = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('loadMore error:', err);
+          this.loadingMore = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
 
   // ========================================
   // 🔸 Search & Filter
@@ -143,13 +218,12 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   }
 
   applyFilter(query: string): void {
+    const base = this.loadedParagraphs;
     if (!query.trim()) {
-      this.filteredParagraphs = [...this.paragraphs];
+      this.filteredParagraphs = [...base];
     } else {
-      const lowerQuery = query.toLowerCase();
-      this.filteredParagraphs = this.paragraphs.filter(p =>
-        p.text.toLowerCase().includes(lowerQuery)
-      );
+      const q = query.toLowerCase();
+      this.filteredParagraphs = base.filter(p => p.text.toLowerCase().includes(q));
     }
     this.buildTOC();
     this.cdr.markForCheck();
@@ -334,20 +408,13 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   // 🔸 Child outputs
   // ========================================
   onParagraphEdited(paragraph: ParagraphItem): void {
-    const isVoiceCompleted = paragraph.process?.status === 3; // VoiceStatus.Completed
-    if (isVoiceCompleted) {
-      this.loadParagraphs();
-    } else {
-      const index = this.paragraphs.findIndex(p => p.id === paragraph.id);
-      if (index !== -1) {
-        this.paragraphs[index] = { ...paragraph };
-        this.applyFilter(this.searchQuery);
-      }
-    }
+    const idx = this.loadedParagraphs.findIndex(p => p.id === paragraph.id);
+    if (idx !== -1) this.loadedParagraphs[idx] = { ...paragraph };
+    this.applyFilter(this.searchQuery);
   }
 
   onParagraphDeleted(paragraphId: number): void {
-    this.paragraphs = this.paragraphs.filter(p => p.id !== paragraphId);
+    this.loadedParagraphs = this.loadedParagraphs.filter(p => p.id !== paragraphId);
     this.applyFilter(this.searchQuery);
   }
 

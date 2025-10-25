@@ -1,19 +1,219 @@
-<div class="book-reader" *ngIf="!isLoading; else loading">
-  <aside class="chapters-sidebar">
-    <ul>
-      <li *ngFor="let ch of chapters; trackBy: trackById"
-          [class.active]="ch.id === selectedChapterId"
-          (click)="selectChapter(ch.id, ch.title)">
-        {{ ch.title }}
-      </li>
-    </ul>
+<div class="book-reader-container" [class]="'theme-' + settings.theme">
+  
+  <!-- Top Toolbar -->
+  <header class="reader-toolbar">
+    <div class="toolbar-left">
+      <button class="toolbar-btn" 
+              (click)="toggleChaptersSidebar()"
+              [class.active]="showChaptersSidebar"
+              title="Chapters">
+        <span>☰</span>
+        <span>Chapters</span>
+      </button>
+      
+      <div class="book-title-display" *ngIf="book">
+        {{ book.title }}
+      </div>
+    </div>
+
+    <div class="page-indicator" *ngIf="totalPages > 0">
+      Page {{ currentPage }} of {{ totalPages }}
+    </div>
+
+    <div class="toolbar-actions">
+      <button class="toolbar-btn" 
+              (click)="toggleSettings()"
+              [class.active]="showSettings"
+              title="Settings">
+        <span>⚙️</span>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Reader Area -->
+  <div class="reader-main">
+    
+    <!-- Chapters Sidebar -->
+    <aside class="chapters-sidebar" [class.open]="showChaptersSidebar">
+      <div class="sidebar-header">
+        Table of Contents
+      </div>
+      <ul class="chapters-list">
+        <li *ngFor="let ch of chapters; trackBy: trackById"
+            class="chapter-item"
+            [class.active]="ch.id === selectedChapterId"
+            (click)="goToChapter(ch.id)">
+          {{ ch.title }}
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Book Spread Container -->
+    <div class="book-spread-container">
+      
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" *ngIf="isLoading">
+        <div class="loading">
+          <div>📖 Loading book...</div>
+        </div>
+      </div>
+
+      <!-- Book Spread (Two Pages) -->
+      <div class="book-spread" 
+           *ngIf="!isLoading && pages?.length"
+           [class.flipping]="isFlipping"
+           [style.font-size.px]="settings.fontSize"
+           [style.line-height]="settings.lineHeight">
+        
+        <!-- Left Page -->
+        <div class="book-page"
+             (click)="onPageClick('left')"
+             (mousedown)="onPageMouseDown($event, 'left')"
+             (mousemove)="onPageMouseMove($event)"
+             (mouseup)="onPageMouseUp($event, 'left')"
+             (mouseleave)="onPageMouseLeave()"
+             (touchstart)="onPageTouchStart($event, 'left')"
+             (touchmove)="onPageTouchMove($event)"
+             (touchend)="onPageTouchEnd($event, 'left')"
+             [style.cursor]="currentPage > 1 ? 'pointer' : 'default'">
+          <div [innerHTML]="pages[currentSpreadIndex * 2]?.html"></div>
+          <div class="page-number">
+            {{ pages[currentSpreadIndex * 2]?.pageNumber }}
+          </div>
+        </div>
+        
+        <!-- Right Page (if exists) -->
+        <div class="book-page" 
+             *ngIf="(currentSpreadIndex * 2 + 1) < pages.length"
+             (click)="onPageClick('right')"
+             (mousedown)="onPageMouseDown($event, 'right')"
+             (mousemove)="onPageMouseMove($event)"
+             (mouseup)="onPageMouseUp($event, 'right')"
+             (mouseleave)="onPageMouseLeave()"
+             (touchstart)="onPageTouchStart($event, 'right')"
+             (touchmove)="onPageTouchMove($event)"
+             (touchend)="onPageTouchEnd($event, 'right')"
+             [style.cursor]="currentPage < totalPages ? 'pointer' : 'default'">
+          <div [innerHTML]="pages[currentSpreadIndex * 2 + 1]?.html"></div>
+          <div class="page-number">
+            {{ pages[currentSpreadIndex * 2 + 1]?.pageNumber }}
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- Navigation Controls -->
+      <div class="navigation-controls" *ngIf="!isLoading && pages?.length">
+        <button class="nav-btn" 
+                (click)="prevPage()" 
+                [disabled]="currentPage <= 1"
+                aria-label="Previous page">
+          ◄
+        </button>
+        
+        <div class="nav-info">
+          {{ currentPage }} / {{ totalPages }}
+        </div>
+        
+        <button class="nav-btn" 
+                (click)="nextPage()" 
+                [disabled]="currentPage >= totalPages"
+                aria-label="Next page">
+          ►
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Settings Panel -->
+  <aside class="settings-panel" [class.open]="showSettings">
+    <div class="settings-header">
+      <div class="settings-title">Reading Settings</div>
+      <button class="close-btn" (click)="toggleSettings()" aria-label="Close">×</button>
+    </div>
+
+    <div class="settings-content">
+      
+      <!-- Font Size -->
+      <div class="setting-group">
+        <div class="setting-label">Font Size</div>
+        <div class="font-controls">
+          <button class="font-btn" (click)="updateFontSize(-1)">A-</button>
+          <div class="font-size-display">{{ settings.fontSize }}px</div>
+          <button class="font-btn" (click)="updateFontSize(1)">A+</button>
+        </div>
+      </div>
+
+      <!-- Line Height -->
+      <div class="setting-group">
+        <div class="setting-label">Line Spacing</div>
+        <div class="slider-control">
+          <input type="range" 
+                 min="1.4" 
+                 max="2.0" 
+                 step="0.05" 
+                 [value]="settings.lineHeight"
+                 (input)="updateLineHeight($any($event.target).value)" />
+          <div style="text-align: center; font-size: 13px; color: #6c757d;">
+            {{ settings.lineHeight }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme -->
+      <div class="setting-group">
+        <div class="setting-label">Theme</div>
+        <div class="theme-selector">
+          <div class="theme-option" 
+               [class.active]="settings.theme === 'light'"
+               (click)="updateTheme('light')">
+            ☀️ Light
+          </div>
+          <div class="theme-option" 
+               [class.active]="settings.theme === 'sepia'"
+               (click)="updateTheme('sepia')">
+            📜 Sepia
+          </div>
+          <div class="theme-option" 
+               [class.active]="settings.theme === 'dark'"
+               (click)="updateTheme('dark')">
+            🌙 Dark
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Effects -->
+      <div class="setting-group">
+        <div class="setting-label">Sound Effects</div>
+        <div class="toggle-control">
+          <span>Page flip sounds</span>
+          <div class="toggle-switch" 
+               [class.active]="settings.audioEnabled"
+               (click)="toggleAudio()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Volume -->
+      <div class="setting-group" *ngIf="settings.audioEnabled">
+        <div class="setting-label">Volume</div>
+        <div class="slider-control">
+          <input type="range" 
+                 min="0" 
+                 max="1" 
+                 step="0.05" 
+                 [value]="settings.audioVolume"
+                 (input)="updateVolume($any($event.target).value)" />
+          <div style="text-align: center; font-size: 13px; color: #6c757d;">
+            {{ (settings.audioVolume * 100).toFixed(0) }}%
+          </div>
+        </div>
+      </div>
+
+    </div>
   </aside>
 
-  <main class="book-content">
-    <app-book-flip [pages]="pages"></app-book-flip>
-  </main>
 </div>
-
-<ng-template #loading>
-  <div class="loading">Loading...</div>
-</ng-template>

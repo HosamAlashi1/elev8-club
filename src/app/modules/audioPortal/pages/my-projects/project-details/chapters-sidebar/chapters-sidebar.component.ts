@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { HttpService } from 'src/app/modules/services/http.service';
@@ -105,13 +105,34 @@ export class ChaptersSidebarComponent implements OnChanges {
         this.destroy$.next(); this.destroy$.complete();
     }
 
-    ngOnChanges(): void {
+
+    ngOnChanges(changes: SimpleChanges): void {
         this.applyFilter();
-        // Reset reload state when chapters updated
+
         if (this.isReloading) {
             this.isReloading = false;
         }
+
+        // ✅ كلما تغيّر chapters من الأب (استجابة جديدة من السيرفر)
+        if (changes['chapters'] && this.chapters && this.chapters.length > 0) {
+            this.selectFirstFromResponse(); // دايمًا اختَر أول شابتر جاي من الـ API
+        }
     }
+
+    /** يحدد أول شابتر حسب ترتيب الاستجابة */
+    private selectFirstFromResponse(): void {
+        const firstChapterId = this.chapters[0].id;
+
+        // لو أصلاً محدد ومساوي للأول، ما في داعي نبعث حدث
+        const changed = this.selectedChapterId !== firstChapterId;
+
+        this.selectedChapterId = firstChapterId;
+
+        if (changed) {
+            this.chapterSelected.emit(firstChapterId);
+        }
+    }
+
 
     // ========================================
     // 🔸 Filter Chapters

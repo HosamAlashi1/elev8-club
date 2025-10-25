@@ -336,37 +336,36 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
   generateVoice(): void {
     if (this.reorderMode) return;
     this.updateCanGenerate();
-    if (!this.canGenerate || this.isGenerating) return;
+    if (!this.canGenerate || this.isGenerating || !this.paragraph) return;
 
     if (this.isProjectGenerating) {
       this.toastService.showWarning('Cannot generate - project voice is currently generating');
       return;
     }
+
     if (this.isChapterGenerating) {
       this.toastService.showWarning('Cannot generate - chapter voice is currently generating');
       return;
     }
 
-    // 🎤 Open voice selection modal
+    // 🎤 فتح مودال اختيار الصوت فقط (بدون أي خيارات صمت)
     const modalRef = this.modalService.open(VoiceSelectionModalComponent, {
       centered: true,
       size: 'lg'
     });
 
     modalRef.componentInstance.entityType = 'paragraph';
-    modalRef.componentInstance.defaultVoiceKey = this.paragraph?.voice_key; // Pre-select current voice
-    modalRef.componentInstance.defaultFormat = this.paragraph?.format; // Pre-select current format
+    modalRef.componentInstance.defaultVoiceKey = this.paragraph?.voice_key;
 
     modalRef.result.then(
-      (result: string | { key: string; format?: 'mp3' | 'wav' }) => {
+      (result: any) => {
         if (!result) return;
 
-        // 🧠 يدعم الصيغتين القديمة والجديدة
-        const voiceKey = typeof result === 'string' ? result : result.key;
-        const format = typeof result === 'string' ? 'mp3' : (result.format || 'mp3');
+        const voiceKey = result.key || (typeof result === 'string' ? result : null);
+        if (!voiceKey) return;
 
-        console.log(`[ParagraphItem] Selected voice ${voiceKey} (${format.toUpperCase()})`);
-        this.proceedWithVoiceGeneration(voiceKey, format);
+        console.log(`[ParagraphItem] Selected voice: ${voiceKey}`);
+        this.proceedWithVoiceGeneration(voiceKey);
       },
       () => console.log('[ParagraphItem] Voice selection cancelled')
     );
@@ -375,29 +374,33 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
   /**
    * Proceed with voice generation after voice selection
    */
-  private proceedWithVoiceGeneration(voiceKey: string, format: 'mp3' | 'wav' = 'mp3'): void {
-    //  أي محاولة جديدة تلغي رسالة الفشل السابقة
-    this.lastFailureMessage = null;
+  private proceedWithVoiceGeneration(voiceKey: string): void {
+    if (!this.paragraph) return;
 
+    // 🔄 أي محاولة جديدة تلغي رسالة الفشل السابقة
+    this.lastFailureMessage = null;
     this.isGenerating = true;
     this.voiceState = 'generating';
     this.cdr.markForCheck();
 
-    this.toastService.showInfo(`Generating paragraph voice as ${format.toUpperCase()}... ⏳`);
+    this.toastService.showInfo(`Generating paragraph voice... ⏳`);
 
-    this.voiceService.generateVoice(VoiceEntityType.Paragraph, this.paragraph.id, voiceKey, format)
+    this.voiceService
+      .generateVoice(VoiceEntityType.Paragraph, this.paragraph.id, voiceKey)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (processId) => {
+          console.log(`[ParagraphItem] Voice generation started (processId=${processId})`);
           this.toastService.showInfo('Generating voice... ⏳');
+
           if (!this.paragraph.process) {
             this.paragraph.process = { id: processId, status: VoiceStatus.Pending };
           }
+
           this.trackVoiceGeneration(processId);
         },
         error: (error) => {
           console.error('[ParagraphItem] Failed to start voice generation:', error);
-          //  بدال failed → ارجع لـ idle مع رسالة
           this.handleProcessFailure(error?.message || 'Failed to start generation');
           this.toastService.showError('Failed to generate voice. Please try again.');
         }

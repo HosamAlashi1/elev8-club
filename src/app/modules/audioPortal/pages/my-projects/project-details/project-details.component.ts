@@ -187,46 +187,38 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
       next: (response: ProjectDetailsResponse) => {
         if (response.success && response.data) {
           this.project = response.data;
-
-          // Check permissions
           this.canGenerate = true;
 
-          // Check permissions
-          this.canGenerate = true;
+          // ✅ تأكد أنو نختار أول شابتر أو آخر واحد محفوظ محليًا
+          const chapters = this.project.chapters ?? [];
 
-          // Initialize voice state
+          if (chapters.length > 0) {
+            const lastChapterId = this.getLastOpenedChapter();
+            const chapterToSelect =
+              lastChapterId && chapters.some(c => c.id === lastChapterId)
+                ? lastChapterId
+                : chapters[0].id;
+
+            this.selectChapter(chapterToSelect);
+          } else {
+            this.selectedChapterId$.next(null);
+          }
+
+          // ✅ ضبط حالات الصوت (زي ما عندك بالأصل)
           if (this.project.process) {
-            // 👇 لو كان Failed جاي من الـ API، رجّع الزر جاهز لإعادة المحاولة فورًا
             if (this.project.process.status === VoiceStatus.Failed) {
               this.handleProcessFailure(this.project.process?.error_message || 'Generation failed');
             } else {
               this.voiceState = getVoiceUIState(this.project);
-              console.log(this.voiceState);
-
-              // Auto-resume polling if active
-              if (this.project.process.status === VoiceStatus.Pending ||
-                this.project.process.status === VoiceStatus.Processing) {
+              if ([VoiceStatus.Pending, VoiceStatus.Processing].includes(this.project.process.status)) {
                 this.resumeVoiceTracking(this.project.process.id);
               }
             }
           } else {
-            // لا يوجد process
             this.voiceState = 'idle';
           }
-
-
-          // Auto-select first chapter or last opened chapter
-          if (this.project.chapters.length > 0) {
-            const lastChapterId = this.getLastOpenedChapter();
-            const chapterToSelect = lastChapterId
-              ? this.project.chapters.find(c => c.id === lastChapterId)?.id
-              : this.project.chapters[0].id;
-
-            if (chapterToSelect) {
-              this.selectChapter(chapterToSelect);
-            }
-          }
         }
+
         this.isLoadingProject$.next(false);
       },
       error: (error) => {
@@ -236,6 +228,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 
   seekProjectAudio(event: MouseEvent): void {
     const audio = document.querySelector('.project-voice-player-bar audio') as HTMLAudioElement;
@@ -444,23 +437,24 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     // 🧹 أي محاولة جديدة = امسح آخر فشل
     this.lastFailureMessage = null;
 
-    // 🎤 افتح مودال اختيار الصوت والفورمات
+    // 🎤 افتح مودال اختيار الصوت ومدد الصمت
     const modalRef = this.modalService.open(VoiceSelectionModalComponent, { centered: true, size: 'lg' });
     modalRef.componentInstance.entityType = 'project';
     modalRef.componentInstance.defaultVoiceKey = this.project?.voice_key;
-    modalRef.componentInstance.defaultFormat = this.project?.format; // Pre-select current format
-
 
     modalRef.result.then(
-      (result: string | { key: string; format?: 'mp3' | 'wav' }) => {
+      (result: any) => {
         if (!result) return;
 
-        // 🧠 دعم الحالتين (string قديم أو object جديد)
-        const voiceKey = typeof result === 'string' ? result : result.key;
-        const format = typeof result === 'string' ? 'mp3' : (result.format || 'mp3');
+        const voiceKey = result.key;
+        const silences = result.silences || {};
 
-        console.log(`[ProjectDetails] Selected voice ${voiceKey} (${format.toUpperCase()})`);
-        this.proceedWithVoiceGeneration(voiceKey, format);
+        console.log(
+          `[ProjectDetails] Selected voice ${voiceKey} with silences:`,
+          silences
+        );
+
+        this.proceedWithVoiceGeneration(voiceKey, silences);
       },
       () => console.log('[ProjectDetails] Voice selection cancelled')
     );
@@ -469,12 +463,16 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   /**
    * Proceed with voice generation after voice selection
    */
-  private proceedWithVoiceGeneration(voiceKey: string, format: 'mp3' | 'wav' = 'mp3'): void {
+  private proceedWithVoiceGeneration(
+    voiceKey: string,
+    silences: { paragraph?: number; chapterTitle?: number; chapter?: number } = {}
+  ): void {
     this.isGenerating = true;
     this.voiceState = 'generating';
-    this.toastService.showInfo(`Generating project voice as ${format.toUpperCase()}... ⏳`);
+    this.toastService.showInfo(`Generating project voice... ⏳`);
 
-    this.voiceService.generateVoice(VoiceEntityType.Project, this.projectId, voiceKey, format)
+    this.voiceService
+      .generateVoice(VoiceEntityType.Project, this.projectId, voiceKey, silences)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (processId) => {
@@ -484,12 +482,13 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          // 👇 رجّع الحالة لـ idle مع تخزين رسالة الفشل
           this.handleProcessFailure(error?.message || 'Failed to start generation');
           this.toastService.showError('Failed to generate voice. Please try again.');
         }
       });
   }
+
+
 
   /**
    * Track voice generation progress
