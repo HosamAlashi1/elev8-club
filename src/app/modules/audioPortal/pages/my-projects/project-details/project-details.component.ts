@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
@@ -88,7 +88,6 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get user auth type from session
     this.userAuthType = this.authSession.userRole ?? AuthType.Customer;
-    console.log('[ProjectDetails] User Auth Type:', this.userAuthType, 'Editor Type:', AuthType.Editor);
 
     // Get project ID from route
     this.route.params
@@ -172,6 +171,14 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           this.isExporting = false;
         }
       });
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent) {
+    if (this.isExporting) {
+      event.preventDefault();
+      event.returnValue = 'Export in progress. Are you sure you want to leave?';
+    }
   }
 
   // ========================================

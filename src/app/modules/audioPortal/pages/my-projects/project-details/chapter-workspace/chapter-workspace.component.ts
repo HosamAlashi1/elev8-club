@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
@@ -21,6 +21,7 @@ import { AudioCoordinatorService } from 'src/app/modules/services/audio-coordina
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
+  @ViewChild('chapterAudio', { static: false }) chapterAudioRef?: ElementRef<HTMLAudioElement>;
 
   @Input() chapterId!: number;
   @Input() projectId!: number;
@@ -271,7 +272,7 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
    * Toggle play/pause
    */
   togglePlayPause(): void {
-    const audio = document.querySelector('.chapter-voice-card audio') as HTMLAudioElement;
+    const audio = this.chapterAudioRef?.nativeElement;
     if (!audio) return;
 
     if (this.isPlaying) {
@@ -419,9 +420,12 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
+  get showChapterAction(): boolean {
+    return this.canGenerate && !this.isProjectGenerating && !this.isAnyParagraphGenerating;
+  }
 
   seekAudio(event: MouseEvent): void {
-    const audio = document.querySelector('.glass-player audio') as HTMLAudioElement;
+    const audio = this.chapterAudioRef?.nativeElement;
     const track = event.currentTarget as HTMLElement;
 
     if (!audio || !this.duration) return;
@@ -509,7 +513,7 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getVoiceTooltip(): string {
-    this.updateCanGenerate();
+    // this.updateCanGenerate();
 
     if (this.isProjectGenerating) {
       return 'Cannot generate - project voice is currently generating';

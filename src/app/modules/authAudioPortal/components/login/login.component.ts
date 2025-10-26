@@ -1,3 +1,4 @@
+import { PublicService } from './../../../services/public.service';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,7 +27,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    public session: LandingAuthSessionService
+    public session: LandingAuthSessionService,
+    public publicService: PublicService
   ) { }
 
   ngOnInit(): void {
@@ -34,8 +36,6 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       auth_type: [this.selectedRole],
-      fcm_token: [''],
-      device_id: ['']
     });
 
     //  تحميل بيانات محفوظة لو كانت موجودة
@@ -83,15 +83,18 @@ export class LoginComponent implements OnInit {
     this.rememberMe = event.target.checked;
   }
 
-  submit() {
+  async submit() {
     this.uiState.update((state) => ({ ...state, submitted: true }));
     if (this.form.invalid) return;
 
-    const { email, password, auth_type, fcm_token, device_id } = this.form.value as any;
+    const fcm_token = await this.publicService.getFCMToken();
+    const device_id = this.publicService.getDeviceId();
+
+    const { email, password, auth_type } = this.form.value as any;
     this.showMsg(false, '');
     this.isLoading = true;
 
-    this.session.login(email, password, Number(auth_type || 4), fcm_token, device_id).subscribe({
+    this.session.login(email, password, Number(auth_type || 4), fcm_token || '', device_id).subscribe({
       next: (res: any) => {
         this.isLoading = false;
 

@@ -16,7 +16,7 @@ export class PermissionGuard implements CanActivate {
     const requiredPermission = route.data['permission'] as string | string[];
 
     // 🔹 لو ما في توكن → سجل خروج
-    const token = this.publicService.getToken();
+    const token = this.publicService.getAuthToken();
     if (!token) {
       this.authService.logout();
       return false;

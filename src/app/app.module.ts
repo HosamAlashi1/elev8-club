@@ -1,10 +1,11 @@
+import { initializeApp } from 'firebase/app';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpClient } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap'; 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { InlineSVGModule } from 'ng-inline-svg-2';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ToastrModule } from 'ngx-toastr';
@@ -18,6 +19,8 @@ import player from 'lottie-web';
 import { SharedModule } from './modules/dash/shared/shared.module';
 import { AppInitializerService } from './core/services/app-initializer.service';
 import { appInitializerFactory } from './core/services/app-initializer.factory';
+import { AngularFireModule } from '@angular/fire/compat';
+import { environment } from '../environments/environment';
 
 
 export function playerFactory() {
@@ -45,7 +48,10 @@ export function playerFactory() {
     TranslateModule.forRoot({
       defaultLanguage: 'en'
     }),
-    LottieModule.forRoot({ player: playerFactory })
+    LottieModule.forRoot({ player: playerFactory }),
+    AngularFireModule.initializeApp(environment.firebase)
+    // AngularFireDatabaseModule,
+    // AngularFireStorageModule,
   ],
   providers: [
     DatePipe,

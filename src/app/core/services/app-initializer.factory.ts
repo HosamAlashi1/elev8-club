@@ -6,7 +6,7 @@ import { AppInitializerService } from './app-initializer.service';
  */
 export function appInitializerFactory(appInitializer: AppInitializerService) {
   return () => {
-    console.log('🔧 Factory: Creating APP_INITIALIZER function');
+    // console.log('🔧 Factory: Creating APP_INITIALIZER function');
     return appInitializer.initialize();
   };
 }

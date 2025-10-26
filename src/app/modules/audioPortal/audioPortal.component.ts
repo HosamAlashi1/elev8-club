@@ -12,6 +12,7 @@ import { AnimationOptions } from 'ngx-lottie';
 import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOverlayService.service';
 import { LandingService } from '../services/landing.service';
 import { AppInitializerService } from '../../core/services/app-initializer.service';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -56,7 +57,8 @@ export class AudioPortalPageComponent implements OnInit {
     private lottieService: LottieOverlayService,
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
-    private appInitializer: AppInitializerService
+    private appInitializer: AppInitializerService,
+    private notificationService: NotificationService
   ) {
     this.lottieService.state$.subscribe(config => this.lottieConfig = config);
     this.currentYear = new Date().getFullYear();
@@ -64,6 +66,7 @@ export class AudioPortalPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.enforceDashboardDirection();
+    this.notificationService.listenNotifications();
   }
 
   ngAfterViewInit(): void {

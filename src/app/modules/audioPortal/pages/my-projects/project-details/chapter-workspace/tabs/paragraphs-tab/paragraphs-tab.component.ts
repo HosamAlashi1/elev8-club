@@ -96,6 +96,7 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     ).subscribe(query => {
       this.applyFilter(query);
     });
+    
   }
 
   ngOnChanges(changes: SimpleChanges): void {

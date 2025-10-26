@@ -64,28 +64,40 @@
         </button>
 
         <!-- 💬 Failure Message under button -->
-        <div *ngIf="voiceState === 'idle' && lastFailureMessage" class="text-muted small mt-1 text-center">
+        <div *ngIf="voiceState === 'idle' && lastFailureMessage && userAuthType === AuthType.Editor"
+          class="text-muted small mt-1 text-center">
           Last attempt failed:
-          <strong>{{ lastFailureMessage }}</strong>
-          •
+          <!-- <strong>{{ lastFailureMessage }}</strong> -->
+          <!-- • -->
           <button class="btn btn-link p-0 align-baseline text-decoration-none" (click)="regenerateVoice()">
             Try again
           </button>
         </div>
-      </div> 
+      </div>
 
       <!-- ▾ Export Project Voice (dropdown) -->
       <div ngbDropdown class="btn-export-wrapper" *ngIf="userAuthType === AuthType.Editor">
-        <button class="btn btn-export" ngbDropdownToggle [disabled]="isExporting || (isLoadingProject$ | async)"
-          [ngbTooltip]="'Export project voice as ZIP'" container="body" aria-label="Export project voice">
-          <!-- Download Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="btn btn-export" [class.exporting]="isExporting" ngbDropdownToggle
+          [disabled]="isExporting || (isLoadingProject$ | async)" aria-label="Export project">
+
+          <!-- أيقونة التحميل -->
+          <svg *ngIf="!isExporting" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          <span class="ms-2">{{ isExporting ? 'Exporting...' : 'Export Voice' }}</span>
+
+          <!-- لودر “ورقة + نصوص + شريط” -->
+          <div *ngIf="isExporting" class="export-hybrid-loader">
+            <div class="paper">
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+            </div>
+          </div>
+
+          <span class="ms-2">{{ isExporting ? 'Exporting...' : 'Export' }}</span>
         </button>
 
         <div ngbDropdownMenu>
@@ -98,7 +110,6 @@
         </div>
       </div>
 
-
     </div>
 
   </header>
@@ -106,9 +117,8 @@
   <!-- ========================================
         Project Voice Player (Below Header) - Visible Only for Editors
        ======================================== -->
-  <div
-    *ngIf="userAuthType === AuthType.Editor && voiceState === 'ready' && project?.voice_url && project?.process?.status === VoiceStatus.Completed"
-    class="project-voice-player-bar">
+  <div *ngIf="voiceState === 'ready' && project?.voice_url && project?.process?.status === VoiceStatus.Completed"
+    class="project-voice-player-bar" style="border-radius: 6px; margin: 16px 18px 0px 18px;">
     <div class="player-container">
       <div class="player-left">
         <span class="player-label">

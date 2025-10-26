@@ -17,7 +17,7 @@ export class AppInitializerService {
    * دالة التهيئة التي ستعمل قبل بدء التطبيق
    */
  initialize(): Promise<any> {
-  console.log('🚀 APP_INITIALIZER: Starting application initialization...');
+  // console.log('🚀 APP_INITIALIZER: Starting application initialization...');
 
   return new Promise((resolve) => {
     this.landingService.getHomeData()
@@ -29,7 +29,7 @@ export class AppInitializerService {
           return of({ success: false, data: null });
         }),
         tap((response) => {
-          console.log('📦 Response from API:', response);
+          // console.log('📦 Response from API:', response);
           if (response?.success && response?.data) {
             this.cachedData = response.data;
             this.isDataLoaded = true;
@@ -40,7 +40,7 @@ export class AppInitializerService {
       )
       .subscribe({
         next: () => {
-          console.log('🎉 APP_INITIALIZER: Application ready to start');
+          // console.log('🎉 APP_INITIALIZER: Application ready to start');
           resolve(true);
         },
         error: (err) => {
@@ -49,7 +49,7 @@ export class AppInitializerService {
           resolve(true);
         },
         complete: () => {
-          console.log(' APP_INITIALIZER: Observable completed');
+          // console.log(' APP_INITIALIZER: Observable completed');
           resolve(true);
         }
       });

@@ -44,7 +44,7 @@ export class AuthInterceptor implements HttpInterceptor {
     if (isLanding || isAudioPortal) {
       token = this.landingSession.token ?? this.getLandingTokenFromStorage();
     } else if (isDashboard) {
-      token = this.publicService.getToken();
+      token = this.publicService.getAuthToken();
     }
 
     if (token) {

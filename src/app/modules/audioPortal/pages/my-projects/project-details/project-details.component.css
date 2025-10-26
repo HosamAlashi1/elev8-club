@@ -3,7 +3,7 @@
    ======================================== */
 
 .project-details-page {
-  min-height: 100vh;
+  /* min-height: 100vh; */
   background: linear-gradient(135deg, #f8fafc 0%, #eef5f7 100%);
   display: flex;
   flex-direction: column;
@@ -635,6 +635,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  
 }
 
 /* Right Workspace */
@@ -1116,3 +1117,93 @@
     justify-content: center;
   }
 }
+
+.btn-export {
+  position: relative;
+  overflow: hidden;
+}
+
+/* === الورقة + الأسطر المتحركة === */
+.export-hybrid-loader {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.paper {
+  position: relative;
+  width: 14px;
+  height: 16px;
+  border: 1.5px solid #21d1c5;
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 2px;
+}
+
+.paper .line {
+  width: 80%;
+  height: 2px;
+  background-color: #21d1c5;
+  border-radius: 1px;
+  animation: lineFlow 1.2s infinite ease-in-out;
+}
+
+.paper .line:nth-child(2) { animation-delay: 0.2s; }
+.paper .line:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes lineFlow {
+  0% {
+    transform: translateX(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(4px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(8px);
+    opacity: 0;
+  }
+}
+
+/* === الشريط السفلي المتدرّج === */
+/* شريط التقدّم يشتغل فقط وقت التصدير */
+.btn-export::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, #5bbdb7, #21d1c5, #5bbdb7);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.btn-export.exporting::after {
+  opacity: 1;
+  animation: exportProgress 1.8s infinite ease-in-out;
+}
+
+
+@keyframes exportProgress {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0.6;
+  }
+}
+

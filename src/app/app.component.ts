@@ -4,6 +4,7 @@ import { animate, style, transition, trigger, query, group } from '@angular/anim
 import { PublicService } from './modules/services/public.service';
 import * as AOS from 'aos';
 import { filter } from 'rxjs/operators';
+import { NotificationService } from './modules/services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -30,41 +31,41 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   previousUrl: string | null = null;
 
-  constructor(private publicService: PublicService, private router: Router) { }
+  constructor(private publicService: PublicService, private router: Router, private notificationService: NotificationService) { }
 
-  ngOnInit(): void {
-   AOS.init({
-      duration: 1000, // مدة الأنيميشن
-      once: true,     // يشتغل مرة وحدة فقط
+  async ngOnInit(): Promise<void> {
+    AOS.init({
+      duration: 1000,
+      once: true,
     });
 
-
-    // بعد كل ناڤيجيشن + بعد انتهاء ترانزيشن الراوتر
     this.router.events.pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        setTimeout(() => AOS.refreshHard(), 350); // 300ms ترانزيشن + هامِش
+        setTimeout(() => AOS.refreshHard(), 350);
       });
 
-    // لو عندك تحميل أولي للصور/الخطوط: رجّح حسابات AOS بعد التحميل
     window.addEventListener('load', () => AOS.refreshHard());
-    //  كود التحقق من الاتصال
+
     this.publicService.onlineStatus.subscribe((isOnline) => {
       if (!isOnline) {
         this.previousUrl = this.router.url;
         this.router.navigate(['/error/503']);
-      } else {
-        if (this.previousUrl) {
-          this.router.navigateByUrl(this.previousUrl);
-          this.previousUrl = null;
-        }
+      } else if (this.previousUrl) {
+        this.router.navigateByUrl(this.previousUrl);
+        this.previousUrl = null;
       }
     });
 
-    //  تحميل CSS حسب الـ route
+    // ✅ تحميل الـ CSS حسب الـ route (كما عندك)
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
-        if (event.urlAfterRedirects.startsWith('/dashboard') || event.urlAfterRedirects.startsWith('/audio-portal') || event.urlAfterRedirects.startsWith('/auth') || event.urlAfterRedirects.startsWith('/error')) {
+        if (
+          event.urlAfterRedirects.startsWith('/dashboard') ||
+          event.urlAfterRedirects.startsWith('/audio-portal') ||
+          event.urlAfterRedirects.startsWith('/auth') ||
+          event.urlAfterRedirects.startsWith('/error')
+        ) {
           this.loadCSS('/assets/css/dashboard.css');
           this.loadCSS('/assets/css/theme.bundle.css');
           this.removeCSS('/assets/css/landingPage.css');
@@ -74,22 +75,25 @@ export class AppComponent implements OnInit {
           this.removeCSS('/assets/css/theme.bundle.css');
         }
       });
+
+    this.notificationService.requestPermission();
   }
 
+
   ngAfterViewInit(): void {
-  document.body.classList.add('aos-loading'); // البداية
-  setTimeout(() => {
-    (AOS as any).init({
-      duration: 800,
-      once: true,
-      offset: 0,
-      anchorPlacement: 'top-center',
-      mirror: false
-    });
-    document.body.classList.remove('aos-loading'); // رجّع السلوك الطبيعي
-    window.dispatchEvent(new Event('scroll'));
-  }, 0);
-}
+    document.body.classList.add('aos-loading'); // البداية
+    setTimeout(() => {
+      (AOS as any).init({
+        duration: 800,
+        once: true,
+        offset: 0,
+        anchorPlacement: 'top-center',
+        mirror: false
+      });
+      document.body.classList.remove('aos-loading'); // رجّع السلوك الطبيعي
+      window.dispatchEvent(new Event('scroll'));
+    }, 0);
+  }
 
 
   prepareRoute(outlet: RouterOutlet) {

@@ -97,6 +97,24 @@
   /* margin-right: 1rem !important; */
 }
 
+.player-left {
+  flex-shrink: 0;
+}
+
+.player-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5bbdb7;
+  white-space: nowrap;
+}
+
+.player-label i {
+  font-size: 16px;
+}
+
 /* Left Side - Main Content (Paragraphs) */
 .content-main {
   flex: 1;
@@ -109,9 +127,9 @@
 /* Right Side - Notes Chat Sidebar */
 .notes-sidebar {
   width: 400px;
-  background: #fff;
+  background: transparent;
   border-radius: 1rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -367,290 +385,190 @@
 
 /* Container */
 .chapter-voice-card {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0rem;
   /* margin: 0 1.2rem 0.05rem 1rem; */
   animation: slideDown 0.4s ease-out;
 }
 
-/* Generate Button (Idle State) */
-.btn-generate-voice {
-  width: 100%;
+/* الشريط العام */
+.chapter-voice-bar {
+  background: linear-gradient(135deg, rgba(91, 189, 183, 0.05) 0%, rgba(33, 209, 197, 0.08) 100%);
+  border-bottom: 1px solid rgba(91, 189, 183, 0.15);
+  padding: 10px 24px;
+  animation: slideDown 0.3s ease-out;
+  margin: 8px 18px 0px 18px;
+  border-radius: 6px;
+}
+
+.bar-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  background: linear-gradient(135deg, #5BBDB7 0%, #21D1C5 100%);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(91, 189, 183, 0.25);
+  gap: 16px;
+  max-width: 100%;
 }
 
-.btn-generate-voice:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(91, 189, 183, 0.35);
-}
-
-.btn-generate-voice:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  filter: grayscale(60%);
-  transform: none;
-}
-
-.btn-generate-voice svg {
-  width: 20px;
-  height: 20px;
-}
-
-/* Generating State */
-.voice-generating {
-  width: 100%;
+/* وسط الشريط (ياخد كل المساحة) */
+.bar-center {
+  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(91, 189, 183, 0.1) 0%, rgba(33, 209, 197, 0.08) 100%);
-  border: 1px solid rgba(91, 189, 183, 0.25);
-  border-radius: 12px;
-  color: #334155;
-  font-size: 0.9rem;
-  font-weight: 600;
-  animation: pulse 2s ease-in-out infinite;
+  gap: 12px;
+  min-width: 0;
+}
+.bar-center.full-width {
+  margin-right: 0; /* بس ضبط بصري */
 }
 
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.85;
-  }
-}
-
-.btn-loading {
-  position: relative;
-  width: 32px;
-  height: 32px;
-}
-
-.btn-loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
-  border: 3px solid transparent;
-  border-top-color: #5BBDB7;
-  border-right-color: #5BBDB7;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Glass Player (Ready State) */
-.glass-player {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 16px 20px;
-  background: rgba(91, 189, 183, 0.08);
-  border: 1px solid rgba(91, 189, 183, 0.25);
-  border-radius: 14px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px rgba(91, 189, 183, 0.15);
-  animation: fadeInScale 0.3s ease-out;
-}
-
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Header: Title + Time */
-.player-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.audio-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #334155;
-  letter-spacing: 0.3px;
-  margin: 0;
-}
-
-.time-meta {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #5BBDB7;
-  white-space: nowrap;
-}
-
-/* Play Button (52px) */
-.btn-play {
-  align-self: center;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #5BBDB7 0%, #21D1C5 100%);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(91, 189, 183, 0.3);
-}
-
-.btn-play:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(91, 189, 183, 0.4);
-}
-
-.btn-play:active {
-  transform: scale(0.98);
-}
-
-.btn-play svg {
-  width: 22px;
-  height: 22px;
-}
-
-/* Progress Bar Container */
-.wave-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Simple Progress Track */
-.simple-progress-track {
-  position: relative;
-  width: 100%;
-  height: 6px;
-  background: #DCEFED;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-/* Progress Fill */
-.simple-progress-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: #5BBDB7;
-  border-radius: 999px;
-  transition: width 0.2s ease;
-}
-
-/* Hidden Audio Element */
-.glass-player audio {
-  display: none;
-}
-
-/* Screen Reader Only */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Failed State */
-.voice-failed {
-  animation: slideDown 0.4s ease-out;
-}
-
-.audio-error {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  background: #fff0f0;
-  border: 1px solid #f3b4b9;
-  border-radius: 8px;
-  color: #bb2d3b;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.audio-error svg {
-  width: 16px;
-  height: 16px;
+/* يمين الشريط */
+.bar-right {
   flex-shrink: 0;
 }
 
-/* Responsive */
-@media (max-width: 767px) {
-  .chapter-voice-card {
-    margin: 0 0.75rem 0.5rem 0.75rem;
-    padding: 0.65rem 0.85rem;
-  }
-
-  .glass-player {
-    padding: 14px 16px;
-    gap: 0.85rem;
-  }
-
-  .audio-title {
-    font-size: 0.88rem;
-  }
-
-  .time-meta {
-    font-size: 0.8rem;
-  }
-
-  .btn-play {
-    width: 48px;
-    height: 48px;
-  }
-
-  .btn-play svg {
-    width: 20px;
-    height: 20px;
-  }
+/* زر التشغيل */
+.btn-play-chapter {
+  flex-shrink: 0;
+  background: rgba(91, 189, 183, 0.1);
+  border: none;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #5bbdb7;
+  cursor: pointer; transition: all 0.2s ease;
 }
+.btn-play-chapter:hover:not(:disabled) {
+  background: rgba(91, 189, 183, 0.2);
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(91, 189, 183, 0.2);
+}
+.btn-play-chapter:disabled { opacity: .5; cursor: not-allowed; }
+
+/* التراك */
+.progress-container { flex: 1; min-width: 0; }
+.progress-track {
+  height: 6px;
+  background: rgba(91, 189, 183, 0.15);
+  border-radius: 3px;
+  overflow: hidden; cursor: pointer;
+}
+.progress-track.disabled { cursor: default; opacity: .5; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5bbdb7 0%, #21d1c5 100%);
+  border-radius: 3px; transition: width 0.1s linear;
+}
+
+/* الوقت */
+.time-display {
+  flex-shrink: 0;
+  font-size: 12px; font-weight: 500;
+  color: #64748b; min-width: 85px; text-align: right;
+}
+
+/* زر الإنشاء/إعادة الإنشاء المدمج على اليمين */
+.btn-generate-compact {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border: none; border-radius: 10px;
+  background: rgba(91, 189, 183, 0.10);
+  color: #189585; font-weight: 700; font-size: 13px;
+  cursor: pointer; transition: all .2s ease;
+}
+.btn-generate-compact i { font-size: 16px; }
+.btn-generate-compact:hover:not(:disabled) {
+  background: rgba(91, 189, 183, 0.18);
+  color: #0f766e;
+}
+.btn-generate-compact:disabled { opacity: .5; cursor: not-allowed; }
+
+/* حالة التوليد (سطر نحيف تحت) */
+.generating-inline {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0 0 0; color: #334155; font-weight: 600; font-size: 0.9rem;
+}
+.generating-inline .spinner {
+  width: 16px; height: 16px; border: 2px solid transparent;
+  border-top-color: #5BBDB7; border-right-color: #5BBDB7; border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chapter-voice-bar { padding: 10px 16px; }
+  .bar-container { gap: 12px; }
+  .btn-play-chapter { width: 32px; height: 32px; }
+  .time-display { font-size: 11px; min-width: 75px; }
+  .btn-generate-compact { padding: 7px 10px; font-size: 12px; }
+}
+
+/* زر الشابتر: نسخة compact داخل الشريط */
+.chapter-voice-bar .btn-voice-project.compact {
+  /* أبعاد وثبات ارتفاع */
+  --btn-h: 36px;
+  height: var(--btn-h);
+  padding: 0 12px;
+
+  /* توزيع داخلي */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  /* نص وألوان متناسقة مع البار */
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;              /* يمنع لفّ السطر */
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5BBDB7 0%, #21D1C5 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(91,189,183,0.25);
+}
+
+.chapter-voice-bar .btn-voice-project.compact:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(91,189,183,0.35);
+}
+
+.chapter-voice-bar .btn-voice-project.compact:disabled {
+  opacity: .6;
+  filter: grayscale(20%);
+  cursor: not-allowed;
+}
+
+/* أيقونات/موجات داخل الزر */
+.chapter-voice-bar .btn-voice-project.compact svg {
+  width: 16px; height: 16px; flex: 0 0 16px;
+}
+
+.chapter-voice-bar .btn-voice-project.compact .audio-waves {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;                   /* تصغير موجات داخل الزر */
+}
+
+.chapter-voice-bar .btn-voice-project.compact .audio-waves .wave {
+  width: 3px;
+  border-radius: 2px;
+  /* لو موجاتك العامة أكبر، نقدر نعمل scale بسيط: */
+  transform-origin: bottom center;
+}
+
+/* استجابة موبايل */
+@media (max-width: 768px) {
+  .chapter-voice-bar .btn-voice-project.compact {
+    --btn-h: 32px;
+    height: var(--btn-h);
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .chapter-voice-bar .btn-voice-project.compact svg {
+    width: 14px; height: 14px;
+  }
+  .chapter-voice-bar .btn-voice-project.compact .audio-waves { height: 10px; }
+}
+
+
 
 /* ========================================
    🗑️ OLD STYLES (Keeping for reference)

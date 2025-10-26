@@ -74,130 +74,140 @@
   <!-- ========================================
        🎙️ Chapter Voice - Glass Card (Clean & Premium) - Visible Only for Editors
        ======================================== -->
-  <div class="chapter-voice-card pb-0" *ngIf="authType === AuthType.Editor">
+  <div class="chapter-voice-card pb-0">
 
-    <!-- Idle/Retry State: Generate or Regenerate Button -->
-    <button class="btn-generate-voice mb-3" *ngIf="voiceState !== 'generating'" [disabled]="!canGenerate || isProjectGenerating || isAnyParagraphGenerating"
-      (click)="hasFailed ? regenerateVoice() : generateVoice()" [title]="getVoiceTooltip()">
+    <!-- Chapter Voice: one-line bar exactly like Project -->
+    <div class="chapter-voice-bar">
 
-      <!-- Idle State: Microphone Icon -->
-      <svg *ngIf="voiceState === 'idle'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-        <line x1="12" y1="19" x2="12" y2="23"></line>
-        <line x1="8" y1="23" x2="16" y2="23"></line>
-      </svg>
-
-      <!-- Regenerate Icon -->
-      <svg *ngIf="voiceState === 'ready'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="23 4 23 10 17 10"></polyline>
-        <polyline points="1 20 1 14 7 14"></polyline>
-        <path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"></path>
-        <path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"></path>
-      </svg>
-
-      <span>
-        <ng-container [ngSwitch]="voiceState">
-          <span *ngSwitchCase="'idle'">{{ hasFailed ? 'Regenerate Chapter Voice' : 'Generate Chapter Voice' }}</span>
-          <span *ngSwitchCase="'generating'">Generating...</span>
-          <span *ngSwitchCase="'ready'">Regenerate Chapter Voice</span>
-          <!-- لا نعرض Failed نهائيًا -->
-          <span *ngSwitchDefault>Generate Chapter Voice</span>
-        </ng-container>
-      </span>
-    </button>
-
-    <!-- آخر رسالة خطأ (اختياري/مفيد) -->
-    <div *ngIf="lastFailureMessage && voiceState === 'idle'" class="last-error-hint">
-      <small class="text-muted">
-        Last attempt failed: {{ lastFailureMessage }}
-        • <button class="btn btn-link p-0 align-baseline" (click)="regenerateVoice()">Try again</button>
-      </small>
-    </div>
-
-    <!-- Generating State: Loading with Spinner -->
-    <div *ngIf="voiceState === 'generating'" class="voice-generating mb-3">
-      <!-- Generating State: Spinner -->
-      <span *ngIf="voiceState === 'generating'" class="audio-waves">
-        <span class="wave"></span>
-        <span class="wave"></span>
-        <span class="wave"></span>
-      </span>
-      <span class="generating-text">Generating Chapter Voice...</span>
-    </div>
-
-    <!-- Ready State: Glass Card Player -->
-    <div *ngIf="voiceState === 'ready' && chapter?.voice_url" class="glass-player">
-      <div class="player-header">
-        <span class="audio-title">Chapter Voice</span>
-        <span class="time-meta">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
+      <div class="bar-container">
+        <div class="player-left">
+        <span class="player-label">
+          <i class="bi bi-soundwave"></i>
+        Chapter Voice
+        </span>
       </div>
+        <!-- يسار/المنتصف: المشغّل -->
+        <div class="bar-center" [class.full-width]="!showChapterAction">
+          <button class="btn-play-chapter" (click)="togglePlayPause()"
+            [disabled]="!(voiceState === 'ready' && chapter.voice_url)"
+            [attr.aria-label]="isPlaying ? 'Pause' : 'Play'">
+            <!-- Play -->
+            <svg *ngIf="!isPlaying" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <!-- Pause -->
+            <svg *ngIf="isPlaying" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="currentColor">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+          </button>
 
-      <!-- Play/Pause Button -->
-      <button class="btn-play" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'">
-        <!-- Play Icon -->
-        <svg *ngIf="!isPlaying" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-          fill="currentColor">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-        </svg>
-        <!-- Pause Icon -->
-        <svg *ngIf="isPlaying" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-          fill="currentColor">
-          <rect x="6" y="4" width="4" height="16"></rect>
-          <rect x="14" y="4" width="4" height="16"></rect>
-        </svg>
-      </button>
+          <div class="progress-container">
+            <div class="progress-track cursor-pointer" [class.disabled]="!(voiceState === 'ready' && chapter.voice_url)"
+              (click)="voiceState === 'ready' && chapter.voice_url && seekAudio($event)">
+              <div class="progress-fill" [style.width.%]="audioProgress"></div>
+            </div>
+          </div>
 
-      <!-- Progress Bar -->
-      <div class="wave-container" [class.is-playing]="isPlaying">
-        <div class="simple-progress-track cursor-pointer" (click)="seekAudio($event)">
-          <div class="simple-progress-fill" [style.width.%]="audioProgress"></div>
+          <span class="time-display">
+            {{ voiceState === 'ready' && chapter.voice_url ? (formatTime(currentTime) + ' / ' + formatTime(duration)) :
+            '--:-- / --:--' }}
+          </span>
+
+          <!-- مخفي -->
+          <audio #chapterAudio [src]="chapter.voice_url || ''" (timeupdate)="onTimeUpdate($event)"
+            (loadedmetadata)="onMetadataLoaded($event)" (ended)="onAudioEnded()" preload="metadata">
+          </audio>
         </div>
+
+        <ng-container *ngIf="authType === AuthType.Editor">
+          <!-- يمين: زر إنشاء/إعادة إنشاء (نفس السطر وبنفس لودينغ المشروع) -->
+          <div class="bar-right" *ngIf="showChapterAction">
+            <button class="btn btn-voice-project compact" [class.generating]="voiceState === 'generating'"
+              [class.failed]="voiceState === 'failed'"
+              [disabled]="!canGenerate || isGenerating || isProjectGenerating || isAnyParagraphGenerating"
+              (click)="hasFailed ? regenerateVoice() : generateVoice()" [ngbTooltip]="getVoiceTooltip()"
+              aria-label="Generate chapter voice">
+
+              <!-- Idle: Mic -->
+              <svg *ngIf="voiceState === 'idle'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+
+              <!-- Generating -->
+              <span *ngIf="voiceState === 'generating'" class="audio-waves">
+                <span class="wave"></span><span class="wave"></span><span class="wave"></span>
+              </span>
+
+              <!-- Ready: Regenerate -->
+              <svg *ngIf="voiceState === 'ready'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"></path>
+                <path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"></path>
+              </svg>
+
+              <span>
+                <ng-container [ngSwitch]="voiceState">
+                  <span *ngSwitchCase="'idle'">{{ hasFailed ? 'Regenerate' : 'Generate' }}</span>
+                  <span *ngSwitchCase="'generating'">Generating...</span>
+                  <span *ngSwitchCase="'ready'">Regenerate</span>
+                  <span *ngSwitchDefault>Generate</span>
+                </ng-container>
+              </span>
+            </button>
+          </div>
+
+          <!-- إشعار آخر خطأ -->
+          <div *ngIf="lastFailureMessage && voiceState === 'idle'" class="last-error-hint">
+            <small class="text-muted">
+              Last attempt failed •
+              <button class="btn btn-link p-0 align-baseline" (click)="regenerateVoice()">Try again</button>
+            </small>
+          </div>
+        </ng-container>
+
       </div>
 
-      <!-- Hidden Audio Element -->
-      <audio #chapterAudio [src]="chapter.voice_url" (timeupdate)="onTimeUpdate($event)"
-        (loadedmetadata)="onMetadataLoaded($event)" (ended)="onAudioEnded()" preload="metadata">
-      </audio>
-
-      <!-- Accessibility -->
-      <div class="sr-only" aria-live="polite" aria-atomic="true">
-        {{ isPlaying ? 'Playing' : 'Paused' }}: Chapter Voice
-      </div>
     </div>
 
-  </div>
-
-  <!-- ========================================
+    <!-- ========================================
        🔹 Split Content Layout (Paragraphs + Notes)
        ======================================== -->
-  <div class="split-content-layout pt-0">
+    <div class="split-content-layout pt-0">
 
-    <!-- Left Side: Paragraphs -->
-    <div class="content-main">
-      <app-paragraphs-tab [chapterId]="chapterId" [authType]="authType" [isProjectGenerating]="isProjectGenerating"
-        [isChapterGenerating]="isGenerating">
-      </app-paragraphs-tab>
-    </div>
-
-    <!-- Right Side: Notes Chat -->
-    <div class="notes-sidebar" style="margin-top: .85rem !important;" [class.mobile-visible]="notesVisible">
-      <div class="notes-sidebar-header">
-        <div class="notes-header-title">
-          <i class="bi bi-chat-dots"></i>
-          <h6>Discussion</h6>
-        </div>
-        <button class="btn-close-sidebar d-lg-none" (click)="toggleNotesSidebar()">
-          <i class="bi bi-x-lg"></i>
-        </button>
+      <!-- Left Side: Paragraphs -->
+      <div class="content-main">
+        <app-paragraphs-tab [chapterId]="chapterId" [authType]="authType" [isProjectGenerating]="isProjectGenerating"
+          [isChapterGenerating]="isGenerating">
+        </app-paragraphs-tab>
       </div>
 
-      <app-notes-tab [chapterId]="chapterId">
-      </app-notes-tab>
+      <!-- Right Side: Notes Chat -->
+      <div class="notes-sidebar" style="margin-top: .85rem !important;" [class.mobile-visible]="notesVisible">
+        <div class="notes-sidebar-header">
+          <div class="notes-header-title">
+            <i class="bi bi-chat-dots"></i>
+            <h6>Discussion</h6>
+          </div>
+          <button class="btn-close-sidebar d-lg-none" (click)="toggleNotesSidebar()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <app-notes-tab [chapterId]="chapterId">
+        </app-notes-tab>
+      </div>
+
     </div>
 
   </div>
-
-</div>

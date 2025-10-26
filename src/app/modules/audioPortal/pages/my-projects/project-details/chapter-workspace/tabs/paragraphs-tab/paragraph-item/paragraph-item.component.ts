@@ -74,6 +74,10 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
 
   private chapterSync = inject(ChapterSyncService);
 
+  // Action menu state
+  showTitleMenu = false;
+  showParaMenu = false;
+
   constructor(
     private projectsClient: ProjectsClientService,
     private modalService: NgbModal,
@@ -81,7 +85,6 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    console.log('[ParagraphItem] Auth Type:', this.authType, 'Editor Type:', AuthType.Editor);
     this.updateCanGenerate();
 
     this.voiceState = getVoiceUIState(this.paragraph);
@@ -126,6 +129,8 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
 
     this.checkViewport();
     window.addEventListener('resize', this.checkViewport.bind(this));
+
+    document.addEventListener('click', this.closeMenus, true);
   }
 
   private checkViewport(): void {
@@ -183,6 +188,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     window.removeEventListener('resize', this.checkViewport.bind(this));
+    document.removeEventListener('click', this.closeMenus, true);
   }
 
   // ========================================
@@ -590,4 +596,21 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  toggleTitleMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.showTitleMenu = !this.showTitleMenu;
+    this.showParaMenu = false;
+  }
+  toggleParaMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.showParaMenu = !this.showParaMenu;
+    this.showTitleMenu = false;
+  }
+
+  closeMenus = () => {
+    this.showTitleMenu = false;
+    this.showParaMenu = false;
+  };
+
+  
 }

@@ -1,3 +1,4 @@
+import { getMessaging, getToken } from 'firebase/messaging';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FileManagementComponent } from '../dash/shared/file-management/file-management.component';
@@ -5,7 +6,10 @@ import { UserProfileComponent } from '../dash/shared/user-profile/user-profile.c
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from 'src/environments/environment';
 import * as CryptoJS from 'crypto-js';
+import { v4 as uuidv4 } from 'uuid';
+import { initializeApp } from 'firebase/app';
 
+let app = initializeApp(environment.firebase);
 @Injectable({
   providedIn: 'root'
 })
@@ -13,6 +17,8 @@ export class PublicService {
 
   public numOfRows: number;
   public onlineStatus: Subject<boolean> = new Subject<boolean>();
+  private deviceIdKey = `${environment.prefix}-device-id`;
+
 
   constructor(private modalService: NgbModal) {
     this.onlineStatus.next(navigator.onLine);
@@ -43,7 +49,34 @@ export class PublicService {
     return data ? data.user : null;
   }
 
-  public getToken(): string | null {
+  public getDeviceId(): string {
+    let deviceId = localStorage.getItem(this.deviceIdKey);
+    if (!deviceId) {
+      deviceId = uuidv4();
+      localStorage.setItem(this.deviceIdKey, deviceId);
+    }
+    return deviceId;
+  }
+
+  async getFCMToken(): Promise<string | null> {
+    try {
+      const messaging = getMessaging(app);
+      const token = await getToken(messaging, {
+        vapidKey: environment.firebase.vapidKey,
+      });
+
+      if (token) {
+        localStorage.setItem(`${environment.prefix}-fcm-token`, token);
+        return token;
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  public getAuthToken(): string | null {
     const data = this.decryptStorage();
     return data ? data.token : null;
   }

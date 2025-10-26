@@ -117,6 +117,7 @@ export class ChaptersSidebarComponent implements OnChanges {
         if (changes['chapters'] && this.chapters && this.chapters.length > 0) {
             this.selectFirstFromResponse(); // دايمًا اختَر أول شابتر جاي من الـ API
         }
+        
     }
 
     /** يحدد أول شابتر حسب ترتيب الاستجابة */
@@ -127,6 +128,7 @@ export class ChaptersSidebarComponent implements OnChanges {
         const changed = this.selectedChapterId !== firstChapterId;
 
         this.selectedChapterId = firstChapterId;
+        
 
         if (changed) {
             this.chapterSelected.emit(firstChapterId);

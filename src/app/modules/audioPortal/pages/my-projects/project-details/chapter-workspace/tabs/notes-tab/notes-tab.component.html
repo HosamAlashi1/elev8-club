@@ -3,10 +3,6 @@
      ======================================== -->
 
 <div class="notes-chat-container">
-  
-  <!-- ========================================
-       🔹 Messages Area (Scrollable)
-       ======================================== -->
   <div class="messages-area">
     
     <!-- Loading State -->
@@ -39,21 +35,22 @@
   <!-- ========================================
        🔹 Composer (Add New Note)
        ======================================== -->
-  <div class="composer-section">
-    <textarea 
-      class="form-control composer-input"
-      [(ngModel)]="newNoteText"
-      (keydown)="onComposerKeydown($event)"
-      placeholder="Type a note... (Ctrl+Enter to send)"
-      rows="2"></textarea>
-    
-    <button 
-      class="btn-send"
-      (click)="submitNewNote()"
-      [disabled]="!newNoteText.trim() || isSubmittingNew"
-      aria-label="Send note">
+ <div class="composer-section">
+    <textarea class="form-control composer-input"
+              [(ngModel)]="newNoteText"
+              (keydown)="onComposerKeydown($event)"
+              placeholder="Type a note... (Ctrl+Enter to send)"
+              rows="2"></textarea>
+
+    <button class="btn-send"
+            (click)="submitNewNote()"
+            [disabled]="!newNoteText.trim() || isSubmittingNew"
+            aria-label="Send note">
       <span *ngIf="!isSubmittingNew">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <!-- أيقونة الإرسال -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>

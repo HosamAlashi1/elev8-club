@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(): boolean {
-    const token = this.publicService.getToken();
+    const token = this.publicService.getAuthToken();
 
     if (token) {
       return true;
