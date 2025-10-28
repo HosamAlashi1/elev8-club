@@ -36,16 +36,16 @@ export class VoiceSelectionModalComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
 
   // 👇 افتراضيات تُمرّر من الأب (لو متوفّرة)
-  @Input() defaultParagraphSilence: number = 1;
-  @Input() defaultChapterTitleSilence: number = 2;
-  @Input() defaultChapterSilence: number = 3;
+  @Input() defaultParagraphSilence: number;
+  @Input() defaultChapterTitleSilence: number;
+  @Input() defaultChapterSilence: number;
 
-  readonly silenceOptions: number[] = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5];
-
+  readonly silenceOptions: number[] = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3];
+  skeletonItems = Array.from({ length: 32 });
   // القيم المختارة
-  selectedParagraphSilence: number = 1;
-  selectedChapterTitleSilence: number = 2;
-  selectedChapterSilence: number = 3;
+  selectedParagraphSilence: number = 0.5;
+  selectedChapterTitleSilence: number = 1;
+  selectedChapterSilence: number = 1.5;
 
   // مشغل العيّنة
   currentPlayingAudio: HTMLAudioElement | null = null;
@@ -73,9 +73,9 @@ export class VoiceSelectionModalComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.selectedParagraphSilence = this.defaultParagraphSilence ?? 1;
-    this.selectedChapterTitleSilence = this.defaultChapterTitleSilence ?? 2;
-    this.selectedChapterSilence = this.defaultChapterSilence ?? 3;
+    this.selectedParagraphSilence = this.defaultParagraphSilence ?? 0.5;
+    this.selectedChapterTitleSilence = this.defaultChapterTitleSilence ?? 1;
+    this.selectedChapterSilence = this.defaultChapterSilence ?? 1.5;
 
     this.loadVoices();
   }

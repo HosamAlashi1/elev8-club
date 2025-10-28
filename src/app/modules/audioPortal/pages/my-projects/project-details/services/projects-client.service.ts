@@ -169,15 +169,42 @@ export class ProjectsClientService {
     chapterId: number,
     page = 1,
     size = 20,
-    forceRefresh = false
+    opts: { q?: string; forceRefresh?: boolean } = {}
   ): Observable<ParagraphItem[]> {
-    const key = `${chapterId}:${page}:${size}`;
+    const q = (opts.q ?? '').trim();
+    const key = `${chapterId}:${page}:${size}:q=${q}`;
 
-    if (forceRefresh || !this.paragraphsPageCache.has(key)) {
-      const url = `${this.apiPortal.chapters.paragraphs(String(chapterId))}?size=${size}&page=${page}`;
+    if (opts.forceRefresh || !this.paragraphsPageCache.has(key)) {
+      const params = new URLSearchParams({ size: String(size), page: String(page) });
+      if (q) params.set('q', q);
+
+      const url = `${this.apiPortal.chapters.paragraphs(String(chapterId))}?${params.toString()}`;
 
       const observable = this.httpService.listGet(url, 'getChapterParagraphs').pipe(
-        map((response: ParagraphsResponse) => (response.success && response.data) ? response.data : []),
+        map((res: any) => {
+          // 🔧 طبّيع كل الأشكال المحتملة
+          let list: any =
+            Array.isArray(res?.data) ? res.data :
+              Array.isArray(res?.data?.data) ? res.data.data :         // Laravel paginator
+                Array.isArray(res?.data?.items) ? res.data.items :
+                  Array.isArray(res?.rows) ? res.rows :
+                    Array.isArray(res?.items) ? res.items :
+                      res?.data ?? []; // fallback
+
+          if (typeof list === 'string') {
+            try { list = JSON.parse(list); } catch { list = []; }
+          }
+          if (!Array.isArray(list)) list = [];
+
+          // (اختياري) تطبيع الحقول
+          return list.map((p: any) => ({
+            id: Number(p.id),
+            text: p.text ?? '',
+            is_title: !!p.is_title,
+            // انسخ أي حقول إضافية تحتاجها...
+            ...p
+          })) as ParagraphItem[];
+        }),
         shareReplay(1)
       );
 
@@ -253,14 +280,29 @@ export class ProjectsClientService {
    */
   getChapterNotes(chapterId: number, forceRefresh = false): Observable<NoteItem[]> {
     if (forceRefresh || !this.notesCache.has(chapterId)) {
-      const url = `${this.apiPortal.chapters.notes(String(chapterId))}?size=50&page=1`;
+      const url = `${this.apiPortal.chapters.notes(String(chapterId))}`;
 
       const observable = this.httpService.listGet(url, 'getChapterNotes').pipe(
-        map((response: NotesResponse) => {
-          if (response.success && response.data) {
-            return response.data;
+        map((res: any) => {
+          let list: any =
+            Array.isArray(res?.data) ? res.data :
+              Array.isArray(res?.data?.data) ? res.data.data :
+                Array.isArray(res?.data?.items) ? res.data.items :
+                  Array.isArray(res?.rows) ? res.rows :
+                    Array.isArray(res?.items) ? res.items :
+                      res?.data ?? [];
+
+          if (typeof list === 'string') {
+            try { list = JSON.parse(list); } catch { list = []; }
           }
-          return [];
+          if (!Array.isArray(list)) list = [];
+
+          return list.map((n: any) => ({
+            id: Number(n.id),
+            text: n.text ?? '',
+            // أضف أي حقول لازمة…
+            ...n
+          })) as NoteItem[];
         }),
         shareReplay(1)
       );
@@ -270,7 +312,6 @@ export class ProjectsClientService {
 
     return this.notesCache.get(chapterId)!;
   }
-
   /**
    * Add new note
    */

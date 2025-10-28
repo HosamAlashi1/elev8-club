@@ -276,7 +276,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1rem;
   overflow-y: auto;
-  max-height: calc(100vh - 366px);
+  max-height: calc(100vh - 350px);
   flex-shrink: 0;
 }
 
@@ -470,7 +470,7 @@
   background: rgba(91, 189, 183, .12);
 }
 .paragraphs-list-container {
-  max-height: calc(100vh - 460px);
+  max-height: calc(100vh - 383px);
   overflow: auto;
 }
 
@@ -503,7 +503,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #21D1C5 #f1f5f4;
+  scrollbar-color: #21D1C5 transparent;
 }
 
 @keyframes fadeInUp {
@@ -601,7 +601,7 @@
   gap: 8px;
   cursor: move;
   padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  /* border-bottom: 1px solid #f1f5f9; */
 }
 
 .order-badge {
@@ -635,6 +635,12 @@
 .drag-handle:active {
   cursor: grabbing;
 }
+
+.drag-handle.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 
 .cdk-drag-preview {
   background: #fff;

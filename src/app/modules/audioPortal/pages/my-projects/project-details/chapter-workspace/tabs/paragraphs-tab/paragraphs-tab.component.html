@@ -33,7 +33,7 @@
         <span>New Paragraph</span>
       </button>
 
-      <button class="btn-reorder" (click)="toggleReorderMode()" [disabled]="isLoading || !paragraphs.length"
+      <button class="btn-reorder" (click)="toggleReorderMode()" [disabled]="isLoading || !filteredParagraphs.length"
         title="Reorder paragraphs">
         <i class="bi bi-arrow-down-up"></i>
         <span>Reorder</span>
@@ -148,7 +148,6 @@
         </div>
       </div>
 
-      <!-- Reorder Mode List (بدون انفينتي) -->
       <div class="paragraphs-list" *ngIf="!isLoading && isReorderMode" cdkDropList
         (cdkDropListDropped)="onDrop($event)">
 
@@ -157,20 +156,22 @@
           <span>Drag paragraphs to change their order. Click <strong>Save</strong> when done.</span>
         </div> -->
 
-        <div class="paragraph-row reorderable paragraph-card"  [style.animationDelay]="(i * 0.05) + 's'" *ngFor="let p of paragraphs; let i = index; trackBy: trackByParagraphId"
-          cdkDrag>
+        <div class="paragraph-row reorderable"
+          *ngFor="let p of filteredParagraphs; let i = index; trackBy: trackByParagraphId" cdkDrag>
+          <ng-container *ngIf="!p.is_title">
+            <div class="order-badge">{{ i }}</div>
 
-          <div class="order-badge">{{ i + 1 }}</div>
-          <div class="drag-handle" cdkDragHandle>
-            <i class="bi bi-grip-vertical"></i>
-          </div>
+            <div class="drag-handle" cdkDragHandle>
+              <i class="bi bi-grip-vertical"></i>
+            </div>
+            <app-paragraph-item [paragraph]="p" [chapterId]="chapterId" [authType]="authType"
+              [isProjectGenerating]="isProjectGenerating" [isChapterGenerating]="isChapterGenerating"
+              [reorderMode]="true">
+            </app-paragraph-item>
+          </ng-container>
 
-          <!-- نعرض العنصر بدون الأكشنات (reorderMode = true) -->
-          <app-paragraph-item [paragraph]="p" [chapterId]="chapterId" [authType]="authType"
-            [isProjectGenerating]="isProjectGenerating" [isChapterGenerating]="isChapterGenerating"
-            [reorderMode]="true">
-          </app-paragraph-item>
         </div>
+
       </div>
 
     </div>

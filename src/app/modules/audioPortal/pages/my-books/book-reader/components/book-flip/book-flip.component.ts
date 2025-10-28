@@ -1,4 +1,7 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit, Component, ElementRef, EventEmitter, Input,
+  OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, inject, NgZone
+} from '@angular/core';
 import { PageFlip, FlipSetting } from 'page-flip';
 import { AudioSfxService } from '../../services/audio-sfx.service';
 
@@ -9,133 +12,154 @@ import { AudioSfxService } from '../../services/audio-sfx.service';
 })
 export class BookFlipComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('host', { static: true }) host!: ElementRef<HTMLDivElement>;
-  
+
   @Input() pages: HTMLElement[] = [];
   @Input() width = 820;
-  @Input() height = 600;
+  @Input() height = 800;
   @Input() soundEnabled = true;
-  
+
   @Output() pageChange = new EventEmitter<{ index: number; total: number }>();
   @Output() flipStart = new EventEmitter<void>();
   @Output() flipComplete = new EventEmitter<void>();
+  @Output() spreadChange = new EventEmitter<{ left: number; total: number }>();
 
   private flip?: PageFlip;
-  private resizeHandler = () => {};
-  private audioSfx = inject(AudioSfxService);
+  private resizeHandler = () => { };
+  private readonly audioSfx = inject(AudioSfxService);
+  private readonly zone = inject(NgZone);
   private isDragging = false;
 
   ngAfterViewInit(): void {
-    this.initializeFlip();
+    this.initFlip();
   }
 
-  private initializeFlip(): void {
-    const set: Partial<FlipSetting> = {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.flip) return;
+
+    // لو تغيّر الحجم المدخل، أعد التهيئة بالكامل
+    if (changes['width'] || changes['height']) {
+      const idx0 = this.getIndex0();
+      this.reinitPreserveIndex(idx0);
+      return;
+    }
+
+    // لو تغيّرت الصفحات: حدّث المحتوى مع الحفاظ على الصفحة الحالية
+    if (changes['pages'] && this.pages?.length) {
+      const idx0 = this.getIndex0();
+      this.safeUpdateFromHtml(idx0);
+    }
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.resizeHandler);
+    this.flip?.destroy();
+  }
+
+  // ======== Public API ========
+  next(): void { this.flip?.flipNext(); }
+  prev(): void { this.flip?.flipPrev(); }
+  goTo(i: number): void { this.flip?.flip(i); }
+
+  getIndex(): number { return this.getIndex0() + 1; }
+  getCount(): number { return this.flip?.getPageCount() ?? 0; }
+  canGoNext(): boolean { return this.getIndex() < this.getCount(); }
+  canGoPrev(): boolean { return this.getIndex() > 1; }
+
+  // ======== Private ========
+
+  private initFlip(): void {
+    const settings: Partial<FlipSetting> = {
       width: this.width,
       height: this.height,
-      usePortrait: true,
+      size: 'stretch' as any,   // يتمدّد مع الحاوية
+      usePortrait: false,       // وضع صفحتين غالباً (يتحوّل تلقائيًا حسب الأبعاد)
       showCover: false,
-      maxShadowOpacity: 0.35,
-      mobileScrollSupport: false,
       drawShadow: true,
-      flippingTime: 600,
+      maxShadowOpacity: 0.35,
+      flippingTime: 700,
+      mobileScrollSupport: false,
       useMouseEvents: true
     };
 
-    this.flip = new PageFlip(this.host.nativeElement, set);
+    this.flip = new PageFlip(this.host.nativeElement, settings);
 
     if (this.pages?.length) {
       this.flip.loadFromHTML(this.pages);
     }
 
-    // أرسل المؤشر عند كل قلبة
+    // Events: اشتغل جوّا الـ Zone
     this.flip.on('flip', (e: any) => {
-      if (this.soundEnabled) {
-        this.audioSfx.play('flip');
-      }
-      this.flipComplete.emit();
-      this.pageChange.emit({ 
-        index: (e.data ?? 0) + 1, 
-        total: this.getCount() 
+      this.zone.run(() => {
+        if (this.soundEnabled) this.audioSfx.play('flip');
+        this.flipComplete.emit();
+
+        const current = (e.data ?? 0) + 1;          // رقم الصفحة الحالي (1-based)
+        const total = this.getCount();
+        this.pageChange.emit({ index: current, total });
+
+        // 👇 أرسل السبريد (يسار الصفحة الحالية)
+        const leftPage = current % 2 === 0 ? current - 1 : current;
+        this.spreadChange.emit({ left: leftPage, total });
       });
     });
 
-    // عند بداية السحب
     this.flip.on('changeState', (e: any) => {
-      if (e.data === 'user_fold' && !this.isDragging) {
+      // user_fold / flipping / read ...
+      const state = e?.data;
+      if (state === 'user_fold' && !this.isDragging) {
         this.isDragging = true;
-        if (this.soundEnabled) {
-          this.audioSfx.play('drag');
-        }
-        this.flipStart.emit();
-      } else if (e.data === 'read') {
+        if (this.soundEnabled) this.audioSfx.play('drag');
+        this.zone.run(() => this.flipStart.emit());
+      } else if (state === 'read') {
         this.isDragging = false;
       }
     });
 
-    // أول بعثة
+    // Emit initial
     setTimeout(() => {
-      this.pageChange.emit({ 
-        index: this.getIndex(), 
-        total: this.getCount() 
-      });
-    }, 0);
+      this.zone.run(() => {
+        const current = this.getIndex();
+        const total = this.getCount();
+        this.pageChange.emit({ index: current, total });
 
-    // معالج تغيير الحجم
-    this.resizeHandler = () => { 
-      if (this.flip && this.pages?.length) {
-        this.flip.updateFromHtml(this.pages); 
-      }
+        const leftPage = current % 2 === 0 ? current - 1 : current;
+        this.spreadChange.emit({ left: leftPage, total });
+      });
+    }, 60);
+
+    // Handle resize: أعد التحديث بدون فقد الصفحة
+    this.resizeHandler = () => {
+      if (!this.flip || !this.pages?.length) return;
+      const idx0 = this.getIndex0();
+      this.flip.updateFromHtml(this.pages);
+      this.clampAndGo(idx0);
+      this.zone.run(() => this.pageChange.emit({ index: this.getIndex(), total: this.getCount() }));
     };
     window.addEventListener('resize', this.resizeHandler);
   }
 
-  ngOnChanges(ch: SimpleChanges): void {
-    if (ch['pages'] && this.flip && this.pages?.length) {
-      this.flip.loadFromHTML(this.pages);
-      this.pageChange.emit({ 
-        index: this.getIndex(), 
-        total: this.getCount() 
-      });
-    }
-
-    if (ch['soundEnabled'] !== undefined) {
-      // تحديث حالة الصوت
-    }
+  private reinitPreserveIndex(idx0: number) {
+    this.flip?.destroy();
+    this.initFlip();
+    this.clampAndGo(idx0);
+    this.zone.run(() => this.pageChange.emit({ index: this.getIndex(), total: this.getCount() }));
   }
 
-  ngOnDestroy(): void { 
-    window.removeEventListener('resize', this.resizeHandler);
-    if (this.flip) {
-      this.flip.destroy();
-    }
+  private safeUpdateFromHtml(idx0: number) {
+    // تحديث لطيف يحافظ على الصفحة الحالية قدر الإمكان
+    this.flip!.updateFromHtml(this.pages);
+    this.clampAndGo(idx0);
+    this.zone.run(() => this.pageChange.emit({ index: this.getIndex(), total: this.getCount() }));
   }
 
-  // واجهة عامة
-  next(): void { 
-    this.flip?.flipNext(); 
-  }
-  
-  prev(): void { 
-    this.flip?.flipPrev(); 
-  }
-  
-  goTo(i: number): void { 
-    this.flip?.flip(i); 
-  }
-  
-  getIndex(): number { 
-    return (this.flip?.getCurrentPageIndex() ?? 0) + 1; 
-  }
-  
-  getCount(): number { 
-    return this.flip?.getPageCount() ?? 0; 
+  private clampAndGo(idx0: number) {
+    const total = this.getCount();
+    if (total === 0) return;
+    const target = Math.max(0, Math.min(idx0, total - 1));
+    this.flip!.flip(target);
   }
 
-  canGoNext(): boolean {
-    return this.getIndex() < this.getCount();
-  }
-
-  canGoPrev(): boolean {
-    return this.getIndex() > 1;
+  private getIndex0(): number {
+    return this.flip ? (this.flip.getCurrentPageIndex() ?? 0) : 0;
   }
 }

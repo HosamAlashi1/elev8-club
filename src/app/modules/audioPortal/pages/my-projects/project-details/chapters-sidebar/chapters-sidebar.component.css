@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   background: #fff;
-  max-height: calc(100vh - 276px);
+  max-height: calc(100vh - 190px);
 }
 
 /* ========================================
@@ -285,6 +285,8 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #21D1C5 transparent;
 }
 
 /* Custom Scrollbar */

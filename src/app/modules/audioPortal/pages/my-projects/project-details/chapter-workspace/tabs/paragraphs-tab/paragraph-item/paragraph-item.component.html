@@ -9,7 +9,7 @@
   *ngIf="paragraph.is_title">
 
   <!-- شريط الأكشنات المدمج أعلى اليمين (بدون Dropdown) -->
-  <div class="actions-compact" *ngIf="!isEditing">
+  <div class="actions-compact" *ngIf="!isEditing && !reorderMode">
     <!-- Copy -->
     <button type="button" class="btn-icon" (click)="copyText()"
       [ngbTooltip]="isCompactView ? (isCopied ? 'Copied!' : 'Copy') : null" [class.copied]="isCopied" container="body"
@@ -104,7 +104,7 @@
 
   <!-- Mini Player (Author & Editor يشوفوه) -->
   <div class="title-mini-player"
-    *ngIf="(authType === AuthType.Editor || authType === AuthType.Author) && paragraph.voice_url">
+    *ngIf="(authType === AuthType.Editor || authType === AuthType.Author) && paragraph.voice_url && !reorderMode">
     <button class="btn-play-para" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'"
       title="Play">
       <svg *ngIf="!isPlaying" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -119,7 +119,7 @@
     </button>
 
     <div class="para-progress-container">
-      <div class="para-progress-track cursor-pointer" (click)="seekAudio($event)">
+      <div class="para-progress-track cursor-pointer" (mousedown)="seekAudioStart($event)">
         <div class="para-progress-fill" [style.width.%]="audioProgress"></div>
       </div>
     </div>
@@ -210,7 +210,7 @@
 
   <!-- نص الفقرة -->
   <div class="paragraph-content" *ngIf="!isEditing">
-    <p class="paragraph-text" [class.collapsed]="!isExpanded && needsExpansion">
+    <p class="paragraph-text" [class.collapsed]="(!isExpanded && needsExpansion) || reorderMode">
       {{ paragraph.text }}
     </p>
 
@@ -280,7 +280,7 @@
     </button>
 
     <div class="para-progress-container">
-      <div class="para-progress-track cursor-pointer" (click)="seekAudio($event)">
+      <div class="para-progress-track cursor-pointer" (mousedown)="seekAudioStart($event)">
         <div class="para-progress-fill" [style.width.%]="audioProgress"></div>
       </div>
     </div>

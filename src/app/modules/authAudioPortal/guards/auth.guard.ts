@@ -68,10 +68,10 @@ export class AudioPortalAuthGuard implements CanActivate {
   // 🚦 الصفحة الافتراضية المسموح بها حسب الدور
   private getDefaultRouteForRole(role: string): string {
     switch (role) {
-      case 'Admin':
       case 'Editor':
         return '/audio-portal/my-projects'; // للمحررين والمدراء
       case 'Author':
+        return '/audio-portal/my-projects';
       case 'Customer':
         return '/audio-portal/my-books'; // للمؤلفين والعملاء
       default:

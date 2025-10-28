@@ -1,22 +1,36 @@
-.book-host { width:min(820px,96vw); height:min(600px,78vh); margin-inline:auto; }
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
-/* الصفحة نفسها */
+.book-host {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  touch-action: none;      /* للسوايب */
+  user-select: none;
+  background: #f7f5f2;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  overflow: hidden;
+  will-change: transform;  /* سلاسة */
+}
+
 .page {
   background: #fff;
-  height: 100%;
-  box-shadow: 0 10px 25px rgba(0,0,0,.12);
-  border-radius: 6px;
   overflow: hidden;
-}
-.page-content {
-  padding: 20px;
-  height: 100%;
-  display: block;
-  line-height: 1.65;
-  text-align: justify;
-  font-size: 16px;
-  overflow: hidden;
+  border-radius: 10px;
 }
 
-.page-content h2, .page-content h3 { margin: 0 0 10px; }
-.page-content p { margin: 0 0 10px; }
+.page-content {
+  padding: 24px;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #222;
+}
+
+.book-host * {
+  pointer-events: auto;
+}
+

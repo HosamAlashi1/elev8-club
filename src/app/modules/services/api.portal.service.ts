@@ -20,6 +20,7 @@ export class ApiPortalService {
     list: this.base + 'projects', // GET 
     create: this.base + 'add-project', // POST
     details: (projectId: string) => environment.apiUrl + `/projects/details/${projectId}`, // GET
+    chapters: (projectId: string) => environment.apiUrl + `/projects/chapters/${projectId}`, // GET
   };
 
   public chapters = {

@@ -81,11 +81,11 @@
 
       <div class="bar-container">
         <div class="player-left">
-        <span class="player-label">
-          <i class="bi bi-soundwave"></i>
-        Chapter Voice
-        </span>
-      </div>
+          <span class="player-label">
+            <i class="bi bi-soundwave"></i>
+            Chapter Voice
+          </span>
+        </div>
         <!-- يسار/المنتصف: المشغّل -->
         <div class="bar-center" [class.full-width]="!showChapterAction">
           <button class="btn-play-chapter" (click)="togglePlayPause()"
@@ -106,7 +106,7 @@
 
           <div class="progress-container">
             <div class="progress-track cursor-pointer" [class.disabled]="!(voiceState === 'ready' && chapter.voice_url)"
-              (click)="voiceState === 'ready' && chapter.voice_url && seekAudio($event)">
+              (mousedown)="seekAudioStart($event)">
               <div class="progress-fill" [style.width.%]="audioProgress"></div>
             </div>
           </div>

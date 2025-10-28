@@ -109,7 +109,7 @@ export class LoginComponent implements OnInit {
           const userType = res?.data?.data?.auth_type;
           
 
-          if (userType == 3) { // Editor
+          if (userType == 3 || userType == 2) { // Editor
             this.router.navigate(['/audio-portal/my-projects']);
           } else {
             this.router.navigate(['/audio-portal/my-books']);

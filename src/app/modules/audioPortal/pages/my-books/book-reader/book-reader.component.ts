@@ -1,13 +1,15 @@
-import { Component, OnInit, ViewChild, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 import { HttpClient } from '@angular/common/http';
-import { buildPagesAuto, paginateFlow } from './utils/page-factory';
+import { paginateFlow } from './utils/page-factory';
 import { MockReaderApiService } from './services/mock-reader-api.service';
 import { AudioSfxService } from './services/audio-sfx.service';
 import { ReaderStateService } from './services/reader-state.service';
 import { BookFlipComponent } from './components/book-flip/book-flip.component';
-
+import { firstValueFrom } from 'rxjs';
+import { ElementRef, Renderer2 } from '@angular/core';
+import { computeForeEdges } from './utils/page-factory';  // <- استيراد الهيلبر
 export interface Page {
   html: string;
   pageNumber: number;
@@ -18,10 +20,12 @@ export interface Page {
 @Component({
   selector: 'app-book-reader',
   templateUrl: './book-reader.component.html',
-  styleUrls: ['./book-reader.component.css']
+  styleUrls: ['./book-reader.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class BookReaderComponent implements OnInit, OnDestroy {
   @ViewChild(BookFlipComponent) flipComp!: BookFlipComponent;
+  @ViewChild('frameRef', { static: true }) frameRef!: ElementRef<HTMLElement>;
 
   projectId!: number;
   bookId!: number; // for mock API
@@ -69,7 +73,8 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private mockApi: MockReaderApiService,
     private audioSfx: AudioSfxService,
-    private readerState: ReaderStateService
+    private readerState: ReaderStateService,
+    private renderer: Renderer2
   ) { }
 
   ngOnInit(): void {
@@ -94,7 +99,7 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     try {
       // Load book metadata
-      this.book = await this.mockApi.getBook(this.bookId).toPromise();
+      this.book = await firstValueFrom(this.mockApi.getBook(this.bookId));
 
       // Initialize audio SFX
       if (this.book.sounds) {
@@ -106,11 +111,11 @@ export class BookReaderComponent implements OnInit, OnDestroy {
       }
 
       // Load chapters
-      this.chapters = (await this.mockApi.getChapters(this.bookId).toPromise()) || [];
+      this.chapters = (await firstValueFrom(this.mockApi.getChapters(this.bookId)) ?? [])
+        .map((c: any) => ({ ...c, id: +c.id }));
 
       // Load flow
-      this.flow = (await this.mockApi.getFlow(this.bookId).toPromise()) || [];
-
+      this.flow = await firstValueFrom(this.mockApi.getFlow(this.bookId)) ?? [];
       // Apply book settings
       if (this.book.settings) {
         this.settings = { ...this.settings, ...this.book.settings };
@@ -119,6 +124,12 @@ export class BookReaderComponent implements OnInit, OnDestroy {
       // Paginate the flow
       this.pages = paginateFlow(this.flow, this.book, this.chapters);
       this.totalPages = this.pages.length;
+      this.pageEls = this.makePageElements(this.pages);
+      setTimeout(() => {
+        const idx = this.flipComp?.getIndex?.() ?? this.currentPage;   // 1-based
+        const total = this.flipComp?.getCount?.() ?? this.totalPages;
+        this.applyForeEdgesByIndex(idx, total);
+      }, 0);
 
       // Restore last position
       const lastPos = this.readerState.getPosition(this.bookId);
@@ -152,7 +163,7 @@ export class BookReaderComponent implements OnInit, OnDestroy {
 
   async loadProjectDetails() {
     try {
-      const res: any = await this.http.get(this.api.projects.details(String(this.projectId))).toPromise();
+      const res: any = await firstValueFrom(this.http.get(this.api.projects.details(String(this.projectId))));
       if (res?.success) {
         this.project = res.data;
         this.chapters = res.data.chapters || [];
@@ -170,7 +181,7 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   }
 
   async selectChapter(chapterId: number, titleFromList?: string) {
-    this.selectedChapterId = chapterId;
+    this.selectedChapterId = Number(chapterId);
     this.isLoading = true;
     try {
       const res: any = await this.http.get(this.api.chapters.paragraphs(String(chapterId))).toPromise();
@@ -178,18 +189,23 @@ export class BookReaderComponent implements OnInit, OnDestroy {
         this.paragraphs = res.data;
         const title = titleFromList ?? (this.chapters.find(c => c.id === chapterId)?.title ?? 'Chapter');
 
-        // Legacy mode: build pages from paragraphs (returns HTMLElement[])
-        const legacyPages = buildPagesAuto(title, this.paragraphs);
-
-        // Convert to new Page[] format
-        this.pages = legacyPages.map((el, idx) => ({
-          html: el.innerHTML || '',
-          pageNumber: idx + 1,
-          chapterId: chapterId,
-          chapterTitle: title
+        // بناء تدفق النصوص (flow) من الفقرات
+        const flow = this.paragraphs.map((p: any) => ({
+          id: 'p-' + p.id,
+          type: 'p' as const,
+          text: p.text,
+          chapterId
         }));
 
-        // لو فيه حفظ سابق لنفس الفصل، ارجع له
+        // إنشاء الصفحات باستخدام paginateFlow الجديد
+        this.pages = paginateFlow(flow, { title }, this.chapters);
+        this.pageEls = this.makePageElements(this.pages);
+        setTimeout(() => {
+          const idx = this.flipComp?.getIndex?.() ?? this.currentPage;   // 1-based
+          const total = this.flipComp?.getCount?.() ?? this.totalPages;
+          this.applyForeEdgesByIndex(idx, total);
+        }, 0);
+
         const last = this.getLastPosition();
         setTimeout(() => {
           if (last?.chapterId === chapterId && last.pageIndex > 0) {
@@ -207,28 +223,41 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  onSpreadChange(leftPage: number, totalPages: number) {
+    this.totalPages = totalPages;
+    this.applyForeEdges(leftPage, totalPages);
+  }
+
+  private applyForeEdges(leftPage: number, totalPages: number) {
+    const { leftPx, rightPx } = computeForeEdges(leftPage, totalPages);
+    const el = this.frameRef?.nativeElement;
+    if (!el) return;
+    this.renderer.setStyle(el, '--edge-left', `${leftPx}px`);  // يسار = المقروء
+    this.renderer.setStyle(el, '--edge-right', `${rightPx}px`); // يمين = المتبقي
+  }
+
+  private applyForeEdgesByIndex(index1Based: number, total: number) {
+    // حدد رقم صفحة اليسار داخل السبريد الحالي
+    const left = index1Based % 2 === 0 ? index1Based - 1 : index1Based;
+    this.applyForeEdges(left, total);
+  }
+
   getChapterTitle(): string {
     return this.chapters.find(c => c.id === this.selectedChapterId)?.title ?? '';
   }
 
   // ---- Navigation & State Management ----
   nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.triggerFlipAnimation();
-      this.currentPage++;
-      this.currentSpreadIndex = Math.floor((this.currentPage - 1) / 2);
+    if (this.flipComp?.canGoNext()) {
+      this.flipComp.next();
       this.audioSfx.play('flip');
-      this.saveState();
     }
   }
 
   prevPage() {
-    if (this.currentPage > 1) {
-      this.triggerFlipAnimation();
-      this.currentPage--;
-      this.currentSpreadIndex = Math.floor((this.currentPage - 1) / 2);
+    if (this.flipComp?.canGoPrev()) {
+      this.flipComp.prev();
       this.audioSfx.play('flip');
-      this.saveState();
     }
   }
 
@@ -319,18 +348,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   }
 
   goToChapter(chapterId: number) {
-    // Find first page of chapter
-    const pageIndex = this.pages.findIndex(p => p.chapterId === chapterId);
+    const id = Number(chapterId);
+    const pageIndex = this.pages.findIndex(p => Number(p.chapterId) === id);
     if (pageIndex >= 0 && this.flipComp) {
+      this.selectedChapterId = id; // تفادي وميض لحظي قبل onPageChange
       this.flipComp.goTo(pageIndex);
-      this.selectedChapterId = chapterId;
       this.showChaptersSidebar = false;
     } else if (this.project) {
-      // Legacy mode - load chapter via API
-      const chapter = this.chapters.find(c => c.id === chapterId);
-      if (chapter) {
-        this.selectChapter(chapterId, chapter.title);
-      }
+      const chapter = this.chapters.find(c => c.id === id);
+      if (chapter) this.selectChapter(id, chapter.title);
     }
   }
 
@@ -339,14 +365,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     this.totalPages = e.total;
     this.currentSpreadIndex = Math.floor((e.index - 1) / 2);
 
-    // Update selected chapter based on current page
-    const pageChapterId = this.pages[e.index - 1]?.chapterId;
-    if (pageChapterId !== undefined) {
-      this.selectedChapterId = pageChapterId;
-    }
+    const cid = this.getActiveChapterIdForIndex(e.index);
+    if (cid !== null) this.selectedChapterId = cid;
 
     this.saveState();
+
+    // 🔁 حدّث الحواف حتى لو ما اجانا spreadChange
+    this.applyForeEdgesByIndex(e.index, e.total);
   }
+
 
   // ---- Settings Management ----
   toggleSettings() {
@@ -388,23 +415,27 @@ export class BookReaderComponent implements OnInit, OnDestroy {
 
   private repaginate() {
     if (this.flow.length > 0) {
-      // Save current position
-      const currentPageNum = this.currentPage;
+      // احفظ المؤشر العالمي الحالي (0-based)
+      const currentIndex = (this.flipComp ? this.flipComp.getIndex() - 1 : this.currentPage - 1);
       const currentChapterId = this.selectedChapterId;
 
-      // Re-paginate with new settings
-      this.pages = paginateFlow(this.flow, { ...this.book, ...this.settings }, this.chapters);
+      // أعد التقسيم
+      this.pages = paginateFlow(this.flow, { ...this.book, ...this.settings }, this.chapters)
+        .map(p => ({ ...p, chapterId: Number(p.chapterId) })); // طبع
       this.totalPages = this.pages.length;
 
-      // Try to restore approximate position
-      const targetPageIndex = this.pages.findIndex(
-        p => p.chapterId === currentChapterId && p.pageNumber >= currentPageNum
-      );
+      // حاول العودة لنفس الصفحة إن أمكن، وإلا لأول صفحة من نفس الفصل
+      let targetPageIndex = Math.min(Math.max(currentIndex, 0), this.pages.length - 1);
+      if (!this.pages[targetPageIndex]) targetPageIndex = 0;
 
-      if (targetPageIndex >= 0 && this.flipComp) {
-        setTimeout(() => {
-          this.flipComp.goTo(targetPageIndex);
-        }, 100);
+      // إن تغيّر توزيع الصفحات كثيرًا، ارجع لأول صفحة من نفس الفصل
+      if (currentChapterId != null) {
+        const fallback = this.pages.findIndex(p => Number(p.chapterId) === Number(currentChapterId));
+        if (fallback >= 0) targetPageIndex = fallback;
+      }
+
+      if (this.flipComp) {
+        setTimeout(() => this.flipComp!.goTo(targetPageIndex), 80);
       }
     }
   }
@@ -437,10 +468,9 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   private makePageElements(pages: Page[]): HTMLElement[] {
     return pages.map(p => {
       const el = document.createElement('div');
-      el.className = 'page';                 // PageFlip يتوقع class=page
+      el.className = 'page'; // PageFlip يتوقع class=page
       el.innerHTML = `
       <div class="page-content">${p.html}</div>
-      <div class="page-number">${p.pageNumber}</div>
     `;
       return el;
     });
@@ -457,4 +487,12 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   }
 
   trackById = (_: number, item: any) => item.id;
+
+  private getActiveChapterIdForIndex(idx1Based: number): number | null {
+    const left = this.pages[idx1Based - 1];
+    const right = this.pages[idx1Based]; // قد تكون undefined في آخر صفحة
+    // نفضل اليمنى إن وُجدت لأنها غالبًا بداية الفصل
+    const cid = (right?.chapterId ?? left?.chapterId);
+    return (cid !== undefined && cid !== null) ? Number(cid) : null;
+  }
 }

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil, debounceTime, finalize } from 'rxjs/operators';
 import { ProjectsClientService } from '../../../services/projects-client.service';
 import { ParagraphItem } from '../../../models/project-details.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -49,6 +49,8 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   hasMore = true;
   loadingMore = false;
 
+
+
   // نخزن ما تم تحميله حتى الآن
   private loadedParagraphs: ParagraphItem[] = [];
 
@@ -60,7 +62,8 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   // Search
   searchQuery = '';
   private searchSubject = new Subject<string>();
-
+  private currentQuery = '';
+  private lastQueryToken = 0;
   // Quick TOC
   tocItems: TocItem[] = [];
   activeTocId: number | null = null;
@@ -94,9 +97,9 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
       debounceTime(300),
       takeUntil(this.destroy$)
     ).subscribe(query => {
-      this.applyFilter(query);
+      this.serverSearch(query);
     });
-    
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -132,33 +135,170 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     this.loadedParagraphs = [];
     this.filteredParagraphs = [];
 
-    // (اختياري) نظّف كاش الفصل
-    // this.projectsClient.clearChapterParagraphsCache(this.chapterId);
+    // الاستعلام الحالي حسب حقل البحث
+    this.currentQuery = (this.searchQuery ?? '').trim();
 
-    this.projectsClient.getChapterParagraphs(this.chapterId, this.page, this.pageSize, true)
-      .pipe(takeUntil(this.destroy$))
+    const token = ++this.lastQueryToken;
+    this.projectsClient.getChapterParagraphs(this.chapterId, this.page, this.pageSize, {
+      q: this.currentQuery,
+      forceRefresh: true
+    })
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
       .subscribe({
         next: (rows) => {
+          if (token !== this.lastQueryToken) return; // استجابة قديمة تجاهلها
           this.loadedParagraphs = rows.map(p => ({ ...p, isExpanded: false, isEditing: false }));
-          this.applyFilter(this.searchQuery); // تبني filteredParagraphs من المحمّل
+          // لما البحث سيرفري، خليك تعرض مباشرة بدون فلترة محلية
+          this.filteredParagraphs = [...this.loadedParagraphs];
           this.buildTOC();
           this.isLoading = false;
-
-          // لو الدفعة أقل من 20 → ما في صفحات لاحقة
           this.hasMore = rows.length === this.pageSize;
-
           this.cdr.markForCheck();
 
-          // فعّل مراقب الانفينتي سكروول بعد تحديث DOM
           setTimeout(() => this.setupInfiniteScroll(), 100);
-          setTimeout(() => this.setupScrollSpy(), 150); // الموجود عندك للـ TOC
+          setTimeout(() => this.setupScrollSpy(), 150);
         },
         error: (err) => {
+          if (token !== this.lastQueryToken) return;
           console.error('Failed to load paragraphs:', err);
           this.isLoading = false;
           this.cdr.markForCheck();
         }
       });
+  }
+
+  // بحث عند تغيّر النص (ديباونس)
+  private serverSearch(query: string): void {
+    this.searchQuery = query;
+    this.currentQuery = (query ?? '').trim();
+
+    // ✅ فعّل اللودينج للبحث
+    this.isLoading = true;
+    this.loadingMore = false;
+    this.page = 1;
+    this.hasMore = true;
+
+    // صفّي الداتا المعروضة حالياً
+    this.loadedParagraphs = [];
+    this.filteredParagraphs = [];
+
+    // وقّف الإنفينيتي سكرول مؤقتًا
+    this.infiniteObserver?.disconnect();
+
+    this.cdr.markForCheck();
+
+    const token = ++this.lastQueryToken;
+
+    this.projectsClient.getChapterParagraphs(this.chapterId, 1, this.pageSize, {
+      q: this.currentQuery,
+      forceRefresh: true
+    })
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          // ما تنزّل اللودينج إلا لو هاي آخر استجابة
+          if (token !== this.lastQueryToken) return;
+          this.isLoading = false;
+          this.cdr.markForCheck();
+
+          // رجّع الإنفينيتي سكرول والـ TOC بعد ما يترندر اللست
+          setTimeout(() => this.setupInfiniteScroll(), 80);
+          setTimeout(() => this.setupScrollSpy(), 120);
+        })
+      )
+      .subscribe({
+        next: (rows) => {
+          if (token !== this.lastQueryToken) return; // تجاهل استجابة قديمة
+          this.loadedParagraphs = rows.map(p => ({ ...p, isExpanded: false, isEditing: false }));
+          console.log(this.loadParagraphs);
+          
+          this.filteredParagraphs = [...this.loadedParagraphs];
+          this.hasMore = rows.length === this.pageSize;
+          this.buildTOC();
+          this.cdr.markForCheck();
+        },
+        error: (e) => {
+          if (token !== this.lastQueryToken) return;
+          console.error('serverSearch error:', e);
+          // (finalize) رح ينزل الـ isLoading
+        }
+      });
+  }
+
+  private loadMore(): void {
+    if (!this.hasMore || this.loadingMore) return;
+
+    this.loadingMore = true;
+    const nextPage = this.page + 1;
+
+    this.projectsClient.getChapterParagraphs(this.chapterId, nextPage, this.pageSize, {
+      q: this.currentQuery
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (rows) => {
+          this.loadedParagraphs = [...this.loadedParagraphs, ...rows];
+          this.filteredParagraphs = [...this.loadedParagraphs]; // عرض السيرفر كما هو
+          this.buildTOC();
+
+          this.page = nextPage;
+          this.hasMore = rows.length === this.pageSize;
+          this.loadingMore = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('loadMore error:', err);
+          this.loadingMore = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  // البحث لم يعد يفلتر محليًا؛ نظّف applyFilter واستعملها فقط للحالات الداخلية إن لزم
+  applyFilter(_query: string): void {
+    // إبقِها no-op أو احذف الاستدعاءات القديمة إلّا إذا بدك فلترة إضافية محلية لاحقًا
+    this.filteredParagraphs = [...this.loadedParagraphs];
+    this.buildTOC();
+    this.cdr.markForCheck();
+  }
+
+  // إدخال البحث
+  onSearchInput(event: Event): void {
+    const query = (event.target as HTMLInputElement).value;
+    this.searchQuery = query;
+
+    // ✅ فعّل السكلتون مباشرةً
+    this.isLoading = true;
+    this.loadingMore = false;
+    this.page = 1;
+    this.hasMore = true;
+
+    // أوقف الإنفينيتي سكرول مؤقتًا أثناء البحث
+    this.infiniteObserver?.disconnect();
+
+    this.cdr.markForCheck();
+    this.searchSubject.next(query); // يكمّل للديباونس → serverSearch
+  }
+
+  // أثناء البحث، الأفضل تعطيل إعادة الترتيب (لأن النتائج جزئية)
+  toggleReorderMode(): void {
+    if (this.isLoading || !this.filteredParagraphs.length || this.searchQuery.trim().length > 0) return;
+    this.showComposer = false;
+    this.isReorderMode = true;
+    this.originalOrderIds = this.filteredParagraphs.map(p => p.id);
+    this.cdr.markForCheck();
+  }
+
+  onDrop(event: CdkDragDrop<ParagraphItem[]>): void {
+    if (!this.isReorderMode) return;
+    moveItemInArray(this.filteredParagraphs, event.previousIndex, event.currentIndex);
+    this.cdr.markForCheck();
   }
 
   private setupInfiniteScroll(): void {
@@ -179,55 +319,6 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     });
 
     this.infiniteObserver.observe(this.infiniteAnchor.nativeElement);
-  }
-
-  private loadMore(): void {
-    if (!this.hasMore || this.loadingMore) return;
-
-    this.loadingMore = true;
-    const nextPage = this.page + 1;
-
-    this.projectsClient.getChapterParagraphs(this.chapterId, nextPage, this.pageSize)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (rows) => {
-          this.loadedParagraphs = [...this.loadedParagraphs, ...rows];
-          this.applyFilter(this.searchQuery);     // تحدّث العرض والـ TOC
-          this.buildTOC();
-
-          this.page = nextPage;
-          this.hasMore = rows.length === this.pageSize;
-          this.loadingMore = false;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.error('loadMore error:', err);
-          this.loadingMore = false;
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-
-  // ========================================
-  // 🔸 Search & Filter
-  // ========================================
-  onSearchInput(event: Event): void {
-    const query = (event.target as HTMLInputElement).value;
-    this.searchQuery = query;
-    this.searchSubject.next(query);
-  }
-
-  applyFilter(query: string): void {
-    const base = this.loadedParagraphs;
-    if (!query.trim()) {
-      this.filteredParagraphs = [...base];
-    } else {
-      const q = query.toLowerCase();
-      this.filteredParagraphs = base.filter(p => p.text.toLowerCase().includes(q));
-    }
-    this.buildTOC();
-    this.cdr.markForCheck();
   }
 
   // ========================================
@@ -340,16 +431,6 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   // ========================================
   // 🔸 Reorder Mode
   // ========================================
-  toggleReorderMode(): void {
-    if (this.isLoading || !this.paragraphs.length) return;
-
-    // أغلق الـ composer أثناء الري أوردر
-    this.showComposer = false;
-
-    this.isReorderMode = true;
-    this.originalOrderIds = this.paragraphs.map(p => p.id);
-    this.cdr.markForCheck();
-  }
 
   cancelReorderMode(): void {
     this.isReorderMode = false;
@@ -368,24 +449,13 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     return this.paragraphs.map(p => p.id).join(',') !== this.originalOrderIds.join(',');
   }
 
-  onDrop(event: CdkDragDrop<ParagraphItem[]>): void {
-    if (!this.isReorderMode) return;
-
-    const next = [...this.paragraphs];
-    moveItemInArray(next, event.previousIndex, event.currentIndex);
-    this.paragraphs = next;
-
-    // مبدئيًا خلّ الفلترة كما هي (نحافظ على filtered في الوضع العادي فقط)
-    this.cdr.markForCheck();
-  }
-
   saveOrder(): void {
     if (this.isSavingOrder || !this.isOrderDirty) return;
 
     this.isSavingOrder = true;
     this.cdr.markForCheck();
 
-    const orderedIds = this.paragraphs.map(p => p.id);
+    const orderedIds = this.filteredParagraphs.map(p => p.id);
 
     this.projectsClient.reorderParagraphs(this.chapterId, orderedIds).subscribe({
       next: () => {
@@ -395,6 +465,7 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
         // بنعيد الفلترة عشان ترجع القائمة العادية بالترتيب الجديد
         this.applyFilter(this.searchQuery);
         this.cdr.markForCheck();
+        this.loadParagraphs();
       },
       error: (err) => {
         console.error('Failed to save paragraph order:', err);

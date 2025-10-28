@@ -32,6 +32,8 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   @Output() chapterDeleted = new EventEmitter<number>();
   @Output() showToast = new EventEmitter<{ message: string; type: 'success' | 'error' }>();
 
+  private isSeeking = false;
+
   // ========================================
   // 🔹 State
   // ========================================
@@ -424,26 +426,50 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
     return this.canGenerate && !this.isProjectGenerating && !this.isAnyParagraphGenerating;
   }
 
-  seekAudio(event: MouseEvent): void {
-    const audio = this.chapterAudioRef?.nativeElement;
-    const track = event.currentTarget as HTMLElement;
+  // لما يبدأ السحب أو الضغط
+  seekAudioStart(event: MouseEvent): void {
+    if (!(this.voiceState === 'ready' && this.chapter?.voice_url)) return;
+    this.isSeeking = true;
+    this.updateSeek(event);
 
-    if (!audio || !this.duration) return;
+    window.addEventListener('mousemove', this.onSeekMove);
+    window.addEventListener('mouseup', this.onSeekEnd);
+  }
 
-    // حساب نسبة النقر على الشريط
+  // أثناء السحب
+  onSeekMove = (event: MouseEvent) => {
+    if (!this.isSeeking) return;
+    this.updateSeek(event);
+  };
+
+  // لما يرفع الماوس
+  onSeekEnd = (event: MouseEvent) => {
+    if (!this.isSeeking) return;
+    this.updateSeek(event);
+    this.isSeeking = false;
+
+    window.removeEventListener('mousemove', this.onSeekMove);
+    window.removeEventListener('mouseup', this.onSeekEnd);
+  };
+
+  // الدالة المركزية لحساب الموضع الجديد
+  private updateSeek(event: MouseEvent): void {
+    const audio = this.chapterAudioRef?.nativeElement as HTMLAudioElement;
+    const track = document.querySelector('.progress-track') as HTMLElement;
+    if (!audio || !track || !this.duration) return;
+
     const rect = track.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const percentage = Math.min(Math.max(clickX / rect.width, 0), 1);
+    const offsetX = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
+    const percentage = offsetX / rect.width;
 
-    // تحديد الموضع الجديد في الصوت
     const newTime = percentage * this.duration;
     audio.currentTime = newTime;
 
-    // تحديث واجهة المستخدم
     this.currentTime = newTime;
     this.audioProgress = percentage * 100;
     this.cdr.markForCheck();
   }
+
 
   private trackVoiceGeneration(processId: number): void {
     this.voiceProcess$ = this.voiceService.trackProcess(

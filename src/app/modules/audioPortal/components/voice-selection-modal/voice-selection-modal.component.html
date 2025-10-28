@@ -10,57 +10,42 @@
   </div>
 
   <div class="modal-body-custom">
-<div class="silence-sliders" *ngIf="entityType !== 'paragraph'">
-  <div class="silence-slider" *ngIf="entityType === 'project' || entityType === 'chapter'">
-    <label>Pause after <strong>Chapter Title</strong></label>
-    <input
-      type="range"
-      min="0.25"
-      max="5"
-      step="0.25"
-      [(ngModel)]="selectedChapterTitleSilence"
-    />
-    <span>{{ selectedChapterTitleSilence }}s</span>
-  </div>
+    <!-- <div class="silence-sliders" *ngIf="entityType !== 'paragraph'">
 
-  <div class="silence-slider" *ngIf="entityType === 'project' || entityType === 'chapter'">
-    <label>Pause after <strong>Paragraph</strong></label>
-    <input
-      type="range"
-      min="0.25"
-      max="5"
-      step="0.25"
-      [(ngModel)]="selectedParagraphSilence"
-    />
-    <span>{{ selectedParagraphSilence }}s</span>
-  </div>
+      <div class="silence-slider" *ngIf="entityType === 'project' || entityType === 'chapter'">
+        <label>Pause after <strong>Paragraph</strong></label>
+        <input type="range" min="0.25" max="5" step="0.25" [(ngModel)]="selectedParagraphSilence" />
+        <span>{{ selectedParagraphSilence }}s</span>
+      </div>
 
-  <div class="silence-slider" *ngIf="entityType === 'project'">
-    <label>Pause after <strong>Chapter</strong></label>
-    <input
-      type="range"
-      min="0.25"
-      max="5"
-      step="0.25"
-      [(ngModel)]="selectedChapterSilence"
-    />
-    <span>{{ selectedChapterSilence }}s</span>
-  </div>
-</div>
+      <div class="silence-slider" *ngIf="entityType === 'project' || entityType === 'chapter'">
+        <label>Pause after <strong>Chapter Title</strong></label>
+        <input type="range" min="0.25" max="5" step="0.25" [(ngModel)]="selectedChapterTitleSilence" />
+        <span>{{ selectedChapterTitleSilence }}s</span>
+      </div>
+
+      <div class="silence-slider" *ngIf="entityType === 'project'">
+        <label>Pause after <strong>Chapter</strong></label>
+        <input type="range" min="0.25" max="5" step="0.25" [(ngModel)]="selectedChapterSilence" />
+        <span>{{ selectedChapterSilence }}s</span>
+      </div>
+    </div> -->
 
 
 
 
     <!-- Skeleton Loader -->
     <div class="voices-grid" *ngIf="isLoadingVoices">
-      <div class="voice-card skeleton-card" *ngFor="let item of [1,2,3,4,5,6]">
+      <div class="voice-card skeleton-card" *ngFor="let _ of skeletonItems">
         <div class="voice-avatar skeleton-avatar">
           <div class="skeleton-circle"></div>
         </div>
+
         <div class="voice-info">
-          <div class="skeleton-line skeleton-name voice-info"></div>
-          <div class="skeleton-line skeleton-gender voice-info"></div>
+          <div class="skeleton-line skeleton-name"></div>
+          <div class="skeleton-line skeleton-gender"></div>
         </div>
+
         <div class="voice-actions">
           <div class="skeleton-line h-100"></div>
         </div>

@@ -30,6 +30,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
 
   @Output() edited = new EventEmitter<ParagraphItem>();
   @Output() deleted = new EventEmitter<number>();
+  private isSeeking = false;
 
   isCompactView = false;
 
@@ -137,28 +138,48 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.isCompactView = window.innerWidth < 1480;
   }
 
-  seekAudio(event: MouseEvent): void {
+  seekAudioStart(event: MouseEvent): void {
     if (this.reorderMode) return;
+    this.isSeeking = true;
+    this.updateSeek(event);
+
+    window.addEventListener('mousemove', this.onSeekMove);
+    window.addEventListener('mouseup', this.onSeekEnd);
+  }
+
+  // أثناء السحب
+  onSeekMove = (event: MouseEvent) => {
+    if (!this.isSeeking) return;
+    this.updateSeek(event);
+  };
+
+  // لما يرفع الماوس
+  onSeekEnd = (event: MouseEvent) => {
+    if (!this.isSeeking) return;
+    this.updateSeek(event);
+    this.isSeeking = false;
+
+    window.removeEventListener('mousemove', this.onSeekMove);
+    window.removeEventListener('mouseup', this.onSeekEnd);
+  };
+
+  // المعادلة الأساسية لحساب الموقع الجديد على الشريط
+  private updateSeek(event: MouseEvent): void {
     const audio = document.querySelector(`#para-${this.paragraph.id} audio`) as HTMLAudioElement;
-    const track = event.currentTarget as HTMLElement;
+    const track = document.querySelector(`#para-${this.paragraph.id} .para-progress-track`) as HTMLElement;
+    if (!audio || !track || !this.duration) return;
 
-    if (!audio || !this.duration) return;
-
-    // احسب النسبة بين موقع النقر وطول الشريط
     const rect = track.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const percentage = Math.min(Math.max(clickX / rect.width, 0), 1);
+    const offsetX = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
+    const percentage = offsetX / rect.width;
 
-    // حدّد الزمن الجديد
     const newTime = percentage * this.duration;
     audio.currentTime = newTime;
 
-    // حدّث واجهة التقدّم
     this.currentTime = newTime;
     this.audioProgress = percentage * 100;
     this.cdr.markForCheck();
   }
-
   // ========================================
   // 🔒 Update canGenerate with Hierarchical Blocking
   // ========================================
@@ -612,5 +633,5 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.showParaMenu = false;
   };
 
-  
+
 }

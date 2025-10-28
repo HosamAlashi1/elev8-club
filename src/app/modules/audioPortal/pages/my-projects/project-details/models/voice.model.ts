@@ -34,7 +34,11 @@ export enum VoiceEntityType {
 export interface VoiceProcess {
   id: number;
   status: VoiceStatus;
-  // duration_seconds: number | null;
+  progress_percent?: number | null;
+  generated_time_minutes?: number | null;        // elapsed
+  estimated_remaining_minutes?: number | null;   // eta
+  last_progress_update?: string | null;
+  completed_date?: string | null;
   error_message?: string | null;
 }
 
@@ -66,7 +70,13 @@ export interface VoiceStatusResponse {
   success: boolean;
   msg: string;
   data: {
+    id: number;
     status: VoiceStatus;
+    progress_percent?: number | null;
+    generated_time_minutes?: number | null;
+    estimated_remaining_minutes?: number | null;
+    last_progress_update?: string | null;
+    completed_date?: string | null;
     error_message?: string | null;
   };
 }
@@ -165,8 +175,10 @@ export function getVoiceUIState(entity?: any): VoiceUIState {
   if (!status) return 'idle';
 
   // الحالات العامة
-  if (status === VoiceStatus.Pending || status === VoiceStatus.Processing)
+  if (status === VoiceStatus.Processing)
     return 'generating';
+  if( status === VoiceStatus.Pending)
+    return 'idle';
   if (status === VoiceStatus.Completed)
     return 'ready';
   if (status === VoiceStatus.Failed)

@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
 import { HttpService } from 'src/app/modules/services/http.service';
 import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 import { AudioPlayerService } from 'src/app/modules/services/audio-player.service';
@@ -16,6 +17,7 @@ import { AuthType } from 'src/app/core/enums/auth-type.enum';
 import { VoiceSelectionModalComponent } from '../../../components/voice-selection-modal/voice-selection-modal.component';
 import { AudioCoordinatorService } from 'src/app/modules/services/audio-coordinator.service';
 import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-project-details',
@@ -32,9 +34,25 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   private toastService = inject(ToastrsService);
   private authSession = inject(LandingAuthSessionService);
 
+  private isSeeking = false;
+
   projectId!: number;
   project: ProjectDetails | null = null;
   isLoadingProject$ = new BehaviorSubject<boolean>(true);
+
+  chapters: ChapterRef[] = [];
+  isLoadingChapters$ = new BehaviorSubject<boolean>(true);
+
+  private chaptersPage = 1;
+  private chaptersSize = 20;
+  private chaptersLoading = false;
+  private chaptersHasMore = true;
+
+  private search$ = new Subject<string>();
+  currentQuery = '';
+
+  @ViewChild('infiniteAnchor', { static: false }) infiniteAnchor?: ElementRef<HTMLElement>;
+  private io?: IntersectionObserver;
 
   // User auth type from session
   userAuthType: AuthType = AuthType.Customer; // Default to Customer
@@ -50,7 +68,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
   // Voice Generation state
   voiceProcess$?: Observable<VoiceProcess>;
-  voiceState: 'idle' | 'generating' | 'ready' | 'failed' = 'idle';
+  voiceState: 'idle' | 'generating' | 'ready' | 'failed' | 'pending' = 'idle';
   canGenerate = false;
   isGenerating = false;
   // NEW: آخر رسالة فشل + مشتق hasFailed
@@ -184,6 +202,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   // ========================================
   // 🔸 Load Project Details
   // ========================================
+  // 2) عدّل loadProjectDetails: أزِل منطق اختيار الشابتر من chapters
   loadProjectDetails(): void {
     this.isLoadingProject$.next(true);
     this.errorMessage = '';
@@ -196,28 +215,16 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           this.project = response.data;
           this.canGenerate = true;
 
-          // ✅ تأكد أنو نختار أول شابتر أو آخر واحد محفوظ محليًا
-          const chapters = this.project.chapters ?? [];
+          // صار اختيار الشابتر من API منفصل
+          this.loadChapters(true);
 
-          if (chapters.length > 0) {
-            const lastChapterId = this.getLastOpenedChapter();
-            const chapterToSelect =
-              lastChapterId && chapters.some(c => c.id === lastChapterId)
-                ? lastChapterId
-                : chapters[0].id;
-
-            this.selectChapter(chapterToSelect);
-          } else {
-            this.selectedChapterId$.next(null);
-          }
-
-          // ✅ ضبط حالات الصوت (زي ما عندك بالأصل)
+          // حالات الصوت كما هي
           if (this.project.process) {
             if (this.project.process.status === VoiceStatus.Failed) {
               this.handleProcessFailure(this.project.process?.error_message || 'Generation failed');
             } else {
               this.voiceState = getVoiceUIState(this.project);
-              if ([VoiceStatus.Pending, VoiceStatus.Processing].includes(this.project.process.status)) {
+              if ([VoiceStatus.Processing].includes(this.project.process.status)) {
                 this.resumeVoiceTracking(this.project.process.id);
               }
             }
@@ -236,16 +243,80 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // 3) أضف دالة تحميل الشباتر من الـ API الجديد
+  private loadChapters(preserveSelection: boolean = true): void {
+    this.isLoadingChapters$.next(true);
 
-  seekProjectAudio(event: MouseEvent): void {
+    const url = this.apiPortal.projects.chapters(this.projectId.toString());
+    const prevSelected =
+      preserveSelection ? (this.selectedChapterId$.value ?? this.getLastOpenedChapter()) : null;
+
+    this.httpService.listGet(url, 'loadChapters').subscribe({
+      next: (res: { success: boolean; data: any }) => {
+        if (res?.success) {
+          this.chapters = res.data.data ?? [];
+
+          if (this.chapters.length > 0) {
+            const lastId = prevSelected && this.chapters.some(c => c.id === prevSelected)
+              ? prevSelected
+              : this.getLastOpenedChapter();
+
+            const chapterToSelect =
+              lastId && this.chapters.some(c => c.id === lastId)
+                ? lastId
+                : this.chapters[0].id;
+
+            this.selectChapter(chapterToSelect);
+          } else {
+            this.selectedChapterId$.next(null);
+          }
+        } else {
+          this.chapters = [];
+          this.selectedChapterId$.next(null);
+        }
+
+        this.isLoadingChapters$.next(false);
+      },
+      error: (error) => {
+        console.error('Failed to load chapters:', error);
+        this.chapters = [];
+        this.selectedChapterId$.next(null);
+        this.isLoadingChapters$.next(false);
+      }
+    });
+  }
+
+  seekProjectAudioStart(event: MouseEvent): void {
+    this.isSeeking = true;
+    this.updateSeek(event);
+
+    window.addEventListener('mousemove', this.seekProjectAudioMove);
+    window.addEventListener('mouseup', this.seekProjectAudioEnd);
+  }
+
+  seekProjectAudioMove = (event: MouseEvent) => {
+    if (!this.isSeeking) return;
+    this.updateSeek(event);
+  }
+
+  seekProjectAudioEnd = (event: MouseEvent) => {
+    if (!this.isSeeking) return;
+    this.updateSeek(event);
+    this.isSeeking = false;
+
+    window.removeEventListener('mousemove', this.seekProjectAudioMove);
+    window.removeEventListener('mouseup', this.seekProjectAudioEnd);
+  }
+
+  /** 🔧 الميثود الأصلية للتحديث */
+  private updateSeek(event: MouseEvent): void {
     const audio = document.querySelector('.project-voice-player-bar audio') as HTMLAudioElement;
-    const track = event.currentTarget as HTMLElement;
-
-    if (!audio || !this.projectDuration) return;
+    const track = document.querySelector('.progress-track') as HTMLElement;
+    if (!audio || !track || !this.projectDuration) return;
 
     const rect = track.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const percentage = Math.min(Math.max(clickX / rect.width, 0), 1);
+    const clickX = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
+    const percentage = clickX / rect.width;
 
     const newTime = percentage * this.projectDuration;
     audio.currentTime = newTime;
@@ -253,7 +324,6 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     this.projectCurrentTime = newTime;
     this.projectAudioProgress = percentage * 100;
   }
-
   // ========================================
   // 🔸 Check if ANY Child Entity is Generating
   // ========================================
@@ -285,59 +355,28 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   // 🔸 Chapter Added Handler
   // ========================================
   onChapterAdded(chapter: ChapterRef): void {
-    if (this.project) {
-      // Add to top of list
-      this.project.chapters.unshift(chapter);
-      // Auto-select the new chapter
-      this.selectChapter(chapter.id);
-    }
+    // Add to top of list
+    this.chapters.unshift(chapter);
+    // Auto-select the new chapter
+    this.selectChapter(chapter.id);
   }
 
   // ========================================
   // 🔸 Reload Chapters After Add/Delete
   // ========================================
   onReloadRequested(): void {
-    // Reload project details to get fresh chapters list
-    const url = this.apiPortal.projects.details(this.projectId.toString());
-    const oldSelectedId = this.selectedChapterId$.value;
-
-    this.httpService.listGet(url, 'reloadAfterChange').subscribe({
-      next: (response: ProjectDetailsResponse) => {
-        if (response.success && response.data) {
-          this.project = response.data;
-
-          if (this.project.chapters.length > 0) {
-            // Check if old selected chapter still exists
-            const stillExists = this.project.chapters.find(c => c.id === oldSelectedId);
-
-            if (stillExists) {
-              // Keep same selection
-              this.selectChapter(oldSelectedId!);
-            } else {
-              // Old chapter was deleted, select first chapter
-              this.selectChapter(this.project.chapters[0].id);
-            }
-          } else {
-            // No chapters left
-            this.selectedChapterId$.next(null);
-          }
-        }
-      },
-      error: (error) => {
-        console.error('Failed to reload chapters:', error);
-      }
-    });
+    const oldSelectedId = this.selectedChapterId$.value ?? this.getLastOpenedChapter();
+    this.loadChapters(true);
+    // الميثود loadChapters تحاول المحافظة على الاختيار السابق تلقائياً
   }
 
   // ========================================
   // 🔸 Chapter Renamed Handler
   // ========================================
   onChapterRenamed(data: { chapterId: number; newTitle: string }): void {
-    if (this.project) {
-      const chapter = this.project.chapters.find(c => c.id === data.chapterId);
-      if (chapter) {
-        chapter.title = data.newTitle;
-      }
+    const chapter = this.chapters.find(c => c.id === data.chapterId);
+    if (chapter) {
+      chapter.title = data.newTitle;
     }
   }
 
@@ -345,13 +384,12 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   // 🔸 Chapter Deleted Handler (From Workspace)
   // ========================================
   onChapterDeletedFromWorkspace(chapterId: number): void {
-    // Open delete modal
     const modalRef = this.modalService.open(DeleteComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    const chapter = this.project?.chapters.find(c => c.id === chapterId);
+    const chapter = this.chapters.find(c => c.id === chapterId);
 
     modalRef.componentInstance.id = chapterId;
     modalRef.componentInstance.type = 'chapter';
@@ -363,25 +401,19 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
       }
     });
   }
-
   // ========================================
   // 🔸 Chapter Deleted Handler
   // ========================================
   onChapterDeleted(chapterId: number): void {
-    if (!this.project) return;
-
-    const index = this.project.chapters.findIndex(c => c.id === chapterId);
+    const index = this.chapters.findIndex(c => c.id === chapterId);
     if (index === -1) return;
 
-    // Remove from list
-    this.project.chapters.splice(index, 1);
+    this.chapters.splice(index, 1);
 
-    // If deleted chapter was selected, select nearest
     if (this.selectedChapterId$.value === chapterId) {
-      if (this.project.chapters.length > 0) {
-        // Select previous or next chapter
+      if (this.chapters.length > 0) {
         const newIndex = Math.max(0, index - 1);
-        this.selectChapter(this.project.chapters[newIndex].id);
+        this.selectChapter(this.chapters[newIndex].id);
       } else {
         this.selectedChapterId$.next(null);
       }
@@ -392,9 +424,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   // 🔸 Chapters Reordered Handler
   // ========================================
   onChaptersReordered(chapters: ChapterRef[]): void {
-    if (this.project) {
-      this.project.chapters = chapters;
-    }
+    this.chapters = chapters;
   }
 
   // ========================================
@@ -505,17 +535,22 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
       processId, VoiceEntityType.Project, this.projectId
     ).pipe(
       tap(process => {
-        if (this.project) this.project.process = process;
+        if (!this.project) return;
 
-        // NEW: فشل؟ رجّع لـ idle + hint وتوقّف
+        // نزّل الحالة الجديدة على الـproject بشكل **غير قابل للكسر** عشان Change Detection
+        this.project = { ...this.project, process: { ...process } };
+
+        // فشل؟ نظّف وأوقف
         if (process.status === VoiceStatus.Failed) {
           this.handleProcessFailure(process?.error_message || 'Generation failed');
           return;
         }
 
-        // تحديث طبيعي للحالات الأخرى
+        // حدّث واجهة الحالة
         this.voiceState = getVoiceUIState(this.project);
-        this.isGenerating = process.status === VoiceStatus.Pending ||
+
+        // rocessing “جاري توليد”
+        this.isGenerating =
           process.status === VoiceStatus.Processing;
       }),
       takeUntil(this.destroy$)
@@ -680,4 +715,58 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
+
+  getExportTooltip(isLoadingProject: boolean | null | undefined): string {
+    if (this.isExporting) return 'Export is in progress…';
+    if (isLoadingProject) return 'Project is loading…';
+    if (this.voiceState === 'generating') return 'Audio is still generating. Please wait.';
+    if (!this.project?.voice_url) return 'Project audio is not ready yet.';
+    return 'Export the project audio (ZIP).';
+  }
+
+  get process(): VoiceProcess | undefined {
+    return this.project?.process;
+  }
+
+  get progressPercent(): number {
+    return Math.max(0, Math.min(100, this.process?.progress_percent ?? 0));
+  }
+
+  formatMinutes(ms: number | null | undefined): string {
+    if (ms == null) return '—';
+    const m = Math.floor(ms);
+    const s = Math.round((ms - m) * 60);
+    return `${m}m ${s.toString().padStart(2, '0')}s`;
+  }
+
+  get elapsedText(): string {
+    return this.formatMinutes(this.process?.generated_time_minutes ?? 0);
+  }
+
+  get etaText(): string {
+    return this.formatMinutes(this.process?.estimated_remaining_minutes ?? 0);
+  }
+
+  get finishTimeText(): string {
+    const eta = this.process?.estimated_remaining_minutes;
+    if (eta == null) return '—';
+    const doneAt = new Date(Date.now() + eta * 60 * 1000);
+    // HH:MM (24h)
+    const hh = doneAt.getHours().toString().padStart(2, '0');
+    const mm = doneAt.getMinutes().toString().padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  get isProcessing(): boolean {
+    const s = this.process?.status;
+    return s === VoiceStatus.Processing;
+  }
+
+  get statusText(): string {
+    switch (this.process?.status) {
+      case VoiceStatus.Processing: return 'Synthesizing audio…';
+      default: return '';
+    }
+  }
+
 }

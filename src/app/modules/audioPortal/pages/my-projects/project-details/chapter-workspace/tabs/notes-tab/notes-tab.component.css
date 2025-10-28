@@ -8,7 +8,7 @@
   flex-direction: column;
   height: 100%;
   background: #fff;
-  max-height: calc(100vh - 439px);
+  /* max-height: calc(100vh - 439px); */
 }
 
 /* ========================================
@@ -210,8 +210,8 @@
 
 /* الحاوية: ارتفاع ثابت عبر متغير CSS + Grid بصفين */
 .notes-chat-container {
-  height: calc(100vh - 439px);
-  max-height: calc(100vh - 439px);    /* غيّر الرقم براحتك أو من التمبلِيت */
+  height: calc(100vh - 365px);   /* 439*/
+  /* max-height: calc(100vh - 439px);    غيّر الرقم براحتك أو من التمبلِيت */
   display: grid;
   grid-template-rows: 1fr auto; /* الرسائل فوق (تتمدد) + الكومبوزر تحت (ثابت) */
   background: #fff;
