@@ -11,7 +11,8 @@
       </div>
 
       <!-- Right: New Project Button -->
-      <button *ngIf="canCreateProject" class="btn btn-primary btn-new-project" (click)="openAddProjectModal()"
+        <!-- *ngIf="canCreateProject" -->
+      <button class="btn btn-primary btn-new-project" (click)="openAddProjectModal()"
         aria-label="Create New Project">
         <i class="bi bi-plus-circle me-2"></i>
         New Project
@@ -53,7 +54,8 @@
       : 'Start your creative journey by creating your first audio project'
       }}
     </p>
-    <button *ngIf="!searchTerm && canCreateProject" class="btn btn-outline-primary btn-create-first" (click)="openAddProjectModal()">
+     <!-- && canCreateProject -->
+    <button *ngIf="!searchTerm" class="btn btn-outline-primary btn-create-first" (click)="openAddProjectModal()">
       <i class="bi bi-plus-circle me-2"></i>
       Create Your First Project
     </button>

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, finalize } from 'rxjs/operators';
 import { ProjectsClientService } from '../../../services/projects-client.service';
@@ -35,6 +35,8 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
   @Input() authType?: number;                  // 3 = Editor
   @Input() isProjectGenerating = false;
   @Input() isChapterGenerating = false;
+
+  @Output() refreshRequested = new EventEmitter<void>();
 
   // ========================================
   // 🔹 State
@@ -217,7 +219,7 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
           if (token !== this.lastQueryToken) return; // تجاهل استجابة قديمة
           this.loadedParagraphs = rows.map(p => ({ ...p, isExpanded: false, isEditing: false }));
           console.log(this.loadParagraphs);
-          
+
           this.filteredParagraphs = [...this.loadedParagraphs];
           this.hasMore = rows.length === this.pageSize;
           this.buildTOC();
@@ -417,7 +419,7 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
       .subscribe({
         next: () => {
           this.toggleComposer();
-          this.loadParagraphs();
+          this.refreshRequested.emit();
           this.isSubmittingNew = false;
         },
         error: (error) => {
@@ -462,10 +464,10 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
         this.isSavingOrder = false;
         this.isReorderMode = false;
         this.originalOrderIds = [];
-        // بنعيد الفلترة عشان ترجع القائمة العادية بالترتيب الجديد
         this.applyFilter(this.searchQuery);
         this.cdr.markForCheck();
-        this.loadParagraphs();
+        this.refreshRequested.emit();
+
       },
       error: (err) => {
         console.error('Failed to save paragraph order:', err);
@@ -489,6 +491,21 @@ export class ParagraphsTabComponent implements OnChanges, OnInit, AfterViewInit,
     this.loadedParagraphs = this.loadedParagraphs.filter(p => p.id !== paragraphId);
     this.applyFilter(this.searchQuery);
   }
+
+  reloadChapterParagraphs(fromParent = false): void {
+    // فضّ المراقبين عشان ما يصير دابل اشتراك بعد الريفرش
+    this.infiniteObserver?.disconnect();
+    this.intersectionObserver?.disconnect();
+
+    if (fromParent) {
+      // 🧩 طلب من الأعلى → فقط حمّل الفقرات داخليًا
+      this.loadParagraphs();
+    } else {
+      // 🚀 طلب محلي (من داخل ParagraphsTab نفسه) → نبّه الأب
+      this.refreshRequested.emit();
+    }
+  }
+
 
   // ========================================
   // 🔸 TrackBy

@@ -97,7 +97,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
   buildUrl(): string {
     const q = encodeURIComponent(this.searchText.trim());
     let url = `${this.api.users.list}?q=${q}&auth_type=4&size=${this.size}&page=${this.page}`;
-    
+
     if (this.minOrders !== null && this.minOrders !== undefined) {
       url += `&min_orders=${this.minOrders}`;
     }
@@ -127,8 +127,8 @@ export class CustomersComponent implements OnInit, OnDestroy {
 
     this.http.listGet(url, 'users-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
-          this.totalCount = res.data.total_records ?? 0;
+        if (res?.status && res?.data) {
+          this.totalCount = res.data.total_count ?? res.data.total_records ?? 0;
           this.users = res.data.data || [];
         } else {
           this.totalCount = 0;
@@ -143,6 +143,7 @@ export class CustomersComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 
 
   // 🔹 دالة لفتح مودال الفلاتر المتقدمة
@@ -253,12 +254,12 @@ export class CustomersComponent implements OnInit, OnDestroy {
     const url = this.api.users.active(user.id);
     this.http.action(url, {}, 'toggleActive').subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res.msg || 'Status updated successfully');
+        if (res?.status) {
+          this.toastr.showSuccess(res.message || 'Status updated successfully');
           // حدّث القيمة مباشرة بدون ما تعمل ريفريش كامل
           user.is_active = !user.is_active;
         } else {
-          this.toastr.showError(res?.msg || 'Operation failed');
+          this.toastr.showError(res?.message || 'Operation failed');
         }
       },
       error: () => {

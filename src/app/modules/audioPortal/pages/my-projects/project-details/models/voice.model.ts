@@ -49,15 +49,16 @@ export interface GenerateVoiceRequest {
   id: number;
   type: VoiceEntityType;
   voice_key?: string; // Optional: Selected voice key from modal
-    format?: 'mp3' | 'wav';
+  format?: 'mp3' | 'wav';
 }
 
 /**
  * Voice Generation Response
  */
 export interface GenerateVoiceResponse {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: {
     process_id: number;
   };
@@ -67,8 +68,9 @@ export interface GenerateVoiceResponse {
  * Voice Status Response
  */
 export interface VoiceStatusResponse {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: {
     id: number;
     status: VoiceStatus;
@@ -164,7 +166,7 @@ export function getVoiceUIState(entity?: any): VoiceUIState {
 
   // لو عنده voice_url، نرجّح الجاهزية إلا إذا كان شغال
   if (entity.voice_url) {
-    if (status === VoiceStatus.Pending || status === VoiceStatus.Processing)
+    if (status === VoiceStatus.Processing)
       return 'generating';
     if (status === VoiceStatus.Failed)
       return 'failed';
@@ -177,7 +179,7 @@ export function getVoiceUIState(entity?: any): VoiceUIState {
   // الحالات العامة
   if (status === VoiceStatus.Processing)
     return 'generating';
-  if( status === VoiceStatus.Pending)
+  if (status === VoiceStatus.Pending)
     return 'idle';
   if (status === VoiceStatus.Completed)
     return 'ready';

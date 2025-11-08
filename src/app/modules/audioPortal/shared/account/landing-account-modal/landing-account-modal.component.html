@@ -120,13 +120,13 @@
 
           <!-- Alert Messages -->
           <div class="alerts-zone px-4">
-            <div *ngIf="serverMsg" class="alert-glass alert-danger">
+            <div *ngIf="servermessage" class="alert-glass alert-danger">
               <i class="fas fa-exclamation-circle"></i>
-              {{ serverMsg }}
+              {{ servermessage }}
             </div>
-            <div *ngIf="signupSuccessMsg" class="alert-glass alert-success">
+            <div *ngIf="signupSuccessMessage" class="alert-glass alert-success">
               <i class="fas fa-check-circle"></i>
-              {{ signupSuccessMsg }}
+              {{ signupSuccessMessage }}
               <small class="d-block mt-1 opacity-75">Check your email for the password.</small>
             </div>
           </div>

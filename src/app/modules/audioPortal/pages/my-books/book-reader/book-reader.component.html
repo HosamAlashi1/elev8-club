@@ -1,31 +1,16 @@
 <div class="book-reader-container" [class]="'theme-' + settings.theme">
 
-  <!-- Top Toolbar -->
-  <header class="reader-toolbar">
-    <div class="toolbar-left">
-      <!-- <button class="toolbar-btn" (click)="toggleChaptersSidebar()" [class.active]="showChaptersSidebar"
-        title="Chapters">
-        <span>☰</span>
-        <span>Chapters</span>
-      </button> -->
-
-      <div class="book-title-display" *ngIf="book">
-        {{ book.title }}
-      </div>
-    </div>
-
-    <div class="page-indicator" *ngIf="totalPages > 0">
-      Page {{ currentPage }} of {{ totalPages }}
-    </div>
-
-  </header>
 
   <!-- Main Reader Area -->
   <div class="reader-main">
 
     <!-- Chapters Sidebar -->
     <aside class="chapters-sidebar" [class.open]="showChaptersSidebar">
-      <div class="sidebar-header">Table of Contents</div>
+      <div class="sidebar-header">
+        <div class="book-title-display" *ngIf="book">
+          {{ book.title }}
+        </div>
+      </div>
       <ul class="chapters-list">
         <li *ngFor="let ch of chapters; trackBy: trackById" class="chapter-item"
           [class.active]="ch.id === selectedChapterId" (click)="goToChapter(ch.id)">
@@ -46,16 +31,18 @@
       <div class="book-spread" *ngIf="!isLoading && pages?.length" [class.flipping]="isFlipping"
         [style.font-size.px]="settings.fontSize" [style.line-height]="settings.lineHeight">
 
-        <!-- Chapter Title above the book -->
-        <h1 class="chapter-title">{{ getChapterTitle() }}</h1>
-
         <!-- Framed book with inner shadow/gutter -->
-        <div class="book-frame" #frameRef>
-          <app-book-flip [pages]="pageEls" [width]="820" [height]="900" [soundEnabled]="settings.audioEnabled"
-            (pageChange)="onPageChange($event)" (flipStart)="isFlipping = true" (flipComplete)="isFlipping = false"
-            (spreadChange)="onSpreadChange($event.left, $event.total)">
+        <div class="book-frame" #frameRef [class.flipping]="isFlipping"
+          [class.flip-right]="isFlipping && lastDir==='right'" [class.flip-left]="isFlipping && lastDir==='left'">
+
+          <app-book-flip [pages]="pageEls" [width]="920" [height]="1300" [soundEnabled]="settings.audioEnabled"
+            (flipStart)="onFlipStart()" (flipComplete)="onFlipComplete()"
+            (spreadChange)="onSpreadChange($event.left, $event.total)" (pageChange)="onPageChange($event)">
           </app-book-flip>
 
+          <div class="page-curl" aria-hidden="true"></div>
+          <div class="edge-count left" aria-hidden="true"></div>
+          <div class="edge-count right" aria-hidden="true"></div>
           <div class="book-gutter-shadow" aria-hidden="true"></div>
         </div>
 

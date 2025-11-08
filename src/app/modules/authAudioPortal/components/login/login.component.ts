@@ -71,10 +71,10 @@ export class LoginComponent implements OnInit {
     this.form.patchValue({ auth_type: role });
   }
 
-  showMsg(success: boolean, msg: string) {
+  showmessage(success: boolean, message: string) {
     this.uiState.update((state) => ({
       ...state,
-      message: msg,
+      message: message,
       type: success ? 'success' : 'danger',
     }));
   }
@@ -91,14 +91,14 @@ export class LoginComponent implements OnInit {
     const device_id = this.publicService.getDeviceId();
 
     const { email, password, auth_type } = this.form.value as any;
-    this.showMsg(false, '');
+    this.showmessage(false, '');
     this.isLoading = true;
 
     this.session.login(email, password, Number(auth_type || 4), fcm_token || '', device_id).subscribe({
       next: (res: any) => {
         this.isLoading = false;
 
-        if (res?.success === true && res?.data?.access_token) {
+        if (res?.status === true && res?.data?.access_token) {
           if (this.rememberMe) {
             const data = { email, password };
             const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), environment.cryptoKey).toString();
@@ -116,12 +116,12 @@ export class LoginComponent implements OnInit {
           }
 
         } else {
-          this.showMsg(false, res?.msg || 'Login failed');
+          this.showmessage(false, res?.message || 'Login failed');
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.showMsg(false, err?.error?.msg || 'Something went wrong. Please try again.');
+        this.showmessage(false, err?.response?.message || 'Something went wrong. Please try again.');
       }
     });
   }

@@ -94,7 +94,7 @@
         <div class="glass-card" [class.show-signup]="activeTab==='signup'">
 
           <!-- Header with tab toggle -->
-          <div class="card-header">
+          <div class="card-header" *ngIf="activeTab !== 'verification'">
             <h2 class="form-title" data-aos="fade-right" data-aos-duration="400">
               {{ activeTab === 'login' ? 'Your Story Begins Here' : 'Join Literary Haven' }}
             </h2>
@@ -119,15 +119,14 @@
           </div>
 
           <!-- Alert Messages -->
-          <div class="alerts-zone px-4">
-            <div *ngIf="serverMsg" class="alert-glass alert-danger">
+          <div class="alerts-zone px-4" *ngIf="activeTab !== 'verification'">
+            <div *ngIf="serverMessage" class="alert-glass alert-danger">
               <i class="fas fa-exclamation-circle"></i>
-              {{ serverMsg }}
+              {{ serverMessage }}
             </div>
-            <div *ngIf="signupSuccessMsg" class="alert-glass alert-success">
+            <div *ngIf="signupSuccessMessage" class="alert-glass alert-success">
               <i class="fas fa-check-circle"></i>
-              {{ signupSuccessMsg }}
-              <small class="d-block mt-1 opacity-75">Check your email for the password.</small>
+              {{ signupSuccessMessage }}
             </div>
           </div>
 
@@ -163,7 +162,7 @@
                     formControlName="password" [class.error]="submittedLogin && lf['password'].invalid">
                   <div *ngIf="submittedLogin && lf['password'].invalid" class="field-error">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Password must be at least 6 characters
+                    Password must be at least 5 characters
                   </div>
                 </div>
 
@@ -212,17 +211,7 @@
                     </div>
                   </div>
 
-                  <div class="col-12">
-                    <div class="input-group-custom">
-                      <label class="input-label">
-                        <i class="fas fa-user"></i>
-                        Middle Name <span class="optional">(optional)</span>
-                      </label>
-                      <input class="input-field" placeholder="e.g., James" formControlName="middle_name">
-                    </div>
-                  </div>
-
-                  <div class="col-md-7">
+                  <div class="col-md-12">
                     <div class="input-group-custom">
                       <label class="input-label">
                         <i class="fas fa-envelope"></i>
@@ -237,13 +226,99 @@
                     </div>
                   </div>
 
-                  <div class="col-md-5">
+                  <div class="col-md-12">
                     <div class="input-group-custom">
                       <label class="input-label">
                         <i class="fas fa-phone"></i>
                         Phone <span class="optional">(optional)</span>
                       </label>
-                      <input class="input-field" placeholder="(555) 123-4567" formControlName="phone">
+                      <div class="phone-input-group">
+                        <!-- Country Code Dropdown -->
+                        <div class="country-selector" ngbDropdown>
+                          <button 
+                            type="button" 
+                            class="country-selector-btn" 
+                            ngbDropdownToggle
+                            [disabled]="isLoadingCountries"
+                          >
+                            <span *ngIf="!isLoadingCountries && selectedCountry">
+                              {{ selectedCountry.code }}
+                            </span>
+                            <span *ngIf="isLoadingCountries">
+                              <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                            <span *ngIf="!isLoadingCountries && !selectedCountry">+</span>
+                            <i class="fas fa-chevron-down"></i>
+                          </button>
+                          <div class="country-dropdown-menu" ngbDropdownMenu>
+                            <div class="country-search">
+                              <input 
+                                type="text" 
+                                class="country-search-input" 
+                                placeholder="Search country..."
+                                (input)="onCountrySearch($event)"
+                                #countrySearch
+                              />
+                            </div>
+                            <div class="country-list">
+                              <button 
+                                *ngFor="let country of filteredCountries" 
+                                type="button"
+                                class="country-item"
+                                [class.active]="selectedCountry?.id === country.id"
+                                (click)="onCountryChange(country)"
+                              >
+                                <span class="country-name">{{ country.name }}</span>
+                                <span class="country-code">{{ country.code }}</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Phone Number Input -->
+                        <input 
+                          class="input-field phone-number-input" 
+                          placeholder="123 456 7890" 
+                          formControlName="phone"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Password -->
+                  <div class="col-md-6">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-lock"></i>
+                        Password
+                      </label>
+                      <input type="password" class="input-field" placeholder="Enter your password"
+                        formControlName="password" [class.error]="submittedSignup && sf['password'].invalid">
+                      <div *ngIf="submittedSignup && sf['password'].invalid" class="field-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Password required (min 5 characters)
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Confirm Password -->
+                  <div class="col-md-6">
+                    <div class="input-group-custom">
+                      <label class="input-label">
+                        <i class="fas fa-lock"></i>
+                        Confirm Password
+                      </label>
+                      <input type="password" class="input-field" placeholder="Confirm your password"
+                        formControlName="password_confirmation"
+                        [class.error]="submittedSignup && (sf['password_confirmation'].invalid || signupForm.hasError('passwordMismatch'))">
+                      <div *ngIf="submittedSignup && sf['password_confirmation'].invalid" class="field-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Please confirm your password
+                      </div>
+                      <div *ngIf="submittedSignup && signupForm.hasError('passwordMismatch') && !sf['password_confirmation'].invalid"
+                        class="field-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Passwords do not match
+                      </div>
                     </div>
                   </div>
 
@@ -294,12 +369,115 @@
                     </div>
                   </div>
 
-                  <div class="col-12">
+                  <!-- Info Note - REMOVED -->
+                  <!-- <div class="col-12">
                     <div class="info-note mb-3">
                       <i class="fas fa-info-circle"></i>
                       We'll email you a secure password after creating your account.
                     </div>
-                  </div>
+                  </div> -->
+                </div>
+
+              </div>
+
+              <!-- VERIFICATION PANEL -->
+              <div class="form-content verification-panel" [class.active]="activeTab==='verification'">
+                
+                <!-- Verification Icon -->
+                <div class="verification-icon-circle">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+
+                <!-- Title & Description -->
+                <h3 class="verification-title">Verify Your Email</h3>
+                <p class="verification-subtitle">
+                  We've sent a 4-digit verification code to<br>
+                  <strong>{{ userEmail }}</strong>
+                </p>
+
+                <!-- Error Message -->
+                <div *ngIf="verificationError" class="alert-glass alert-danger mb-3">
+                  <i class="fas fa-exclamation-circle"></i>
+                  {{ verificationError }}
+                </div>
+
+                <!-- 4-Digit Code Input -->
+                <div class="code-inputs-container">
+                  <input 
+                    type="text" 
+                    maxlength="1"
+                    inputmode="numeric"
+                    pattern="[0-9]"
+                    class="code-digit-input"
+                    id="digit-0"
+                    (input)="onDigitInput($event, 0)"
+                    (keydown)="onDigitKeydown($event, 0)"
+                    (paste)="onDigitPaste($event)"
+                    [disabled]="isVerifying"
+                    autocomplete="off"
+                  />
+                  <input 
+                    type="text" 
+                    maxlength="1"
+                    inputmode="numeric"
+                    pattern="[0-9]"
+                    class="code-digit-input"
+                    id="digit-1"
+                    (input)="onDigitInput($event, 1)"
+                    (keydown)="onDigitKeydown($event, 1)"
+                    (paste)="$event.preventDefault()"
+                    [disabled]="isVerifying"
+                    autocomplete="off"
+                  />
+                  <input 
+                    type="text" 
+                    maxlength="1"
+                    inputmode="numeric"
+                    pattern="[0-9]"
+                    class="code-digit-input"
+                    id="digit-2"
+                    (input)="onDigitInput($event, 2)"
+                    (keydown)="onDigitKeydown($event, 2)"
+                    (paste)="$event.preventDefault()"
+                    [disabled]="isVerifying"
+                    autocomplete="off"
+                  />
+                  <input 
+                    type="text" 
+                    maxlength="1"
+                    inputmode="numeric"
+                    pattern="[0-9]"
+                    class="code-digit-input"
+                    id="digit-3"
+                    (input)="onDigitInput($event, 3)"
+                    (keydown)="onDigitKeydown($event, 3)"
+                    (paste)="$event.preventDefault()"
+                    [disabled]="isVerifying"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <!-- Resend Code -->
+                <div class="resend-section">
+                  <p class="resend-text">Didn't receive the code?</p>
+                  <button 
+                    type="button" 
+                    class="btn-resend"
+                    [disabled]="resendTimer > 0 || isLoading"
+                    (click)="resendVerificationCode()"
+                  >
+                    <i class="fas fa-redo-alt"></i>
+                    <span *ngIf="resendTimer > 0">Resend in {{ resendTimer }}s</span>
+                    <span *ngIf="resendTimer === 0">Resend Code</span>
+                  </button>
+                </div>
+
+                <!-- Back to Signup -->
+                <div class="form-footer-note mt-3">
+                  Wrong email?
+                  <a href (click)="switch('signup'); $event.preventDefault()" class="link-glow">
+                    Go back to signup
+                  </a>
                 </div>
 
               </div>
@@ -308,7 +486,7 @@
           </div>
           <!-- End Scrollable Content Area -->
 
-          <div class="card-actions">
+          <div class="card-actions" *ngIf="activeTab !== 'verification'">
             <!-- Cancel Button -->
             <button type="button" class="btn-glass btn-cancel" (click)="activeModal.dismiss('cancel')"
               [disabled]="isLoading" data-aos="fade-right" data-aos-delay="200" data-aos-duration="700"

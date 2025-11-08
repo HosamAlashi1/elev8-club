@@ -101,8 +101,8 @@ export interface ContactResponse {
 }
 
 export interface ApiResponse<T = any> {
-  success: boolean;   
-  msg?: string;
+  status: boolean;   
+  message?: string;
   data: T;
 }
 

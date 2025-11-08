@@ -1,0 +1,21 @@
+<div class="logout-modal">
+  <div class="modal-icon">
+    <div class="icon-circle">
+      <i class="bi bi-box-arrow-right"></i>
+    </div>
+  </div>
+  
+  <h3 class="modal-title">Confirm Logout</h3>
+  <p class="modal-message">Are you sure you want to logout from your account?</p>
+  
+  <div class="modal-actions">
+    <button type="button" class="btn btn-cancel" (click)="cancel()">
+      <i class="bi bi-x-circle me-2"></i>
+      Cancel
+    </button>
+    <button type="button" class="btn btn-confirm" (click)="confirm()">
+      <i class="bi bi-check-circle me-2"></i>
+      Yes, Logout
+    </button>
+  </div>
+</div>

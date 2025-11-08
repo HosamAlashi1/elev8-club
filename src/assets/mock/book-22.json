@@ -8,7 +8,7 @@
     "settings": {
       "page": {
         "width": 400,
-        "height": 550,
+        "height": 700,
         "gutter": 20,
         "padding": 30
       },
@@ -31,27 +31,19 @@
   "chapters": [
     {
       "id": 1,
-      "title": "Introduction",
-      "flowStart": 0,
-      "flowEnd": 7
+      "title": "Introduction"
     },
     {
       "id": 2,
-      "title": "The Journey Begins",
-      "flowStart": 8,
-      "flowEnd": 15
+      "title": "The Journey Begins"
     },
     {
       "id": 3,
-      "title": "The Hidden Valley",
-      "flowStart": 16,
-      "flowEnd": 24
+      "title": "The Hidden Valley"
     },
     {
       "id": 4,
-      "title": "Secrets Unveiled",
-      "flowStart": 25,
-      "flowEnd": 32
+      "title": "Secrets Unveiled"
     }
   ],
   "flow": [

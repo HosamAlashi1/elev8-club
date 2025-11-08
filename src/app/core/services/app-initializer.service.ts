@@ -26,11 +26,11 @@ export class AppInitializerService {
         catchError((error) => {
           console.error(' APP_INITIALIZER: Failed to load initial data:', error);
           this.setFallbackData();
-          return of({ success: false, data: null });
+          return of({ status: false, data: null });
         }),
         tap((response) => {
           // console.log('📦 Response from API:', response);
-          if (response?.success && response?.data) {
+          if (response?.status && response?.data) {
             this.cachedData = response.data;
             this.isDataLoaded = true;
           } else {

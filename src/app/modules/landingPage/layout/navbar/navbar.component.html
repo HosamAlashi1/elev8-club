@@ -73,8 +73,8 @@
         <div ngbDropdownMenu class="user-dropdown-menu dropdown-menu-end">
           <div class="dropdown-header d-flex align-items-center gap-2 px-3 py-2">
             <img *ngIf="user?.image" [src]="user.image" alt="avatar" class="rounded-circle" width="36" height="36">
-            <div>
-              <strong>{{ user?.first_name }} {{ user?.last_name }}</strong><br>
+            <div class="header-info">
+              <strong>{{ user?.first_name }} {{ user?.last_name }}</strong>
               <small class="text-muted">{{ user?.email }}</small>
             </div>
           </div>

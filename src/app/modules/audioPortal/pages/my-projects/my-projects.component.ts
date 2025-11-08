@@ -88,7 +88,7 @@ export class MyProjectsComponent implements OnInit {
 
     this.httpService.listGet(url, 'loadProjects').subscribe({
       next: (response: ProjectsResponse) => {
-        if (response.success && response.data) {
+        if (response.status && response.data) {
           this.projects = response.data;
           this.applyFilter();
         }

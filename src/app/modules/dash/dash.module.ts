@@ -24,6 +24,7 @@ import {
   UserCog
 } from 'lucide-angular';
 import { HeaderComponent } from './components/header/header.component';
+import { PublicSharedModule } from '../shared/public-shared.module';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { HeaderComponent } from './components/header/header.component';
     NgxPaginationModule,
     NgxSkeletonLoaderModule,
     LottieModule,
+    PublicSharedModule,
     LucideAngularModule.pick({
       Home,
       Package,

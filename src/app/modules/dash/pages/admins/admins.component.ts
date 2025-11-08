@@ -82,7 +82,7 @@ export class AdminsComponent implements OnInit {
     const url = this.buildUrl();
     this.http.listGet(url, 'admins-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.totalCount = res.data.total_count ?? 0;
           this.admins = (res.data.data || []) as AdminRow[];
         } else {
@@ -165,12 +165,12 @@ export class AdminsComponent implements OnInit {
     const url = this.api.admins.active(admin.id);
     this.http.action(url, {}, 'toggleActive').subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res.msg || 'Status updated successfully');
+        if (res?.status) {
+          this.toastr.showSuccess(res.message || 'Status updated successfully');
           // حدّث القيمة مباشرة بدون ما تعمل ريفريش كامل
           admin.is_active = !admin.is_active;
         } else {
-          this.toastr.showError(res?.msg || 'Operation failed');
+          this.toastr.showError(res?.message || 'Operation failed');
         }
       },
       error: () => {

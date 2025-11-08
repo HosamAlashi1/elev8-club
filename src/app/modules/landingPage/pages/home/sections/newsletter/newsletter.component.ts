@@ -35,9 +35,9 @@ export class NewsletterComponent {
     this.http.post(this.api.home.subscribe, { email: this.email }).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        this.isSuccess = res.success;
-        this.message = res.msg;
-        if (res.success) this.email = '';
+        this.isSuccess = res.status;
+        this.message = res.message;
+        if (res.status) this.email = '';
       },
       error: () => {
         this.isLoading = false;

@@ -135,7 +135,7 @@
           [paragraph]="paragraph" [chapterId]="chapterId" [authType]="authType"
           [isProjectGenerating]="isProjectGenerating" [isChapterGenerating]="isChapterGenerating" [reorderMode]="false"
           [id]="'paragraph-' + paragraph.id" [attr.data-paragraph-id]="paragraph.id"
-          (edited)="onParagraphEdited($event)" (deleted)="onParagraphDeleted($event)">
+           (refreshRequested)="reloadChapterParagraphs()"> 
         </app-paragraph-item>
 
         <!-- ⛳ مرساة الانفينتي سكروول -->

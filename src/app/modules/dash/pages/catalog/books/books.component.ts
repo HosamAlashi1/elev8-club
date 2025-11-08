@@ -123,7 +123,7 @@ export class BooksComponent implements OnInit {
 
     this.http.listGet(url, 'books-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.totalCount = res.data.total_count ?? 0;
           this.books = (res.data.data || []) as Book[];
         } else {

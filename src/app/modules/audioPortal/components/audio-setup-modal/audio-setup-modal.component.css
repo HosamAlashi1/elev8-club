@@ -331,8 +331,32 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* هذا يظل يمنع تسرب الهيدر */
 }
+
+.project-details-panel .panel-section:first-child {
+  flex-shrink: 0;
+}
+
+.project-details-panel {
+  overflow-y: auto; /* ✅ أضف هذا بدل ما هو على scrollable-content */
+  padding-right: 8px;
+}
+
+/* لتجميل السكروول */
+.project-details-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-details-panel::-webkit-scrollbar-thumb {
+  background: rgba(91, 189, 183, 0.4);
+  border-radius: 10px;
+}
+
+.project-details-panel::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
 
 .project-details-panel>.panel-section:first-child {
   flex-shrink: 0;
@@ -347,10 +371,9 @@
   top: 0;
   z-index: 10;
   background: transparent;
-  padding: 2px 12px 16px !important;
-  margin: 0 !important;
+  padding: 16px ;
+  /* margin: 0 !important; */
   border-radius: 12px 12px 0 0 !important;
-  box-shadow: 0 2px 8px rgba(91, 189, 183, 0.08);
 }
 
 .panel-section-content {
@@ -359,7 +382,7 @@
 
 .scrollable-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   padding-right: 8px;
   display: flex;
   flex-direction: column;
@@ -662,7 +685,6 @@
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
 }
 
 .upload-zone.disabled {
@@ -1271,7 +1293,6 @@
   .sticky-header {
     position: sticky;
     top: 0;
-    padding: 10px 12px !important;
     font-size: 14px;
     background: rgba(248, 250, 252, 0.98);
     z-index: 10;
@@ -1413,10 +1434,6 @@
     gap: 12px;
   }
 
-  .sticky-header {
-    padding: 8px 10px !important;
-  }
-
   .sticky-header h3 {
     font-size: 13px;
   }
@@ -1445,3 +1462,75 @@
     font-size: 12px;
   }
 }
+.project-details-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* يمنع السكرول عن الحاوية نفسها */
+  background: rgba(91, 189, 183, 0.02);
+  border: 1px solid rgba(91, 189, 183, 0.1);
+  border-radius: 12px;
+  padding: 0;
+}
+
+/* العنوان ثابت */
+.sticky-header {
+  border-bottom: 2px solid rgba(91, 189, 183, 0.15);
+  display: flex;
+  align-items: center;
+  /* gap: 10px; */
+}
+
+/* المحتوى الكامل للسكرول */
+.details-scroll {
+  flex: 1;
+  overflow-y: auto; /* ✅ السكرول هنا */
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+
+/* تجميل السكرول */
+.details-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.details-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.details-scroll::-webkit-scrollbar-thumb {
+  background: rgba(91, 189, 183, 0.4);
+  border-radius: 10px;
+}
+
+/* البانلات داخل التفاصيل */
+.panel-section {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(91, 189, 183, 0.1);
+}
+
+.panel-section-content {
+  padding: 0;
+}
+
+/* النموذج والعناصر */
+.form-group {
+  margin-bottom: 16px;
+}
+
+/* لضمان أن الرفع يبدو جيدًا داخل السكرول */
+.upload-zone {
+  margin-top: 8px;
+}
+
+/* نص التحذير السفلي */
+.upload-hint {
+  margin-top: 10px;
+}
+

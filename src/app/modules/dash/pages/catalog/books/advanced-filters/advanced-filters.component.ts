@@ -40,7 +40,7 @@ export class AdvancedFiltersComponent implements OnInit {
         const url = this.api.common.categories;
         this.http.listGet(url, 'common-categories').subscribe({
             next: (res: any) => {
-                if (res?.success && res?.data) {
+                if (res?.status && res?.data) {
                     this.categories = res.data || [];
                     this.categoriesOptions = this.categories.map(cat => ({
                         value: cat.id,
@@ -62,7 +62,7 @@ export class AdvancedFiltersComponent implements OnInit {
         
         this.http.listGet(url, 'common-authors').subscribe({
             next: (res: any) => {
-                if (res?.success && res?.data) {
+                if (res?.status && res?.data) {
                     this.authors = res.data || [];
                 } else {
                     this.authors = [];

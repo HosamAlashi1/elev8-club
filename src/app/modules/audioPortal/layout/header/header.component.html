@@ -13,9 +13,9 @@
     </div>
 
     <!-- 🔸 Center: Premium Pill Tabs -->
-    <nav class="tabs-container" *ngIf="user?.auth_type === 2">
+    <!-- <nav class="tabs-container" *ngIf="user?.auth_type === 2">
       <div class="tabs-wrapper">
-        <!-- فقط للمؤلف -->
+        
         <a class="tab-pill" routerLink="/audio-portal/my-projects" routerLinkActive="active">
           <div class="tab-icon">
             <i class="bi bi-mic-fill"></i>
@@ -34,10 +34,20 @@
         </a>
         
       </div>
-    </nav>
+    </nav> -->
 
     <!-- 🔸 Right: User Profile -->
     <div class="user-section">
+      <!-- 🔔 Notifications -->
+      <div class="notification-wrapper" *ngIf="isLoggedIn">
+        <button class="notification-btn" (click)="toggleNotifications($event)">
+          <i class="bi bi-bell"></i>
+          <span class="notification-badge" *ngIf="(unreadCount$ | async) as count" [class.zero]="count === 0">
+            {{ count > 99 ? '99+' : count }}
+          </span>
+        </button>
+      </div>
+
       <div class="dropdown">
         <button class="user-profile-btn" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <div class="avatar-wrapper">
@@ -92,3 +102,5 @@
   </div>
 </header>
 <!-- 🔹 End Header -->
+   <app-notifications-drawer [isOpen]="isNotificationsOpen" [context]="'user'" (close)="isNotificationsOpen = false">
+    </app-notifications-drawer>

@@ -36,10 +36,10 @@ export class AddEditCategoryComponent implements OnInit {
     if (this.isEdit) {
       this.httpService.listGet(this.api.categories.details(this.category.id), 'category-details').subscribe({
         next: (res: any) => {
-          if (res?.success && res?.data) {
+          if (res?.status && res?.data) {
             this.patchForm(res.data);
           } else {
-            this.toastr.showError(res?.msg || 'Failed to load category');
+            this.toastr.showError(res?.message || 'Failed to load category');
           }
         },
         error: () => this.toastr.showError('Failed to load category')
@@ -88,16 +88,16 @@ export class AddEditCategoryComponent implements OnInit {
 
     this.httpService.action(url, formData, 'addEditCategory').subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res?.msg || 'Category saved successfully');
+        if (res?.status) {
+          this.toastr.showSuccess(res?.message || 'Category saved successfully');
           this.activeModal.close(true);
         } else {
-          this.toastr.showError(res?.msg || 'Operation failed');
+          this.toastr.showError(res?.message || 'Operation failed');
         }
       },
       error: (error: any) => {
-        const msg = error?.error?.msg || error?.message || 'Operation failed';
-        this.toastr.showError(msg);
+        const message = error?.response?.message || error?.message || 'Operation failed';
+        this.toastr.showError(message);
       }
     });
   }

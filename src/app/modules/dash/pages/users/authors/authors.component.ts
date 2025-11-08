@@ -92,12 +92,12 @@ export class AuthorsComponent implements OnInit {
   buildUrl(): string {
     const q = encodeURIComponent(this.searchText.trim());
     let url = `${this.api.users.list}?q=${q}&auth_type=2&size=${this.size}&page=${this.page}`;
-    
+
     if (this.statusFilter) {
       const statusValue = this.statusFilter === 'active' ? "1" : "2";
       url += `&is_active=${statusValue}`;
     }
-    
+
     return url;
   }
 
@@ -108,15 +108,21 @@ export class AuthorsComponent implements OnInit {
     const url = this.buildUrl();
     this.http.listGet(url, 'users-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
-          this.originalUsers = res.data.data || [];
-          this.totalCount = res.data.total_records || 0;
+        if (res?.status && res?.data) {
+          const payload = res.data;
+
+          this.originalUsers = payload.data || [];
+
+          this.totalCount =
+            (payload.total_count ?? payload.totalRecords ?? payload.total_records) || 0;
+
           this.applyAdvancedFilters();
         } else {
           this.users = [];
           this.originalUsers = [];
           this.totalCount = 0;
         }
+
         this.isLoading$.next(false);
       },
       error: () => {
@@ -216,11 +222,11 @@ export class AuthorsComponent implements OnInit {
     const url = this.api.users.active(user.id);
     this.http.action(url, {}, 'toggleActive').subscribe({
       next: (res: any) => {
-        if (res?.success) {
+        if (res?.status) {
           user.is_active = !user.is_active;
-          this.toastr.showSuccess(res?.msg || 'Status updated successfully');
+          this.toastr.showSuccess(res?.message || 'Status updated successfully');
         } else {
-          this.toastr.showError(res?.msg || 'Failed to update status');
+          this.toastr.showError(res?.message || 'Failed to update status');
         }
       },
       error: () => {

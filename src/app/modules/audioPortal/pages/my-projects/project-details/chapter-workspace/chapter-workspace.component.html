@@ -111,6 +111,7 @@
             </div>
           </div>
 
+
           <span class="time-display">
             {{ voiceState === 'ready' && chapter.voice_url ? (formatTime(currentTime) + ' / ' + formatTime(duration)) :
             '--:-- / --:--' }}
@@ -188,7 +189,7 @@
       <!-- Left Side: Paragraphs -->
       <div class="content-main">
         <app-paragraphs-tab [chapterId]="chapterId" [authType]="authType" [isProjectGenerating]="isProjectGenerating"
-          [isChapterGenerating]="isGenerating">
+          (refreshRequested)="onParagraphsRefreshRequested()" [isChapterGenerating]="isGenerating">
         </app-paragraphs-tab>
       </div>
 

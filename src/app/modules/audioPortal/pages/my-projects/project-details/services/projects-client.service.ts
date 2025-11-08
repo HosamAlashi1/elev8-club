@@ -57,7 +57,7 @@ export class ProjectsClientService {
 
     return this.httpService.listGet(url, 'getProjectDetails').pipe(
       map((response: ProjectDetailsResponse) => {
-        if (response.success && response.data) {
+        if (response.status && response.data) {
           return response.data;
         }
         return null;
@@ -80,7 +80,7 @@ export class ProjectsClientService {
 
       const observable = this.httpService.listGet(url, 'getChapterDetails').pipe(
         map((response: ChapterDetailsResponse) => {
-          if (response.success && response.data) {
+          if (response.status && response.data) {
             return response.data;
           }
           return null;
@@ -385,7 +385,7 @@ export class ProjectsClientService {
 
     return this.httpService.list(url, request, 'generateVoice').pipe(
       map((response: GenerateVoiceResponse) => {
-        if (response.success && response.data?.process_id) {
+        if (response.status && response.data?.process_id) {
           return response.data.process_id;
         }
         throw new Error('Voice generation failed: No process ID returned');

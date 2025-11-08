@@ -117,7 +117,7 @@ export class ChaptersSidebarComponent implements OnChanges {
         if (changes['chapters'] && this.chapters && this.chapters.length > 0) {
             this.selectFirstFromResponse(); // دايمًا اختَر أول شابتر جاي من الـ API
         }
-        
+
     }
 
     /** يحدد أول شابتر حسب ترتيب الاستجابة */
@@ -128,7 +128,7 @@ export class ChaptersSidebarComponent implements OnChanges {
         const changed = this.selectedChapterId !== firstChapterId;
 
         this.selectedChapterId = firstChapterId;
-        
+
 
         if (changed) {
             this.chapterSelected.emit(firstChapterId);
@@ -193,7 +193,7 @@ export class ChaptersSidebarComponent implements OnChanges {
 
         this.httpService.action(this.apiPortal.chapters.create, body, 'addChapter').subscribe({
             next: (response: ApiResponse<ChapterRef>) => {
-                if (response.success) {
+                if (response.status) {
                     // Reset form
                     this.cancelAddChapter();
                     this.isSubmitting = false;
@@ -242,7 +242,7 @@ export class ChaptersSidebarComponent implements OnChanges {
 
         this.httpService.action(url, body, 'editChapter').subscribe({
             next: (response: ApiResponse<any>) => {
-                if (response.success) {
+                if (response.status) {
                     // 1) عدّل محليًا
                     this.chapters = this.chapters.map(c =>
                         c.id === chapterId ? { ...c, title } : c
@@ -258,6 +258,7 @@ export class ChaptersSidebarComponent implements OnChanges {
 
                     // 3) لو بدك تُبقي إخطار الأب موجودًا (اختياري)
                     this.chapterRenamed.emit({ chapterId, newTitle: title });
+
 
                     this.cancelRename();
                 }
@@ -306,7 +307,7 @@ export class ChaptersSidebarComponent implements OnChanges {
             const idToChapter = new Map(this.chapters.map(c => [c.id, c]));
             this.chapters = this.originalOrderIds.map(id => idToChapter.get(id)!).filter(Boolean);
             this.applyFilter();
-            this.chaptersReordered.emit(this.chapters);
+            // this.chaptersReordered.emit(this.chapters);
         }
         this.originalOrderIds = [];
     }
@@ -330,7 +331,9 @@ export class ChaptersSidebarComponent implements OnChanges {
                 this.isReorderMode = false;
                 this.originalOrderIds = [];
                 this.saveReorderToLocalStorage(this.chapters);
-                this.chaptersReordered.emit(this.chapters); // علّم الأب
+                this.chaptersReordered.emit(this.chapters);
+                // 🔔 اطلب ريفرش شامل
+                this.reloadRequested.emit();
             },
             error: (err) => {
                 console.error('Failed to save chapter order:', err);

@@ -1,7 +1,7 @@
 <!-- ========================================
      📖 Project Details Page
      ======================================== -->
-<div class="project-details-page" *ngIf="!(isLoadingProject$ | async) && project">
+<div class="project-details-page" *ngIf="!(isLoadingProject$ | async) && project" [class.project-has-voice]="hasProjectVoice">
 
   <!-- ========================================
        🔹 Header
@@ -17,13 +17,14 @@
       </div>
     </div>
 
-    <div *ngIf="isProcessing && project.process?.progress_percent !== 100 && userAuthType === AuthType.Editor" class="voice-progress-bar">
+    <div *ngIf="isProcessing && project.process?.progress_percent !== 100 && userAuthType === AuthType.Editor"
+      class="voice-progress-bar">
       <div class="progress-info">
-        <span>{{ project.process?.progress_percent | number:'1.0-0' }}%</span>
+        <span>{{ project.process?.progress_percent ?? 0 | number:'1.0-0' }}%</span>
         <span class="dot">•</span>
-        <span>{{ project.process?.generated_time_minutes | number:'1.1-1' }} m elapsed</span>
+        <span>{{ (project.process?.generated_time_minutes ?? 0) | durationFormat:'minutes' }} elapsed</span>
         <span class="dot">•</span>
-        <span>~{{ project.process?.estimated_remaining_minutes | number:'1.1-1' }} m left</span>
+        <span>~{{ project.process?.estimated_remaining_minutes | countdown:'minutes' | async }} left</span>
       </div>
 
       <div class="progress-track">
@@ -91,7 +92,7 @@
       </div>
 
       <!-- ▾ Export Project Voice (dropdown) -->
-      <div ngbDropdown class="btn-export-wrapper" >
+      <div ngbDropdown class="btn-export-wrapper">
         <!-- نلفّ الزر بعنصر عليه الـ tooltip عشان يشتغل حتى لو الزر disabled -->
         <span [ngbTooltip]="getExportTooltip(isLoadingProject$ | async)" container="body" placement="left"
           class="tooltip-wrapper">
@@ -219,16 +220,15 @@
       <app-chapters-sidebar [projectId]="projectId" [chapters]="chapters"
         [selectedChapterId]="selectedChapterId$ | async" [isInitialLoading]="!!(isLoadingProject$ | async)"
         (chapterSelected)="selectChapter($event)" (reloadRequested)="onReloadRequested()"
-        (chapterRenamed)="onChapterRenamed($event)"
-        (chaptersReordered)="onChaptersReordered($event)"></app-chapters-sidebar>
+        (chapterRenamed)="onChapterRenamed($event)" (chaptersReordered)="onChaptersReordered($event)"></app-chapters-sidebar>
     </aside>
 
     <!-- Right: Chapter Workspace -->
     <main class="workspace-container">
       <app-chapter-workspace *ngIf="selectedChapterId$ | async as chapterId" [chapterId]="chapterId"
         [projectId]="projectId" [authType]="userAuthType" [isProjectGenerating]="isGenerating"
-        (chapterRenamed)="onChapterRenamed($event)"
-        (chapterDeleted)="onChapterDeletedFromWorkspace($event)"></app-chapter-workspace>
+        (chapterRenamed)="onChapterRenamed($event)" (chapterDeleted)="onChapterDeletedFromWorkspace($event)"
+        (refreshAllRequested)="refreshAllIfProjectReady({ preserveQuery: true })"></app-chapter-workspace>
 
       <!-- Empty State: No Chapter Selected -->
       <div class="workspace-empty" *ngIf="!(selectedChapterId$ | async) && !(isLoadingChapters$ | async)">

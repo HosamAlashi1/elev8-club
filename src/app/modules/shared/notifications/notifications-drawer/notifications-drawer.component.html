@@ -1,0 +1,88 @@
+<div class="notifications-root" *ngIf="isOpen || isAnimatingOut">
+
+  <!-- Overlay -->
+  <div class="notifications-overlay" [class.visible]="panelOpen && !isAnimatingOut" (click)="closeDrawer()">
+  </div>
+
+  <!-- Panel -->
+  <div class="notifications-panel" [class.open]="panelOpen && !isAnimatingOut" [class.closing]="isAnimatingOut"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="panel-header">
+      <h3>Notifications</h3>
+
+      <div class="panel-actions">
+        <button class="btn-pill btn-read-all" (click)="markAllAsRead()">
+          <i class="bi bi-check2-circle"></i>
+          Read All
+        </button>
+
+        <button class="btn-pill btn-hide-all" (click)="hideAll()">
+          <i class="bi bi-x-circle"></i>
+          Hide All
+        </button>
+      </div>
+
+      <button class="close-btn" (click)="closeDrawer()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="panel-body" #panelBody (scroll)="onScroll($event)">
+
+      <!-- Skeleton Loader -->
+      <div class="timeline-skeleton" *ngIf="isInitialLoading">
+        <div class="skeleton-item" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">
+          <div class="skeleton-icon"></div>
+          <div class="skeleton-timeline-line"></div>
+          <div class="skeleton-content">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+            <div class="skeleton-meta"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div class="empty-state" *ngIf="!isInitialLoading && notifications.length === 0">
+        <i class="bi bi-bell-slash"></i>
+        <p>No notifications yet.</p>
+      </div>
+
+      <!-- List -->
+      <div class="timeline" *ngIf="notifications.length" [class.read-all-pulse]="readAllPulse"
+        [class.hiding-all]="isHidingAll">
+        <div class="timeline-item" *ngFor="let n of notifications" [class.unread]="!n.is_read"
+          [class.removing]="removingIds.has(n.id)" data-aos="fade-up" data-aos-duration="450"
+          (click)="openNotification(n)">
+          <!-- Icon + Hover Trash -->
+          <div class="timeline-icon">
+            <i class="bi icon-main" [ngClass]="n.is_read ? 'bi-bell' : 'bi-bell-fill'">
+            </i>
+
+            <button type="button" class="icon-trash-btn" (click)="hide(n, $event)" title="Hide notification">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+
+          <div class="timeline-line"></div>
+
+          <div class="timeline-content">
+            <div class="title-row">
+              <div class="title">{{ n.title }}</div>
+              <div class="time">{{ n.insert_date | utcToLocal | timeAgo }}</div>
+            </div>
+            <div class="message">{{ n.message | maxLength: 100 }}</div>
+          </div>
+        </div>
+
+        <div class="load-more-spinner" *ngIf="isLoadingMore">
+          <div class="spinner-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

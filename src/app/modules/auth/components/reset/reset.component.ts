@@ -34,19 +34,19 @@ export class ResetComponent {
     return this.resetForm.controls;
   }
 
-  showMsg(success: boolean, msg: string) {
-    this.message = msg;
+  showmessage(success: boolean, message: string) {
+    this.message = message;
     this.messageType = success ? 'success' : 'danger';
     this.changeDetectorRef.detectChanges();
   }
 
   submit() {
-    // this.showMsg(false);
+    // this.showmessage(false);
     // this.authService
     //   .reset(this.id, this.f.password.value)
     //   .subscribe({
-    //     next: (res: any) => this.showMsg(res.success, res.msg),
-    //     error: (err: any) => this.showMsg(false, err.error.error_text)
+    //     next: (res: any) => this.showmessage(res.status, res.message),
+    //     error: (err: any) => this.showmessage(false, err.error.error_text)
     //   });
   }
 }

@@ -27,8 +27,8 @@ export class DeleteComponent {
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
-  showMsg(success: boolean, msg: string) {
-    this.alertMessage = msg;
+  showmessage(success: boolean, message: string) {
+    this.alertMessage = message;
     this.messageType = success ? 'success' : 'danger';
     this.changeDetectorRef.detectChanges();
   }
@@ -70,14 +70,14 @@ export class DeleteComponent {
         url = this.apiPortal.notes.delete(this.id);
         break;
       default:
-        this.showMsg(false, 'Invalid delete type');
+        this.showmessage(false, 'Invalid delete type');
         return;
     }
 
     this.httpService.action(url, data, 'deleteAction').subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.alertMessage = res.msg;
+        if (res?.status) {
+          this.alertMessage = res.message;
           this.messageType = 'success';
           this.changeDetectorRef.detectChanges();
 
@@ -85,10 +85,10 @@ export class DeleteComponent {
             this.activeModal.close('deleted');
           }, 500);
         } else {
-          this.showMsg(false, res?.msg || 'Operation failed');
+          this.showmessage(false, res?.message || 'Operation failed');
         }
       },
-      error: () => this.showMsg(false, 'Error occurred. Please try again.')
+      error: () => this.showmessage(false, 'Error occurred. Please try again.')
     });
   }
 }

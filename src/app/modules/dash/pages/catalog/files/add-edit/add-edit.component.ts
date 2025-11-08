@@ -215,16 +215,16 @@ export class AddEditFileComponent implements OnInit {
 
     this.httpService.action(url, fd, loaderKey).subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res.msg || 'File saved successfully');
+        if (res?.status) {
+          this.toastr.showSuccess(res.message || 'File saved successfully');
           this.activeModal.close(true);
         } else {
-          this.toastr.showError(res.msg || 'Operation failed');
+          this.toastr.showError(res.message || 'Operation failed');
         }
       },
       error: (err) => {
-        const msg = err?.error?.msg || err?.message || 'Operation failed';
-        this.toastr.showError(msg);
+        const message = err?.response?.message || err?.message || 'Operation failed';
+        this.toastr.showError(message);
       }
     });
   }
@@ -236,7 +236,7 @@ export class AddEditFileComponent implements OnInit {
     
     this.httpService.listGet(url, 'common-books').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.booksOptions = (res.data || []).map((book: any) => ({
             id: book.id,
             title: book.title,
@@ -273,7 +273,7 @@ export class AddEditFileComponent implements OnInit {
     
     this.httpService.listGet(url, 'common-books-edit').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           const books = (res.data || []).map((book: any) => ({
             id: book.id,
             title: book.title,

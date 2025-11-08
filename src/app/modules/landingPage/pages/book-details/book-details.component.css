@@ -314,12 +314,12 @@
 }
 
 /* أنيميشن النجاح */
-.btn-add-to-cart.success {
+.btn-add-to-cart.status {
   background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
-.btn-add-to-cart.success .icon {
+.btn-add-to-cart.status .icon {
   animation: successBounce 0.6s ease;
 }
 

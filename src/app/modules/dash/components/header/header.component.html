@@ -7,40 +7,74 @@
     </div>
 
     <!-- Right Section -->
-    <div class="d-flex align-items-center gap-3">
-        <!-- Notification -->
-        <div class="icon-btn position-relative">
-            <i class="fe fe-bell"></i>
-            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 rounded-circle"></span>
-        </div>
+    <div class="user-section">
+      <!-- 🔔 Notifications -->
+      <div class="notification-wrapper">
+        <button class="notification-btn" (click)="toggleNotifications($event)">
+          <i class="bi bi-bell"></i>
+          <span class="notification-badge" *ngIf="(unreadCount$ | async) as count" [class.zero]="count === 0">
+            {{ count > 99 ? '99+' : count }}
+          </span>
+        </button>
+      </div>
 
-        <!-- User Dropdown -->
-        <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle" href="#" id="userMenu"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                <img [src]="user?.image || 'assets/img/blank.png'" alt="User" class="rounded-circle me-3" width="32" height="32">
-                <span class="fw-medium">{{ user?.first_name }} {{ user?.last_name }}</span>
+      <!-- User Profile Dropdown -->
+      <div class="dropdown">
+        <button class="user-profile-btn" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="avatar-wrapper">
+            <img [src]="user?.image || 'assets/img/blank.png'" alt="User Avatar" class="user-avatar" />
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ user?.first_name }} {{ user?.last_name }}</span>
+            <span class="user-role">Admin</span>
+          </div>
+          <i class="bi bi-chevron-down dropdown-arrow"></i>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="userDropdown">
+          <li class="dropdown-header">
+            <div class="header-avatar">
+              <img [src]="user?.image || 'assets/img/blank.png'" alt="Avatar" />
+            </div>
+            <div class="header-info">
+              <strong>{{ user?.first_name }} {{ user?.last_name }}</strong>
+              <small>{{ user?.email }}</small>
+            </div>
+          </li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/dash/profile">
+              <i class="bi bi-person"></i>
+              <span>My Profile</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                <li>
-                  <a class="dropdown-item">
-                    <i class="fe fe-user me-2 fs-3"></i> Profile
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item">
-                    <i class="fe fe-settings me-2 text-secondary"></i> Settings
-                  </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <!-- 🔹 زر تسجيل الخروج -->
-                <li>
-                  <a class="dropdown-item text-danger" (click)="logout()">
-                    <i class="fe fe-log-out me-2"></i> Logout
-                  </a>
-                </li>
-            </ul>
-        </div>
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/dash/settings">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li>
+            <a class="dropdown-item logout-item" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 </header>
 <!-- 🔹 End Header -->
+
+<!-- Notifications Drawer -->
+<app-notifications-drawer 
+  [isOpen]="isNotificationsOpen" 
+  [context]="'admin'" 
+  (close)="isNotificationsOpen = false">
+</app-notifications-drawer>

@@ -1,6 +1,6 @@
 ﻿import { ToastrsService } from './../../../services/toater.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
@@ -83,7 +83,8 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
   // ========================================
   private initForm(): void {
     this.projectForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]]
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      isbn: ['', [Validators.required, this.isbnValidator()]]
     });
   }
 
@@ -122,8 +123,91 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
   }
 
   // ========== Voice Selection ==========
+  // كان عندك شرط يمنع اختيار الصوت في MANUAL عبر الواجهة؛ بنخليه دومًا ممكن
   selectVoice(voice: Voice): void {
     this.selectedVoice = voice;
+  }
+
+  // زر الإنشاء: عدّل منطق التحقّق
+  isSubmitDisabled(): boolean {
+    if (this.projectForm.invalid) return true;
+
+    // الصوت مطلوب في الطريقتين
+    if (!this.selectedVoice) return true;
+
+    // الملف مطلوب فقط في AI
+    if (this.method === 'AI' && !this.selectedFile) return true;
+
+    if (this.isLoading) return true;
+
+    return false;
+  }
+
+  createAudioProject(): void {
+    this.formSubmitted = true;
+
+    if (this.isSubmitDisabled()) {
+      if (this.projectForm.invalid) {
+        this.toastr.showWarning('Please enter a valid project name');
+      } else if (!this.selectedVoice) {
+        this.toastr.showWarning('Please select a voice for your audiobook');
+      } else if (this.method === 'AI' && !this.selectedFile) {
+        this.toastr.showWarning('Please upload your formatted book file');
+      }
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const url = this.apiService.projects.create;
+    const name = this.projectForm.value.name.trim();
+    const isbn = this.normalizeIsbn(this.projectForm.value.isbn);
+    const type = this.method === 'AI' ? 1 : 2; // كما هو
+    const creationMethod = this.method;        // 'AI' | 'MANUAL'
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('type', String(type));
+    formData.append('creation_method', creationMethod);
+
+    // أرسل الـ ISBN لو موجود
+    if (isbn) {
+      formData.append('isbn', isbn);
+    }
+
+    // الصوت مطلوب في الطريقتين
+    if (this.selectedVoice) {
+      formData.append('voice_key', String(this.selectedVoice.key));
+    }
+
+    // الملف فقط في AI
+    if (this.method === 'AI' && this.selectedFile) {
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+    }
+
+    console.log('📤 Creating project with:', {
+      name, isbn, type, creationMethod, voice_key: this.selectedVoice?.key, file: this.selectedFile?.name
+    });
+
+    this.http.post<any>(url, formData, { withCredentials: true }).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        if (response?.status) {
+          this.toastr.showSuccess('Your audio project has been created successfully!');
+          this.activeModal.close(true);
+        } else {
+          this.errorMessage = response?.message || 'Failed to create audio project';
+          this.toastr.showError(this.errorMessage);
+        }
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        console.error('Error creating audio project:', error);
+        this.errorMessage = error?.response?.message || 'An error occurred while creating the project';
+        this.toastr.showError(this.errorMessage);
+      }
+    });
   }
 
   isVoiceSelected(voice: Voice): boolean {
@@ -300,93 +384,59 @@ export class AudioSetupModalComponent implements OnInit, OnDestroy {
     return this.formSubmitted && !!field?.invalid;
   }
 
-  // ========================================
-  // 🔸 Check if Submit Should Be Disabled
-  // ========================================
-  isSubmitDisabled(): boolean {
-    // Form must be valid
-    if (this.projectForm.invalid) return true;
-
-    // If method is AI, voice and file are required
-    if (this.method === 'AI' && (!this.selectedVoice || !this.selectedFile)) {
-      return true;
+isbnValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const raw = (control.value ?? '').toString().trim();
+    if (raw === '') {
+      return { required: true };
     }
 
-    // Cannot submit while already submitting
-    if (this.isLoading) return true;
-
-    return false;
-  }
-
-  // ========== Create Project ==========
-  createAudioProject(): void {
-    this.formSubmitted = true;
-
-    if (this.isSubmitDisabled()) {
-      // Show appropriate warning
-      if (this.projectForm.invalid) {
-        this.toastr.showWarning('Please enter a valid project name');
-      } else if (this.method === 'AI' && !this.selectedVoice) {
-        this.toastr.showWarning('Please select a voice for your audiobook');
-      } else if (this.method === 'AI' && !this.selectedFile) {
-        this.toastr.showWarning('Please upload your formatted book file');
-      }
-      return;
+    const cleaned = raw.replace(/[\s-]/g, '').toUpperCase();
+    if (!(/^\d{9}[\dX]$/.test(cleaned) || /^\d{13}$/.test(cleaned))) {
+      return { isbnFormat: true };
     }
 
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    // إعداد البيانات للإرسال: سنستخدم FormData لدعم رفع الملف مع الحقول الأخرى
-    const url = this.apiService.projects.create;
-    const name = this.projectForm.value.name.trim();
-    const type = this.method === 'AI' ? 1 : 2; // 1=AI, 2=Manual (قابلة للتعديل حسب الـ API)
-    const creationMethod = this.method; // 'AI' | 'MANUAL'
-
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('type', String(type));
-    formData.append('creation_method', creationMethod);
-
-    if (this.method === 'AI') {
-      if (this.selectedVoice) {
-        formData.append('voice_key', String(this.selectedVoice.key));
+    if (cleaned.length === 10) {
+      let sum = 0;
+      for (let i = 0; i < 9; i++) {
+        const digit = Number(cleaned[i]);
+        if (isNaN(digit)) return { isbnFormat: true };
+        sum += (10 - i) * digit;
       }
-      if (this.selectedFile) {
-        formData.append('file', this.selectedFile, this.selectedFile.name);
+      const last = cleaned[9];
+      const check = (last === 'X') ? 10 : Number(last);
+      if (isNaN(check)) return { isbnFormat: true };
+      sum += check;
+      if (sum % 11 !== 0) {
+        return { isbnChecksum: true };
       }
+      return null;
     }
 
-    console.log('📤 Creating project with:', { name, type, creationMethod, voice_key: this.selectedVoice?.key, file: this.selectedFile?.name });
-
-    this.http.post<any>(url, formData, {
-      withCredentials: true
-    }).subscribe({
-      next: (response: any) => {
-        this.isLoading = false;
-
-        if (response?.success) {
-          // const projectId = response.data.id;
-
-          this.toastr.showSuccess('Your audio project has been created successfully!');
-
-          // إغلاق المودال مع إرجاع نجاح
-          this.activeModal.close(true);
-
-          // التوجيه إلى صفحة المشروع
-          // this.router.navigate(['/audio-portal/my-projects', projectId]);
-        } else {
-          this.errorMessage = response?.msg || 'Failed to create audio project';
-          this.toastr.showError(this.errorMessage);
-        }
-      },
-      error: (error: any) => {
-        this.isLoading = false;
-        console.error('Error creating audio project:', error);
-        this.errorMessage = error?.error?.msg || 'An error occurred while creating the project';
-        this.toastr.showError(this.errorMessage);
+    if (cleaned.length === 13) {
+      let sum = 0;
+      for (let i = 0; i < 12; i++) {
+        const digit = Number(cleaned[i]);
+        if (isNaN(digit)) return { isbnFormat: true };
+        sum += (i % 2 === 0) ? digit : digit * 3;
       }
-    });
+      const expected = (10 - (sum % 10)) % 10;
+      const lastDigit = Number(cleaned[12]);
+      if (isNaN(lastDigit)) return { isbnFormat: true };
+      if (expected !== lastDigit) {
+        return { isbnChecksum: true };
+      }
+      return null;
+    }
+
+    // ما نصل هنا عادة
+    return { isbnFormat: true };
+  };
+}
+
+
+  normalizeIsbn(value: string | null | undefined): string {
+    return (value ?? '').replace(/[\s-]/g, '').toUpperCase();
   }
 
   // ========================================

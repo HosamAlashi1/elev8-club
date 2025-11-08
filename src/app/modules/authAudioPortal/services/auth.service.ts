@@ -31,7 +31,7 @@ export class AuthService {
     return this.http.post<any>(`${API_BASE_URL}/Auth/login`, { email, password, auth_type, fcm_token, device_id }).pipe(
       tap({
         next: (res: any) => {
-          if (res?.success === true && res?.data?.access_token) {
+          if (res?.status === true && res?.data?.access_token) {
             // نجهز البايانات
             const payload = {
               user: res.data.data,

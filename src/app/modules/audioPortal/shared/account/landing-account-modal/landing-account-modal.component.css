@@ -1432,7 +1432,7 @@
 /* ============================================
    SUCCESS OVERLAY (After Signup)
    ============================================ */
-.success-overlay {
+.status-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -1448,7 +1448,7 @@
     animation: fadeIn 0.4s ease-out;
 }
 
-.success-card {
+.status-card {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
     border-radius: 24px;
     padding: 48px 40px;
@@ -1462,7 +1462,7 @@
     overflow: hidden;
 }
 
-.success-card::before {
+.status-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1473,7 +1473,7 @@
 }
 
 /* Email Animation */
-.success-icon-container {
+.status-icon-container {
     margin-bottom: 28px;
     position: relative;
 }
@@ -1519,7 +1519,7 @@
 }
 
 /* Success Title & Message */
-.success-title {
+.status-title {
     font-size: 28px;
     font-weight: 700;
     color: #0f172a;
@@ -1527,14 +1527,14 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.success-message {
+.status-message {
     font-size: 16px;
     color: #475569;
     margin: 0 0 28px;
     line-height: 1.6;
 }
 
-.success-message strong {
+.status-message strong {
     color: #5BBDB7;
     font-weight: 600;
 }
@@ -1590,7 +1590,7 @@
 }
 
 /* Instructions */
-.success-instructions {
+.status-instructions {
     margin-bottom: 32px;
     display: flex;
     flex-direction: column;
@@ -1659,7 +1659,7 @@
 }
 
 /* Footnote */
-.success-footnote {
+.status-footnote {
     font-size: 12px;
     color: #94a3b8;
     margin: 0;
@@ -1721,15 +1721,15 @@
 
 /* Responsive */
 @media (max-width: 640px) {
-    .success-overlay {
+    .status-overlay {
         padding: 20px;
     }
     
-    .success-card {
+    .status-card {
         padding: 36px 28px;
     }
     
-    .success-title {
+    .status-title {
         font-size: 24px;
     }
     

@@ -77,7 +77,7 @@ export class RolesPermissionsComponent implements OnInit {
     const url = this.buildUrl();
     this.http.listGet(url, 'roles-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.roles = res.data.data || [];
           this.totalCount = res.data.total_count || 0;
         } else {
@@ -137,7 +137,7 @@ export class RolesPermissionsComponent implements OnInit {
   loadPermissions() {
     this.http.listGet(this.api.common.permissions, 'permissions-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           console.log('permissions', res.data);
         }
       }

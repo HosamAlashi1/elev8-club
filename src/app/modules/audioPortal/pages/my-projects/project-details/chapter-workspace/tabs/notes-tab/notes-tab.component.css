@@ -19,7 +19,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 1.5rem;
-  padding-bottom: 6rem; /* ترك مساحة كافية للـ composer */
+  padding-bottom: 6rem;
+  /* ترك مساحة كافية للـ composer */
   background: #f8f9fa;
   scroll-behavior: smooth;
   min-height: 0;
@@ -65,8 +66,13 @@
 }
 
 @keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Empty State */
@@ -120,7 +126,7 @@
   padding: 1rem 1.25rem;
   background: #fff;
   border-top: 1px solid #e9ecef;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
   z-index: 10;
 }
 
@@ -192,12 +198,12 @@
   .messages-area {
     padding: 1rem;
   }
-  
+
   .composer-section {
     padding: 0.75rem;
     gap: 0.5rem;
   }
-  
+
   .btn-send {
     width: 40px;
     height: 40px;
@@ -208,16 +214,20 @@
    📌 Notes Chat Styles - Fixed Height + Grid
    ======================================== */
 
-/* الحاوية: ارتفاع ثابت عبر متغير CSS + Grid بصفين */
 .notes-chat-container {
-  height: calc(100vh - 365px);   /* 439*/
-  /* max-height: calc(100vh - 439px);    غيّر الرقم براحتك أو من التمبلِيت */
+  height: calc(100vh - 365px);
   display: grid;
-  grid-template-rows: 1fr auto; /* الرسائل فوق (تتمدد) + الكومبوزر تحت (ثابت) */
+  grid-template-rows: 1fr auto;
+  /* الرسائل فوق (تتمدد) + الكومبوزر تحت */
   background: #fff;
-  border: 1px solid #e9ecef;        /* اختياري تجميلي */
-  border-radius: 12px;               /* اختياري تجميلي */
-  overflow: hidden;                  /* يمنع أي تدفّق بصري خارج الإطار */
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 🟢 لما المشروع عنده صوت */
+:host-context(.project-has-voice) .notes-chat-container {
+  height: calc(100vh - 420px);
 }
 
 /* منطقة الرسائل: هي اللي بتسكرول */
@@ -227,14 +237,27 @@
   padding: 1.5rem;
   background: #f8f9fa;
   scroll-behavior: smooth;
-  min-height: 0;  /* مهم جدًا داخل Grid لتفعيل الـscroll */
+  min-height: 0;
+  /* مهم جدًا داخل Grid لتفعيل الـscroll */
 }
 
 /* سكربار لطيف */
-.messages-area::-webkit-scrollbar { width: 6px; }
-.messages-area::-webkit-scrollbar-track { background: transparent; }
-.messages-area::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
-.messages-area::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+.messages-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-area::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.messages-area::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
 
 /* الحالة الفارغة واللودينغ زي ما عندك (تبقى كما هي) */
 
@@ -253,8 +276,9 @@
   padding: 1rem 1.25rem;
   background: #fff;
   border-top: 1px solid #e9ecef;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
-  z-index: 1; /* فوق محتوى الرسائل لو فيه ظلال */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 1;
+  /* فوق محتوى الرسائل لو فيه ظلال */
 }
 
 /* مدخل النص وزر الإرسال كما لديك */
@@ -276,21 +300,48 @@
 }
 
 .btn-send {
-  width: 44px; height: 44px;
-  display: flex; align-items: center; justify-content: center;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, #5BBDB7 0%, #4aa9a3 100%);
-  border: none; border-radius: 50%;
-  color: #fff; font-size: 1.1rem; cursor: pointer; transition: all 0.2s;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
   flex-shrink: 0;
 }
-.btn-send:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 12px rgba(91,189,183,0.4); }
-.btn-send:active:not(:disabled) { transform: scale(0.95); }
-.btn-send:disabled { opacity: .6; cursor: not-allowed; }
+
+.btn-send:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(91, 189, 183, 0.4);
+}
+
+.btn-send:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-send:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
 
 /* Responsive tweaks */
 @media (max-width: 576px) {
-  .messages-area { padding: 1rem; }
-  .composer-section { padding: 0.75rem; gap: 0.5rem; }
-  .btn-send { width: 40px; height: 40px; }
-}
+  .messages-area {
+    padding: 1rem;
+  }
 
+  .composer-section {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .btn-send {
+    width: 40px;
+    height: 40px;
+  }
+}

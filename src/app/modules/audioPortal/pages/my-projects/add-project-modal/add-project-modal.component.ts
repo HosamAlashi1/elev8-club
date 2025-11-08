@@ -11,14 +11,14 @@ import { ProjectCreationMethod, AddProjectResponse } from '../models/project.mod
   styleUrls: ['./add-project-modal.component.css']
 })
 export class AddProjectModalComponent implements OnInit {
-  
+
   // ========================================
   // 🔹 Form State
   // ========================================
   projectForm!: FormGroup;
   method: ProjectCreationMethod = 'AI';
   selectedFile?: File;
-  
+
   // ========================================
   // 🔹 UI State
   // ========================================
@@ -26,7 +26,7 @@ export class AddProjectModalComponent implements OnInit {
   isDragging = false;
   errorMessage = '';
   formSubmitted = false; // 🆕 Track if form was submitted
-  
+
   // ========================================
   // 🔹 File Upload Config
   // ========================================
@@ -38,7 +38,7 @@ export class AddProjectModalComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private apiPortal: ApiPortalService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -49,7 +49,9 @@ export class AddProjectModalComponent implements OnInit {
   // ========================================
   private initForm(): void {
     this.projectForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]]
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      isbn: ['', [Validators.required, Validators.pattern(/^[0-9\-]{10,20}$/)]],
+      voice_key: ['', Validators.required]
     });
   }
 
@@ -114,7 +116,7 @@ export class AddProjectModalComponent implements OnInit {
     // Validate file type
     const extension = '.' + file.name.split('.').pop()?.toLowerCase();
     const allowedExtensions = this.acceptedFormats.split(',');
-    
+
     if (!allowedExtensions.includes(extension)) {
       this.errorMessage = `Invalid file type. Allowed: ${this.acceptedFormats}`;
       return;
@@ -145,7 +147,7 @@ export class AddProjectModalComponent implements OnInit {
   // ========================================
   getFileIcon(): string {
     if (!this.selectedFile) return 'bi-file-earmark';
-    
+
     const ext = this.selectedFile.name.split('.').pop()?.toLowerCase();
     switch (ext) {
       case 'pdf': return 'bi-file-earmark-pdf';
@@ -169,13 +171,13 @@ export class AddProjectModalComponent implements OnInit {
   isSubmitDisabled(): boolean {
     // Form must be valid
     if (this.projectForm.invalid) return true;
-    
+
     // If method is AI, file is required
     if (this.method === 'AI' && !this.selectedFile) return true;
-    
+
     // Cannot submit while already submitting
     if (this.isSubmitting) return true;
-    
+
     return false;
   }
 
@@ -184,7 +186,7 @@ export class AddProjectModalComponent implements OnInit {
   // ========================================
   onSubmit(): void {
     this.formSubmitted = true; // 🆕 Mark form as submitted
-    
+
     if (this.isSubmitDisabled()) return;
 
     this.isSubmitting = true;
@@ -201,22 +203,22 @@ export class AddProjectModalComponent implements OnInit {
 
     // Send POST request
     const url = this.apiPortal.projects.create;
-    
-    this.http.post<AddProjectResponse>(url, formData, { 
-      withCredentials: true 
+
+    this.http.post<AddProjectResponse>(url, formData, {
+      withCredentials: true
     }).subscribe({
       next: (response) => {
-        if (response.success) {
+        if (response.status) {
           // Close modal with success flag
           this.activeModal.close(true);
         } else {
-          this.errorMessage = response.msg || 'Failed to create project';
+          this.errorMessage = response.message || 'Failed to create project';
           this.isSubmitting = false;
         }
       },
       error: (error) => {
         console.error('Failed to create project:', error);
-        this.errorMessage = error.error?.msg || 'An error occurred. Please try again.';
+        this.errorMessage = error.response?.message || 'An error occurred. Please try again.';
         this.isSubmitting = false;
       }
     });

@@ -72,8 +72,9 @@ export interface NoteItem {
  * Generic API Response
  */
 export interface ApiResponse<T> {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: T;
 }
 

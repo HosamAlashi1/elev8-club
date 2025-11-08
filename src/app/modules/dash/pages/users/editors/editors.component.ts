@@ -107,7 +107,7 @@ export class EditorsComponent implements OnInit {
     const url = this.buildUrl();
     this.http.listGet(url, 'users-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.originalUsers = res.data.data || [];
           this.totalCount = res.data.total_count || 0;
           this.applyAdvancedFilters();
@@ -215,11 +215,11 @@ export class EditorsComponent implements OnInit {
     const url = this.api.users.active(user.id);
     this.http.action(url, {}, 'toggleActive').subscribe({
       next: (res: any) => {
-        if (res?.success) {
+        if (res?.status) {
           user.is_active = !user.is_active;
-          this.toastr.showSuccess(res?.msg || 'Status updated successfully');
+          this.toastr.showSuccess(res?.message || 'Status updated successfully');
         } else {
-          this.toastr.showError(res?.msg || 'Failed to update status');
+          this.toastr.showError(res?.message || 'Failed to update status');
         }
       },
       error: () => {

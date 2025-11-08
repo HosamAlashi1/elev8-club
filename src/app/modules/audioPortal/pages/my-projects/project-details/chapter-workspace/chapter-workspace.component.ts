@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { finalize, takeUntil, tap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectsClientService } from '../services/projects-client.service';
 import { VoiceService } from '../services/voice.service';
@@ -12,6 +12,7 @@ import { ToastrsService } from 'src/app/modules/services/toater.service';
 import { AuthType } from 'src/app/core/enums/auth-type.enum';
 import { VoiceSelectionModalComponent } from '../../../../components/voice-selection-modal/voice-selection-modal.component';
 import { AudioCoordinatorService } from 'src/app/modules/services/audio-coordinator.service';
+import { ParagraphsTabComponent } from './tabs/paragraphs-tab/paragraphs-tab.component';
 
 
 @Component({
@@ -22,6 +23,7 @@ import { AudioCoordinatorService } from 'src/app/modules/services/audio-coordina
 })
 export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('chapterAudio', { static: false }) chapterAudioRef?: ElementRef<HTMLAudioElement>;
+  @ViewChild(ParagraphsTabComponent) paragraphsTab?: ParagraphsTabComponent;
 
   @Input() chapterId!: number;
   @Input() projectId!: number;
@@ -31,6 +33,7 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
   @Output() chapterRenamed = new EventEmitter<{ chapterId: number; newTitle: string }>();
   @Output() chapterDeleted = new EventEmitter<number>();
   @Output() showToast = new EventEmitter<{ message: string; type: 'success' | 'error' }>();
+  @Output() refreshAllRequested = new EventEmitter<{ preserveQuery?: boolean }>();
 
   private isSeeking = false;
 
@@ -134,14 +137,13 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
           this.voiceState = getVoiceUIState(this.chapter);
 
           if (this.chapter?.process?.status === VoiceStatus.Failed) {
-            const msg = this.chapter.process?.error_message || 'Generation failed';
-            this.handleProcessFailure(msg); // هذي رح ترجع الحالة لـ 'idle' وتخزن الرسالة
+            const message = this.chapter.process?.error_message || 'Generation failed';
+            this.handleProcessFailure(message); // هذي رح ترجع الحالة لـ 'idle' وتخزن الرسالة
           }
 
           // Auto-resume polling if voice is being generated
           if (this.chapter?.process) {
-            if (this.chapter.process.status === VoiceStatus.Pending ||
-              this.chapter.process.status === VoiceStatus.Processing) {
+            if (this.chapter.process.status === VoiceStatus.Processing) {
               this.resumeVoiceTracking(this.chapter.process.id);
             }
           }
@@ -488,8 +490,7 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
 
         // تحديث الحالة الطبيعية لباقي الحالات
         this.voiceState = getVoiceUIState(this.chapter);
-        this.isGenerating = process.status === VoiceStatus.Pending ||
-          process.status === VoiceStatus.Processing;
+        this.isGenerating = process.status === VoiceStatus.Processing;
 
         this.cdr.markForCheck();
       }),
@@ -501,14 +502,12 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
       next: (finalProcess) => {
         if (finalProcess.status === VoiceStatus.Completed) {
           this.toastService.showSuccess('Chapter voice generated successfully! 🎉');
-          this.showToast.emit({ message: 'Voice generated successfully!', type: 'success' });
 
           //  Reload chapter details to refresh paragraphs with their voice URLs
           this.loadChapterDetails();
         } else if (finalProcess.status === VoiceStatus.Failed) {
           // 👇 نظّف ورجّع الزر لوضع Regenerate بدل إظهار failed UI
           this.toastService.showError('Chapter voice generation failed');
-          this.showToast.emit({ message: 'Voice generation failed', type: 'error' });
           this.handleProcessFailure(finalProcess?.error_message || 'Generation failed');
         }
       },
@@ -561,6 +560,65 @@ export class ChapterWorkspaceComponent implements OnInit, OnChanges, OnDestroy {
       return 'Previous attempt failed — click to regenerate';
     }
     return 'Generate chapter voice';
+  }
+
+  refreshChapterThenParagraphs(opts?: { preserveQuery?: boolean }): void {
+    const preserveQuery = opts?.preserveQuery ?? true;
+
+    this.isLoadingChapter = true;
+    this.cdr.markForCheck();
+
+    this.projectsClient.getChapterDetails(this.chapterId, /*forceRefresh*/ true)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.isLoadingChapter = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (chapter) => {
+          this.chapter = chapter;
+          this.voiceState = getVoiceUIState(this.chapter);
+
+          // لو في توليد قائم، كمّل تتبّع
+          if (this.chapter?.process?.status === VoiceStatus.Processing) {
+            this.resumeVoiceTracking(this.chapter.process.id);
+          }
+
+          // الآن حمّل الفقرات من الطفل
+          const tab = this.paragraphsTab;
+          if (tab) {
+            if (!preserveQuery) {
+              tab.searchQuery = '';
+            }
+            // هذه الدالة عندك تفصل المراقبين ثم تعيد التحميل
+            tab.reloadChapterParagraphs();
+          }
+        },
+        error: (err) => {
+          console.error('[ChapterWorkspace] Failed to refresh chapter:', err);
+          // حتى عند الفشل، لو نقدر ننعش الفقرات لحالها
+          this.paragraphsTab?.reloadChapterParagraphs();
+        }
+      });
+  }
+
+  onParagraphsRefreshRequested(): void {
+    // ✅ اعتبر الصوت جاهز فقط إذا في voice_url أو الـ process مخلص
+    const hasChapterVoice =
+      !!this.chapter?.voice_url ||
+      this.chapter?.process?.status === VoiceStatus.Completed;
+
+    if (!hasChapterVoice) {
+      // ⛏️ ما في صوت للشابتر → اكتفِ بإنعاش الفقرات فقط
+      this.paragraphsTab?.reloadChapterParagraphs(true);
+      return;
+    }
+
+    // 🎯 في صوت للشابتر → انتعاش محلي سريع ثم اطلب من الأب يكمل السلسلة الكبيرة
+    this.refreshChapterThenParagraphs({ preserveQuery: true });
+    this.refreshAllRequested.emit({ preserveQuery: true }); // الأب أصلاً مقيّد بشرط "صوت المشروع جاهز"
   }
 
 }

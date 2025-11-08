@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { List } from 'lucide-angular';
 import { generate } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -52,6 +53,15 @@ export class ApiPortalService {
     generateParagraph: environment.apiUrl + '/voices/generate-paragraph', // POST
     export: environment.apiUrl + '/voices/export', // POST
     status: (taskId: string) => environment.apiUrl + `/voices/status/${taskId}`, // GET
+  }
+
+  public notifications = {
+    List: environment.apiUrl + '/users/notifications', // GET
+    read: (notificationId: number) => environment.apiUrl + `/users/notifications/${notificationId}/read`, // POST
+    hide: (notificationId: number) => environment.apiUrl + `/users/notifications/${notificationId}/hide`, // POST
+    readAll: environment.apiUrl + '/users/notifications/read-all', // POST
+    hideAll: environment.apiUrl + '/users/notifications/hide-all', // POST
+    unread: environment.apiUrl + '/users/unread-notifications', // GET
   }
 }
 

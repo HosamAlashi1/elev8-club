@@ -21,6 +21,7 @@ import { AppInitializerService } from './core/services/app-initializer.service';
 import { appInitializerFactory } from './core/services/app-initializer.factory';
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
+import { PublicSharedModule } from './modules/shared/public-shared.module';
 
 
 export function playerFactory() {
@@ -37,6 +38,7 @@ export function playerFactory() {
     NgbModule,
     BrowserAnimationsModule,
     SharedModule,
+    PublicSharedModule,
     InlineSVGModule.forRoot(),
     NgxSkeletonLoaderModule,
     ToastrModule.forRoot({

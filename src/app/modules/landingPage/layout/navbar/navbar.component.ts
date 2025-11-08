@@ -6,6 +6,7 @@ import { CartService } from 'src/app/modules/services/cart.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LandingAuthSessionService } from '../../../services/auth-session.service';
 import { LandingAccountModalComponent } from '../../shared/account/landing-account-modal/landing-account-modal.component';
+import { LogoutConfirmationModalComponent } from 'src/app/modules/shared/logout-confirmation-modal/logout-confirmation-modal.component';
 
 type LinkItem =
   | { label: string; type: 'route'; route: string }
@@ -199,7 +200,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   // 👤 Logout
   logout() {
-    this.session.logout();
-    this.router.navigate(['/']);
+    const modalRef = this.modal.open(LogoutConfirmationModalComponent, {
+      size: 'md',
+    });
+
+    modalRef.result.then(
+      (confirmed: boolean) => {
+        if (confirmed) {
+          this.session.logout();
+          this.router.navigate(['/']);
+        }
+      },
+      () => {
+        // Dismissed - do nothing
+      }
+    );
   }
 }

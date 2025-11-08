@@ -69,7 +69,7 @@ export class LandingAuthSessionService {
   ) {
     return this.api.login(email, password, auth_type, fcm_token, device_id).pipe(
       tap((res: any) => {
-        if (res?.success && res?.data?.access_token && res?.data?.data) {
+        if (res?.status && res?.data?.access_token && res?.data?.data) {
           const payload: LandingAuthPayload = {
             user: res.data.data as LandingAuthUser,
             token: res.data.access_token as string,
@@ -84,6 +84,14 @@ export class LandingAuthSessionService {
   signup(form: SignupRequest, file?: File): Observable<any> {
     const body = { ...form, auth_type: form.auth_type ?? AuthType.Customer };
     return this.api.signup(body, file);
+  }
+
+  confirmCode(email: string, code: string): Observable<any> {
+    return this.api.confirmCode(email, code);
+  }
+
+  resendCode(email: string): Observable<any> {
+    return this.api.resendCode(email);
   }
 
   logout() {

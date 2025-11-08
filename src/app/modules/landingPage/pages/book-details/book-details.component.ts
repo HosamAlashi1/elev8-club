@@ -67,7 +67,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     const url = this.api.books.details(id);
     this.http.listGet(url, 'book_details').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           const b = res.data;
 
           // تطبيع الرد إلى ViewModel متوافق مع الـ template

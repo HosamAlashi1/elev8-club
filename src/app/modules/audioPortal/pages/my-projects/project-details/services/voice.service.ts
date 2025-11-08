@@ -51,6 +51,7 @@ import { AuthType } from 'src/app/core/enums/auth-type.enum';
  * );
  * ```
  */
+
 @Injectable({
   providedIn: 'root'
 })
@@ -58,6 +59,7 @@ export class VoiceService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly projectsClient = inject(ProjectsClientService);
   private readonly authSession = inject(LandingAuthSessionService);
+  private activeProcesses$ = new BehaviorSubject<void>(undefined);
 
   // Track active polling to prevent duplicates
   private activePolls = new Map<number, Observable<VoiceProcess>>();
@@ -140,6 +142,7 @@ export class VoiceService {
       tap((processId) => {
         console.log(`[VoiceService] Voice generation started: process ${processId} for ${key}`);
         this.entityProcesses.set(key, processId);
+        this.notifyActiveProcessesChanged();
       }),
       catchError((error) => {
         console.error(`[VoiceService] Failed to generate voice for ${key}:`, error);
@@ -163,66 +166,68 @@ export class VoiceService {
    * @returns Observable that emits VoiceProcess updates
    */
 
-trackProcess(processId: number, type: VoiceEntityType, entityId: number): Observable<VoiceProcess> {
-  if (!this.hasVoicePermission()) return EMPTY;
+  trackProcess(processId: number, type: VoiceEntityType, entityId: number): Observable<VoiceProcess> {
+    if (!this.hasVoicePermission()) return EMPTY;
 
-  const key = this.getEntityKey(type, entityId);
+    const key = this.getEntityKey(type, entityId);
 
-  if (this.activePolls.has(processId)) {
-    console.log(`[VoiceService] Already polling process ${processId}`);
-    return this.activePolls.get(processId)!;
+    if (this.activePolls.has(processId)) {
+      console.log(`[VoiceService] Already polling process ${processId}`);
+      return this.activePolls.get(processId)!;
+    }
+
+    const backoffConfig = getBackoffConfig(type);
+    let attemptIndex = 0;
+
+    const poll$ = timer(0).pipe(
+      switchMap(() => this.projectsClient.getVoiceStatus(processId)),
+      map(response => {
+        if (!response.status || !response.data) throw new Error('Invalid response from voice status API');
+        return response.data as VoiceProcess;
+      }),
+      // ⬇️ هنا السحر: نستخدم expand لتكرار الاستدعاء بدلاً من recursion
+      expand((process) => {
+        attemptIndex++;
+        const shouldContinue =
+          process.status === VoiceStatus.Pending ||
+          process.status === VoiceStatus.Processing;
+
+        if (!shouldContinue) return EMPTY;
+
+        const interval = backoffConfig.intervals[Math.min(attemptIndex, backoffConfig.intervals.length - 1)];
+        const visibilityMultiplier = this.isDocumentHidden$.value ? 3 : 1;
+        const currentInterval = interval * visibilityMultiplier;
+
+        return timer(currentInterval).pipe(
+          switchMap(() => this.projectsClient.getVoiceStatus(processId)),
+          map(r => r.data as VoiceProcess),
+          catchError(err => {
+            console.error('[VoiceService] Poll error:', err);
+            const failedProcess: VoiceProcess = {
+              id: processId,
+              status: VoiceStatus.Failed,
+              error_message: err.message || 'Polling failed'
+            };
+            return of(failedProcess);
+          })
+        );
+      }),
+      // ⬆️ expand راح يخلي الـ stream يطلع كل تحديث
+      takeWhile(p => p.status === VoiceStatus.Pending || p.status === VoiceStatus.Processing, true),
+      finalize(() => {
+        this.activePolls.delete(processId);
+        this.entityProcesses.delete(key);
+        console.log(`[VoiceService] Cleaned up polling for process ${processId}`);
+        this.notifyActiveProcessesChanged(); 
+      }),
+      shareReplay(1),
+      takeUntilDestroyed(this.destroyRef)
+    );
+
+    this.activePolls.set(processId, poll$);
+    this.notifyActiveProcessesChanged(); 
+    return poll$;
   }
-
-  const backoffConfig = getBackoffConfig(type);
-  let attemptIndex = 0;
-
-  const poll$ = timer(0).pipe(
-    switchMap(() => this.projectsClient.getVoiceStatus(processId)),
-    map(response => {
-      if (!response.success || !response.data) throw new Error('Invalid response from voice status API');
-      return response.data as VoiceProcess;
-    }),
-    // ⬇️ هنا السحر: نستخدم expand لتكرار الاستدعاء بدلاً من recursion
-    expand((process) => {
-      attemptIndex++;
-      const shouldContinue =
-        process.status === VoiceStatus.Pending ||
-        process.status === VoiceStatus.Processing;
-
-      if (!shouldContinue) return EMPTY;
-
-      const interval = backoffConfig.intervals[Math.min(attemptIndex, backoffConfig.intervals.length - 1)];
-      const visibilityMultiplier = this.isDocumentHidden$.value ? 3 : 1;
-      const currentInterval = interval * visibilityMultiplier;
-
-      return timer(currentInterval).pipe(
-        switchMap(() => this.projectsClient.getVoiceStatus(processId)),
-        map(r => r.data as VoiceProcess),
-        catchError(err => {
-          console.error('[VoiceService] Poll error:', err);
-          const failedProcess: VoiceProcess = {
-            id: processId,
-            status: VoiceStatus.Failed,
-            error_message: err.message || 'Polling failed'
-          };
-          return of(failedProcess);
-        })
-      );
-    }),
-    // ⬆️ expand راح يخلي الـ stream يطلع كل تحديث
-    takeWhile(p => p.status === VoiceStatus.Pending || p.status === VoiceStatus.Processing, true),
-    finalize(() => {
-      this.activePolls.delete(processId);
-      this.entityProcesses.delete(key);
-      console.log(`[VoiceService] Cleaned up polling for process ${processId}`);
-    }),
-    shareReplay(1),
-    takeUntilDestroyed(this.destroyRef)
-  );
-
-  this.activePolls.set(processId, poll$);
-  return poll$;
-}
 
 
   // ========================================
@@ -351,4 +356,13 @@ trackProcess(processId: number, type: VoiceEntityType, entityId: number): Observ
   isChapterGenerating(chapterId: number): boolean {
     return this.isGenerating(VoiceEntityType.Chapter, chapterId);
   }
+
+  private notifyActiveProcessesChanged(): void {
+    this.activeProcesses$.next();
+  }
+
+  public watchActiveProcesses(): Observable<void> {
+    return this.activeProcesses$.asObservable();
+  }
+
 }

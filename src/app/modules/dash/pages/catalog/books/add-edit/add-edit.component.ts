@@ -47,10 +47,10 @@ export class AddEditBookComponent implements OnInit {
     if (this.isEdit) {
       this.httpService.listGet(this.api.books.details(this.book.id), 'book-details').subscribe({
         next: (res: any) => {
-          if (res?.success && res?.data) {
+          if (res?.status && res?.data) {
             this.patchForm(res.data);
           } else {
-            this.toastr.showError(res?.msg || 'Failed to load book details');
+            this.toastr.showError(res?.message || 'Failed to load book details');
           }
         },
         error: () => this.toastr.showError('Failed to load book details')
@@ -81,7 +81,7 @@ export class AddEditBookComponent implements OnInit {
   loadCommonData() {
     this.httpService.listGet(this.api.common.categories, 'common-categories').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.categories = res.data;
           this.categoryOptions = res.data.map((c: any) => ({
             label: c.name,
@@ -107,7 +107,7 @@ export class AddEditBookComponent implements OnInit {
     this.httpService.listGet(url, 'common-authors').subscribe({
       next: (res: any) => {
         this.authorsLoading = false;
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           // Map the response data to match the expected format for authors
           this.authors = res.data.map((author: any) => ({
             id: author.id,
@@ -155,7 +155,7 @@ export class AddEditBookComponent implements OnInit {
     this.httpService.listGet(this.api.common.authors, 'common-authors-edit').subscribe({
       next: (res: any) => {
         this.authorsLoading = false;
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           // تحويل البيانات
           this.authors = res.data.map((author: any) => ({
             id: author.id,
@@ -301,16 +301,16 @@ export class AddEditBookComponent implements OnInit {
 
     this.httpService.action(url, formData, loaderKey).subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res?.msg || 'Book saved successfully');
+        if (res?.status) {
+          this.toastr.showSuccess(res?.message || 'Book saved successfully');
           this.activeModal.close(true);
         } else {
-          this.toastr.showError(res?.msg || 'Operation failed');
+          this.toastr.showError(res?.message || 'Operation failed');
         }
       },
       error: (error: any) => {
-        const msg = error?.error?.msg || error?.message || 'Operation failed';
-        this.toastr.showError(msg);
+        const message = error?.response?.message || error?.message || 'Operation failed';
+        this.toastr.showError(message);
       }
     });
   }

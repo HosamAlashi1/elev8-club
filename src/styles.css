@@ -22,7 +22,7 @@
 }
 
 /* ألوان حسب الحالة */
-.success-toast {
+.status-toast {
   background: #ECFDF5 !important;
   color: #065F46 !important;
   border-left: 5px solid #10B981 !important;

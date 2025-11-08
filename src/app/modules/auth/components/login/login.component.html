@@ -3,7 +3,7 @@
   <p class="text-muted text-center mb-5">Please enter login information</p>
 
   <form [formGroup]="form" novalidate (ngSubmit)="submit()">
-    <ngb-alert *ngIf="uiState().message" [type]="uiState().type" (closed)="showMsg(false, '')">
+    <ngb-alert *ngIf="uiState().message" [type]="uiState().type" (closed)="showmessage(false, '')">
       {{ uiState().message }}
     </ngb-alert>
 

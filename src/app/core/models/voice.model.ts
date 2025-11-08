@@ -24,8 +24,9 @@ export interface Voice {
  * Response من API /common/voices
  */
 export interface VoicesApiResponse {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: Array<{
     key: string;
     gender: 'Male' | 'Female' | 'Neutral';

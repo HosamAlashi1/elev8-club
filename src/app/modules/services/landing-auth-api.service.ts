@@ -11,6 +11,9 @@ export interface SignupRequest {
   last_name: string;
   email: string;
   phone?: string;
+  country_code?: string; // مثال: +966, +1, +20
+  password: string;
+  password_confirmation: string;
   auth_type?: number; // always 4 for customer
 }
 
@@ -39,6 +42,9 @@ export class LandingAuthApiService {
       fd.append('last_name', body.last_name);
       fd.append('email', body.email);
       fd.append('phone', body.phone ?? '');
+      fd.append('country_code', body.country_code ?? '');
+      fd.append('password', body.password);
+      fd.append('password_confirmation', body.password_confirmation);
       fd.append('auth_type', String(auth_type));
       fd.append('file', file);
       return this.http.post<any>(`${API_BASE_URL}/Auth/signup`, fd);
@@ -46,6 +52,18 @@ export class LandingAuthApiService {
 
     const payload = { ...body, auth_type };
     return this.http.post<any>(`${API_BASE_URL}/Auth/signup`, payload);
+  }
+
+  /** POST /Auth/confirm-code — verify 4-digit code */
+  confirmCode(email: string, code: string): Observable<any> {
+    const body = { email, code };
+    return this.http.post<any>(`${API_BASE_URL}/Auth/confirm-code`, body);
+  }
+
+  /** POST /Auth/resend-code — resend verification code */
+  resendCode(email: string): Observable<any> {
+    const body = { email };
+    return this.http.post<any>(`${API_BASE_URL}/Auth/resend-code`, body);
   }
 
   /** POST /Auth/logout — optional device_id */

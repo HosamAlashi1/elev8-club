@@ -241,33 +241,33 @@ function createTypesetter(cfg: RequiredCfg): TypesetterCtx {
 
   const headerEl = host.querySelector('.pg-header') as HTMLElement;
   const footerEl = host.querySelector('.pg-footer') as HTMLElement;
-  const bodyEl   = host.querySelector('.pg-body')   as HTMLElement;
+  const bodyEl = host.querySelector('.pg-body') as HTMLElement;
 
   // نثبت البادينغ والخطوط inline عشان القياس يطابق صفحاتك
-  bodyEl.style.padding    = '24px 32px 16px';
+  bodyEl.style.padding = '24px 32px 16px';
   bodyEl.style.fontFamily = cfg.font;
-  bodyEl.style.fontSize   = `${cfg.size}px`;
+  bodyEl.style.fontSize = `${cfg.size}px`;
   bodyEl.style.lineHeight = String(cfg.lineHeight);
-  bodyEl.style.direction  = cfg.rtl ? 'rtl' : 'ltr';
-  bodyEl.style.hyphens    = 'auto';
-  bodyEl.style.wordBreak  = 'break-word';
-  bodyEl.style.overflow   = 'hidden';
+  bodyEl.style.direction = cfg.rtl ? 'rtl' : 'ltr';
+  bodyEl.style.hyphens = 'auto';
+  bodyEl.style.wordBreak = 'break-word';
+  bodyEl.style.overflow = 'hidden';
 
   // احسب ارتفاع مساحة الكتابة داخل الـ body
   const headerH = Math.ceil(headerEl.getBoundingClientRect().height);
   const footerH = Math.ceil(footerEl.getBoundingClientRect().height);
 
   const cs = getComputedStyle(bodyEl);
-  const padTop    = parseFloat(cs.paddingTop)    || 0;
+  const padTop = parseFloat(cs.paddingTop) || 0;
   const padBottom = parseFloat(cs.paddingBottom) || 0;
-  const padLeft   = parseFloat(cs.paddingLeft)   || 0;
-  const padRight  = parseFloat(cs.paddingRight)  || 0;
+  const padLeft = parseFloat(cs.paddingLeft) || 0;
+  const padRight = parseFloat(cs.paddingRight) || 0;
 
   const contentHeight = Math.max(0, host.clientHeight - headerH - footerH - padTop - padBottom);
-  const contentWidth  = Math.max(0, host.clientWidth  - padLeft - padRight);
+  const contentWidth = Math.max(0, host.clientWidth - padLeft - padRight);
 
   bodyEl.style.height = `${contentHeight}px`;
-  bodyEl.style.width  = `${contentWidth}px`;
+  bodyEl.style.width = `${contentWidth}px`;
 
   return {
     host,
@@ -278,8 +278,8 @@ function createTypesetter(cfg: RequiredCfg): TypesetterCtx {
 }
 
 function isOverflow(ctx: TypesetterCtx) {
-  const tolerance = 1; // px بسيط لتجنّب "أكل" آخر سطر
-  return ctx.pageBox.scrollHeight > ctx.maxHeight + tolerance;
+  // سماحية صغيرة للتذبذب في السطور الأخيرة
+  return ctx.pageBox.scrollHeight > ctx.maxHeight + 1;
 }
 
 
@@ -321,88 +321,107 @@ function baseInlineStyleForTag(tag: string) {
   return 'margin: 0 0 12px;';
 }
 
-function appendWithSplit(ctx: TypesetterCtx, text: string, onBreak: () => void) {
-  // جرّب الفقرة كاملة أولًا
-  const p = block('p', text);
-  ctx.pageBox.appendChild(p);
+function appendWithSplit(ctx: TypesetterCtx, text: string, commitPage: () => void) {
+  // 1) جرّب إضافة الفقرة كاملة
+  const full = block('p', text);
+  ctx.pageBox.appendChild(full);
+
+  // ✅ وسعت؟ تمام
   if (!isOverflow(ctx)) return;
 
-  // الصفحة ما وسعت: احذف الفقرة وابدأ التقطيع الذكي
+  // ما وسعت…
+  // 2) لو الصفحة الحالية فيها محتوى أصلاً، فلّشها وافتح صفحة جديدة ثم جرّب من جديد
   removeLastChild(ctx.pageBox);
-  let rest = text.trim();
-  let safety = 0; // مانع اللانهاية
+  if (!isPageEmpty(ctx)) {
+    commitPage();
+    // صفحة جديدة الآن:
+    const fullAgain = block('p', text);
+    ctx.pageBox.appendChild(fullAgain);
+    if (!isOverflow(ctx)) return; // هالمرة وسعت كاملة على الصفحة الجديدة
+    removeLastChild(ctx.pageBox);  // ما وسعت حتى وهي فاضية → نبدأ التقطيع
+  }
 
-  while (rest.length && safety++ < 2000) {
-    // ✂️ أولًا: حاول تقسيم النص إلى جمل مفهومة
+  // 3) الفقرة أكبر من صفحة حتى لو كانت الصفحة فاضية:
+  //    نقسمها على عدة صفحات: جُمَل أولًا ثم كلمات ببحث ثنائي لملء الصفحة قدر الإمكان.
+  let rest = text.trim();
+  let guard = 0;
+
+  while (rest.length && guard++ < 5000) {
+    // a) جرّب الجُمَل
     const sentences = rest.split(/(?<=[.?!،…])\s+/);
-    let fitSentences = '';
-    let overflowed = false;
+    let bestSentences = '';
+    let usedCount = 0;
 
     for (let i = 0; i < sentences.length; i++) {
-      const candidate = (fitSentences + ' ' + sentences[i]).trim();
-      const testEl = block('p', candidate);
-      ctx.pageBox.appendChild(testEl);
+      const candidate = (bestSentences + ' ' + sentences[i]).trim();
+      const probe = block('p', candidate);
+      ctx.pageBox.appendChild(probe);
 
       if (isOverflow(ctx)) {
-        overflowed = true;
         removeLastChild(ctx.pageBox);
-        break; // توقّف عند الجملة اللي طفحت
+        break; // توقّف عند الجملة التي طفحت
+      } else {
+        removeLastChild(ctx.pageBox);
+        bestSentences = candidate;
+        usedCount = i + 1;
       }
-
-      removeLastChild(ctx.pageBox);
-      fitSentences = candidate;
     }
 
-    // ✅ لو الجمل كلها ما وسعتش، ننتقل للتقطيع بالكلمات
-    if (!fitSentences) {
-      const [fitWords, remainingWords] = fitWordsByBinary(ctx, rest);
-      if (!fitWords) {
-        // الصفحة فاضية بالكامل، خذ كلمة واحدة على الأقل
-        const firstWord = rest.split(/\s+/)[0];
-        ctx.pageBox.appendChild(block('p', firstWord));
-        onBreak();
-        rest = rest.slice(firstWord.length).trim();
-        continue;
-      }
+    if (bestSentences) {
+      // أضف أفضل ما يَسَع من الجُمل
+      ctx.pageBox.appendChild(block('p', bestSentences));
 
-      ctx.pageBox.appendChild(block('p', fitWords));
-
-      // بعد الإضافة، تأكد من عدم الطفح المفاجئ
       if (isOverflow(ctx)) {
         removeLastChild(ctx.pageBox);
-        const [fit2] = fitWordsByBinary(ctx, fitWords, true);
-        if (fit2) ctx.pageBox.appendChild(block('p', fit2));
-      }
-
-      if (remainingWords) {
-        onBreak();
-        rest = remainingWords.trim();
+        // خفّض بسطر/جملة أخيرة إلى كلمات (fallback سريع)
+        const [fit, restWords] = fitWordsByBinary(ctx, bestSentences, true);
+        if (fit) ctx.pageBox.appendChild(block('p', fit));
+        commitPage();
+        const remaining =
+          (restWords ? restWords + ' ' : '') +
+          sentences.slice(usedCount).join(' ');
+        rest = remaining.trim();
         continue;
       }
+
+      // لو بقي جُمل لم تُضَف → اقفل الصفحة وافتح الجديدة وأكمل
+      if (usedCount < sentences.length) {
+        commitPage();
+        rest = sentences.slice(usedCount).join(' ').trim();
+        continue;
+      }
+
+      // لا مزيد من الجُمل، انتهينا من هذه الفقرة
       break;
     }
 
-    // ✅ أضف الجمل اللي بتسع
-    ctx.pageBox.appendChild(block('p', fitSentences));
+    // b) ولا جملة تسَع: ننزل إلى مستوى الكلمات ببحث ثنائي
+    const [fitWords, remainingWords] = fitWordsByBinary(ctx, rest);
 
-    // تحقق لو الصفحة طفحت بعد الإضافة
-    if (isOverflow(ctx)) {
-      removeLastChild(ctx.pageBox);
-      onBreak();
+    if (!fitWords) {
+      // الصفحة فارغة جدًا والسطور عالية/الخط كبير: خذ كلمة واحدة على الأقل
+      const firstWord = rest.split(/\s+/)[0];
+      ctx.pageBox.appendChild(block('p', firstWord));
+      commitPage();
+      rest = rest.slice(firstWord.length).trim();
       continue;
     }
 
-    // احسب ما تبقّى
-    const remainingSentences = sentences.slice(fitSentences.split(/(?<=[.?!،…])\s+/).length).join(' ');
-    rest = remainingSentences.trim();
+    ctx.pageBox.appendChild(block('p', fitWords));
 
-    // لو باقي نص، فلّش الصفحة
-    if (rest.length > 0) onBreak();
+    if (remainingWords) {
+      commitPage();
+      rest = remainingWords.trim();
+      continue;
+    }
+
+    // لا مزيد من الكلمات
+    break;
   }
 }
 
 function fitWordsByBinary(ctx: TypesetterCtx, text: string, shrink = false): [string, string] {
-  const words = text.split(/\s+/);
+  const words = text.split(/\s+/).filter(Boolean);
   let lo = 0, hi = words.length, best = 0;
 
   // عنصر مؤقت واحد فقط
@@ -423,16 +442,16 @@ function fitWordsByBinary(ctx: TypesetterCtx, text: string, shrink = false): [st
     }
   }
 
-  // أمان للسطر الأخير
+  // تقليص بسيط لو على الحافة (اختياري)
   if (shrink && best > 0) best = Math.max(1, best - 1);
 
   const fit = words.slice(0, best).join(' ').trim();
   const remaining = words.slice(best).join(' ').trim();
 
-  tmp.remove(); // مهم: لا نترك أي tmp
-
+  tmp.remove();
   return [fit, remaining];
 }
+
 
 // يحوّل محتوى الـ typesetter الحالي إلى HTML صفحة فعلية بهيدر/فوتر
 function renderFinalPageHTML(
@@ -490,32 +509,25 @@ export type ForeEdges = {
   remainingCount: number;
 };
 
-/**
- * leftPage: رقم الصفحة اليسار في السبريد الحالي (1-based)
- * totalPages: إجمالي الصفحات
- * maxPx/minPx: سماكة الحافة القصوى/الدنيا
- */
-export function computeForeEdges(
-  leftPage: number,
-  totalPages: number,
-  maxPx = 16,
-  minPx = 3
-): ForeEdges {
+export function computeEdges(leftPage: number, totalPages: number): {
+  leftPx: number;
+  rightPx: number;
+  readCount: number;
+  remainCount: number;
+} {
+  // يسار = كل الصفحات قبل صفحة اليسار الحالية
   const readCount = Math.max(0, leftPage - 1);
-  const rightPage = leftPage + 1;
-  const remainingCount = Math.max(0, totalPages - rightPage);
 
-  const curve = (pages: number, total: number) => {
-    if (total <= 1) return minPx;
-    const r = Math.min(1, Math.max(0, pages / total));
-    return Math.round(minPx + (maxPx - minPx) * Math.pow(r, 0.9));
-  };
+  // يمين = كل الصفحات بعد صفحة اليمين الحالية (left+1)
+  const remainCount = Math.max(0, totalPages - (leftPage + 1));
 
-  return {
-    leftPx: curve(readCount, totalPages),
-    rightPx: curve(remainingCount, totalPages),
-    readCount,
-    remainingCount
-  };
+  // خريطة سماكة بسيطة وواقعية
+  const pxPer = 2;       // 2px لكل صفحة
+  const cap = 24;      // حد أعلى شكلي
+  const clamp = (n: number) => Math.max(0, Math.min(n, cap));
+
+  const leftPx = clamp(readCount * pxPer);
+  const rightPx = clamp(remainCount * pxPer);
+
+  return { leftPx, rightPx, readCount, remainCount };
 }
-

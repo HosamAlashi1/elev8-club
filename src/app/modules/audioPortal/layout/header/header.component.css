@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 32px;
+  /* gap: 32px; */
 }
 
 /* Brand */
@@ -440,4 +440,113 @@
   .dropdown-menu-custom {
     min-width: 240px;
   }
+}
+
+/* ============================================
+   🔔 NOTIFICATION BELL - Smooth Dorrance Style
+   ============================================ */
+
+.notification-wrapper {
+  position: relative;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.notification-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.notification-btn:hover {
+  border-color: #21d1c5;
+  color: #21d1c5;
+  box-shadow: 0 4px 16px rgba(91, 189, 183, 0.25);
+  transform: translateY(-2px);
+}
+
+.notification-btn:active {
+  transform: scale(0.96);
+}
+
+/* 🔴 Badge */
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 5px;
+  border-radius: 999px;
+  min-width: 16px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+  transition: all 0.25s ease;
+}
+
+.notification-badge.zero {
+  background: #cbd5e1;
+  color: #fff;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* 🔔 Animation pulse عند وجود إشعارات */
+@keyframes bellPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(91,189,183,0.4));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(91,189,183,0.5));
+  }
+}
+
+.notification-btn.has-unread i {
+  animation: bellPulse 1.8s infinite;
+}
+
+/* تنسيق المسافة بين الجرس والبروفايل */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+/* 🔧 Fix header alignment */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* خلي المستخدم والجرس يلتصقوا باليمين */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto; /* 👈 هذا أهم سطر */
+}
+
+/* بس هيك نضمن أن الجرس والبروفايل يكونوا على يمين الهيدر تمامًا */
+.notification-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }

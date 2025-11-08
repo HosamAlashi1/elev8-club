@@ -14,8 +14,9 @@ export interface ProjectItem {
  * Generic API Response Wrapper
  */
 export interface ApiResponse<T> {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: T;
 }
 
@@ -23,8 +24,9 @@ export interface ApiResponse<T> {
  * Projects List Response
  */
 export interface ProjectsResponse {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: ProjectItem[];
 }
 
@@ -32,8 +34,9 @@ export interface ProjectsResponse {
  * Add Project Response
  */
 export interface AddProjectResponse {
-  success: boolean;
-  msg: string;
+  status: boolean;
+  statusCode: number;
+  message: string;
   data: null;
 }
 

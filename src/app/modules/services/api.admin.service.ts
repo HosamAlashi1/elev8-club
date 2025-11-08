@@ -171,4 +171,14 @@ export class ApiAdminService {
 		list: API_BASE_URL + 'settings', // POST
 		update: API_BASE_URL + 'settings/update' // POST
 	};
+
+	// Notifications
+	public notifications = {
+		List: API_BASE_URL + 'admins/notifications', // GET
+		read: (notificationId: number) => API_BASE_URL + `admins/notifications/${notificationId}/read`, // POST
+		hide: (notificationId: number) => API_BASE_URL + `admins/notifications/${notificationId}/hide`, // POST
+		readAll: API_BASE_URL + 'admins/notifications/read-all', // POST
+		hideAll: API_BASE_URL + 'admins/notifications/hide-all', // POST
+		unread: API_BASE_URL + 'admins/unread-notifications', // GET
+	}
 }

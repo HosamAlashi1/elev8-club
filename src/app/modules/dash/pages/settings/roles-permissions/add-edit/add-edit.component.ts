@@ -79,7 +79,7 @@ export class AddEditRoleComponent implements OnInit {
       )
       .subscribe({
         next: (res: any) => {
-          const catalog: PermissionGroup[] = (res?.success && Array.isArray(res?.data)) ? res.data : [];
+          const catalog: PermissionGroup[] = (res?.status && Array.isArray(res?.data)) ? res.data : [];
           this.prepareGroups(catalog);
           // افتح الكل بشكل افتراضي
           this.groups.forEach(g => this.expanded.add(g.id));
@@ -113,7 +113,7 @@ export class AddEditRoleComponent implements OnInit {
           this.form.patchValue({ name: r?.name || '' });
 
           // بنبني الشجرة من الكاتالوج العام فقط (مش من details)
-          const groups: PermissionGroup[] = (catalog?.success && Array.isArray(catalog?.data)) ? catalog.data : [];
+          const groups: PermissionGroup[] = (catalog?.status && Array.isArray(catalog?.data)) ? catalog.data : [];
           this.prepareGroups(groups);
 
           // IDs المختارة من role.permissions (قائمة مسطحة تضم آباء وأبناء)
@@ -239,16 +239,16 @@ export class AddEditRoleComponent implements OnInit {
       .pipe(finalize(() => this.isSaving$.next(false)))
       .subscribe({
         next: (res: any) => {
-          if (res?.success) {
-            this.toastr.showSuccess(res?.msg || 'Saved successfully');
+          if (res?.status) {
+            this.toastr.showSuccess(res?.message || 'Saved successfully');
             this.activeModal.close(true);
           } else {
-            this.toastr.showError(res?.msg || 'Operation failed');
+            this.toastr.showError(res?.message || 'Operation failed');
           }
         },
         error: (err: any) => {
-          const msg = err?.error?.msg || err?.message || 'Operation failed';
-          this.toastr.showError(msg);
+          const message = err?.response?.message || err?.message || 'Operation failed';
+          this.toastr.showError(message);
         }
       });
   }

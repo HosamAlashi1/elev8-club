@@ -471,7 +471,12 @@
 }
 .paragraphs-list-container {
   max-height: calc(100vh - 383px);
-  overflow: auto;
+  overflow-y: auto;
+}
+
+/* 🟢 لما المشروع عنده صوت */
+:host-context(.project-has-voice) .paragraphs-list-container {
+  max-height: calc(100vh - 438px);
 }
 
 .infinite-anchor { height: 1px; width: 100%; }

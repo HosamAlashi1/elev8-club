@@ -38,10 +38,10 @@ export class LoginComponent implements OnInit {
     return this.form.controls;
   }
 
-  showMsg(success: boolean, msg: string) {
+  showmessage(success: boolean, message: string) {
     this.uiState.update(state => ({
       ...state,
-      message: msg,
+      message: message,
       type: success ? 'success' : 'danger'
     }));
   }
@@ -51,11 +51,11 @@ export class LoginComponent implements OnInit {
 
     if (this.form.valid) {
       const { email, password } = this.form.value;
-      this.showMsg(false, '');
+      this.showmessage(false, '');
 
       this.authService.login(email, password ,1).subscribe({ // 1 for admin login , 2 for author , 3 for editor , 4 for customer login
         next: (res: any) => {
-          if (res?.success === true && res?.data?.access_token) {
+          if (res?.status === true && res?.data?.access_token) {
             // Prepare data
             const payload = {
               user: res.data.data,
@@ -73,16 +73,16 @@ export class LoginComponent implements OnInit {
 
             this.router.navigate(['/dashboard']);
           } else {
-            this.showMsg(false, res?.msg ?? 'Login failed');
+            this.showmessage(false, res?.message ?? 'Login failed');
           }
         },
         error: (err: any) => {
           if (err.status === 422) {
-            this.showMsg(false, 'The credentials you entered are incorrect.');
-          } else if (err?.error?.msg) {
-            this.showMsg(false, err.error.msg);
+            this.showmessage(false, 'The credentials you entered are incorrect.');
+          } else if (err?.response?.message) {
+            this.showmessage(false, err.errormessage);
           } else {
-            this.showMsg(false, 'Something went wrong. Please try again.');
+            this.showmessage(false, 'Something went wrong. Please try again.');
           }
         }
       });

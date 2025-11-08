@@ -27,7 +27,7 @@
 
   <!-- فورم تسجيل الدخول -->
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <ngb-alert *ngIf="uiState().message" [type]="uiState().type" (closed)="showMsg(false, '')">
+    <ngb-alert *ngIf="uiState().message" [type]="uiState().type" (closed)="showmessage(false, '')">
       {{ uiState().message }}
     </ngb-alert>
 

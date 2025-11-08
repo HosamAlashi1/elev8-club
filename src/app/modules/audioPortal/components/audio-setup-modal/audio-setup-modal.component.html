@@ -77,52 +77,83 @@
       <!-- ========== COLUMN 2: Project Details & File Upload ========== -->
       <div class="project-details-panel" data-aos="fade-up" data-aos-duration="600">
 
-        <!-- Project Name Section -->
-        <div class="panel-section pb-2">
-          <div class="panel-header sticky-header pt-0">
-            <i class="bi bi-pencil-square"></i>
-            <h3>Project Details</h3>
-          </div>
-
-          <div class="panel-section-content pb-0">
-            <form [formGroup]="projectForm">
-              <div class="form-group">
-                <label for="projectName" class="form-label required">
-                  Project Name
-                </label>
-                <input type="text" id="projectName" class="form-control" placeholder="Enter your project name..."
-                  formControlName="name" [class.is-invalid]="shouldShowError('name')" autofocus />
-                <div class="invalid-feedback"
-                  *ngIf="shouldShowError('name') && projectForm.get('name')?.hasError('required')">
-                  Project name is required
-                </div>
-                <div class="invalid-feedback"
-                  *ngIf="shouldShowError('name') && projectForm.get('name')?.hasError('minlength')">
-                  Project name must be at least 2 characters
-                </div>
-              </div>
-
-              <!-- Creation Method Toggle -->
-              <div class="form-group">
-                <label class="form-label">Creation Method</label>
-                <div class="method-toggle">
-                  <button type="button" class="method-btn" [class.active]="method === 'AI'" (click)="setMethod('AI')"
-                    [disabled]="isLoading">
-                    <i class="bi bi-robot me-2"></i>
-                    <span>AI from File</span>
-                  </button>
-                  <button type="button" class="method-btn" [class.active]="method === 'MANUAL'"
-                    (click)="setMethod('MANUAL')" [disabled]="isLoading">
-                    <i class="bi bi-pencil-square me-2"></i>
-                    <span>Manual</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+        <!-- Project Header -->
+        <div class="panel-header sticky-header mx-4 ps-0">
+          <i class="bi bi-pencil-square"></i>
+          <h3>Project Details</h3>
         </div>
 
-        <div class="scrollable-content">
+        <!-- Scrollable Area -->
+        <div class="details-scroll">
+
+          <!-- Project Name Section -->
+          <div class="panel-section pb-2">
+            <div class="panel-section-content pb-0">
+              <form [formGroup]="projectForm">
+                <div class="form-group">
+                  <label for="projectName" class="form-label required">
+                    Project Name
+                  </label>
+                  <input type="text" id="projectName" class="form-control" placeholder="Enter your project name..."
+                    formControlName="name" [class.is-invalid]="shouldShowError('name')" autofocus />
+                  <div class="invalid-feedback"
+                    *ngIf="shouldShowError('name') && projectForm.get('name')?.hasError('required')">
+                    Project name is required
+                  </div>
+                  <div class="invalid-feedback"
+                    *ngIf="shouldShowError('name') && projectForm.get('name')?.hasError('minlength')">
+                    Project name must be at least 2 characters
+                  </div>
+                </div>
+
+                <div class="form-group mt-3">
+                  <label for="isbn" class="form-label required">
+                    ISBN
+                  </label>
+
+                  <input type="text" id="isbn" class="form-control"
+                    placeholder="ISBN-10 or ISBN-13 (e.g. 978-1-23456-789-7)" formControlName="isbn"
+                    [class.is-invalid]="shouldShowError('isbn') && projectForm.get('isbn')?.invalid" />
+
+                  <!-- required error -->
+                  <div class="invalid-feedback"
+                    *ngIf="shouldShowError('isbn') && projectForm.get('isbn')?.hasError('required')">
+                    ISBN is required
+                  </div>
+
+                  <!-- format error -->
+                  <div class="invalid-feedback"
+                    *ngIf="shouldShowError('isbn') && projectForm.get('isbn')?.hasError('isbnFormat')">
+                    Invalid ISBN format. Use ISBN-10 or ISBN-13.
+                  </div>
+
+                  <!-- checksum error -->
+                  <div class="invalid-feedback"
+                    *ngIf="shouldShowError('isbn') && projectForm.get('isbn')?.hasError('isbnChecksum')">
+                    Invalid ISBN checksum. Please double-check the digits.
+                  </div>
+                </div>
+
+                <!-- Creation Method Toggle -->
+                <div class="form-group">
+                  <label class="form-label">Creation Method</label>
+                  <div class="method-toggle">
+                    <button type="button" class="method-btn" [class.active]="method === 'AI'" (click)="setMethod('AI')"
+                      [disabled]="isLoading">
+                      <i class="bi bi-robot me-2"></i>
+                      <span>AI from File</span>
+                    </button>
+                    <button type="button" class="method-btn" [class.active]="method === 'MANUAL'"
+                      (click)="setMethod('MANUAL')" [disabled]="isLoading">
+                      <i class="bi bi-pencil-square me-2"></i>
+                      <span>Manual</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
           <!-- Manual Method Info -->
           <div class="alert alert-info" *ngIf="method === 'MANUAL'" data-aos="fade-right" data-aos-duration="500">
             <i class="bi bi-info-circle-fill"></i>
@@ -133,8 +164,8 @@
           </div>
 
           <!-- File Upload Section -->
-          <div *ngIf="method === 'AI'" class="upload-zone" [class.drag-active]="isDragOver && method === 'AI'" [class.has-file]="selectedFile"
-             (dragover)="method === 'AI' && onDragOver($event)"
+          <div *ngIf="method === 'AI'" class="upload-zone" [class.drag-active]="isDragOver && method === 'AI'"
+            [class.has-file]="selectedFile" (dragover)="method === 'AI' && onDragOver($event)"
             (dragleave)="method === 'AI' && onDragLeave($event)" (drop)="method === 'AI' && onDrop($event)"
             (click)="method === 'AI' && fileInput.click()">
 
@@ -171,43 +202,29 @@
             <i class="bi bi-info-circle"></i>
             Make sure your document is formatted according to the guidelines.
           </div>
-        </div>
 
+        </div>
       </div>
 
+
       <!-- ========== COLUMN 3: Voice Selection ========== -->
-      <div class="voice-selection-panel" [class.disabled-section]="method === 'MANUAL'" data-aos="fade-left"
-        data-aos-duration="600">
+      <div class="voice-selection-panel" data-aos="fade-left" data-aos-duration="600">
         <div class="panel-header">
           <i class="bi bi-mic-fill"></i>
           <h3>Select Voice</h3>
-          <span class="badge-disabled" *ngIf="method === 'MANUAL'">Available in AI mode</span>
         </div>
 
         <!-- Skeleton Loader -->
         <div class="voices-grid-container" *ngIf="isLoadingVoices">
-          <div class="voices-grid">
-            <div class="voice-card skeleton-card" *ngFor="let item of [1,2,3,4,5,6]">
-              <div class="voice-avatar skeleton-avatar">
-                <div class="skeleton-circle"></div>
-              </div>
-              <div class="voice-info">
-                <div class="skeleton-line skeleton-name"></div>
-                <div class="skeleton-line skeleton-gender"></div>
-              </div>
-              <div class="voice-actions">
-                <div class="skeleton-line"></div>
-              </div>
-            </div>
-          </div>
+          <!-- كما هو -->
         </div>
 
         <!-- Voices Grid -->
         <div class="voices-grid-container" *ngIf="!isLoadingVoices">
           <div class="voices-grid">
             <div class="voice-card" *ngFor="let voice of voices; let i = index"
-              [class.selected]="isVoiceSelected(voice)" [class.disabled]="method === 'MANUAL'"
-              (click)="method === 'AI' && selectVoice(voice)" [style.animation-delay]="getVoiceCardDelay(i) + 'ms'">
+              [class.selected]="isVoiceSelected(voice)" (click)="selectVoice(voice)"
+              [style.animation-delay]="getVoiceCardDelay(i) + 'ms'">
 
               <div class="voice-avatar">
                 <img [src]="voice.image || 'assets/img/blank.png'" [alt]="voice.name + ' avatar'" loading="lazy"
@@ -224,21 +241,19 @@
               </div>
 
               <div class="voice-actions">
-                <button class="btn-play-sample" [class.playing]="isVoicePlaying(voice)" [disabled]="method === 'MANUAL'"
+                <button class="btn-play-sample" [class.playing]="isVoicePlaying(voice)"
                   (click)="playSample(voice, $event)" type="button">
                   <i class="bi" [ngClass]="isVoicePlaying(voice) ? 'bi-stop-fill' : 'bi-play-fill'"></i>
-                  <small>
-                    {{ isVoicePlaying(voice) ? 'Pause' : 'Play' }}
-                    </small>
+                  <small>{{ isVoicePlaying(voice) ? 'Pause' : 'Play' }}</small>
                 </button>
                 <div class="selected-indicator" *ngIf="isVoiceSelected(voice)">
                   <i class="bi bi-check-circle-fill"></i>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
-
       </div>
 
     </div>

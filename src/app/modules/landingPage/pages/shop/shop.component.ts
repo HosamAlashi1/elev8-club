@@ -40,7 +40,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
   categories: CategoryItem[] = []; // هنا بنستقبل الفئات من الـ API
   isLoading = true;        // للصفحة الأولى
   isLoadingMore = false;   // للتحميل اللامتناهي
-  errorMsg = '';
+  errormessage = '';
   skeletonArray = Array(6);
 
   // ========= Filters / Query =========
@@ -190,7 +190,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.http.listGet(url, 'categories').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data && Array.isArray(res.data)) {
+        if (res?.status && res?.data && Array.isArray(res.data)) {
           this.categories = res.data.map((cat: any) => ({
             id: cat.id,
             name: cat.name,
@@ -199,7 +199,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
           }));
           console.log('📂 Categories loaded:', this.categories.length);
         } else {
-          console.error('Failed to load categories:', res?.msg);
+          console.error('Failed to load categories:', res?.message);
         }
       },
       error: (err) => {
@@ -213,7 +213,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
     this.page = 1;
     this.totalRecords = 0;
     this.books = [];
-    this.errorMsg = '';
+    this.errormessage = '';
     this.isLoading = true;
     this.isLoadingMore = false;
     this.isScrolling = false;
@@ -238,7 +238,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
       }, 100);
     }).catch(err => {
       console.error('Failed to reload:', err);
-      this.errorMsg = 'Failed to load books.';
+      this.errormessage = 'Failed to load books.';
       this.isLoading = false;
       this.observer?.disconnect();
     });
@@ -246,7 +246,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private loadFirstPage() {
     this.isLoading = true;
-    this.errorMsg = '';
+    this.errormessage = '';
     this.page = 1;
 
     this.fetchBooks(this.page).then(({ items, total }) => {
@@ -262,7 +262,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
       }, 200);
     }).catch(err => {
       console.error('Error loading first page:', err);
-      this.errorMsg = 'Failed to load books.';
+      this.errormessage = 'Failed to load books.';
       this.isLoading = false;
       this.observer?.disconnect();
     });
@@ -382,7 +382,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
     return new Promise((resolve, reject) => {
       this.http.listGet(url, page === 1 ? 'shop_first' : 'shop_more').subscribe({
         next: (res: any) => {
-          if (res?.success && res?.data?.data && Array.isArray(res.data.data)) {
+          if (res?.status && res?.data?.data && Array.isArray(res.data.data)) {
             const raw: ApiBookItem[] = res.data.data;
             const items: BookViewModel[] = raw.map(b => ({
               id: b.id,
@@ -403,7 +403,7 @@ export class ShopComponent implements OnInit, AfterViewInit, OnDestroy {
 
             resolve({ items, total });
           } else {
-            reject(new Error(res?.msg || 'Invalid response'));
+            reject(new Error(res?.message || 'Invalid response'));
           }
         },
         error: (err) => reject(err)

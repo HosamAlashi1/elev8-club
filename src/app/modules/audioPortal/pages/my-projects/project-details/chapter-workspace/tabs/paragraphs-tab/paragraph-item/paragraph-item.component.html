@@ -104,7 +104,7 @@
 
   <!-- Mini Player (Author & Editor يشوفوه) -->
   <div class="title-mini-player"
-    *ngIf="(authType === AuthType.Editor || authType === AuthType.Author) && paragraph.voice_url && !reorderMode">
+    *ngIf="(authType === AuthType.Editor || authType === AuthType.Author) && paragraph.voice_url && !reorderMode && !isGenerating">
     <button class="btn-play-para" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'"
       title="Play">
       <svg *ngIf="!isPlaying" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -265,7 +265,7 @@
 
   <!-- Mini Player (Author & Editor يشوفوه) -->
   <div class="paragraph-mini-player"
-    *ngIf="(authType === AuthType.Editor || authType === AuthType.Author) && paragraph.voice_url && !reorderMode">
+    *ngIf="(authType === AuthType.Editor || authType === AuthType.Author) && paragraph.voice_url && !reorderMode && !isGenerating">
     <button class="btn-play-para" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'"
       title="Play">
       <svg *ngIf="!isPlaying" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

@@ -3,7 +3,7 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
-    <ngb-alert *ngIf="alertMessage" [type]="messageType" (closed)="showMsg(false, '')">
+    <ngb-alert *ngIf="alertMessage" [type]="messageType" (closed)="showmessage(false, '')">
         {{ alertMessage }}
     </ngb-alert>
     {{ message }}

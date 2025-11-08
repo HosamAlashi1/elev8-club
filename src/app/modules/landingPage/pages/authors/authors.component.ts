@@ -22,7 +22,7 @@ export class AuthorsComponent implements OnInit {
 
   authors: Author[] = [];
   isLoading = false;
-  errorMsg = '';
+  errormessage = '';
 
   constructor(
     private api: ApiLandingService,
@@ -37,7 +37,7 @@ export class AuthorsComponent implements OnInit {
     this.isLoading = true;
     this.http.listGet(this.api.featured_author.list, 'featured_author').subscribe({
       next: (res) => {
-        if (res?.success && Array.isArray(res?.data)) {
+        if (res?.status && Array.isArray(res?.data)) {
           // 🧠 تحويل الـ response إلى الـ interface المحلي
           this.authors = res.data.map((item: any, index: number) => ({
             name: item.author?.full_name ?? 'Unknown Author',
@@ -48,13 +48,13 @@ export class AuthorsComponent implements OnInit {
             link: `/author/${item.author?.id ?? 0}`
           }));
         } else {
-          this.errorMsg = 'No featured authors found.';
+          this.errormessage = 'No featured authors found.';
         }
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching featured authors:', err);
-        this.errorMsg = 'Failed to load featured authors.';
+        this.errormessage = 'Failed to load featured authors.';
         this.isLoading = false;
       }
     });

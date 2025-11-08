@@ -92,7 +92,7 @@ export class FilesComponent implements OnInit {
 
     this.http.listGet(url, 'files-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.totalCount = res.data.total_records ?? 0;
           this.files = res.data.data || [];
         } else {

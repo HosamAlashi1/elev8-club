@@ -36,7 +36,7 @@ export class ProjectDetailsResolver  {
 
   //   return this.httpService.listGet(url, 'projectResolver').pipe(
   //     map((response: ProjectDetailsResponse) => {
-  //       if (response.success && response.data) {
+  //       if (response.status && response.data) {
   //         return response.data;
   //       }
   //       return null;

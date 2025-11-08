@@ -36,10 +36,10 @@ export class AddEditCustomerComponent implements OnInit {
     if (this.isEdit) {
       this.httpService.listGet(this.api.users.details(this.customer.id), 'user-details').subscribe({
         next: (res: any) => {
-          if (res?.success && res?.data) {
+          if (res?.status && res?.data) {
             this.patchForm(res.data);
           } else {
-            this.toastr.showError(res?.msg || 'Failed to load user');
+            this.toastr.showError(res?.message || 'Failed to load user');
           }
         },
         error: () => this.toastr.showError('Failed to load user')
@@ -104,16 +104,16 @@ export class AddEditCustomerComponent implements OnInit {
 
     this.httpService.action(url, formData, 'addEditUser').subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res?.msg || 'Customer saved successfully');
+        if (res?.status) {
+          this.toastr.showSuccess(res?.message || 'Customer saved successfully');
           this.activeModal.close(true);
         } else {
-          this.toastr.showError(res?.msg || 'Operation failed');
+          this.toastr.showError(res?.message || 'Operation failed');
         }
       },
       error: (error: any) => {
-        const msg = error?.error?.msg || error?.message || 'Operation failed';
-        this.toastr.showError(msg);
+        const message = error?.response?.message || error?.message || 'Operation failed';
+        this.toastr.showError(message);
       }
     });
   }

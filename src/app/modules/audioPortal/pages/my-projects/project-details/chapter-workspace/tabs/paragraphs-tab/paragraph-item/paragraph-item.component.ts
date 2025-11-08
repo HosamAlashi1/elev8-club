@@ -30,6 +30,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
 
   @Output() edited = new EventEmitter<ParagraphItem>();
   @Output() deleted = new EventEmitter<number>();
+  @Output() refreshRequested = new EventEmitter<void>();
   private isSeeking = false;
 
   isCompactView = false;
@@ -91,8 +92,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.voiceState = getVoiceUIState(this.paragraph);
 
     if (this.paragraph.process) {
-      if (this.paragraph.process.status === VoiceStatus.Pending ||
-        this.paragraph.process.status === VoiceStatus.Processing) {
+      if (this.paragraph.process.status === VoiceStatus.Processing) {
         this.resumeVoiceTracking(this.paragraph.process.id);
       } else if (this.paragraph.process.status === VoiceStatus.Failed) {
         //  هيك الزر يطلع Regenerate فورًا
@@ -278,6 +278,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
               origin: 'paragraph'
             });
           }
+          this.requestRefresh();
         },
         error: () => {
           this.isSubmitting = false;
@@ -333,25 +334,13 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
-          this.deleteParagraph();
+            this.requestRefresh();
         }
       },
       () => { } // Dismissed
     );
   }
 
-  deleteParagraph(): void {
-    this.projectsClient.deleteParagraph(this.paragraph.id, this.chapterId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.deleted.emit(this.paragraph.id);
-        },
-        error: (error) => {
-          console.error('Failed to delete paragraph:', error);
-        }
-      });
-  }
 
   // ========================================
   // 🎙️ Voice Generation
@@ -410,8 +399,6 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.voiceState = 'generating';
     this.cdr.markForCheck();
 
-    this.toastService.showInfo(`Generating paragraph voice... ⏳`);
-
     this.voiceService
       .generateVoice(VoiceEntityType.Paragraph, this.paragraph.id, voiceKey)
       .pipe(takeUntil(this.destroy$))
@@ -440,7 +427,6 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
       processId, VoiceEntityType.Paragraph, this.paragraph.id
     ).pipe(
       tap(process => {
-        console.log(`[ParagraphItem] Voice status p${this.paragraph.id}:`, process.status);
 
         this.paragraph.process = process;
 
@@ -465,9 +451,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
         if (finalProcess.status === VoiceStatus.Completed) {
           this.toastService.showSuccess('Voice generated successfully! 🎉');
 
-          //  Emit to parent to reload paragraphs list with updated voice URLs
-          // The parent (paragraphs-tab) should reload chapter details which includes all paragraphs
-          this.edited.emit(this.paragraph); // Reuse edited event to trigger refresh
+          this.requestRefresh();
         } else if (finalProcess.status === VoiceStatus.Failed) {
           // (اختياري) توست فقط — الـ UI عولج في tap
           this.toastService.showError(finalProcess.error_message || 'Voice generation failed');
@@ -633,5 +617,7 @@ export class ParagraphItemComponent implements OnInit, OnDestroy {
     this.showParaMenu = false;
   };
 
-
+  private requestRefresh(): void {
+    this.refreshRequested.emit();
+  }
 }

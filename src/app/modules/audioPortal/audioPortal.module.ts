@@ -28,6 +28,7 @@ import { AudioDockComponent } from './shared/audio-dock/audio-dock.component';
 import { VoiceSelectionModalComponent } from './components/voice-selection-modal/voice-selection-modal.component';
 import { BookReaderComponent } from './pages/my-books/book-reader/book-reader.component';
 import { BookFlipComponent } from './pages/my-books/book-reader/components/book-flip/book-flip.component';
+import { PublicSharedModule } from '../shared/public-shared.module';
 
 
 export function playerFactory() {
@@ -68,7 +69,8 @@ export function playerFactory() {
     DragDropModule,
     AudioPortalRoutingModule,
     LottieModule.forRoot({ player: playerFactory }),
-    LandingSharedModule
+    LandingSharedModule,
+    PublicSharedModule
   ],
   providers: [
     // ConfirmationDialogService

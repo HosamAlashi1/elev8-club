@@ -74,7 +74,7 @@ export class CategoriesComponent implements OnInit {
     const url = this.buildUrl();
     this.http.listGet(url, 'categories-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data) {
+        if (res?.status && res?.data) {
           this.totalCount = res.data.total_count ?? 0;
           this.categories = (res.data.data || []) as Category[];
         } else {

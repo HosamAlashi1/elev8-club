@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, HostListener, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, OnDestroy, ViewEncapsulation, NgZone, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 import { HttpClient } from '@angular/common/http';
@@ -9,13 +9,29 @@ import { ReaderStateService } from './services/reader-state.service';
 import { BookFlipComponent } from './components/book-flip/book-flip.component';
 import { firstValueFrom } from 'rxjs';
 import { ElementRef, Renderer2 } from '@angular/core';
-import { computeForeEdges } from './utils/page-factory';  // <- استيراد الهيلبر
+import { computeEdges } from './utils/page-factory';  // <- استيراد الهيلبر
 export interface Page {
   html: string;
   pageNumber: number;
   chapterId?: number;
   chapterTitle?: string;
 }
+
+const JSON_CONFIG: any = {
+  settings: {
+    page: { width: 400, height: 650, gutter: 20, padding: 30 },
+    typography: { font: 'Georgia, serif', size: 15, lineHeight: 1.6 },
+    theme: 'light',
+    spread: true,
+    rtl: false,
+  },
+  sounds: {
+    drag: 'assets/sfx/page-drag.mp3',
+    flip: 'assets/sfx/page-flip.mp3',
+    enabled: true,
+    volume: 0.35,
+  },
+};
 
 @Component({
   selector: 'app-book-reader',
@@ -25,10 +41,16 @@ export interface Page {
 })
 export class BookReaderComponent implements OnInit, OnDestroy {
   @ViewChild(BookFlipComponent) flipComp!: BookFlipComponent;
-  @ViewChild('frameRef', { static: true }) frameRef!: ElementRef<HTMLElement>;
+  @ViewChild('frameRef', { static: false }) frameRef!: ElementRef<HTMLElement>;
+
+  lastDir: 'left' | 'right' = 'right';
+
+  private flipStartIndex = 0;
+  private flipFailSafe?: number;
 
   projectId!: number;
   bookId!: number; // for mock API
+  pageEls: HTMLElement[] = [];
 
   // Book data
   book: any = null;
@@ -47,14 +69,23 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   currentPage = 1;
   totalPages = 1;
 
+  private isPointerDown = false;
+  private dragSide: 'left' | 'right' = 'right';
+  private frameRect!: DOMRect;
+
+
   // Settings
+  // --- 2) داخل الكلاس BookReaderComponent: عدّل الـ settings الافتراضية لتستوعب قيم JSON ---
   settings: any = {
+    fontFamily: '',
     fontSize: 16,
-    lineHeight: 1.65,
+    lineHeight: 1.6,
     theme: 'light',
     spreadMode: true,
+    rtl: false,
+    page: { width: 0, height: 0, gutter: 0, padding: 0 },
     audioEnabled: true,
-    audioVolume: 0.35
+    audioVolume: 0.35,
   };
 
   // UI flags
@@ -74,17 +105,24 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     private mockApi: MockReaderApiService,
     private audioSfx: AudioSfxService,
     private readerState: ReaderStateService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private zone: NgZone,
+    private cdr: ChangeDetectorRef,
+
   ) { }
 
   ngOnInit(): void {
     this.projectId = Number(this.route.snapshot.paramMap.get('projectId'));
-    this.bookId = this.projectId; // Use projectId as bookId for mock API
+    this.bookId = this.projectId;
 
-    // Load saved settings
+    // المصدر الواحد
+    this.initConfigFromJson();
+
+    // دمج المحفوظ (بدون لمس الصوت)
     const savedSettings = this.readerState.getSettings();
     if (savedSettings) {
-      this.settings = { ...this.settings, ...savedSettings };
+      const { soundEnabled, soundVolume, ...rest } = savedSettings;
+      this.settings = { ...this.settings, ...rest };
     }
 
     this.loadBookData();
@@ -95,43 +133,120 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     this.saveState();
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.setFrameMetrics();
+      this.ensureEdges();
+      this.bindFramePointerListeners();
+    }, 0);
+  }
+
+  private bindFramePointerListeners() {
+    const frame = this.getFrameEl();
+    if (!frame) return;
+
+    frame.addEventListener('pointerdown', this.onFramePointerDown, { passive: true });
+    window.addEventListener('pointermove', this.onFramePointerMove, { passive: false });
+    window.addEventListener('pointerup', this.onFramePointerUp, { passive: true });
+  }
+
+
+  private onFramePointerDown = (e: PointerEvent) => {
+    const frame = this.getFrameEl();
+    const host = frame?.querySelector('app-book-flip') as HTMLElement;
+    if (!frame || !host) return;
+
+    this.frameRect = host.getBoundingClientRect();
+    const cx = this.frameRect.left + this.frameRect.width / 2;
+
+    this.isPointerDown = true;
+
+    // اجعل الاتجاه حسب جهة الضغط من منتصف الكتاب:
+    this.dragSide = (e.clientX >= cx) ? 'right' : 'left';
+
+    // فعّل كلاس flipping + اتجاه
+    frame.classList.add('flipping');
+    frame.classList.toggle('flip-right', this.dragSide === 'right');
+    frame.classList.toggle('flip-left', this.dragSide === 'left');
+
+    // صفر progress بالبداية
+    this.setSpineProgress(0);
+  };
+
+  private onFramePointerMove = (e: PointerEvent) => {
+    if (!this.isPointerDown) return;
+
+    // امنع السحب من التمرير
+    e.preventDefault();
+
+    const frame = this.getFrameEl();
+    const host = frame?.querySelector('app-book-flip') as HTMLElement;
+    if (!frame || !host || !this.frameRect) return;
+
+    const cx = this.frameRect.left + this.frameRect.width / 2;
+    const half = this.frameRect.width / 2;
+
+    // مسافة الإصبع من منتصف الكتاب على جهة السحب
+    const dx = (this.dragSide === 'right')
+      ? Math.max(0, e.clientX - cx)
+      : Math.max(0, cx - e.clientX);
+
+    // progress [0..1] حسب كم ابتعد عن منتصف الكتاب (منطقي بصريًا)
+    const raw = dx / half;
+    const progress = Math.min(1, Math.max(0, raw));
+
+    this.setSpineProgress(progress);
+  };
+
+  private onFramePointerUp = (_e: PointerEvent) => {
+    if (!this.isPointerDown) return;
+    this.isPointerDown = false;
+
+    // رجّع الظل طبيعي بلحظة (CSS transition قصيرة)
+    this.setSpineProgress(0);
+
+    const frame = this.getFrameEl();
+    if (frame) {
+      frame.classList.remove('flipping', 'flip-right', 'flip-left');
+    }
+  };
+
+  private setSpineProgress(progress: number) {
+    const frame = this.getFrameEl();
+    if (!frame) return;
+
+    // شدّة الظل: تُحسب في CSS من var(--drag-progress)
+    frame.style.setProperty('--drag-progress', progress.toFixed(3));
+
+    // مقدار القصّ حول منتصف spine:
+    // 0% عند البداية، ويزيد حتى ~22% عند منتصف الكتاب
+    const maskCut = (progress * 22).toFixed(2) + '%';
+    frame.style.setProperty('--mask-cut', maskCut);
+  }
+
   async loadBookData() {
     this.isLoading = true;
     try {
-      // Load book metadata
-      this.book = await firstValueFrom(this.mockApi.getBook(this.bookId));
-
-      // Initialize audio SFX
-      if (this.book.sounds) {
-        this.audioSfx.init(
-          { flip: this.book.sounds.flip, drag: this.book.sounds.drag },
-          this.book.sounds.enabled,
-          this.book.sounds.volume
-        );
-      }
-
-      // Load chapters
+      // لا نستخدم book.sounds / book.settings إطلاقاً هنا
+      // فقط حمّل الفصول والتدفق من الـ mockApi كالمعتاد:
       this.chapters = (await firstValueFrom(this.mockApi.getChapters(this.bookId)) ?? [])
         .map((c: any) => ({ ...c, id: +c.id }));
 
-      // Load flow
       this.flow = await firstValueFrom(this.mockApi.getFlow(this.bookId)) ?? [];
-      // Apply book settings
-      if (this.book.settings) {
-        this.settings = { ...this.settings, ...this.book.settings };
-      }
 
-      // Paginate the flow
-      this.pages = paginateFlow(this.flow, this.book, this.chapters);
+      this.book = await firstValueFrom(this.mockApi.getBook(this.bookId));
+
+      this.pages = paginateFlow(this.flow, this.getLayoutConfig(), this.chapters);
+
       this.totalPages = this.pages.length;
       this.pageEls = this.makePageElements(this.pages);
+
+      this.cdr.detectChanges();
       setTimeout(() => {
-        const idx = this.flipComp?.getIndex?.() ?? this.currentPage;   // 1-based
-        const total = this.flipComp?.getCount?.() ?? this.totalPages;
-        this.applyForeEdgesByIndex(idx, total);
+        this.setFrameMetrics();
+        this.ensureEdges();
       }, 0);
 
-      // Restore last position
       const lastPos = this.readerState.getPosition(this.bookId);
       if (lastPos) {
         this.selectedChapterId = lastPos.chapterId;
@@ -139,22 +254,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
           const pageIndex = lastPos.pageIndex || 0;
           this.currentPage = pageIndex + 1;
           this.currentSpreadIndex = Math.floor(pageIndex / 2);
-          if (this.flipComp) {
-            this.flipComp.goTo(pageIndex);
-          }
+          this.flipComp?.goTo(pageIndex);
         }, 100);
       } else {
-        // Start from beginning
         this.currentPage = 1;
         this.currentSpreadIndex = 0;
-        if (this.chapters.length > 0) {
-          this.selectedChapterId = this.chapters[0].id;
-        }
+        if (this.chapters.length > 0) this.selectedChapterId = this.chapters[0].id;
       }
-
     } catch (error) {
       console.error('Failed to load book:', error);
-      // Fallback to legacy API
       await this.loadProjectDetails();
     } finally {
       this.isLoading = false;
@@ -164,7 +272,7 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   async loadProjectDetails() {
     try {
       const res: any = await firstValueFrom(this.http.get(this.api.projects.details(String(this.projectId))));
-      if (res?.success) {
+      if (res?.status) {
         this.project = res.data;
         this.chapters = res.data.chapters || [];
 
@@ -184,12 +292,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     this.selectedChapterId = Number(chapterId);
     this.isLoading = true;
     try {
-      const res: any = await this.http.get(this.api.chapters.paragraphs(String(chapterId))).toPromise();
-      if (res?.success) {
+      const res: any = await this.http
+        .get(this.api.chapters.paragraphs(String(chapterId)))
+        .toPromise();
+
+      if (res?.status) {
         this.paragraphs = res.data;
         const title = titleFromList ?? (this.chapters.find(c => c.id === chapterId)?.title ?? 'Chapter');
 
-        // بناء تدفق النصوص (flow) من الفقرات
+        // Build flow from paragraphs
         const flow = this.paragraphs.map((p: any) => ({
           id: 'p-' + p.id,
           type: 'p' as const,
@@ -197,14 +308,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
           chapterId
         }));
 
-        // إنشاء الصفحات باستخدام paginateFlow الجديد
+        // Generate pages
         this.pages = paginateFlow(flow, { title }, this.chapters);
         this.pageEls = this.makePageElements(this.pages);
+        this.cdr.detectChanges();
         setTimeout(() => {
-          const idx = this.flipComp?.getIndex?.() ?? this.currentPage;   // 1-based
-          const total = this.flipComp?.getCount?.() ?? this.totalPages;
-          this.applyForeEdgesByIndex(idx, total);
+          this.setFrameMetrics();
+          this.ensureEdges();
         }, 0);
+
 
         const last = this.getLastPosition();
         setTimeout(() => {
@@ -224,17 +336,96 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   }
 
   onSpreadChange(leftPage: number, totalPages: number) {
+    if (!totalPages) return;
+    // قد يتغير ارتفاع عنصر الكتاب أثناء السبرد — نقرأه أولًا ثم نطبّق الحواف
+    this.setFrameMetrics();
     this.totalPages = totalPages;
     this.applyForeEdges(leftPage, totalPages);
   }
 
+
   private applyForeEdges(leftPage: number, totalPages: number) {
-    const { leftPx, rightPx } = computeForeEdges(leftPage, totalPages);
-    const el = this.frameRef?.nativeElement;
+    const el = this.frameRef?.nativeElement || document.querySelector('.book-frame');
     if (!el) return;
-    this.renderer.setStyle(el, '--edge-left', `${leftPx}px`);  // يسار = المقروء
-    this.renderer.setStyle(el, '--edge-right', `${rightPx}px`); // يمين = المتبقي
+
+    const { leftPx, rightPx, readCount, remainCount } = computeEdges(leftPage, totalPages);
+
+    // سماكة الحواف الجانبية
+    el.style.setProperty('--edge-left', `${leftPx}px`);
+    el.style.setProperty('--edge-right', `${rightPx}px`);
+
+    // نسب القراءة (0 إلى 1)
+    const readRatio = totalPages > 0 ? readCount / totalPages : 0;
+    const remainRatio = totalPages > 0 ? remainCount / totalPages : 0;
+
+    //  إعدادات الإزاحة الجانبية
+    const baseOffset = -4.25;
+    const maxOffset = 6;
+
+    const leftOffset = baseOffset - (readRatio * maxOffset);
+    const rightOffset = baseOffset - (remainRatio * maxOffset);
+
+    // إعدادات الارتفاع
+    const baseHeight = 597;
+    const maxHeight = 610;
+
+    // دالة لحساب الارتفاع بناءً على عدد الصفحات
+    const computeHeight = (pages: number) => {
+      console.log(pages);
+
+      if (pages <= 0) return baseHeight;
+      if (pages === 2) return 596;
+      if (pages === 4) return 600;
+      if (pages === 6) return 603;
+      if (pages === 8) return 608;
+
+      // بعد الصفحة الرابعة، ندأ بالزيادة البطيئة بالأعشار
+      const capped = Math.min(pages, totalPages); // تأكد ألا تتعدى المجموع
+      const extra = Math.min((capped - 7) * 0.25, maxHeight - 608); // 0.25px لكل صفحة تقريبًا
+      return 606 + extra;
+    };
+
+    // 🧮 نحسب ارتفاع الجهتين بناءً على عدد الصفحات المقروءة والمتبقية
+    const leftHeight = computeHeight(readCount);
+    const rightHeight = computeHeight(remainCount);
+
+    // حدّث القيم في الـ CSS
+    el.style.setProperty('--offset-left', `${leftOffset.toFixed(1)}px`);
+    el.style.setProperty('--offset-right', `${rightOffset.toFixed(1)}px`);
+    el.style.setProperty('--page-h-left', `${leftHeight.toFixed(2)}px`);
+    el.style.setProperty('--page-h-right', `${rightHeight.toFixed(2)}px`);
   }
+
+  private ensureEdges() {
+    const el = this.getFrameEl();
+    if (!this.flipComp || !el) {
+      requestAnimationFrame(() => this.ensureEdges());
+      return;
+    }
+    // أولًا اضبط المقاسات الفعلية للكتاب داخل الإطار
+    this.setFrameMetrics();
+
+    const total = this.flipComp.getCount?.() ?? this.totalPages ?? 1;
+    const idx = this.flipComp.getIndex?.() ?? 1;   // 1-based
+    this.applyForeEdgesByIndex(idx, total);
+  }
+
+  private getLayoutConfig() {
+    return {
+      settings: {
+        page: this.settings.page,
+        typography: {
+          font: this.settings.fontFamily,
+          size: this.settings.fontSize,
+          lineHeight: this.settings.lineHeight,
+        },
+        theme: this.settings.theme,
+        spread: this.settings.spreadMode,
+        rtl: this.settings.rtl,
+      },
+    } as any;
+  }
+
 
   private applyForeEdgesByIndex(index1Based: number, total: number) {
     // حدد رقم صفحة اليسار داخل السبريد الحالي
@@ -246,9 +437,60 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     return this.chapters.find(c => c.id === this.selectedChapterId)?.title ?? '';
   }
 
-  // ---- Navigation & State Management ----
+  onFlipStart() {
+    this.isFlipping = true;
+
+    // احفظ الصفحة الحالية كبداية
+    this.flipStartIndex = this.flipComp?.getIndex?.() ?? this.currentPage;
+
+    // طبّق كلاسات الاتجاه
+    const frame = this.getFrameEl();
+    if (frame) {
+      frame.classList.add('flipping');
+      frame.classList.toggle('flip-right', this.lastDir === 'right');
+      frame.classList.toggle('flip-left', this.lastDir === 'left');
+      frame.style.setProperty('--spine-opacity', '0'); // اختياري
+    }
+
+    // Fail-safe: لو ما أجانا flipComplete ولا pointerup لسبب ما
+    window.clearTimeout(this.flipFailSafe);
+    this.flipFailSafe = window.setTimeout(() => {
+      if (this.isFlipping) this.resetFlipUi();
+    }, 9000); // نفس مدة أنيميشنك تقريبًا + هامش بسيط
+  }
+
+  onFlipComplete() {
+    // تم التقليب فعلاً => رجّع الحالة طبيعي
+    window.clearTimeout(this.flipFailSafe);
+    this.resetFlipUi();
+  }
+
+  // دالة تعيد كل شيء لوضعه الطبيعي (تُستخدم في الإلغاء والاكتمال)
+  private resetFlipUi() {
+    this.isFlipping = false;
+    const frame = this.getFrameEl();
+    if (frame) {
+      frame.classList.remove('flipping', 'flip-right', 'flip-left');
+      frame.style.setProperty('--spine-opacity', '1');
+    }
+  }
+  
+
+  @HostListener('window:pointerup')
+  onWindowPointerUp() {
+    if (!this.isFlipping) return;
+
+    const idxNow = this.flipComp?.getIndex?.() ?? this.currentPage;
+    // ما تغيّر الإندكس = ما صار قلب فعلي => إلغاء
+    if (idxNow === this.flipStartIndex) {
+      window.clearTimeout(this.flipFailSafe);
+      this.resetFlipUi();
+    }
+  }
+
   nextPage() {
     if (this.flipComp?.canGoNext()) {
+      this.lastDir = 'right';
       this.flipComp.next();
       this.audioSfx.play('flip');
     }
@@ -256,95 +498,20 @@ export class BookReaderComponent implements OnInit, OnDestroy {
 
   prevPage() {
     if (this.flipComp?.canGoPrev()) {
+      this.lastDir = 'left';
       this.flipComp.prev();
       this.audioSfx.play('flip');
     }
   }
 
+  private getFrameEl(): HTMLElement | null {
+    return this.frameRef?.nativeElement ?? document.querySelector('.book-frame');
+  }
   private triggerFlipAnimation() {
     this.isFlipping = true;
     setTimeout(() => {
       this.isFlipping = false;
     }, 600);
-  }
-
-  // ==============================
-  // Touch/Drag/Click Interactions
-  // ==============================
-
-  onPageTouchStart(event: TouchEvent, side: 'left' | 'right'): void {
-    if (this.isFlipping) return;
-    const touch = event.touches[0];
-    this.touchStartX = touch.clientX;
-    this.touchStartY = touch.clientY;
-    this.isDragging = true;
-  }
-
-  onPageTouchMove(event: TouchEvent): void {
-    if (!this.isDragging || this.isFlipping) return;
-    event.preventDefault();
-  }
-
-  onPageTouchEnd(event: TouchEvent, side: 'left' | 'right'): void {
-    if (!this.isDragging || this.isFlipping) return;
-
-    const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - this.touchStartX;
-    const deltaY = touch.clientY - this.touchStartY;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-      if (deltaX > 0 && side === 'left') {
-        this.prevPage();
-      } else if (deltaX < 0 && side === 'right') {
-        this.nextPage();
-      }
-    }
-
-    this.isDragging = false;
-  }
-
-  onPageMouseDown(event: MouseEvent, side: 'left' | 'right'): void {
-    if (this.isFlipping) return;
-    this.touchStartX = event.clientX;
-    this.touchStartY = event.clientY;
-    this.isDragging = true;
-  }
-
-  onPageMouseMove(event: MouseEvent): void {
-    if (!this.isDragging || this.isFlipping) return;
-  }
-
-  onPageMouseUp(event: MouseEvent, side: 'left' | 'right'): void {
-    if (!this.isDragging || this.isFlipping) return;
-
-    const deltaX = event.clientX - this.touchStartX;
-    const deltaY = event.clientY - this.touchStartY;
-
-    if (Math.abs(deltaX) > 30 || Math.abs(deltaY) > 30) {
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0 && side === 'left') {
-          this.prevPage();
-        } else if (deltaX < 0 && side === 'right') {
-          this.nextPage();
-        }
-      }
-    }
-
-    this.isDragging = false;
-  }
-
-  onPageClick(side: 'left' | 'right'): void {
-    if (this.isFlipping) return;
-
-    if (side === 'left') {
-      this.prevPage();
-    } else {
-      this.nextPage();
-    }
-  }
-
-  onPageMouseLeave(): void {
-    this.isDragging = false;
   }
 
   goToChapter(chapterId: number) {
@@ -370,10 +537,10 @@ export class BookReaderComponent implements OnInit, OnDestroy {
 
     this.saveState();
 
-    // 🔁 حدّث الحواف حتى لو ما اجانا spreadChange
+    // أعِد ضبط مقاسات الإطار ثم طبّق الحواف
+    this.setFrameMetrics();
     this.applyForeEdgesByIndex(e.index, e.total);
   }
-
 
   // ---- Settings Management ----
   toggleSettings() {
@@ -413,31 +580,60 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     this.readerState.saveSettings({ soundVolume: volume });
   }
 
+  // --- 6) في repaginate: مرّر نفس bookForLayout المبني من settings فقط ---
   private repaginate() {
     if (this.flow.length > 0) {
-      // احفظ المؤشر العالمي الحالي (0-based)
       const currentIndex = (this.flipComp ? this.flipComp.getIndex() - 1 : this.currentPage - 1);
       const currentChapterId = this.selectedChapterId;
 
-      // أعد التقسيم
-      this.pages = paginateFlow(this.flow, { ...this.book, ...this.settings }, this.chapters)
-        .map(p => ({ ...p, chapterId: Number(p.chapterId) })); // طبع
-      this.totalPages = this.pages.length;
+      this.pages = paginateFlow(this.flow, this.getLayoutConfig(), this.chapters)
+        .map(p => ({ ...p, chapterId: Number(p.chapterId) }));
 
-      // حاول العودة لنفس الصفحة إن أمكن، وإلا لأول صفحة من نفس الفصل
+      this.totalPages = this.pages.length;
+      this.pageEls = this.makePageElements(this.pages);
+
+      this.cdr.detectChanges();
+
       let targetPageIndex = Math.min(Math.max(currentIndex, 0), this.pages.length - 1);
       if (!this.pages[targetPageIndex]) targetPageIndex = 0;
 
-      // إن تغيّر توزيع الصفحات كثيرًا، ارجع لأول صفحة من نفس الفصل
       if (currentChapterId != null) {
         const fallback = this.pages.findIndex(p => Number(p.chapterId) === Number(currentChapterId));
         if (fallback >= 0) targetPageIndex = fallback;
       }
 
       if (this.flipComp) {
-        setTimeout(() => this.flipComp!.goTo(targetPageIndex), 80);
+        setTimeout(() => {
+          this.flipComp!.goTo(targetPageIndex);
+          this.setFrameMetrics();
+          this.ensureEdges();
+        }, 100);
       }
     }
+  }
+
+  // --- 3) أضِف دالة صغيرة تطبق الإعدادات والصوت من الثوابت ---
+  private initConfigFromJson() {
+    const s = JSON_CONFIG.settings;
+    const snd = JSON_CONFIG.sounds;
+
+    this.settings = {
+      fontFamily: s.typography.font,
+      fontSize: s.typography.size,
+      lineHeight: s.typography.lineHeight,
+      theme: s.theme,
+      spreadMode: s.spread,
+      rtl: s.rtl,
+      page: { ...s.page },
+      audioEnabled: snd.enabled,
+      audioVolume: snd.volume,
+    };
+
+    this.audioSfx.init(
+      { flip: snd.flip, drag: snd.drag },
+      snd.enabled,
+      snd.volume
+    );
   }
 
   // ---- State Persistence ----
@@ -463,7 +659,34 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     catch { return null; }
   }
 
-  pageEls: HTMLElement[] = [];
+
+  private setFrameMetrics() {
+    const frame = this.frameRef?.nativeElement;
+    const host = frame?.querySelector('app-book-flip') as HTMLElement;
+    if (!frame || !host) return;
+
+    const rect = host.getBoundingClientRect();
+    // لو المكوّن الداخلي يرسم داخل عنصر child، خذ child.firstElementChild بدل host
+    const inner = host.firstElementChild as HTMLElement || host;
+    const r = (inner.getBoundingClientRect().width > 0 ? inner : host).getBoundingClientRect();
+
+    // قياسات الصفحات الفعلية
+    const pageW = Math.round(r.width);
+    const pageH = Math.round(r.height);
+
+    this.renderer.setStyle(frame, '--page-w', `${pageW}px`);
+    this.renderer.setStyle(frame, '--page-h', `${pageH}px`);
+
+    // مزامنة لون الورق مع .pg لو عدّلته لاحقًا (اختياري)
+    // this.renderer.setStyle(frame, '--paper-top', '#fffdfa');
+    // this.renderer.setStyle(frame, '--paper-bot', '#fdfcf7');
+
+    // بعد ضبط المقاسات، أعِد تطبيق الحواف
+    const total = this.flipComp?.getCount?.() ?? this.totalPages ?? 1;
+    const idx = this.flipComp?.getIndex?.() ?? 1;
+    this.applyForeEdgesByIndex(idx, total);
+  }
+
 
   private makePageElements(pages: Page[]): HTMLElement[] {
     return pages.map(p => {
@@ -474,6 +697,15 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     `;
       return el;
     });
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    // مع الريسايز، نقرأ المقاسات من جديد ثم نعيد حساب الحواف
+    this.setFrameMetrics();
+    const total = this.flipComp?.getCount?.() ?? this.totalPages ?? 1;
+    const idx = this.flipComp?.getIndex?.() ?? 1;
+    this.applyForeEdgesByIndex(idx, total);
   }
 
 

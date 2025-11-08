@@ -170,15 +170,15 @@
 
 @keyframes pageFlip {
   0% {
-    transform: perspective(1200px) rotateY(0deg);
+    transform: perspective(1200px);
   }
 
   50% {
-    transform: perspective(1200px) rotateY(-12deg);
+    transform: perspective(1200px);
   }
 
   100% {
-    transform: perspective(1200px) rotateY(0deg);
+    transform: perspective(1200px);
   }
 }
 
@@ -191,53 +191,257 @@
   margin: 0 0 18px 0;
 }
 
-/* ===== Book frame (background, edges, spine) ===== */
+/* =========== Book Frame =========== */
 .book-frame {
   position: relative;
   margin: 0 auto;
-  padding: 26px;
-  /* مسافة حول الكتاب للظل */
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0)) padding-box,
-    #f0f2f5;
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.22),
-    0 6px 18px rgba(0, 0, 0, 0.12);
-  /* المقاس مقارب لحجم الكتاب داخل PageFlip */
+  /* اضبط padding كمتغير حتى نستعمله بحسابات الحواف */
+  --frame-pad: 28px;
+  padding: var(--frame-pad);
   width: 920px;
   max-width: 100%;
-}
-
-.book-frame {
-  /* القيم الافتراضية لو لسه ما حسبنا بالـTS */
+  border-radius: 12px;
+  background: #f0f2f5;
+  /* يتبدّل مع الثيم لاحقاً */
+  box-shadow: 0 28px 65px rgba(0, 0, 0, .25), 0 10px 24px rgba(0, 0, 0, .12);
+  perspective: 1600px;
+  /* سماكات الحواف تُحدَّث من TS */
   --edge-left: 8px;
   --edge-right: 8px;
+  /* أبعاد الكتاب الفعلية (نحدّثها من TS) */
+  --page-w: 400px;
+  --page-h: 609px;
+  /* لون ورق الصفحات (حتى ننسجم مع .pg) */
+  --paper-top: #fffdfa;
+  --paper-bot: #fdfcf7;
+  overflow: visible;
+  z-index: 0;
+  /* قاعدة الهرم */
 }
 
+/* تخلي الحواف على ارتفاع الصفحات بالضبط ومتمركزة عمودياً داخل الإطار */
 .book-frame::before,
 .book-frame::after {
   content: "";
   position: absolute;
-  top: 20px; bottom: 20px;
-  border-radius: 6px;
   pointer-events: none;
-  filter: blur(.3px);
-  transition: width .25s ease;   /* سلاسة التغيير */
+  z-index: 1;
+  transition: all .25s ease;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(to right,
+      rgba(0, 0, 0, .10) 0, rgba(0, 0, 0, .10) 1px,
+      rgba(255, 255, 255, .72) 1px, rgba(255, 255, 255, .72) 2.2px);
 }
 
-/* يسار = المقروء */
+/* يسار */
 .book-frame::before {
-  left: 10px;
+  left: calc(var(--frame-pad) + var(--offset-left, -5px));
+  top: calc(var(--frame-pad) + ((100% - 2*var(--frame-pad) - var(--page-h-left, 609px)) / 2));
+  height: var(--page-h-left, 609px);
   width: var(--edge-left);
-  background: linear-gradient(to right, rgba(0,0,0,.10), rgba(0,0,0,.02));
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, .18),
+    2px 0 4px rgba(255, 255, 255, .45);
+  border-radius: 30px 0 0 30px;
 }
 
-/* يمين = المتبقّي */
+/* يمين */
 .book-frame::after {
-  right: 10px;
+  right: calc(var(--frame-pad) + var(--offset-right, -5px));
+  top: calc(var(--frame-pad) + ((100% - 2*var(--frame-pad) - var(--page-h-right, 609px)) / 2));
+  height: var(--page-h-right, 609px);
   width: var(--edge-right);
-  background: linear-gradient(to left, rgba(0,0,0,.10), rgba(0,0,0,.02));
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, .18),
+    -2px 0 4px rgba(255, 255, 255, .45);
+  border-radius: 0 30px 30px 0;
+}
+
+.book-frame app-book-flip {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+/* الظل الوسطي (spine) تحت الصفحات */
+.book-frame {
+  --spine-opacity: 1;
+  /* أساس الشفافية */
+  --spine-width: 6px;
+  --drag-progress: 0;
+  /* 0..1 يتم ضبطها من TS */
+  --mask-cut: 0%;
+  /* يتم ضبطها من TS */
+}
+
+.book-frame {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.book-frame.dragging {
+  cursor: grabbing;
+}
+
+/* spine تحت الصفحات */
+.book-gutter-shadow {
+  position: absolute;
+  inset: var(--frame-pad);
+  pointer-events: none;
+  z-index: 1;
+  /* تحت app-book-flip */
+  opacity: calc(var(--spine-opacity) * (1 - (var(--drag-progress) * .85)));
+  transition: opacity .08s linear;
+  /* سريع وناعم */
+}
+
+
+.book-gutter-shadow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--spine-width);
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, .06) 0%,
+      rgba(0, 0, 0, .14) 50%,
+      rgba(0, 0, 0, .06) 100%);
+  filter: blur(.2px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .12);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* قصّ ديناميكي: نحرك حدّ القص حول منتصف الكتاب حسب progress */
+.book-frame.flip-right .book-gutter-shadow::before {
+  -webkit-mask-image: linear-gradient(to right,
+      black 0 calc(50% - var(--mask-cut)),
+      transparent calc(50% - var(--mask-cut)) 100%);
+  mask-image: linear-gradient(to right,
+      black 0 calc(50% - var(--mask-cut)),
+      transparent calc(50% - var(--mask-cut)) 100%);
+}
+
+.book-frame.flip-left .book-gutter-shadow::before {
+  -webkit-mask-image: linear-gradient(to left,
+      black 0 calc(50% - var(--mask-cut)),
+      transparent calc(50% - var(--mask-cut)) 100%);
+  mask-image: linear-gradient(to left,
+      black 0 calc(50% - var(--mask-cut)),
+      transparent calc(50% - var(--mask-cut)) 100%);
+}
+
+/* طبقة ظل فوق الصفحات أثناء الطيّة */
+.book-turn-shade {
+  position: absolute;
+  inset: var(--frame-pad);
+  pointer-events: none;
+  z-index: 3;
+  /* فوق الصفحات، تحت أي UI */
+  opacity: 0;
+  transition: opacity .12s ease;
+  background:
+    radial-gradient(120% 100% at 50% 50%, rgba(0, 0, 0, .16), rgba(0, 0, 0, 0) 60%);
+  mix-blend-mode: multiply;
+}
+
+/* قم بتفعيلها أثناء التقليب */
+.book-frame.flipping .book-turn-shade {
+  opacity: .45;
+}
+
+/* عدّل اتجاه الظل حسب اتجاه الطيّة */
+.book-frame.flipping.flip-right .book-turn-shade {
+  transform-origin: left center;
+  animation: shadeRight .55s ease both;
+}
+
+.book-frame.flipping.flip-left .book-turn-shade {
+  transform-origin: right center;
+  animation: shadeLeft .55s ease both;
+}
+
+@keyframes shadeRight {
+  0% {
+    transform: skewY(0deg);
+    opacity: .45;
+  }
+
+  50% {
+    transform: skewY(2.5deg);
+    opacity: .25;
+  }
+
+  100% {
+    transform: skewY(0deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shadeLeft {
+  0% {
+    transform: skewY(0deg);
+    opacity: .45;
+  }
+
+  50% {
+    transform: skewY(-2.5deg);
+    opacity: .25;
+  }
+
+  100% {
+    transform: skewY(0deg);
+    opacity: 0;
+  }
+}
+
+/* ورق الصفحات نفس ألوان الـpaper ليتطابق مع الحواف */
+.page {
+  background:
+    linear-gradient(180deg, var(--paper-top), var(--paper-bot)),
+    radial-gradient(circle at 4% 20%, rgba(0, 0, 0, .05) 0%, rgba(0, 0, 0, 0) 70%);
+  background-blend-mode: multiply;
+  border-radius: 6px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, .10), 0 1px 2px rgba(0, 0, 0, .06);
+}
+
+/* لمعان أثناء التقليب (اختياري) */
+.page-curl {
+  position: absolute;
+  inset: calc(var(--frame-pad) + 6px);
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 8px;
+  background:
+    radial-gradient(120% 120% at 95% 10%, rgba(255, 255, 255, .45), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(120% 120% at 5% 90%, rgba(0, 0, 0, .09), rgba(0, 0, 0, 0) 65%);
+  mix-blend-mode: soft-light;
+}
+
+.book-frame.flipping .page-curl {
+  opacity: 1;
+  animation: pageCurl .55s ease both;
+}
+
+@keyframes pageCurl {
+  0% {
+    transform: rotateY(0deg);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: rotateY(8deg);
+    filter: brightness(1.05);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+    filter: brightness(1);
+  }
 }
 
 
@@ -489,7 +693,8 @@
   font-size: 0.85em;
   color: #444;
   opacity: 0.85;
-  pointer-events: none; /* يمنع تداخل النقر مع PageFlip */
+  pointer-events: none;
+  /* يمنع تداخل النقر مع PageFlip */
 }
 
 .pg-number {
@@ -552,11 +757,23 @@
 }
 
 /* ظل وسط واحد */
-.book-gutter-shadow { position: absolute; inset: 26px; pointer-events: none; z-index: 2; }
-.book-gutter-shadow::before {
-  content: ""; position: absolute; top:0; bottom:0; left:50%; width:6px; transform:translateX(-50%);
-  background: linear-gradient(to bottom, rgba(0,0,0,.06), rgba(0,0,0,.14) 50%, rgba(0,0,0,.06));
-  filter: blur(.2px); box-shadow: 0 0 10px rgba(0,0,0,.12);
+.book-gutter-shadow {
+  position: absolute;
+  inset: 26px;
+  pointer-events: none;
+  z-index: 2;
 }
 
+.book-gutter-shadow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 6px;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .06), rgba(0, 0, 0, .14) 50%, rgba(0, 0, 0, .06));
+  filter: blur(.2px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .12);
+}
 

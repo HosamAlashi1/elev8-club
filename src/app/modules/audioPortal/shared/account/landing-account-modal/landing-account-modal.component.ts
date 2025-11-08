@@ -22,8 +22,8 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
 
   activeTab: AuthTab = this.initialTab;
   isLoading = false;
-  serverMsg = '';
-  signupSuccessMsg = '';
+  servermessage = '';
+  signupSuccessMessage = '';
   showSuccessOverlay = false; // Success animation overlay
   userEmail = ''; // Store user email for success message
 
@@ -143,8 +143,8 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
   switch(tab: AuthTab) {
     if (this.activeTab === tab) return;
     this.activeTab = tab;
-    this.serverMsg = '';
-    this.signupSuccessMsg = '';
+    this.servermessage = '';
+    this.signupSuccessMessage = '';
     this.submittedLogin = false;
     this.submittedSignup = false;
     
@@ -160,8 +160,8 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
   // ========== LOGIN ==========
   submitLogin() {
     this.submittedLogin = true;
-    this.serverMsg = '';
-    this.signupSuccessMsg = '';
+    this.servermessage = '';
+    this.signupSuccessMessage = '';
     if (this.loginForm.invalid) return;
 
     const { email, password, auth_type, fcm_token, device_id } = this.loginForm.value as any;
@@ -170,15 +170,15 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
     this.session.login(email, password, Number(auth_type || 4), fcm_token, device_id).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res?.success === true && res?.data?.access_token) {
+        if (res?.status === true && res?.data?.access_token) {
           this.activeModal.close('authenticated');
         } else {
-          this.serverMsg = res?.msg || 'Login failed';
+          this.servermessage = res?.message || 'Login failed';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.serverMsg = err?.error?.msg || 'Something went wrong. Please try again.';
+        this.servermessage = err?.response?.message || 'Something went wrong. Please try again.';
       }
     });
   }
@@ -186,8 +186,8 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
   // ========== SIGNUP ==========
   submitSignup() {
     this.submittedSignup = true;
-    this.serverMsg = '';
-    this.signupSuccessMsg = '';
+    this.servermessage = '';
+    this.signupSuccessMessage = '';
     if (this.signupForm.invalid) return;
 
     const body: SignupRequest = {
@@ -195,8 +195,10 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
       middle_name: String(this.sf['middle_name'].value || '').trim(),
       last_name: String(this.sf['last_name'].value || '').trim(),
       email: String(this.sf['email'].value || '').trim(),
-      phone: String(this.sf['phone'].value || '').trim(),   // اختياري
-      auth_type: Number(this.sf['auth_type'].value || this.defaultAuthType)
+      phone: String(this.sf['phone'].value || '').trim(), // اختياري
+      auth_type: Number(this.sf['auth_type'].value || this.defaultAuthType),
+      password: String(this.sf['password'].value || '').trim(),
+      password_confirmation: String(this.sf['password_confirmation'].value || '').trim()
     };
 
     // مَرِن: إذا فيه صورة → نرسل multipart، وإلا JSON
@@ -206,18 +208,18 @@ export class LandingAccountModalComponent implements OnInit, OnDestroy {
     this.session.signup(body, this.selectedFile || undefined).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        if (res?.success === true) {
-          this.signupSuccessMsg = res?.msg || 'Your account has been created successfully. Please check your email.';
+        if (res?.status === true) {
+          this.signupSuccessMessage = res?.message || 'Your account has been created successfully. Please check your email.';
           this.showSuccessOverlay = true; // Show success animation
           this.loginForm.patchValue({ email: body.email });
           // Don't switch tab immediately, let user see success message
         } else {
-          this.serverMsg = res?.msg || 'Signup failed';
+          this.servermessage = res?.message || 'Signup failed';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.serverMsg = err?.error?.msg || 'Something went wrong. Please try again.';
+        this.servermessage = err?.response?.message || 'Something went wrong. Please try again.';
       }
     });
   }

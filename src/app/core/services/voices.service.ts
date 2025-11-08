@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError, timer } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { ApiPublicService } from 'src/app/modules/services/api.public.service';
+import { ApiPublicService } from 'src/app/modules/services/api.common.service';
 import { Voice } from '../models/voice.model';
 
 // ========== Constants ==========
@@ -60,7 +60,7 @@ export class VoicesService {
       
       // تحويل Response لـ Voice Model
       map(response => {
-        if (!response?.success || !response?.data) {
+        if (!response?.status || !response?.data) {
           throw new Error('Invalid API response structure');
         }
         return response.data.map(v => this.mapToVoiceModel(v));

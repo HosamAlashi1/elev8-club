@@ -16,8 +16,6 @@ export interface FlowItem {
 export interface Chapter {
   id: number;
   title: string;
-  flowStart: number;
-  flowEnd: number;
 }
 
 export interface BookSettings {
@@ -60,7 +58,7 @@ export class MockReaderApiService {
    * Get complete book data (book + chapters + flow)
    */
   getBookData(bookId: number): Observable<BookData> {
-    return this.http.get<BookData>(`assets/mock/book-${bookId}.json`).pipe(
+    return this.http.get<BookData>(`assets/mock/book-22.json`).pipe(
       catchError(error => {
         console.error('Failed to load book data:', error);
         // Return fallback mock data
@@ -120,7 +118,7 @@ export class MockReaderApiService {
         }
       },
       chapters: [
-        { id: 1, title: 'Chapter 1', flowStart: 0, flowEnd: 4 }
+        { id: 1, title: 'Chapter 1' }
       ],
       flow: [
         { id: 'h1', type: 'h1', text: 'Sample Book' },

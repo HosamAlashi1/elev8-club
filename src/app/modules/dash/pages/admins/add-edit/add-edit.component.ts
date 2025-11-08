@@ -47,10 +47,10 @@ export class AddEditAdminComponent implements OnInit {
       } else {
         this.httpService.listGet(this.api.admins.details(id), 'admin-details').subscribe({
           next: (res: any) => {
-            if (res?.success && res?.data) {
+            if (res?.status && res?.data) {
               this.patchForm(res.data);
             } else {
-              this.toastr.showError(res?.msg || 'Failed to load admin details');
+              this.toastr.showError(res?.message || 'Failed to load admin details');
             }
           },
           error: () => this.toastr.showError('Failed to load admin details')
@@ -96,10 +96,10 @@ export class AddEditAdminComponent implements OnInit {
   loadRoles() {
     this.httpService.listGet(this.api.roles.list, 'roles-list').subscribe({
       next: (res: any) => {
-        if (res?.success && res?.data?.data) {
+        if (res?.status && res?.data?.data) {
           this.roles = res.data.data;
         } else {
-          this.toastr.showError(res?.msg || 'Failed to load roles');
+          this.toastr.showError(res?.message || 'Failed to load roles');
         }
       },
       error: () => this.toastr.showError('Failed to load roles')
@@ -132,16 +132,16 @@ export class AddEditAdminComponent implements OnInit {
 
     this.httpService.action(url, fd, 'addEditAdmin').subscribe({
       next: (res: any) => {
-        if (res?.success) {
-          this.toastr.showSuccess(res?.msg || (this.isEdit ? 'Admin updated successfully' : 'Admin added successfully'));
+        if (res?.status) {
+          this.toastr.showSuccess(res?.message || (this.isEdit ? 'Admin updated successfully' : 'Admin added successfully'));
           this.activeModal.close(true);
         } else {
-          this.toastr.showError(res?.msg || 'Operation failed');
+          this.toastr.showError(res?.message || 'Operation failed');
         }
       },
       error: (error: any) => {
-        const msg = error?.error?.msg || error?.message || 'Operation failed';
-        this.toastr.showError(msg);
+        const message = error?.response?.message || error?.message || 'Operation failed';
+        this.toastr.showError(message);
       }
     });
   }

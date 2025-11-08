@@ -1,3 +1,4 @@
+import { ChapterWorkspaceComponent } from './chapter-workspace/chapter-workspace.component';
 import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -17,6 +18,8 @@ import { AuthType } from 'src/app/core/enums/auth-type.enum';
 import { VoiceSelectionModalComponent } from '../../../components/voice-selection-modal/voice-selection-modal.component';
 import { AudioCoordinatorService } from 'src/app/modules/services/audio-coordinator.service';
 import { HttpClient } from '@angular/common/http';
+import { filter, switchMap, take, finalize } from 'rxjs/operators';
+
 
 
 @Component({
@@ -25,6 +28,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./project-details.component.css']
 })
 export class ProjectDetailsComponent implements OnInit, OnDestroy {
+  @ViewChild(ChapterWorkspaceComponent) chapterWorkspace?: ChapterWorkspaceComponent;
 
   // ========================================
   // 🔹 State Management
@@ -39,6 +43,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   projectId!: number;
   project: ProjectDetails | null = null;
   isLoadingProject$ = new BehaviorSubject<boolean>(true);
+  hasProjectVoice = false;
 
   chapters: ChapterRef[] = [];
   isLoadingChapters$ = new BehaviorSubject<boolean>(true);
@@ -127,6 +132,12 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           this.isProjectPlaying = false;
         }
       });
+
+    this.voiceService.watchActiveProcesses()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateCanGenerate();
+      });
   }
 
   ngOnDestroy(): void {
@@ -154,7 +165,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
             reader.onload = () => {
               try {
                 const json = JSON.parse(String(reader.result || '{}'));
-                this.toastService.showError(json?.msg || 'Project is not ready for export.');
+                this.toastService.showError(json?.message || 'Project is not ready for export.');
               } catch {
                 this.toastService.showError('Project is not ready for export.');
               }
@@ -183,9 +194,9 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           this.isExporting = false;
         },
         error: (err) => {
-          // ممكن يرجّع JSON فيه msg
-          const msg = err?.error?.msg || err?.message || 'Export failed';
-          this.toastService.showError(msg);
+          // ممكن يرجّع JSON فيه message
+          const message = err?.response?.message || err?.message || 'Export failed';
+          this.toastService.showError(message);
           this.isExporting = false;
         }
       });
@@ -211,9 +222,10 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
     this.httpService.listGet(url, 'loadProjectDetails').subscribe({
       next: (response: ProjectDetailsResponse) => {
-        if (response.success && response.data) {
+        if (response.status && response.data) {
           this.project = response.data;
           this.canGenerate = true;
+          this.hasProjectVoice = !!this.project.voice_url;
 
           // صار اختيار الشابتر من API منفصل
           this.loadChapters(true);
@@ -231,6 +243,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           } else {
             this.voiceState = 'idle';
           }
+          this.updateCanGenerate();
         }
 
         this.isLoadingProject$.next(false);
@@ -247,13 +260,13 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   private loadChapters(preserveSelection: boolean = true): void {
     this.isLoadingChapters$.next(true);
 
-    const url = this.apiPortal.projects.chapters(this.projectId.toString());
+    const url = `${this.apiPortal.projects.chapters(this.projectId.toString())}?size=100&page=1`;
     const prevSelected =
       preserveSelection ? (this.selectedChapterId$.value ?? this.getLastOpenedChapter()) : null;
 
     this.httpService.listGet(url, 'loadChapters').subscribe({
-      next: (res: { success: boolean; data: any }) => {
-        if (res?.success) {
+      next: (res: { status: boolean; data: any }) => {
+        if (res?.status) {
           this.chapters = res.data.data ?? [];
 
           if (this.chapters.length > 0) {
@@ -365,10 +378,9 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   // 🔸 Reload Chapters After Add/Delete
   // ========================================
   onReloadRequested(): void {
-    const oldSelectedId = this.selectedChapterId$.value ?? this.getLastOpenedChapter();
-    this.loadChapters(true);
-    // الميثود loadChapters تحاول المحافظة على الاختيار السابق تلقائياً
+    this.handleChapterMutation();
   }
+
 
   // ========================================
   // 🔸 Chapter Renamed Handler
@@ -378,6 +390,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     if (chapter) {
       chapter.title = data.newTitle;
     }
+    this.handleChapterMutation();
   }
 
   // ========================================
@@ -418,15 +431,18 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
         this.selectedChapterId$.next(null);
       }
     }
+
+    this.handleChapterMutation();
   }
+
 
   // ========================================
   // 🔸 Chapters Reordered Handler
   // ========================================
   onChaptersReordered(chapters: ChapterRef[]): void {
     this.chapters = chapters;
+    this.handleChapterMutation();
   }
-
   // ========================================
   // 🔸 Toggle Reorder Mode
   // ========================================
@@ -766,6 +782,75 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     switch (this.process?.status) {
       case VoiceStatus.Processing: return 'Synthesizing audio…';
       default: return '';
+    }
+  }
+
+  private isProjectAudioReady(): boolean {
+    // نعتبره جاهز إذا عنده voice_url أو حالته Ready/Completed وما في توليد شغّال
+    const status = this.project?.process?.status;
+    const readyByUrl = !!this.project?.voice_url;
+    const readyByStatus = status === VoiceStatus.Completed || this.voiceState === 'ready';
+    return (readyByUrl || readyByStatus) && !this.isGenerating && !this.isAnyChildGenerating;
+  }
+
+  private waitForChaptersLoaded$() {
+    // ننتظر انتهاء تحميل الشابترات ثم نرجّع chapterId المختار حالياً
+    return this.isLoadingChapters$.pipe(
+      filter(loading => !loading),
+      take(1),
+      switchMap(() => this.selectedChapterId$.pipe(take(1)))
+    );
+  }
+
+  refreshAllIfProjectReady(opts?: { preserveQuery?: boolean }): void {
+    if (!this.isProjectAudioReady()) {
+      // كوّش بسكوت لو مش جاهز، أو فعّل توست لطيف إن حاب
+      // this.toastService.showInfo('Project audio is not ready yet.');
+      return;
+    }
+
+    this.isLoadingProject$.next(true);
+
+    const url = this.apiPortal.projects.details(this.projectId.toString());
+    this.httpService.listGet(url, 'refreshAllIfProjectReady')
+      .pipe(
+        tap((response: ProjectDetailsResponse) => {
+          if (response.status && response.data) {
+            this.project = response.data;
+            // هذي أصلاً تستدعي loadChapters(true) داخل loadProjectDetails عندك،
+            // بس هون بنستدعيها صراحةً عشان السلسلة واضحة
+            this.loadChapters(true);
+            // حدّث حالة الصوت للمشروع
+            this.voiceState = getVoiceUIState(this.project);
+          }
+        }),
+        switchMap(() => this.waitForChaptersLoaded$()),
+        tap((_chapterId) => {
+          // بعد ما الشابترات تجهز، خلي الفصل ينعش تفاصيله وفقراته
+          this.chapterWorkspace?.refreshChapterThenParagraphs({
+            preserveQuery: opts?.preserveQuery ?? true
+          });
+        }),
+        finalize(() => this.isLoadingProject$.next(false))
+      )
+      .subscribe({
+        error: () => this.isLoadingProject$.next(false)
+      });
+  }
+
+  private hasSelectedChapterVoice(): boolean {
+    const ch = this.chapterWorkspace?.chapter;
+    return !!ch?.voice_url || ch?.process?.status === VoiceStatus.Completed;
+  }
+
+  private handleChapterMutation(): void {
+    const chapterHasVoice = this.hasSelectedChapterVoice();
+    const projectHasVoice = !!this.project?.voice_url;
+
+    if (!projectHasVoice) {
+      this.loadChapters(true);
+    } else {
+      this.refreshAllIfProjectReady({ preserveQuery: true });
     }
   }
 
