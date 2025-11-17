@@ -17,8 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LottieModule } from 'ngx-lottie';
 import player from 'lottie-web';
 import { SharedModule } from './modules/dash/shared/shared.module';
-import { AppInitializerService } from './core/services/app-initializer.service';
-import { appInitializerFactory } from './core/services/app-initializer.factory';
+
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { PublicSharedModule } from './modules/shared/public-shared.module';
@@ -58,12 +57,7 @@ export function playerFactory() {
   providers: [
     DatePipe,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: appInitializerFactory,
-      deps: [AppInitializerService],
-      multi: true
-    }
+  
   ],
   bootstrap: [AppComponent]
 })

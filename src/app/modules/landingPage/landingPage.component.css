@@ -1,7 +1,7 @@
 /* Layout Styles */
 .content-container {
   transition: opacity 0.3s ease;
-  overflow-x: hidden;
+  overflow: hidden;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

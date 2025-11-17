@@ -1,5 +1,5 @@
 {
-  "name": "Dorrance",
+  "name": "Elev8 Club",
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
@@ -35,7 +35,7 @@
     "bootstrap": "^5.3.7",
     "canvas-confetti": "^1.9.3",
     "crypto-js": "^4.2.0",
-    "gsap": "^3.13.0",
+    "d3": "^7.9.0",
     "jquery": "^3.7.1",
     "lottie-web": "^5.13.0",
     "lucide-angular": "^0.525.0",
@@ -44,15 +44,13 @@
     "ng-apexcharts": "^1.7.6",
     "ng-inline-svg-2": "^15.0.1",
     "ngx-lottie": "^10.0.0",
+    "ngx-org-chart": "^1.1.1",
     "ngx-pagination": "^6.0.3",
     "ngx-skeleton-loader": "^8.0.0",
     "ngx-toastr": "^19.0.0",
-    "page-flip": "^2.0.7",
     "rxjs": "~7.8.0",
     "swiper": "^9.4.1",
     "tslib": "^2.3.0",
-    "wavesurfer.js": "^7.11.0",
-    "world-countries": "^5.1.0",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
@@ -62,6 +60,7 @@
     "@angular/localize": "^16.1.0",
     "@types/aos": "^3.0.7",
     "@types/crypto-js": "^4.2.2",
+    "@types/d3": "^7.4.3",
     "@types/google.maps": "^3.58.1",
     "@types/jasmine": "~4.3.0",
     "@types/jquery": "^3.5.32",

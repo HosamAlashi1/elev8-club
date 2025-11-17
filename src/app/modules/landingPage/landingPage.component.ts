@@ -4,7 +4,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { AnimationOptions } from 'ngx-lottie';
 import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOverlayService.service';
 import { LandingService } from '../services/landing.service';
-import { AppInitializerService } from '../../core/services/app-initializer.service';
 
 
 @Component({
@@ -33,7 +32,6 @@ export class LandingPageComponent implements OnInit {
     private lottieService: LottieOverlayService,
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
-    private appInitializer: AppInitializerService
   ) {
     this.lottieService.state$.subscribe(config => this.lottieConfig = config);
     this.currentYear = new Date().getFullYear();
@@ -43,8 +41,6 @@ export class LandingPageComponent implements OnInit {
     // فرض اتجاه LTR للوحة التحكم
     this.enforceDashboardDirection();
 
-    // تحميل البيانات المطلوبة للـ layout
-    this.loadLayoutData();
   }
 
   ngAfterViewInit(): void {
@@ -67,47 +63,6 @@ export class LandingPageComponent implements OnInit {
     bodyElement.classList.remove('rtl-mode', 'arabic-font');
   }
 
-  /**
-   * Load layout data (navbar, footer settings)
-   */
-  private loadLayoutData(): void {
-    // إخفاء اللودر الأولي
-    this.hideInitialLoader();
-
-    const preloaded = this.appInitializer.getPreloadedData();
-
-    if (!preloaded) {
-      // fallback values
-      this.settings = {
-        'footer_title': 'America\'s Oldest Publishing Services Company — Trusted for 100+ Years.',
-        'phone': '',
-        'email': '',
-        'facebook': '',
-        'twitter': '',
-        'instagram': '',
-        'pinterest': '',
-        'youtube': '',
-        'tiktok': ''
-      };
-      this.pre = { navbar: {} };
-      this.showContent = true;
-      this.cd.detectChanges();
-      return;
-    }
-
-    // تحميل البيانات
-    this.pre = preloaded;
-
-    // تحويل settings من array إلى object
-    if (preloaded.settings && Array.isArray(preloaded.settings)) {
-      this.settings = this.landingService.parseSettings(preloaded.settings);
-    } else {
-      this.settings = {};
-    }
-
-    this.showContent = true;
-    this.cd.detectChanges();
-  }
 
   private hideInitialLoader(): void {
     const loader = document.getElementById('lottie-loader');

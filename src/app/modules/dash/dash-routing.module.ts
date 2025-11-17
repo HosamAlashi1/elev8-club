@@ -12,14 +12,14 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./pages/dashboard/dashboard.module').then((m) => m.DashboardModule),
-        title: 'Dashboard | Dorrance',
+        title: 'Dashboard | Elev8 Club',
         data: { animation: 'dashPage' },
       },
       {
         path: 'orders',
         loadChildren: () =>
           import('./pages/orders_Managment/orders.module').then((m) => m.OrdersModule),
-        title: 'Orders | Dorrance',
+        title: 'Orders | Elev8 Club',
         data: { animation: 'ordersPage', permission: 'VIEW_ORDERS' },
         canActivate: [PermissionGuard]
       },
@@ -27,7 +27,7 @@ const routes: Routes = [
         path: 'testimonials',
         loadChildren: () =>
           import('./pages/testimonials/testimonials.module').then((m) => m.TestimonialsModule),
-        title: 'Testimonials | Dorrance',
+        title: 'Testimonials | Elev8 Club',
         data: { animation: 'testimonialsPage', permission: 'LOGS' }, // لو عندك بيرميشن مخصص للتستيمونيال بدله
         canActivate: [PermissionGuard]
       },
@@ -35,7 +35,7 @@ const routes: Routes = [
         path: 'catalog',
         loadChildren: () =>
           import('./pages/catalog/catalog.module').then((m) => m.CatalogModule),
-        title: 'Catalog | Dorrance',
+        title: 'Catalog | Elev8 Club',
         data: { animation: 'catalogPage', permission: ['VIEW_BOOKS', 'VIEW_CATEGORIES', 'VIEW_FILES'] },
         canActivate: [PermissionGuard]
       },
@@ -43,7 +43,7 @@ const routes: Routes = [
         path: 'admins',
         loadChildren: () =>
           import('./pages/admins/admins.module').then((m) => m.AdminsModule),
-        title: 'Admins | Dorrance',
+        title: 'Admins | Elev8 Club',
         data: { animation: 'adminsPage', permission: 'VIEW_ADMINS' },
         canActivate: [PermissionGuard]
       },
@@ -51,7 +51,7 @@ const routes: Routes = [
         path: 'users',
         loadChildren: () =>
           import('./pages/users/users.module').then((m) => m.UsersModule),
-        title: 'Users Management | Dorrance',
+        title: 'Users Management | Elev8 Club',
         data: {
           animation: 'usersPage',
           permission: ['VIEW_AUTHORS', 'VIEW_EDITORS', 'VIEW_CUSTOMERS'] 
@@ -62,7 +62,7 @@ const routes: Routes = [
         path: 'reports',
         loadChildren: () =>
           import('./pages/reports/reports.module').then((m) => m.ReportsModule),
-        title: 'Reports | Dorrance',
+        title: 'Reports | Elev8 Club',
         data: { animation: 'reportsPage', permission: 'MANAGE_LOGS' },
         canActivate: [PermissionGuard]
       },
@@ -70,7 +70,7 @@ const routes: Routes = [
         path: 'contact-messages',
         loadChildren: () =>
           import('./pages/contact_messages/contact_messages.module').then((m) => m.ContactMessagesModule),
-        title: 'Contact Messages | Dorrance',
+        title: 'Contact Messages | Elev8 Club',
         data: { animation: 'contactMessagesPage', permission: 'LOGS' }, // عدلها لو عندك بيرميشن خاص
         canActivate: [PermissionGuard]
       },
@@ -78,7 +78,7 @@ const routes: Routes = [
         path: 'settings',
         loadChildren: () =>
           import('./pages/settings/settings.module').then((m) => m.SettingsModule),
-        title: 'Settings | Dorrance',
+        title: 'Settings | Elev8 Club',
         data: { animation: 'settingsPage', permission: 'MANAGE_ROLES' }, // أو ADMIN حسب اللوجيك
         canActivate: [PermissionGuard]
       },

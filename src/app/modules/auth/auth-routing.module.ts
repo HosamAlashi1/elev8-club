@@ -11,7 +11,7 @@ const routes: Routes = [
       {
         path: 'login',
         component: LoginComponent,
-        title: 'Login | Dorrance'
+        title: 'Login | Elev8 Club'
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: '**', redirectTo: 'login', pathMatch: 'full' },

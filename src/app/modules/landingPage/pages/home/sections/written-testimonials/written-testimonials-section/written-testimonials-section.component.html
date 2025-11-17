@@ -1,0 +1,128 @@
+<section class="testimonials-section" data-aos="fade-up" data-aos-duration="900">
+
+    <div class="bg-blur"></div>
+
+    <div class="container">
+
+        <!-- العنوان -->
+        <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100" data-aos-duration="900">
+
+            <h2 class="main-title">تجارب المشاركين</h2>
+            <p class="subtitle">تجارب حقيقية من أشخاص حققوا نتائج مذهلة</p>
+        </div>
+
+        <!-- Testimonials Grid -->
+        <div class="testimonials-wrapper" data-aos="fade-up" data-aos-delay="200" data-aos-duration="900">
+
+            <div class="testimonials-grid">
+
+                <div class="testimonial-item" *ngFor="let testimonial of visibleTestimonials; let i = index"
+                    data-aos="zoom-in" [attr.data-aos-delay]="250 + (i * 120)" data-aos-duration="800">
+
+                    <div class="testimonial-card">
+
+                        <!-- Rating -->
+                        <div class="rating">
+                            <svg *ngFor="let star of getStars(testimonial.rating)" width="20" height="20"
+                                viewBox="0 0 24 24" fill="#CFAE58" data-aos="fade-right"
+                                [attr.data-aos-delay]="300 + (i * 120)">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 
+                                         17.77L5.82 21.02L7 14.14L2 9.27L8.91 
+                                         8.26L12 2Z" />
+                            </svg>
+                        </div>
+
+                        <!-- Quote Icon -->
+                        <div class="quote-icon" data-aos="fade-down" [attr.data-aos-delay]="350 + (i * 120)">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 21C3 17.4 5.4 15 9 15C10.5 15 11.8 15.6
+                                         12.7 16.5C11.9 14.4 11.1 12.3
+                                         9 10.5C9 10.5 7.5 9 6 9V7C11.5 7 13
+                                         11.5 13 15V21H3Z" fill="#CFAE58" opacity="0.3" />
+                                <path d="M14 21C14 17.4 16.4 15 20 15C21.5 15 
+                                         22.8 15.6 23.7 16.5C22.9 14.4 22.1 
+                                         12.3 20 10.5C20 10.5 18.5 9 17 
+                                         9V7C22.5 7 24 11.5 24 15V21H14Z" fill="#CFAE58" opacity="0.3" />
+                            </svg>
+                        </div>
+
+                        <!-- Message -->
+                        <p class="message" data-aos="fade-up" [attr.data-aos-delay]="400 + (i * 120)">
+                            {{ testimonial.message }}
+                        </p>
+
+                        <!-- User Info -->
+                        <div class="user-info" data-aos="fade-up" [attr.data-aos-delay]="500 + (i * 120)">
+
+                            <img [src]="testimonial.image" [alt]="testimonial.name" class="user-avatar"
+                                onerror="this.src='assets/img/testimonials/person1.png'">
+
+                            <div class="user-details">
+                                <h4 class="user-name">{{ testimonial.name }}</h4>
+                                <p class="user-country">{{ testimonial.country }}</p>
+                            </div>
+                        </div>
+
+                        <div class="card-glow"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Navigation & Pagination -->
+            <div class="navigation-wrapper" data-aos="fade-up" data-aos-delay="800" data-aos-duration="900">
+
+                <!-- Navigation Arrows -->
+                <div class="slider-navigation">
+                    <button class="nav-button nav-prev" (click)="prevPage()" [disabled]="currentPage === 0">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+
+                    <button class="nav-button nav-next" (click)="nextPage()"
+                        [disabled]="currentPage === totalPages - 1">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Pagination Dots -->
+                <div class="pagination-dots">
+                    <button *ngFor="let page of pages" class="dot" [class.active]="currentPage === page"
+                        (click)="goToPage(page)" [attr.aria-label]="'الصفحة ' + (page + 1)">
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CTA Button -->
+        <div class="cta-wrapper" data-aos="fade-up" data-aos-delay="900" data-aos-duration="900">
+
+            <p class="cta-text">جاهز تكون من الناجحين؟</p>
+
+            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+
+                <span class="btn-cta-text">ابدأ رحلتك الآن مجاناً</span>
+
+                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+
+                <div class="ripple-gold"></div>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>

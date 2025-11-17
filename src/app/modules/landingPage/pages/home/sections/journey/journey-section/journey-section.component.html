@@ -1,0 +1,77 @@
+<section class="journey-section" data-aos="fade-up">
+
+  <div class="gold-blur"></div>
+
+  <div class="container">
+
+    <!-- العنوان -->
+    <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
+      <h2 class="main-title">كيف رح تكون رحلتك معنا</h2>
+      <p class="subtitle">خلال 7 أيام؟</p>
+    </div>
+
+    <!-- الـ Timeline -->
+    <div class="timeline-wrapper">
+
+      <div 
+        class="timeline-item"
+        *ngFor="let d of days; let i = index"
+        data-aos="fade-up"
+        [attr.data-aos-delay]="150 + i * 120"
+      >
+
+        <!-- الدائرة -->
+        <div class="circle-wrapper">
+
+          <div class="day-circle">
+            {{ i + 1 }}
+          </div>
+
+          <!-- الخط -->
+          <div 
+            class="line" 
+            *ngIf="i < days.length - 1"
+            data-aos="fade-up"
+            [attr.data-aos-delay]="200 + i * 120"
+          ></div>
+
+        </div>
+
+        <!-- الكارد -->
+        <div class="content-card">
+          <div class="day-text">{{ d.day }}</div>
+          <h3 class="card-title">{{ d.title }}</h3>
+          <p class="card-desc">{{ d.description }}</p>
+
+          <div class="hover-glow"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- النص السفلي -->
+    <div class="bottom-cta" data-aos="fade-up" data-aos-delay="900">
+      <p class="bottom-text">
+        بنهاية التحدي، رح تكون جاهز تبدأ التداول بثقة واستقلالية.
+      </p>
+
+      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+
+        <span class="btn-cta-text">سجّل الآن واستغل الفرصة</span>
+
+        <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+
+        <div class="ripple-gold"></div>
+
+      </button>
+    </div>
+
+  </div>
+
+</section>

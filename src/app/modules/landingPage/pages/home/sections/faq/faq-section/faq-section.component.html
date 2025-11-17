@@ -1,0 +1,47 @@
+<section class="faq-section" data-aos="fade-up" data-aos-duration="800">
+
+  <!-- Background Pattern -->
+  <div class="bg-pattern"></div>
+
+  <div class="container">
+
+    <!-- Title -->
+    <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100" data-aos-duration="800">
+      <h2 class="main-title heading-3d">الأسئلة الشائعة</h2>
+      <p class="subtitle">كل ما تحتاج معرفته</p>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="faq-accordion" data-aos="fade-up" data-aos-delay="250" data-aos-duration="800">
+
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index" 
+           [class.active]="faq.isOpen"
+           data-aos="fade-up" 
+           [attr.data-aos-delay]="300 + (i * 100)"
+           data-aos-duration="600">
+
+        <!-- Question -->
+        <button class="faq-question" (click)="toggleFAQ(i)">
+          <span class="question-text">{{ faq.question }}</span>
+          <svg class="chevron-icon" 
+               [class.rotate]="faq.isOpen"
+               width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Answer -->
+        <div class="faq-answer" [class.show]="faq.isOpen">
+          <div class="answer-content">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+</section>

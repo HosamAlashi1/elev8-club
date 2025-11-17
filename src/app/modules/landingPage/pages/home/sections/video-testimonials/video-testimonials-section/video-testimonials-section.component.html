@@ -1,0 +1,209 @@
+<section class="video-section" data-aos="fade-up">
+
+    <div class="container">
+
+        <!-- Title -->
+        <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
+            <h2 class="section-title text-center mb-5">
+                شاهد تجارب ناس بدأوا التحدي قبلك 
+            </h2>
+        </div>
+
+        <!-- Videos Wrapper -->
+        <div class="videos-grid">
+
+            <div class="video-card" *ngFor="let v of visibleVideos; let i = index" data-aos="fade-up"
+                [attr.data-aos-delay]="200 + i * 120">
+
+                <div class="video-box" [class.playing]="isPlaying(v)">
+
+                    <!-- الفيديو الحقيقي -->
+                    <video #player class="video-element" [src]="v.url" preload="metadata"
+                        (click)="togglePlayPause(v, player)" (timeupdate)="onTimeUpdate(v, player)"
+                        (loadedmetadata)="onLoadedMetadata(v, player)" (ended)="onVideoEnded(v, player)"></video>
+
+                    <!-- زر التشغيل الكبير (يظهر عند الإيقاف) -->
+                    <button class="play-btn-overlay" *ngIf="!isPlaying(v)" (click)="togglePlayPause(v, player)">
+                        <div class="play-circle">
+                            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 5V19L19 12L8 5Z" fill="white" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <!-- شريط التحكم الاحترافي -->
+                    <div class="video-controls" [class.visible]="isPlaying(v)">
+
+                        <!-- Progress Bar -->
+                        <div class="progress-container" (click)="seekTo(v, player, $event)"
+                            (mouseenter)="showProgressThumb = v" (mouseleave)="showProgressThumb = null">
+                            <div class="progress-bar">
+                                <div class="progress-filled" [style.width.%]="getProgress(v)">
+                                    <div class="progress-thumb" *ngIf="showProgressThumb === v"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- أزرار التحكم -->
+                        <div class="controls-row">
+
+                            <!-- Play/Pause -->
+                            <button class="control-btn play-pause"
+                                (click)="togglePlayPause(v, player); $event.stopPropagation()">
+                                <svg *ngIf="!isPlaying(v)" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M8 5V19L19 12L8 5Z" fill="white" />
+                                </svg>
+                                <svg *ngIf="isPlaying(v)" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <rect x="6" y="4" width="4" height="16" fill="white" />
+                                    <rect x="14" y="4" width="4" height="16" fill="white" />
+                                </svg>
+                            </button>
+
+                            <!-- -5s Button -->
+                            <button class="control-btn" (click)="skip(v, player, -5); $event.stopPropagation()"
+                                title="رجوع 5 ثواني">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 8V4L8 8L12 12V8Z" fill="white" />
+                                    <path d="M12 8C7.58 8 4 11.58 4 16C4 20.42 7.58 24 12 24C16.42 24 20 20.42 20 16"
+                                        stroke="white" stroke-width="2" fill="none" />
+                                </svg>
+                                <span class="skip-text">5</span>
+                            </button>
+
+                            <!-- +5s Button -->
+                            <button class="control-btn" (click)="skip(v, player, 5); $event.stopPropagation()"
+                                title="تقديم 5 ثواني">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 8V4L16 8L12 12V8Z" fill="white" />
+                                    <path d="M12 8C16.42 8 20 11.58 20 16C20 20.42 16.42 24 12 24C7.58 24 4 20.42 4 16"
+                                        stroke="white" stroke-width="2" fill="none" />
+                                </svg>
+                                <span class="skip-text">5</span>
+                            </button>
+
+                            <!-- Time Display -->
+                            <div class="time-display">
+                                <span class="current-time">{{ formatTime(getCurrentTime(v)) }}</span>
+                                <span class="separator">/</span>
+                                <span class="duration-time">{{ getDuration(v) }}</span>
+                            </div>
+
+                            <div class="spacer"></div>
+
+                            <!-- Volume Control -->
+                            <div class="volume-control" (mouseenter)="showVolumeSlider = v"
+                                (mouseleave)="showVolumeSlider = null">
+                                <button class="control-btn" (click)="toggleMute(v, player); $event.stopPropagation()">
+                                    <svg *ngIf="!isMuted(v) && getVolume(v) > 50" width="20" height="20"
+                                        viewBox="0 0 24 24" fill="none">
+                                        <path d="M11 5L6 9H2V15H6L11 19V5Z" fill="white" />
+                                        <path
+                                            d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53"
+                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+                                        <path
+                                            d="M18 5C19.4482 6.44819 20.2653 8.42236 20.2653 10.475C20.2653 12.5276 19.4482 14.5018 18 15.95"
+                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+                                    </svg>
+                                    <svg *ngIf="!isMuted(v) && getVolume(v) <= 50 && getVolume(v) > 0" width="20"
+                                        height="20" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11 5L6 9H2V15H6L11 19V5Z" fill="white" />
+                                        <path
+                                            d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53"
+                                            stroke="white" stroke-width="2" stroke-linecap="round" />
+                                    </svg>
+                                    <svg *ngIf="isMuted(v) || getVolume(v) === 0" width="20" height="20"
+                                        viewBox="0 0 24 24" fill="none">
+                                        <path d="M11 5L6 9H2V15H6L11 19V5Z" fill="white" />
+                                        <path d="M23 9L17 15M17 9L23 15" stroke="white" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </button>
+
+                                <div class="volume-slider" *ngIf="showVolumeSlider === v"
+                                    (click)="$event.stopPropagation()">
+                                    <input type="range" min="0" max="100" [value]="getVolume(v)"
+                                        (input)="setVolume(v, player, $event)" class="volume-range">
+                                </div>
+                            </div>
+
+                            <!-- Fullscreen -->
+                            <button class="control-btn" (click)="toggleFullscreen(player); $event.stopPropagation()"
+                                title="شاشة كاملة">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M8 3H5C4.46957 3 3.96086 3.21071 3.58579 3.58579C3.21071 3.96086 3 4.46957 3 5V8"
+                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M21 8V5C21 4.46957 20.7893 3.96086 20.4142 3.58579C20.0391 3.21071 19.5304 3 19 3H16"
+                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M16 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V16"
+                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M3 16V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H8"
+                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </button>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Info -->
+                <div class="info">
+                    <h3 class="name">{{ v.name }}</h3>
+                    <p class="location">{{ v.location }}</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Controls -->
+        <div class="controls" data-aos="fade-up" data-aos-delay="500">
+            <button class="nav-btn" (click)="next()" title="التالي">
+                <svg width="26" height="26" viewBox="0 0 24 24">
+                    <path d="M9 6L15 12L9 18" stroke="#CFAE58" stroke-width="2.4" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <button class="nav-btn" (click)="prev()" title="السابق">
+                <svg width="26" height="26" viewBox="0 0 24 24">
+                    <path d="M15 18L9 12L15 6" stroke="#CFAE58" stroke-width="2.4" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Dots -->
+        <div class="dots">
+            <span class="cursor-pointer" *ngFor="let d of videos; let i=index" (click)="goTo(i)" [class.active]="i===currentIndex"></span>
+        </div>
+
+        <!-- Bottom Text -->
+        <div class="bottom-text" data-aos="fade-up" data-aos-delay="700">
+            <p class="q">"حاب تكون التجربة الجاية؟"</p>
+
+            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+                <span class="btn-cta-text">سجّل بالتحدي المجاني الآن!</span>
+
+                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+
+                <div class="ripple-gold"></div>
+            </button>
+        </div>
+
+    </div>
+
+</section>

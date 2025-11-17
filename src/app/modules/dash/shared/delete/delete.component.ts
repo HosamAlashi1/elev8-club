@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
 import { ApiAdminService } from '../../../services/api.admin.service';
-import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 
 @Component({
   selector: 'app-delete',
@@ -23,7 +22,6 @@ export class DeleteComponent {
     public activeModal: NgbActiveModal,
     public httpService: HttpService,
     private apiAdmin: ApiAdminService,
-    private apiPortal: ApiPortalService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -59,15 +57,6 @@ export class DeleteComponent {
         break;
       case 'testimonials':
         url = this.apiAdmin.testimonials.delete(this.id);
-        break;
-      case 'chapter':
-        url = this.apiPortal.chapters.delete(this.id);
-        break;
-      case 'paragraph':
-        url = this.apiPortal.paragraphs.delete(this.id);
-        break;
-      case 'note':
-        url = this.apiPortal.notes.delete(this.id);
         break;
       default:
         this.showmessage(false, 'Invalid delete type');

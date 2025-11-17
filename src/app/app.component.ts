@@ -4,7 +4,6 @@ import { animate, style, transition, trigger, query, group } from '@angular/anim
 import { PublicService } from './modules/services/public.service';
 import * as AOS from 'aos';
 import { filter } from 'rxjs/operators';
-import { NotificationService } from './modules/services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +30,7 @@ import { NotificationService } from './modules/services/notification.service';
 export class AppComponent implements OnInit {
   previousUrl: string | null = null;
 
-  constructor(private publicService: PublicService, private router: Router, private notificationService: NotificationService) { }
+  constructor(private publicService: PublicService, private router: Router) { }
 
   async ngOnInit(): Promise<void> {
     AOS.init({
@@ -76,7 +75,6 @@ export class AppComponent implements OnInit {
         }
       });
 
-    this.notificationService.requestPermission();
   }
 
 

@@ -1,0 +1,587 @@
+/* الجذر */
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 120px 16px 80px;
+  box-sizing: border-box;
+  overflow: hidden;
+  direction: rtl;
+}
+
+/* ============================================
+   🎨 TRADING BACKGROUND EFFECTS
+   ============================================ */
+
+/* === Trading Chart Lines Overlay === */
+.trading-chart-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.chart-line {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.chart-line-1 {
+  animation: chartPulse 8s ease-in-out infinite, chartFadeIn 2s ease-out forwards;
+  animation-delay: 0s, 0.5s;
+}
+
+.chart-line-2 {
+  animation: chartPulse 10s ease-in-out infinite, chartFadeIn 2s ease-out forwards;
+  animation-delay: 1s, 1s;
+}
+
+@keyframes chartPulse {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-10px) scaleY(1.02);
+    opacity: 0.7;
+  }
+}
+
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Golden Trading Waves === */
+.golden-wave {
+  position: absolute;
+  width: 200%;
+  height: 300px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(207, 174, 88, 0.08) 0%,
+    rgba(207, 174, 88, 0.04) 35%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.golden-wave-1 {
+  top: 15%;
+  right: -30%;
+  animation: waveFloat 18s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+.golden-wave-2 {
+  top: 45%;
+  left: -40%;
+  animation: waveFloat 22s ease-in-out infinite 3s;
+  opacity: 0.4;
+}
+
+.golden-wave-3 {
+  bottom: 10%;
+  right: -20%;
+  animation: waveFloat 20s ease-in-out infinite 6s;
+  opacity: 0.3;
+}
+
+@keyframes waveFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(50px, -40px) scale(1.1) rotate(5deg);
+  }
+  66% {
+    transform: translate(-40px, 30px) scale(0.95) rotate(-3deg);
+  }
+}
+
+/* === Currency Particles === */
+.trading-particles {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(207, 174, 88, 0.25);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Particle Positions & Animations */
+.particle-1 {
+  top: 15%;
+  right: 10%;
+  animation: particleFloat1 12s ease-in-out infinite;
+}
+
+.particle-2 {
+  top: 25%;
+  left: 15%;
+  animation: particleFloat2 14s ease-in-out infinite 2s;
+}
+
+.particle-3 {
+  top: 40%;
+  right: 8%;
+  animation: particleFloat3 16s ease-in-out infinite 4s;
+}
+
+.particle-4 {
+  top: 55%;
+  left: 12%;
+  animation: particleFloat1 13s ease-in-out infinite 1s;
+}
+
+.particle-5 {
+  top: 30%;
+  right: 25%;
+  font-size: 2rem;
+  animation: particleFloat2 11s ease-in-out infinite 3s;
+}
+
+.particle-6 {
+  top: 65%;
+  right: 18%;
+  animation: particleFloat3 15s ease-in-out infinite 5s;
+}
+
+.particle-7 {
+  top: 20%;
+  left: 25%;
+  animation: particleFloat1 17s ease-in-out infinite 6s;
+}
+
+.particle-8 {
+  top: 70%;
+  left: 20%;
+  font-size: 2rem;
+  animation: particleFloat2 13s ease-in-out infinite 2s;
+}
+
+.particle-9 {
+  top: 45%;
+  right: 35%;
+  animation: particleFloat3 14s ease-in-out infinite 7s;
+}
+
+.particle-10 {
+  top: 80%;
+  right: 15%;
+  font-size: 1.8rem;
+  animation: particleFloat1 12s ease-in-out infinite 4s;
+}
+
+.particle-11 {
+  top: 35%;
+  left: 8%;
+  animation: particleFloat2 16s ease-in-out infinite 8s;
+}
+
+.particle-12 {
+  top: 60%;
+  left: 30%;
+  animation: particleFloat3 15s ease-in-out infinite 3s;
+}
+
+/* Particle Animation Variations */
+@keyframes particleFloat1 {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.5);
+  }
+  10% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-30px, -80px) rotate(15deg) scale(1);
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50px, -150px) rotate(25deg) scale(0.7);
+  }
+}
+
+@keyframes particleFloat2 {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.6);
+  }
+  15% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+    transform: translate(40px, -70px) rotate(-12deg) scale(1.1);
+  }
+  85% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(60px, -140px) rotate(-20deg) scale(0.8);
+  }
+}
+
+@keyframes particleFloat3 {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.7);
+  }
+  12% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.75;
+    transform: translate(-20px, -90px) rotate(10deg) scale(0.95);
+  }
+  88% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-40px, -160px) rotate(18deg) scale(0.6);
+  }
+}
+
+/* الخلفية الأساسية (أسود → كحلي) */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(0, 0, 0, 0.95) 0, #000000 40%, transparent 65%),
+    radial-gradient(circle at 90% 20%, rgba(12, 54, 120, 0.95) 0, #0a1e3f 55%, #020817 80%);
+  z-index: -3;
+}
+
+/* الخطوط المنحنية المتحركة في الخلفية */
+.hero-bg-line {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 260px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  transform-origin: center left;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.hero-bg-line--1 {
+  bottom: 26%;
+  opacity: 0.6;
+  animation: heroLineWave1 16s ease-in-out infinite alternate;
+}
+
+.hero-bg-line--2 {
+  bottom: 16%;
+  opacity: 0.35;
+  animation: heroLineWave2 20s ease-in-out infinite alternate;
+}
+
+@keyframes heroLineWave1 {
+  0% {
+    transform: translateX(-12px) scaleX(0.85);
+  }
+  50% {
+    transform: translateX(0) scaleX(1.05);
+  }
+  100% {
+    transform: translateX(8px) scaleX(0.9);
+  }
+}
+
+@keyframes heroLineWave2 {
+  0% {
+    transform: translateX(-8px) scaleX(0.8);
+  }
+  50% {
+    transform: translateX(6px) scaleX(1.08);
+  }
+  100% {
+    transform: translateX(-4px) scaleX(0.92);
+  }
+}
+
+/* المحتوى الأساسي */
+.hero-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* === الشريط العلوي مطابق للصورة 100% === */
+.hero-top-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 8px 28px 9px;
+  border-radius: 50px;
+
+  /* الخلفية الذهبية الفاتحة جداً */
+  background: rgba(213, 182, 118, 0.12);
+
+  /* البوردر الذهبي الفاتح بالضبط */
+  border: 1px solid rgba(213, 182, 118, 0.9);
+
+  /* نفس الشادو المنشور بالصورة */
+  box-shadow:
+    0 0 12px rgba(213, 182, 118, 0.25),
+    inset 0 0 4px rgba(255, 255, 255, 0.08);
+
+  font-size: 0.92rem;
+  font-weight: 400;
+
+  color: #e8d7b3; /* نص ذهبي فاتح مثل الصورة */
+
+  margin-bottom: 28px;
+}
+
+/* النص */
+.pill-text {
+  white-space: nowrap;
+  color: #e8d7b3;
+}
+
+
+/* === أيقونة البرق EXACT MATCH === */
+.pill-icon {
+  font-size: 1rem;
+  color: #ffb14a;       /* نفس اللون البرتقالي الذهبي بالصورة */
+  margin-top: 1px;
+}
+
+
+/* === النقشة على اليسار EXACT MATCH === */
+.pill-dot {
+  font-size: 0.88rem;
+  color: #e8d7b3;
+  opacity: 0.95;
+  margin-top: 1px;
+}
+
+.pill-dot svg {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 0 4px rgba(207, 174, 88, 0.4));
+}
+
+
+
+/* عنوان 3D + Glow */
+.heading-3d {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  position: relative;
+  color: #ffffff;
+  text-shadow:
+    0 0 18px rgba(207, 174, 88, 0.65),
+    0 3px 0 rgba(0, 0, 0, 0.8);
+}
+
+.heading-3d span {
+  white-space: nowrap;
+}
+
+.heading-3d .highlight-gold {
+  color: #cfae58;
+  text-shadow:
+    0 0 22px rgba(207, 174, 88, 0.9),
+    0 3px 0 rgba(0, 0, 0, 0.9);
+}
+
+/* العنوان الرئيسي */
+.hero-title {
+  font-weight: 400;
+  font-size: clamp(4.5rem, 3vw + 1.2rem, 3.3rem);
+  line-height: 1.4;
+  margin: 0 0 18px;
+}
+
+/* النص الفرعي */
+.hero-subtitle {
+  font-size: 1.75rem;
+  color: #fff;
+  margin-bottom: 15 px;
+}
+
+/* نص ثانوي */
+.hero-text {
+  font-size: 1.4rem;
+  color: #a7aab3;
+  margin-bottom: 42px;
+}
+
+/* العدّاد */
+.hero-countdown {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.countdown-card {
+  min-width: 88px;
+  padding: 14px 12px 12px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.04), rgba(1, 9, 20, 0.9));
+  border: 1px solid #cfad5879;
+  box-shadow:
+    0 0 10px rgba(0, 0, 0, 0.8),
+    0 0 12px rgba(7, 26, 58, 0.75);
+  text-align: center;
+}
+
+.countdown-value {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+  color: #cfae58;
+}
+
+.countdown-label {
+  font-size: 1rem;
+  color: #a7aab3;
+}
+
+/* نبض خفيف لكل كارد بتوقيت مختلف */
+.countdown-card--1 {
+  animation: cardPulse 2.6s ease-in-out infinite;
+}
+.countdown-card--2 {
+  animation: cardPulse 3s ease-in-out infinite 0.25s;
+}
+.countdown-card--3 {
+  animation: cardPulse 2.8s ease-in-out infinite 0.5s;
+}
+.countdown-card--4 {
+  animation: cardPulse 3.2s ease-in-out infinite 0.75s;
+}
+
+@keyframes cardPulse {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow:
+      0 0 10px rgba(0, 0, 0, 0.7),
+      0 0 12px rgba(7, 26, 58, 0.75);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+      0 0 18px rgba(207, 174, 88, 0.45),
+      0 0 26px rgba(7, 26, 58, 0.9);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow:
+      0 0 10px rgba(0, 0, 0, 0.7),
+      0 0 12px rgba(7, 26, 58, 0.75);
+  }
+}
+
+/* زر CTA عام – قابل لإعادة الاستخدام */
+.hero-cta-wrapper {
+  margin-bottom: 24px;
+}
+
+
+
+/* المميزات أسفل الزر */
+.hero-benefits {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #e5e7eb;
+  font-size: 1rem;
+}
+
+.hero-benefits li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.benefit-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #cfad58c5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 96px;
+    padding-bottom: 64px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.8rem, 6vw, 2.3rem);
+  }
+
+  .hero-countdown {
+    gap: 10px;
+  }
+
+  .countdown-card {
+    min-width: 76px;
+    padding-inline: 10px;
+  }
+
+  .btn-cta {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+/* احترام prefers-reduced-motion لو حاب تفعّله */
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-line,
+  .countdown-card--1,
+  .countdown-card--2,
+  .countdown-card--3,
+  .countdown-card--4,
+  .btn-cta-primary,
+  .chart-line,
+  .golden-wave,
+  .particle {
+    animation: none !important;
+  }
+
+  .trading-chart-overlay,
+  .golden-wave,
+  .particle {
+    opacity: 0.2 !important;
+  }
+}

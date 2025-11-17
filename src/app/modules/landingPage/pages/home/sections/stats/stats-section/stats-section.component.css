@@ -1,0 +1,126 @@
+/* ========================================================= */
+/*                     SECTION BACKGROUND                     */
+/* ========================================================= */
+
+.stats-section {
+  padding: 80px 20px;
+  background: linear-gradient(to bottom, #0A1E3F 0%, #000000 100%);
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+}
+
+.stats-container {
+  max-width: 1500px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 26px;
+}
+
+/* ========================================================= */
+/*                          CARDS                             */
+/* ========================================================= */
+
+.stat-card {
+  position: relative;
+  padding: 42px 36px;
+  border-radius: 16px;
+
+  background: linear-gradient(145deg, rgba(207, 174, 88, 0.05), rgba(0, 0, 0, 0.25));
+  border: 1px solid rgba(207, 174, 88, 0.28);
+  backdrop-filter: blur(6px);
+
+  transition: 0.35s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Hover — فخم ومطابق للفيجما */
+.stat-card:hover {
+  border-color: #d8b668;
+  transform: translateY(-6px) scale(1.03);
+  box-shadow:
+    0 0 30px rgba(207,174,88,0.55),
+    0 16px 36px rgba(0,0,0,0.65);
+}
+
+/* التوهج الخلفي */
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(207,174,88,0.10), transparent 70%);
+  opacity: 0;
+  transition: 0.35s ease;
+}
+
+.stat-card:hover::after {
+  opacity: 1;
+}
+
+/* ========================================================= */
+/*                          ICONS                             */
+/* ========================================================= */
+
+.stat-icon-wrapper {
+  float: left;
+  margin-bottom: 22px;
+  transform-origin: center;
+  animation: iconBeat 4s cubic-bezier(.23,.59,.36,1) infinite;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  color: #D8B868;
+}
+
+/* ========================================================= */
+/*      MUSIC-BEAT ANIMATION (إيقاع موسيقي احترافي فعلاً)    */
+/* ========================================================= */
+
+@keyframes iconBeat {
+  0%   { transform: translateY(0) scale(1); }
+
+  10%  { transform: translateY(-4px) scale(1.05); }   /* بداية نبضة */
+
+  20%  { transform: translateY(-12px) scale(1.12); }  /* نبضة رئيسية */
+
+  28%  { transform: translateY(-6px) scale(1.07); }   /* ارتداد */
+
+  40%  { transform: translateY(0px) scale(1); }       /* Pause */
+
+  55%  { transform: translateY(6px) scale(0.96); }    /* سقوط موسيقي */
+
+  70%  { transform: translateY(-3px) scale(1.03); }   /* Bounce */
+
+  100% { transform: translateY(0) scale(1); }         /* ثبات */
+}
+
+/* ========================================================= */
+/*                        TEXT                                */
+/* ========================================================= */
+
+.stat-number {
+  font-size: 44px;
+  font-weight: 700;
+  color: #f8e7b2;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  color: #d5d5d5;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* ========================================================= */
+/*                        RESPONSIVE                          */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+}

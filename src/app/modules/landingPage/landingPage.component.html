@@ -1,38 +1,13 @@
 <!-- Landing Page Layout -->
-<div *ngIf="pre" class="content-container" 
-     [class.content-hidden]="!showContent" 
-     [class.content-visible]="showContent">
+<div class="content-container" >
 
-  <!-- Navbar (ثابت لكل الصفحات) -->
-  <app-navbar 
-    [logoUrl]="pre?.navbar?.logo || 'assets/img/landing/home/logo.png'"
-    [phone]="settings['contact_phone']"
-    [email]="settings['contact_email']"
-    [socials]="{
-      facebook: settings['social_facebook'],
-      twitter: settings['social_twitter'],
-      instagram: settings['social_instagram'],
-      pinterest: settings['social_pinterest'],
-      youtube: settings['social_youtube'],
-      tiktok: settings['social_tiktok']
-    }">
-  </app-navbar>
 
   <!-- Main Content Area with Router Outlet -->
-  <main [@routeAnimations]="prepareRoute(outlet)" class="mt-5">
+  <main [@routeAnimations]="prepareRoute(outlet)">
     <router-outlet #outlet="outlet"></router-outlet>
   </main>
 
   <!-- Footer (ثابت لكل الصفحات) -->
-  <app-footer 
-    [description]="settings['footer_title']"
-    [facebook]="settings['social_facebook']"
-    [twitter]="settings['social_twitter']"
-    [instagram]="settings['social_instagram']"
-    [pinterest]="settings['social_pinterest']"
-    [youtube]="settings['social_youtube']"
-    [tiktok]="settings['social_tiktok']">
-    <img brand src="assets/img/landing/home/logo.svg" alt="Dorrance" height="28" />
-  </app-footer>
+  <app-footer></app-footer>
 
 </div>

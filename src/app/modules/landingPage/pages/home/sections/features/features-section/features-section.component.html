@@ -1,0 +1,55 @@
+<section class="features-section" data-aos="fade-up" data-aos-offset="150">
+    <!-- خلفية منقّطة -->
+    <div class="bg-pattern"></div>
+
+    <div class="content-wrapper">
+
+        <!-- العنوان -->
+        <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
+            <h2 class="main-title">كل ما تحتاجه لتبدأ التداول بثقة</h2>
+            <p class="subtitle">خلال 7 أيام فقط</p>
+        </div>
+
+        <!-- الجريد -->
+        <div class="features-grid">
+
+            <div class="feature-card" *ngFor="let f of features; let i = index" data-aos="fade-up"
+                [attr.data-aos-delay]="150 + i * 120">
+
+                <!-- الأيقونة — يمين -->
+                <div class="icon-box">
+                    <lucide-angular [name]="f.icon" class="icon"></lucide-angular>
+                </div>
+
+                <!-- المحتوى — يسار (لكن بعرض محدود) -->
+                <div class="content-box">
+                    <h3 class="feature-title">{{ f.title }}</h3>
+                    <p class="feature-desc">{{ f.description }}</p>
+                </div>
+
+                <!-- التوهج -->
+                <div class="hover-glow"></div>
+
+            </div>
+
+        </div>
+
+        <!-- النص التحفيزي -->
+        <div class="motivation-wrapper" data-aos="fade-up" data-aos-delay="900">
+            <p class="motivation-text">"إنت بس التزم 7 أيام، وإحنا بنتكفّل بالباقي!"</p>
+            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+                <span class="btn-cta-text"> سجّل الآن وابدأ وانتهز الفرصة</span>
+
+                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+
+                <div class="ripple-gold"></div>
+            </button>
+        </div>
+
+    </div>
+</section>

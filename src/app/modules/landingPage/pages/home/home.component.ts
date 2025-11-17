@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrateg
 import { RouterOutlet } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LandingService, LandingPageData } from '../../../services/landing.service';
-import { AppInitializerService } from '../../../../core/services/app-initializer.service';
 
 @Component({
   selector: 'app-home',
@@ -30,7 +29,7 @@ import { AppInitializerService } from '../../../../core/services/app-initializer
       ])
     ])
   ]
-})
+}) 
 export class HomeComponent implements OnInit, OnDestroy {
   // الداتا الخام القادمة من AppInitializer (بناءً على الهيكل الجديد)
   pre: any = null;
@@ -46,15 +45,48 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
-    private appInitializer: AppInitializerService
   ) {}
 
   ngOnInit(): void {
     // إخفاء اللودر (إن وجد في index)
     this.hideInitialLoader();
+    
+    // إضافة scroll effect للخلفية
+    this.initScrollAnimation();
+  }
+  
+  private initScrollAnimation(): void {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const homeContent = document.querySelector('.home-content') as HTMLElement;
+        
+        if (homeContent) {
+          // تغيير opacity بناءً على السكرول
+          const opacity = Math.min(0.15 + (scrolled / 5000), 0.25);
+          homeContent.style.setProperty('--scroll-opacity', opacity.toString());
+          
+          // تحريك الخلفية بناءً على السكرول
+          const translateY = scrolled * 0.3;
+          homeContent.style.setProperty('--scroll-translate', `${translateY}px`);
+        }
+      });
+    }
+  }
 
-    // تحميل الداتا المحمّلة مسبقاً من APP_INITIALIZER
-    this.loadPreloadedData();
+  // حالة فتح/إغلاق الـ modal
+  isRegistrationPopupOpen = false;
+
+  // فتح نافذة التسجيل
+  openRegistrationPopup = () => {
+    this.isRegistrationPopupOpen = true;
+    this.cd.detectChanges();
+  }
+
+  // إغلاق نافذة التسجيل
+  closeRegistrationPopup = () => {
+    this.isRegistrationPopupOpen = false;
+    this.cd.detectChanges();
   }
 
   ngOnDestroy(): void {}
@@ -68,47 +100,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (loader) loader.style.display = 'none';
   }
 
-  // قراءة الداتا من APP_INITIALIZER + تحويل settings إلى object
-  private loadPreloadedData(): void {
-    const preloaded = this.appInitializer.getPreloadedData();
-
-    if (!preloaded) {
-      // حد أدنى من القيم لو لا يوجد أي داتا
-      this.settings = {
-        'hero_title': 'Discover Your Next Literary Adventure',
-        'hero_subtitle': 'Curated collection of finest literature',
-        'contact_title': 'Contact Us',
-        'footer_title': 'America\'s Oldest Publishing Services Company — Trusted for 100+ Years.'
-      };
-      this.pre = { 
-        hero: {}, 
-        introTrust: [], 
-        featuredBooks: [], 
-        categories: [], 
-        bestsellingBooks: [], 
-        staffPicks: {}, 
-        awardWinners: {}, 
-        testimonials: [], 
-        blogs: [] 
-      };
-      this.showContent = true;
-      this.cd.detectChanges();
-      return;
-    }
-
-    // احتفظ بالداتا الجديدة كما هي
-    this.pre = preloaded;
-
-    // تحويل settings من array إلى object
-    if (preloaded.settings && Array.isArray(preloaded.settings)) {
-      this.settings = this.landingService.parseSettings(preloaded.settings);
-    } else {
-      this.settings = {};
-    }
-
-    this.showContent = true;
-    this.cd.detectChanges();
-  }
 
   // للـ Router outlet animation إن احتجته
   prepareRoute(outlet: RouterOutlet) {

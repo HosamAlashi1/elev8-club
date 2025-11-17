@@ -1,0 +1,175 @@
+/* سكشن المميزات */
+.features-section {
+  padding: 90px 0;
+  position: relative;
+  background: #000;
+  overflow: hidden;
+  direction: rtl;
+}
+
+/* الخلفية المنقّطة الخفيفة */
+.bg-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 2px 2px, #CFAE58 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.content-wrapper {
+  position: relative;
+  max-width: 1550px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+/* العنوان */
+.title-wrapper {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.main-title {
+  font-size: 46px;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 0 22px rgba(207, 174, 88, 0.6);
+}
+
+.subtitle {
+  font-size: 20px;
+  color: #bfbfbf;
+  margin-top: 6px;
+}
+
+/* ============ GRID ============ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  direction: rtl;
+}
+
+/* ============ CARD ============ */
+.feature-card {
+  position: relative;
+  padding: 30px 34px;
+  border-radius: 18px;
+
+  background: linear-gradient(135deg, #07172f 0%, #020203 100%);
+  border: 1px solid rgba(207, 174, 88, 0.28);
+  backdrop-filter: blur(4px);
+
+  /* أهم نقطة: أيقونة يمين، النص يسار + عرض محدود */
+  display: flex;
+  flex-direction: row-reverse;          /* تخلي الأيقونة يمين */
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  min-height: 190px;
+
+  transition: 0.35s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  border-color: #CFAE58;
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 22px rgba(207, 174, 88, 0.55),
+    0 14px 32px rgba(0, 0, 0, 0.65);
+}
+
+/* التوهج بالخلف */
+.hover-glow {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(207, 174, 88, 0.08), transparent 65%);
+  opacity: 0;
+  transition: 0.3s ease;
+  filter: blur(14px);
+  z-index: -1;
+}
+
+.feature-card:hover .hover-glow {
+  opacity: 1;
+}
+
+/* ============ ICON ============ */
+.icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(207, 174, 88, 0.25);
+
+  transition: 0.25s ease;
+}
+
+.feature-card:hover .icon-box {
+  background: rgba(207, 174, 88, 0.22);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  color: #F4DFA2;
+}
+
+/* ============ CONTENT ============ */
+.content-box {
+  flex: 1;
+  text-align: right;
+  max-width: 60%;         /* هنا السحر: يكسّر العنوان لأسطر زي الفيجما */
+}
+
+.feature-title {
+  font-size: 22px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.feature-desc {
+  color: #c7c7c7;
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
+/* CTA تحت السكشن (لو مستخدمه) */
+.motivation-wrapper {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.motivation-text {
+  color: #CFAE58;
+  font-size: 26px;
+  margin-bottom: 22px;
+  text-shadow: 0 0 18px rgba(207, 174, 88, 0.45);
+}
+
+/* موبايل */
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-card {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    min-height: auto;
+  }
+
+  .content-box {
+    max-width: 100%;
+  }
+}

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Dorrance": {
+    "Elev8_Club": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -142,19 +142,19 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "Dorrance:build:production"
+              "browserTarget": "Elev8_Club:build:production"
             },
             "development": {
-              "browserTarget": "Dorrance:build:development"
+              "browserTarget": "Elev8_Club:build:development"
             },
             "local": {
-              "browserTarget": "Dorrance:build:local"
+              "browserTarget": "Elev8_Club:build:local"
             },
             "stage": {
-              "browserTarget": "Dorrance:build:stage"
+              "browserTarget": "Elev8_Club:build:stage"
             },
             "live": {
-              "browserTarget": "Dorrance:build:live"
+              "browserTarget": "Elev8_Club:build:live"
             }
           },
           "defaultConfiguration": "development"
@@ -162,7 +162,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Dorrance:build"
+            "browserTarget": "Elev8_Club:build"
           }
         },
         "test": {

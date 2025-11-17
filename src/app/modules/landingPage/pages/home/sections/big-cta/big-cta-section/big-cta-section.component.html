@@ -1,0 +1,52 @@
+<section class="big-cta-section" data-aos="fade-up" data-aos-duration="800">
+
+  <!-- Background Effects -->
+  <div class="background-glow"></div>
+
+  <!-- Animated Particles -->
+  <div class="particles-container">
+    <div class="particle" *ngFor="let particle of particles; let i = index" [attr.data-index]="i"></div>
+  </div>
+
+  <div class="container">
+    <div class="content-wrapper" data-aos="zoom-in" data-aos-delay="100" data-aos-duration="800">
+
+      <!-- Icon -->
+      <div class="sparkles-icon" data-aos="flip-up" data-aos-delay="200">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 3c-.3 2-.9 3.1-2.1 4.2C8.8 8.3 7.7 8.9 6 9c1.7.1 2.8.7 3.9 1.8C11.1 12 11.7 13.1 12 15c.3-1.9.9-3 2.1-4.2C15.2 9.7 16.3 9.1 18 9c-1.7-.1-2.8-.7-3.9-1.8C12.9 6.1 12.3 5 12 3z"
+            fill="#D5B56B" />
+          <circle cx="6.2" cy="15.8" r="1.6" fill="#D5B56B" />
+          <path d="M18.7 4.8c-.2.9-.6 1.5-1.3 2.1.7.1 1.2.3 1.7.8.5-.5.9-1 1-1.8-.8-.1-1.3-.4-1.4-1.1z"
+            fill="#D5B56B" />
+        </svg>
+      </div>
+
+      <!-- Main Text -->
+      <h2 class="main-title heading-3d" data-aos="fade-up" data-aos-delay="250" data-aos-duration="800">
+        انتهز الفرصة الآن مجاناً
+      </h2>
+
+      <!-- Subtext -->
+      <p class="subtitle" data-aos="fade-up" data-aos-delay="350" data-aos-duration="800">
+        سجّل الآن في التحدي المجاني وابدأ رحلتك نحو الحرية المالية
+      </p>
+
+      <!-- CTA Button -->
+      <div class="cta-button-wrapper" data-aos="zoom-in-up" data-aos-delay="450" data-aos-duration="800">
+        <button class="btn-cta btn-cta-primary btn-cta-xl" (click)="onOpenRegistration()">
+          <span class="btn-cta-text">سجّل الآن مجاناً</span>
+          <div class="ripple-gold"></div>
+        </button>
+      </div>
+
+      <!-- Bottom Text -->
+      <p class="bottom-text" data-aos="fade-up" data-aos-delay="550" data-aos-duration="800">
+        انضم لأكثر من <span class="highlight-gold">10,000</span> متدرب يتعلمون التداول الآن
+      </p>
+
+    </div>
+  </div>
+
+</section>

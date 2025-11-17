@@ -1,0 +1,94 @@
+<!-- Registration Modal -->
+<div class="modal-wrapper" *ngIf="isOpen" [@fadeIn]>
+
+  <!-- Backdrop -->
+  <div class="modal-backdrop" (click)="onBackdropClick($event)"></div>
+
+  <!-- Modal Content -->
+  <div class="modal-container" [@slideUp]>
+    <div class="modal-content">
+
+      <!-- Close Button -->
+      <button class="close-button" (click)="onClose()" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- Header -->
+      <div class="modal-header" data-aos="fade-down" data-aos-delay="100">
+        <h2 class="modal-title heading-3d">سجّل الآن في التحدي</h2>
+        <p class="modal-subtitle">انضم لـ 10,000 شخص واحصل على فرصتك المجانية</p>
+      </div>
+
+      <!-- Form -->
+      <form class="registration-form" (ngSubmit)="onSubmit($event)" data-aos="fade-up" data-aos-delay="200">
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="fullName" class="form-label">الاسم الكامل</label>
+          <input 
+            id="fullName"
+            type="text"
+            required
+            [(ngModel)]="formData.fullName"
+            name="fullName"
+            class="form-input"
+            placeholder="أدخل اسمك الكامل"
+            dir="rtl"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email" class="form-label">البريد الإلكتروني</label>
+          <input 
+            id="email"
+            type="email"
+            required
+            [(ngModel)]="formData.email"
+            name="email"
+            class="form-input"
+            placeholder="example@email.com"
+            dir="ltr"
+          />
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="form-group">
+          <label for="whatsapp" class="form-label">رقم الواتساب</label>
+          <input 
+            id="whatsapp"
+            type="tel"
+            required
+            [(ngModel)]="formData.whatsapp"
+            name="whatsapp"
+            class="form-input"
+            placeholder="+966 XX XXX XXXX"
+            dir="ltr"
+          />
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <p class="info-text">
+            سنتواصل معك عبر واتساب خلال 24 ساعة لتأكيد التسجيل وإرسال تفاصيل البدء
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-button">
+          <span>تأكيد التسجيل والانضمام للتحدي</span>
+        </button>
+
+      </form>
+
+      <!-- Privacy Note -->
+      <p class="privacy-note" data-aos="fade-up" data-aos-delay="300">
+        بياناتك محمية ولن يتم مشاركتها مع أي طرف ثالث
+      </p>
+
+    </div>
+  </div>
+
+</div>

@@ -1,4 +1,3 @@
-import { ApiPortalService } from 'src/app/modules/services/api.portal.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, tap } from 'rxjs';
@@ -18,16 +17,12 @@ export class NotificationService {
 
   constructor(
     private http: HttpClient,
-    private apiPortal: ApiPortalService,
     private apiAdmin: ApiAdminService
   ) { }
 
   private getBase(context: NotificationContext = 'user') {
 
-    if (context === 'admin') {
-      return this.apiAdmin.notifications;
-    }
-    return this.apiPortal.notifications;
+         return this.apiAdmin.notifications;
   }
 
   getNotifications(page: number, context: NotificationContext = 'user') {

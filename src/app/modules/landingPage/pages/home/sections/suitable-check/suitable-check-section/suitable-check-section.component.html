@@ -1,0 +1,75 @@
+<section class="target-section" data-aos="fade-up">
+
+    <div class="bg-blur"></div>
+
+    <div class="container">
+
+        <!-- العنوان -->
+        <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
+            <h2 class="main-title">هل التحدي مناسب لك؟</h2>
+        </div>
+
+        <div class="cards-grid">
+
+            <!-- مناسب -->
+            <div class="card suitable" data-aos="fade-left" data-aos-delay="200">
+
+                <div class="card-header pe-0">
+                    <div class="icon-circle gold gold-text">
+                        <lucide-angular name="check-circle-2" class="icon gold"></lucide-angular>
+                    </div>
+                    <h3 class="card-title gold-text">مناسب</h3>
+                </div>
+
+                <div class="card-list">
+                    <div class="list-item mb-3" *ngFor="let item of suitable; let i = index" data-aos="fade-left"
+                        [attr.data-aos-delay]="300 + i * 120">
+                        <lucide-angular name="check-circle-2" class="list-icon gold"></lucide-angular>
+                        <span>{{ item }}</span>
+                    </div>
+                </div>
+
+                <div class="glow"></div>
+            </div>
+
+            <!-- مش مناسب -->
+            <div class="card not-suitable" data-aos="fade-right" data-aos-delay="200">
+
+                <div class="card-header pe-0">
+                    <div class="icon-circle red red-text">
+                        <lucide-angular name="x-circle" class="icon red"></lucide-angular>
+                    </div>
+                    <h3 class="card-title red-text">مش مناسب</h3>
+                </div>
+
+                <div class="card-list">
+                    <div class="list-item mb-3" *ngFor="let item of notSuitable; let i = index" data-aos="fade-right"
+                        [attr.data-aos-delay]="350 + i * 120">
+                        <lucide-angular name="x-circle" class="list-icon red"></lucide-angular>
+                        <span>{{ item }}</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- الزر -->
+        <div class="cta-wrapper" data-aos="fade-up" data-aos-delay="800">
+            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+                <span class="btn-cta-text">سجّل بياناتك وابدأ فورًا</span>
+
+                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+
+                <div class="ripple-gold"></div>
+            </button>
+        </div>
+
+    </div>
+
+</section>

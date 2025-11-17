@@ -1,61 +1,42 @@
-<footer class="site-footer" data-aos="fade-right" data-aos-duration="800">
+<footer class="site-footer">
   <div class="container">
 
-    <!-- أعلى الفوتر -->
-    <div class="row footer-top g-4 gx-lg-5 gx-xl-6 align-items-start">
-
-      <!-- Quick Links -->
-      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-        <h6 class="footer-title">Quick Links</h6>
-        <ul class="list-unstyled mb-0">
-          <li><a (click)="scrollTo('about')" href="javascript:void(0)" class="footer-link">About Us</a></li>
-          <li><a routerLink="/shop" class="footer-link">Shop</a></li>
-          <li><a routerLink="/author-events" class="footer-link">Author Events</a></li>
-          <li><a (click)="scrollTo('contact')" href="javascript:void(0)" class="footer-link">Contact</a></li>
-        </ul>
-      </div>
-
-      <!-- Customer Service -->
-      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-        <h6 class="footer-title">Customer Service</h6>
-        <ul class="list-unstyled mb-0">
-          <li><a href="#" class="footer-link">Shipping Policy</a></li>
-          <li><a href="#" class="footer-link">Returns & Exchanges</a></li>
-          <li><a href="#" class="footer-link">FAQ</a></li>
-          <li><a href="#" class="footer-link">Track Order</a></li>
-        </ul>
-      </div>
-
-      <!-- Legal -->
-      <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-        <h6 class="footer-title">Legal</h6>
-        <ul class="list-unstyled mb-0">
-          <li><a href="#" class="footer-link">Privacy Policy</a></li>
-          <li><a href="#" class="footer-link">Terms of Use</a></li>
-          <li><a href="#" class="footer-link">Confidentiality Statement</a></li>
-        </ul>
-      </div>
-
-      <!-- Social -->
-      <div class="col-12 col-md-12 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-        <h6 class="footer-title">Connect With Us</h6>
-        <div class="socials d-flex gap-2">
-          <a *ngIf="isValidLink(facebook)" [href]="facebook" target="_blank" class="social-link text-decoration-none"><i class="fab fa-facebook-f"></i></a>
-          <a *ngIf="isValidLink(twitter)" [href]="twitter" target="_blank" class="social-link text-decoration-none"><i class="fab fa-twitter"></i></a>
-          <a *ngIf="isValidLink(instagram)" [href]="instagram" target="_blank" class="social-link text-decoration-none"><i class="fab fa-instagram"></i></a>
-          <a *ngIf="isValidLink(pinterest)" [href]="pinterest" target="_blank" class="social-link text-decoration-none"><i class="fab fa-pinterest-p"></i></a>
-          <a *ngIf="isValidLink(youtube)" [href]="youtube" target="_blank" class="social-link text-decoration-none"><i class="fab fa-youtube"></i></a>
-          <a *ngIf="isValidLink(tiktok)" [href]="tiktok" target="_blank" class="social-link text-decoration-none"><i class="fab fa-tiktok"></i></a>
+    <!-- Warning Section -->
+    <div class="warning-box" data-aos="fade-up" data-aos-duration="600">
+      <div class="warning-content">
+        <!-- Warning Icon -->
+        <svg class="warning-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+        <!-- Warning Text -->
+        <div class="warning-text">
+          <p class="warning-title">
+            <strong> تحذير مهم:</strong> التداول في الأسواق المالية يحتوي على مخاطر وقد يؤدي إلى خسارة رأس المال.
+          </p>
+          <p class="warning-subtitle">
+            النتائج السابقة لا تضمن النتائج المستقبلية. يرجى التداول بمسؤولية وعدم استثمار أموال لا يمكنك تحمل خسارتها.
+          </p>
         </div>
       </div>
-
     </div>
 
-    <hr class="footer-divider" data-aos="fade-left" data-aos-delay="500">
+    <!-- Copyright -->
+    <div class="copyright-section" data-aos="fade-up" data-aos-delay="200" data-aos-duration="600">
+      
+      <!-- Logo with Lines -->
+      <div class="logo-wrapper">
+        <div class="divider-line divider-left"></div>
+        <span class="logo-text">Elev8 Club</span>
+        <div class="divider-line divider-right"></div>
+      </div>
 
-    <!-- أسفل -->
-    <div class="footer-bottom text-center py-3">
-      © {{ currentYear }} Dorrance. All rights reserved.
+      <!-- Copyright Text -->
+      <p class="copyright-text">
+        © {{ currentYear }} Elev8 Club – جميع الحقوق محفوظة
+      </p>
     </div>
+
   </div>
 </footer>
