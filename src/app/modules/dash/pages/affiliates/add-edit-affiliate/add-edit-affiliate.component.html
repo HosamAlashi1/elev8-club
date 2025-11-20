@@ -1,0 +1,65 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ isEdit ? 'Edit Affiliate' : 'Add New Affiliate' }}</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- Name -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="name" placeholder="Full name"
+          [ngClass]="{ 'is-invalid': submitted && f['name'].invalid, 'is-valid': submitted && f['name'].valid }" />
+        <div *ngIf="submitted && f['name'].invalid" class="invalid-feedback">
+          Name is required
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Email <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="email" type="email" placeholder="affiliate@example.com"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].invalid, 'is-valid': submitted && f['email'].valid }" />
+        <div *ngIf="submitted && f['email'].invalid" class="invalid-feedback">
+          Valid email is required
+        </div>
+      </div>
+
+      <!-- Code -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Affiliate Code <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="code" placeholder="AHM1 (uppercase, no spaces)"
+          [ngClass]="{ 'is-invalid': submitted && f['code'].invalid, 'is-valid': submitted && f['code'].valid }" />
+        <div *ngIf="submitted && f['code'].invalid" class="invalid-feedback">
+          Code is required (uppercase letters and numbers only)
+        </div>
+        <small class="text-muted">This code will be used in the affiliate link: ?ref=CODE</small>
+      </div>
+
+      <!-- WhatsApp Number -->
+      <div class="col-12 mb-3">
+        <label class="form-label">WhatsApp Number <span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="whatsappNumber" placeholder="+201001112233"
+          [ngClass]="{ 'is-invalid': submitted && f['whatsappNumber'].invalid, 'is-valid': submitted && f['whatsappNumber'].valid }" />
+        <div *ngIf="submitted && f['whatsappNumber'].invalid" class="invalid-feedback">
+          WhatsApp number is required
+        </div>
+        <small class="text-muted">Include country code (e.g., +966 for Saudi Arabia)</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-custom" [disabled]="isSubmitting">
+      <ng-container *ngIf="isSubmitting">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Saving...
+      </ng-container>
+      <ng-container *ngIf="!isSubmitting">
+        {{ isEdit ? 'Update' : 'Add' }} Affiliate
+      </ng-container>
+    </button>
+  </div>
+</form>

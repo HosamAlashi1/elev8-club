@@ -21,7 +21,7 @@
             <!-- Right side (Add button) -->
             <div data-aos="fade-left" data-aos-delay="500">
                 <button class="btn btn-custom d-flex align-items-center gap-2"
-                    *ngIf="publicService.hasPermission('ADD_ADMIN')" (click)="add()">
+                    (click)="add()">
                     <i class="fe fe-plus"></i>
                     Add Admin
                 </button>
@@ -91,13 +91,13 @@
                                         <i class="fe fe-more-vertical black-menu fs-3"></i>
                                     </span>
                                     <ul class="dropdown-menu">
-                                        <li *ngIf="publicService.hasPermission('EDIT_ADMIN')">
+                                        <li>
                                             <a class="dropdown-item" (click)="edit(a)">
                                                 <i class="fe fe-edit me-2"></i>Edit
                                             </a>
                                         </li>
 
-                                        <li *ngIf="publicService.hasPermission('ACTIVE_ADMIN')">
+                                        <li>
                                             <a class="dropdown-item" (click)="toggleActive(a)">
                                                 <i
                                                     [ngClass]="a.is_active ? 'fe fe-user-x me-2' : 'fe fe-user-check me-2'"></i>
@@ -110,7 +110,7 @@
                                             <hr class="m-2" />
                                         </li>
 
-                                        <li *ngIf="publicService.hasPermission('DELETE_ADMIN')">
+                                        <li>
                                             <a class="dropdown-item" (click)="delete(a)">
                                                 <i class="fe fe-trash-2 text-danger me-2"></i>
                                                 <span class="text-danger">Delete</span>

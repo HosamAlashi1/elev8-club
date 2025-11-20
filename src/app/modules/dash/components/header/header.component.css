@@ -60,7 +60,7 @@
 .notification-btn:hover {
   border-color: #21d1c5;
   color: #21d1c5;
-  box-shadow: 0 4px 16px rgba(91, 189, 183, 0.25);
+  box-shadow: 0 4px 16px rgba(228, 201, 138, 0.12);
   transform: translateY(-2px);
 }
 
@@ -124,7 +124,7 @@
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #21d1c5, #5bbdb7);
+  background: linear-gradient(135deg, #21d1c5, #CFAE58);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;

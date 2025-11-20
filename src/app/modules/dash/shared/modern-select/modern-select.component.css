@@ -29,14 +29,14 @@
 }
 
 .modern-select-trigger:focus {
-  border-color: #5BBDB7;
-  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.08);
+  border-color: #CFAE58;
+  box-shadow: 0 0 0 3px rgba(207, 174, 88, 0.12);
   outline: none;
 }
 
 .modern-select-open .modern-select-trigger {
-  border-color: #5BBDB7;
-  box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.08);
+  border-color: #CFAE58;
+  box-shadow: 0 0 0 3px rgba(207, 174, 88, 0.12);
   background: #fff;
 }
 
@@ -168,7 +168,7 @@
 }
 
 .modern-select-search:focus {
-  border-color: #5BBDB7;
+  border-color: #CFAE58;
   outline: none;
 }
 
@@ -213,8 +213,8 @@
 
 /* 🎯 إظهار التحديد للخيارات الحقيقية بس */
 .modern-select-option.selected.has-real-value {
-  background-color: rgba(91, 189, 183, 0.08);
-  color: #5BBDB7;
+  background-color: rgba(207, 174, 88, 0.12);
+  color: #CFAE58;
   font-weight: 500;
 }
 
@@ -236,7 +236,7 @@
 
 /* ✓ Check Icon - بسيط وواضح */
 .option-check {
-  color: #5BBDB7;
+  color: #CFAE58;
   font-size: 14px;
   margin-left: 10px;
   opacity: 0.9;

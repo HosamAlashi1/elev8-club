@@ -1,0 +1,164 @@
+/* Wrapper عام */
+.lead-wrapper {
+  border-radius: 16px;
+  border: 1px solid rgba(228, 201, 138, 0.5);
+  background: linear-gradient(135deg, #ffffff 0%, #fdf8ed 100%);
+  padding: 20px 22px;
+}
+
+/* Avatar */
+.lead-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgba(228, 201, 138, 0.18);
+  border: 1px solid rgba(228, 201, 138, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #cfae58;
+  font-size: 1.1rem;
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.modal-subtitle {
+  font-size: 0.9rem;
+}
+
+/* Sections */
+.info-section {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+/* Labels + values */
+.field-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.field-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Affiliate code */
+.code-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(228, 201, 138, 0.16);
+  color: #cfae58;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-pill.completed {
+  background: rgba(52, 199, 89, 0.12);
+  color: #34c759;
+}
+
+.status-pill.pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+/* Answer badges (Yes/No) */
+.answer-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: rgba(156, 163, 175, 0.12);
+  color: #4b5563;
+}
+
+.answer-pill.yes {
+  background: rgba(52, 199, 89, 0.12);
+  color: #34c759;
+}
+
+.answer-pill.info {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+}
+
+.answer-pill.no {
+  background: rgba(156, 163, 175, 0.16);
+  color: #4b5563;
+}
+
+/* Consent box */
+.consent-box {
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 0.9rem;
+  transition: 0.25s ease;
+}
+
+.consent-box.granted {
+  border-color: rgba(52, 199, 89, 0.5);
+  background: rgba(52, 199, 89, 0.06);
+}
+
+.consent-box.denied {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.consent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #9ca3af;
+}
+
+.consent-box.granted .consent-dot {
+  background: #34c759;
+}
+
+.consent-box.denied .consent-dot {
+  background: #ef4444;
+}
+
+.consent-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .lead-wrapper {
+    padding: 16px 14px;
+  }
+}

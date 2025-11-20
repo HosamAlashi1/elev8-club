@@ -5,13 +5,13 @@ img {
 /* 🎨 خلفية الصفحة */
 .body {
   height: 100vh;
-  background: linear-gradient(135deg, #5BBDB7 0%, #A8E7E3 50%, #E0F7F6 100%);
+  background: linear-gradient(135deg, #F7E8C7 0%, #F1D9A7 45%, #E4C98A 100%);
   position: relative;
   overflow: hidden;
 }
 
-/*  عناصر متحركة هادئة للكتاب الصوتي */
-.floating-audio-elements {
+/*  عناصر متحركة متعلقة بالتداول */
+.floating-trading-elements {
   position: absolute;
   top: 0;
   left: 0;
@@ -21,179 +21,223 @@ img {
   z-index: 1;
 }
 
-/* 🎶 موجات صوتية متحركة بنعومة خيالية */
-.sound-wave {
+/* 📊 شموع يابانية متحركة */
+.candlestick {
   position: absolute;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.15) 25%, 
-    rgba(255, 255, 255, 0.25) 50%, 
-    rgba(255, 255, 255, 0.15) 75%, 
-    transparent 100%);
-  border-radius: 50px;
-  animation: soundPulse 6s ease-in-out infinite;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  filter: blur(0.5px);
+  width: 8px;
+  background: linear-gradient(180deg, 
+    rgba(76, 175, 80, 0.3) 0%, 
+    rgba(76, 175, 80, 0.2) 100%);
+  border-radius: 2px;
+  animation: candleFloat 8s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
 }
 
-.wave-1 {
-  width: 80px;
-  height: 4px;
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
-  animation-duration: 5s;
-}
-
-.wave-2 {
-  width: 120px;
-  height: 6px;
-  top: 30%;
-  right: 15%;
-  animation-delay: 1.5s;
-  animation-duration: 7s;
-}
-
-.wave-3 {
-  width: 60px;
-  height: 3px;
-  bottom: 40%;
-  left: 20%;
-  animation-delay: 3s;
-  animation-duration: 8s;
-}
-
-.wave-4 {
-  width: 100px;
-  height: 5px;
-  bottom: 25%;
-  right: 25%;
-  animation-delay: 0.8s;
-  animation-duration: 6.5s;
-}
-
-/* 📖 كتب عائمة بهدوء وجمال */
-.floating-book {
-  position: absolute;
-  width: 30px;
-  height: 40px;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    rgba(255, 255, 255, 0.1) 50%, 
-    rgba(255, 255, 255, 0.05) 100%);
-  border-radius: 3px;
-  border-left: 3px solid rgba(255, 255, 255, 0.3);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  animation: bookFloat 12s ease-in-out infinite;
-  box-shadow: 
-    0 4px 15px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(2px);
-}
-
-.floating-book::before {
+.candlestick::before {
   content: '';
   position: absolute;
-  top: 8px;
-  left: 6px;
-  width: 18px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.15);
+  width: 2px;
+  height: 15px;
+  background: rgba(76, 175, 80, 0.4);
+  left: 50%;
+  top: -15px;
+  transform: translateX(-50%);
   border-radius: 1px;
 }
 
-.floating-book::after {
+.candlestick::after {
   content: '';
   position: absolute;
-  top: 15px;
-  left: 6px;
-  width: 12px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.5px;
+  width: 2px;
+  height: 12px;
+  background: rgba(76, 175, 80, 0.4);
+  left: 50%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  border-radius: 1px;
 }
 
-.book-1 {
+.candle-1 {
+  height: 35px;
   top: 15%;
-  left: 5%;
+  left: 10%;
   animation-delay: 0s;
-  transform: rotate(-15deg);
   animation-duration: 10s;
 }
 
-.book-2 {
-  top: 60%;
-  right: 8%;
-  animation-delay: 4s;
-  transform: rotate(20deg);
+.candle-2 {
+  height: 45px;
+  top: 50%;
+  right: 12%;
+  animation-delay: 3s;
+  animation-duration: 12s;
+  background: linear-gradient(180deg, 
+    rgba(244, 67, 54, 0.3) 0%, 
+    rgba(244, 67, 54, 0.2) 100%);
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+}
+
+.candle-2::before,
+.candle-2::after {
+  background: rgba(244, 67, 54, 0.4);
+}
+
+.candle-3 {
+  height: 28px;
+  bottom: 25%;
+  left: 18%;
+  animation-delay: 5s;
   animation-duration: 14s;
 }
 
-.book-3 {
-  bottom: 20%;
-  left: 15%;
-  animation-delay: 8s;
-  transform: rotate(-10deg);
-  animation-duration: 16s;
-}
-
-/* 🎧 أيقونات سماعات عائمة بتصميم رايق */
-.floating-headphone {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50% 50% 0 0;
-  animation: headphoneFloat 15s ease-in-out infinite;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    transparent 100%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.floating-headphone::before {
-  content: '';
-  position: absolute;
-  width: 15px;
-  height: 15px;
-  background: radial-gradient(circle, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    rgba(255, 255, 255, 0.05) 100%);
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
-}
-
-.floating-headphone::after {
-  content: '';
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  width: 20px;
-  height: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: none;
-  border-radius: 10px 10px 0 0;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.08) 0%, 
-    transparent 100%);
-}
-
-.headphone-1 {
-  top: 25%;
-  right: 10%;
+.candle-4 {
+  height: 38px;
+  top: 35%;
+  right: 25%;
   animation-delay: 2s;
+  animation-duration: 11s;
+}
+
+/* 💱 رموز العملات عائمة */
+.floating-currency {
+  position: absolute;
+  font-size: 28px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.25);
+  animation: currencyFloat 12s ease-in-out infinite;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.currency-1 {
+  top: 20%;
+  left: 8%;
+  animation-delay: 0s;
+  animation-duration: 10s;
+}
+
+.currency-2 {
+  top: 55%;
+  right: 15%;
+  animation-delay: 4s;
+  animation-duration: 14s;
+  font-size: 24px;
+}
+
+.currency-3 {
+  bottom: 20%;
+  left: 12%;
+  animation-delay: 7s;
+  animation-duration: 16s;
+  font-size: 26px;
+}
+
+/* 📈 خطوط الرسم البياني */
+.chart-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(33, 150, 243, 0.3) 20%,
+    rgba(33, 150, 243, 0.5) 50%,
+    rgba(33, 150, 243, 0.3) 80%,
+    transparent 100%);
+  animation: chartMove 8s ease-in-out infinite;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.2);
+}
+
+.line-1 {
+  width: 120px;
+  top: 28%;
+  left: 15%;
+  animation-delay: 0s;
+  transform: rotate(-10deg);
+}
+
+.line-2 {
+  width: 90px;
+  top: 65%;
+  right: 20%;
+  animation-delay: 3s;
+  animation-duration: 10s;
+  transform: rotate(8deg);
+}
+
+.line-3 {
+  width: 100px;
+  bottom: 30%;
+  left: 25%;
+  animation-delay: 6s;
+  animation-duration: 12s;
+  transform: rotate(-5deg);
+}
+
+/* ↗↘ أسهم الاتجاه */
+.trend-arrow {
+  position: absolute;
+  font-size: 32px;
+  font-weight: bold;
+  animation: arrowFloat 10s ease-in-out infinite;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.arrow-up-1,
+.arrow-up-2 {
+  color: rgba(76, 175, 80, 0.3);
+}
+
+.arrow-down-1 {
+  color: rgba(244, 67, 54, 0.3);
+}
+
+.arrow-up-1 {
+  top: 25%;
+  right: 8%;
+  animation-delay: 1s;
   animation-duration: 12s;
 }
 
-.headphone-2 {
+.arrow-up-2 {
   bottom: 35%;
-  right: 20%;
-  animation-delay: 6s;
-  animation-duration: 18s;
+  left: 20%;
+  animation-delay: 5s;
+  animation-duration: 14s;
+  font-size: 28px;
+}
+
+.arrow-down-1 {
+  top: 60%;
+  right: 18%;
+  animation-delay: 3s;
+  animation-duration: 11s;
+  font-size: 30px;
+}
+
+/* 🌊 موجات السوق */
+.market-wave {
+  position: absolute;
+  height: 60px;
+  width: 150px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  border-top: none;
+  animation: waveMove 10s ease-in-out infinite;
+}
+
+.wave-1 {
+  top: 40%;
+  left: 5%;
+  animation-delay: 0s;
+  animation-duration: 12s;
+}
+
+.wave-2 {
+  bottom: 30%;
+  right: 10%;
+  animation-delay: 4s;
+  animation-duration: 15s;
+  transform: rotate(180deg);
 }
 
 /* 🌟 نجوم لامعة صغيرة حلوة كتير */
@@ -386,49 +430,67 @@ img {
   animation-delay: 1.5s;
 }
 
-/* 🎭 أنيميشنات ناعمة وحلوة كثير */
-@keyframes soundPulse {
+/* 🎭 أنيميشنات التداول */
+@keyframes candleFloat {
   0%, 100% {
-    transform: scaleX(1) translateY(0);
-    opacity: 0.2;
-  }
-  25% {
-    transform: scaleX(1.2) translateY(-3px);
-    opacity: 0.5;
-  }
-  75% {
-    transform: scaleX(1.4) translateY(2px);
-    opacity: 0.7;
-  }
-}
-
-@keyframes bookFloat {
-  0%, 100% {
-    transform: translateY(0px) rotateZ(-15deg) rotateX(0deg);
+    transform: translateY(0px);
     opacity: 0.4;
   }
   33% {
-    transform: translateY(-12px) rotateZ(-10deg) rotateX(5deg);
+    transform: translateY(-15px);
     opacity: 0.7;
   }
   66% {
-    transform: translateY(-8px) rotateZ(-18deg) rotateX(-3deg);
+    transform: translateY(-8px);
     opacity: 0.6;
   }
 }
 
-@keyframes headphoneFloat {
+@keyframes currencyFloat {
   0%, 100% {
     transform: translateY(0px) rotate(0deg) scale(1);
-    opacity: 0.3;
+    opacity: 0.25;
   }
   40% {
-    transform: translateY(-10px) rotate(3deg) scale(1.05);
-    opacity: 0.6;
+    transform: translateY(-12px) rotate(5deg) scale(1.1);
+    opacity: 0.4;
   }
   80% {
-    transform: translateY(-5px) rotate(-2deg) scale(0.98);
+    transform: translateY(-6px) rotate(-3deg) scale(1.05);
+    opacity: 0.35;
+  }
+}
+
+@keyframes chartMove {
+  0%, 100% {
+    transform: translateX(0) scaleX(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(10px) scaleX(1.2);
+    opacity: 0.6;
+  }
+}
+
+@keyframes arrowFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
     opacity: 0.5;
+  }
+}
+
+@keyframes waveMove {
+  0%, 100% {
+    transform: translateY(0px) scaleX(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-8px) scaleX(1.15);
+    opacity: 0.4;
   }
 }
 
@@ -470,44 +532,7 @@ img {
   }
 }
 
-@keyframes musicFlow {
-  0% {
-    transform: translateX(-150px) rotate(0deg);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.7;
-    transform: translateX(50vw) rotate(180deg);
-  }
-  85% {
-    opacity: 0.4;
-  }
-  100% {
-    transform: translateX(calc(100vw + 150px)) rotate(360deg);
-    opacity: 0;
-  }
-}
 
-@keyframes radioExpand {
-  0% {
-    transform: scale(0.5) rotate(0deg);
-    opacity: 0.6;
-    border-width: 2px;
-  }
-  50% {
-    transform: scale(2) rotate(180deg);
-    opacity: 0.3;
-    border-width: 1px;
-  }
-  100% {
-    transform: scale(3.5) rotate(360deg);
-    opacity: 0;
-    border-width: 0.5px;
-  }
-}
 
 /* 🌈 إضافة أنيميشنات جديدة للنعومة الإضافية */
 @keyframes gentleBreath {
@@ -541,16 +566,19 @@ img {
 
 /* 📱 تحسينات للموبايل */
 @media (max-width: 768px) {
-  .floating-book,
-  .floating-headphone {
+  .candlestick,
+  .floating-currency,
+  .trend-arrow {
     transform: scale(0.8);
+    opacity: 0.6;
   }
   
-  .sound-wave {
-    opacity: 0.5;
+  .chart-line {
+    opacity: 0.4;
   }
   
-  .soft-circle {
+  .soft-circle,
+  .market-wave {
     opacity: 0.3;
   }
 }

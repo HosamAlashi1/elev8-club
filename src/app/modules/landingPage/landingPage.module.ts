@@ -29,9 +29,14 @@ import { SuitableCheckSectionComponent } from './pages/home/sections/suitable-ch
 import { FaqSectionComponent } from './pages/home/sections/faq/faq-section/faq-section.component';
 import { LeadsTickerComponent } from './pages/home/sections/leads-ticker/leads-ticker/leads-ticker.component';
 import { RegisterPopupComponent } from './pages/home/sections/register-popup/register-popup/register-popup.component';
+import { LiveRegistrationsComponent } from './pages/home/sections/live-registrations/live-registrations.component';
 import { BigCtaSectionComponent } from './pages/home/sections/big-cta/big-cta-section/big-cta-section.component';
 import { ContactSectionComponent } from './pages/home/sections/contact/contact-section/contact-section.component';
-import { LucideAngularModule, GraduationCap, TrendingUp, Bot, MessageCircle, Globe, Trophy, Check, CheckCircle2, XCircle } from 'lucide-angular';
+import { VideoQuestionsComponent } from './pages/video-questions/video-questions.component';
+import { TopProgressBarComponent } from './pages/video-questions/sections/top-progress-bar/top-progress-bar.component';
+import { VideoHeroSectionComponent } from './pages/video-questions/sections/video-hero/video-hero-section.component';
+import { QuestionFormSectionComponent } from './pages/video-questions/sections/question-form/question-form-section.component';
+import { LucideAngularModule, GraduationCap, TrendingUp, Bot, MessageCircle, Globe, Trophy, Check, CheckCircle2, XCircle, ArrowRight } from 'lucide-angular';
 
 
 
@@ -57,8 +62,13 @@ export function playerFactory() {
     FaqSectionComponent,
     LeadsTickerComponent,
     RegisterPopupComponent,
+    LiveRegistrationsComponent,
     BigCtaSectionComponent,
     ContactSectionComponent,
+    VideoQuestionsComponent,
+    TopProgressBarComponent,
+    VideoHeroSectionComponent,
+    QuestionFormSectionComponent,
     // NavbarComponent,
   ],
   imports: [
@@ -83,7 +93,8 @@ export function playerFactory() {
       Trophy,
       Check,
       CheckCircle2,
-      XCircle
+      XCircle,
+      ArrowRight
     })
   ],
   providers: [

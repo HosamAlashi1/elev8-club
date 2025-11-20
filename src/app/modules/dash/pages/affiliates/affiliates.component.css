@@ -1,0 +1,100 @@
+.page-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.search-wrap i {
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+.badge-leads {
+  background: rgba(56, 132, 255, 0.12);
+  color: #1A73E8;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  min-width: 28px;
+}
+
+.badge-completed {
+  background: rgba(52, 199, 89, 0.12);
+  color: #34C759;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  min-width: 28px;
+}
+
+/* Wrapper لضبط المحاذاة */
+.copy-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* الكود */
+.affiliate-code {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(238, 217, 166, 0.2);
+  color: #D4B574;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* زر النسخ */
+.copy-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.copy-btn i {
+  font-size: 16px;
+  color: #9CA3AF; /* رمادي ناعم */
+  transition: 0.2s ease;
+}
+
+.copy-btn:hover i {
+  color: #D4B574;
+  transform: scale(1.15);
+}
+
+/* نص Copied */
+.copied-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #34C759;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: fadeInOut 1.4s ease forwards;
+}
+
+.copied-indicator i {
+  font-size: 16px;
+}
+
+/* Animation لطلة لطيفة */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(2px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-2px); }
+}

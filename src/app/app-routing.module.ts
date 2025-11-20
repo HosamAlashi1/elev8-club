@@ -18,12 +18,12 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/error/error.module').then((m) => m.ErrorModule),
     data: { animation: 'error' }
   },
-  // {
-  //   path: 'dashboard',
-  //   canActivate: [AuthGuard],
-  //   loadChildren: () => import('./modules/dash/dash.module').then((m) => m.DashModule),
-  //   data: { animation: 'dashboard' }
-  // },
+  {
+    path: 'dashboard',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./modules/dash/dash.module').then((m) => m.DashModule),
+    data: { animation: 'dashboard' }
+  },
 
 
   { path: '**', redirectTo: 'error/404' },

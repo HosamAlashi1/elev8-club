@@ -1,0 +1,95 @@
+<div class="video-questions-content">
+  
+  <!-- Trading Animation Background -->
+  <div class="trading-animation-bg">
+    
+    <!-- Candlesticks Grid -->
+    <div class="candlesticks-container">
+      <div class="candlestick" *ngFor="let i of [1,2,3,4,5,6,7,8]" 
+           [style.animation-delay.s]="i * 0.3"
+           [class.bullish]="i % 2 === 0">
+        <div class="wick"></div>
+        <div class="body"></div>
+      </div>
+    </div>
+
+    <!-- Dynamic Chart Lines -->
+    <svg class="chart-lines" viewBox="0 0 1200 800" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#CFAE58;stop-opacity:0.3" />
+          <stop offset="50%" style="stop-color:#FFD700;stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:#CFAE58;stop-opacity:0.3" />
+        </linearGradient>
+      </defs>
+      <path class="chart-path path-1" d="M0,400 Q300,200 600,350 T1200,300" 
+            stroke="url(#lineGradient)" fill="none" stroke-width="2"/>
+      <path class="chart-path path-2" d="M0,500 Q300,300 600,450 T1200,400" 
+            stroke="url(#lineGradient)" fill="none" stroke-width="2"/>
+      <path class="chart-path path-3" d="M0,600 Q300,400 600,550 T1200,500" 
+            stroke="url(#lineGradient)" fill="none" stroke-width="2"/>
+    </svg>
+
+    <!-- Trading Numbers -->
+    <div class="trading-numbers">
+      <div class="number up" *ngFor="let n of tradingNumbers.slice(0, 5)" 
+           [style.left.%]="n.x" 
+           [style.top.%]="n.y"
+           [style.animation-delay.s]="n.delay">
+        {{ n.value }}
+      </div>
+      <div class="number down" *ngFor="let n of tradingNumbers.slice(5, 10)" 
+           [style.left.%]="n.x" 
+           [style.top.%]="n.y"
+           [style.animation-delay.s]="n.delay">
+        {{ n.value }}
+      </div>
+    </div>
+
+    <!-- Golden Price Waves -->
+    <div class="golden-waves">
+      <div class="wave wave-1"></div>
+      <div class="wave wave-2"></div>
+      <div class="wave wave-3"></div>
+    </div>
+
+    <!-- Trading Indicators -->
+    <div class="trading-indicators">
+      <div class="indicator indicator-1">
+        <div class="indicator-dot"></div>
+        <div class="indicator-line"></div>
+      </div>
+      <div class="indicator indicator-2">
+        <div class="indicator-dot"></div>
+        <div class="indicator-line"></div>
+      </div>
+      <div class="indicator indicator-3">
+        <div class="indicator-dot"></div>
+        <div class="indicator-line"></div>
+      </div>
+    </div>
+
+    <!-- Price Ticker -->
+    <div class="price-ticker">
+      <div class="ticker-item" *ngFor="let ticker of priceTickers">
+        <span class="ticker-symbol">{{ ticker.symbol }}</span>
+        <span class="ticker-price" [class.up]="ticker.change > 0" [class.down]="ticker.change < 0">
+          ${{ ticker.price }}
+        </span>
+        <span class="ticker-change" [class.up]="ticker.change > 0" [class.down]="ticker.change < 0">
+          {{ ticker.change > 0 ? '+' : '' }}{{ ticker.change }}%
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Top Progress Bar -->
+  <app-top-progress-bar></app-top-progress-bar>
+
+  <!-- Video Hero Section -->
+  <app-video-hero-section></app-video-hero-section>
+
+  <!-- Question Form Section -->
+  <app-question-form-section></app-question-form-section>
+</div>

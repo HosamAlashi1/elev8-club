@@ -27,8 +27,8 @@ ul.pagination .page-link {
 
 ul.pagination .page-link:hover { background-color: #f3f4f6; }
 ul.pagination .page-link.active {
-  background-color: #5BBDB7 !important;
-  border-color: #5BBDB7 !important;
+  background-color: #CFAE58 !important;
+  border-color: #CFAE58 !important;
   color: #fff !important;
   font-weight: 600;
   cursor: default;

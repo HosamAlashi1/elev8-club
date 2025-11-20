@@ -1,0 +1,175 @@
+/* Wrapper العام داخل المودال */
+.affiliate-wrapper {
+  border-radius: 16px;
+  border: 1px solid rgba(228, 201, 138, 0.5);
+  background: linear-gradient(135deg, #ffffff 0%, #fdf8ed 100%);
+  padding: 20px 22px;
+}
+
+/* الهيدر */
+.modal-title {
+  font-weight: 600;
+}
+
+.modal-subtitle {
+  font-size: 0.9rem;
+}
+
+/* Avatar بسيط من الحرف الأول */
+.aff-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgba(228, 201, 138, 0.18);
+  border: 1px solid rgba(228, 201, 138, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #cfae58;
+  font-size: 1.1rem;
+}
+
+/* Sections */
+.info-section {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+/* Labels + values */
+.field-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.field-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Code pill */
+.code-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(228, 201, 138, 0.16);
+  color: #cfae58;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Referral link */
+.ref-link-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ref-input {
+  flex: 1;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+}
+
+/* زر النسخ */
+.btn-copy-link {
+  border-radius: 10px;
+  border: none;
+  background: #cfae58;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s;
+  box-shadow: 0 6px 14px rgba(207, 174, 88, 0.4);
+}
+
+.btn-copy-link:hover {
+  background: #d9bc6e;
+  transform: translateY(-1px);
+}
+
+.btn-copy-link:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(207, 174, 88, 0.5) inset;
+}
+
+/* Copied state */
+.copied-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.85rem;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* ألوان خاصة لكل نوع */
+.stat-card.leads .stat-value {
+  color: #1a73e8;
+}
+
+.stat-card.completed .stat-value {
+  color: #34c759;
+}
+
+.stat-card.pending .stat-value {
+  color: #f59e0b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .affiliate-wrapper {
+    padding: 16px 14px;
+  }
+
+  .stats-grid {
+    margin-top: 8px;
+  }
+}

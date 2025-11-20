@@ -60,8 +60,8 @@ ul {
 
 .dropdown-item:focus,
 .dropdown-item:hover {
-  background: #f0fdfa;
-  color: #189585;
+  background: rgba(228, 201, 138, 0.12);
+  color: #CFAE58;
   border-radius: 6px;
 }
 
@@ -264,8 +264,8 @@ body.collapsed .main-footer {
 }
 
 .custom-switch-pink .form-check-input:checked {
-  background-color: #5BBDB7;
-  border-color: #5BBDB7;
+  background-color: #CFAE58;
+  border-color: #CFAE58;
 }
 
 /* Ensure dropdown selects always appear above Google Maps and other content */
@@ -340,7 +340,7 @@ body.collapsed .main-header {
 
 .icon-btn:hover {
   background: rgba(91, 189, 183, 0.1);
-  color: #5BBDB7;
+  color: #CFAE58;
 }
 
 .dropdown-toggle::after {
@@ -359,7 +359,7 @@ body.collapsed .main-header {
 
 /* عند التحديد */
 .form-check-input:checked {
-  background-color: #5BBDB7;
+  background-color: #CFAE58;
   /* الخلفية */
   border-color: #5bbdb623;
   /* الإطار */
@@ -502,7 +502,7 @@ body.collapsed .main-header {
 
 /* Custom add button */
 .btn-custom {
-  background: #5bbdb7;
+  background: #CFAE58;
   color: #fff;
   height: 38px;
   padding: 0 16px;
@@ -511,9 +511,6 @@ body.collapsed .main-header {
   transition: background 0.2s;
 }
 
-.btn-custom:hover {
-  background: #189585;
-}
 
 .btn-action {
   display: inline-flex;

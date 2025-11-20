@@ -2,15 +2,11 @@
   <div class="card-header fw-bold d-flex align-items-center justify-content-between" 
        data-aos="fade-down" data-aos-duration="600">
     <h4 class="m-0">
-      <span class="fw-bold">Revenue Overview</span>
+      <span class="fw-bold">Leads Per Day</span>
     </h4>
-    <select class="form-select form-select-sm" style="width:auto;">
-      <option>Last 6 months</option>
-      <option>Last 12 months</option>
-    </select>
   </div>
 
-  <div class="card-body p-3 chart-container" style="height: 400px;">
+  <div class="card-body" [style.height]="'calc(100dvh - 462px)'">
     <div class="chart-wrapper" 
          data-aos="zoom-in" data-aos-duration="800"
          [@chartAnimation] [@chartUpdate]="animationState">
@@ -18,7 +14,8 @@
                  [xaxis]="chartOptionsRevenue.xaxis" [dataLabels]="chartOptionsRevenue.dataLabels"
                  [stroke]="chartOptionsRevenue.stroke" [colors]="chartOptionsRevenue.colors"
                  [tooltip]="chartOptionsRevenue.tooltip" [markers]="chartOptionsRevenue.markers"
-                 [legend]="chartOptionsRevenue.legend" [responsive]="chartOptionsRevenue.responsive">
+                 [legend]="chartOptionsRevenue.legend" [responsive]="chartOptionsRevenue.responsive"
+                 [grid]="chartOptionsRevenue.grid" [yaxis]="chartOptionsRevenue.yaxis">
       </apx-chart>
     </div>
   </div>

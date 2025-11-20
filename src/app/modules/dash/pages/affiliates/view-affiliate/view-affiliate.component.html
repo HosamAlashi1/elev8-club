@@ -1,0 +1,136 @@
+<div class="modal-header border-0 pb-0">
+  <div class="d-flex align-items-center gap-3">
+    <div class="aff-avatar">
+      <span>{{ getInitial() }}</span>
+    </div>
+    <div>
+      <h4 class="modal-title mb-1">Affiliate Details</h4>
+      <p class="modal-subtitle mb-0 text-muted">{{ affiliate.email }}</p>
+    </div>
+  </div>
+
+  <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body pt-3 pb-4">
+  <div
+    class="affiliate-wrapper"
+    data-aos="zoom-in"
+    data-aos-duration="600"
+  >
+    <div class="row g-4">
+      <!-- Left side: info + link -->
+      <div class="col-lg-7">
+
+        <!-- Personal Info -->
+        <div
+          class="info-section"
+          data-aos="fade-up"
+          data-aos-delay="100"
+          data-aos-duration="700"
+        >
+          <h5 class="section-title">Personal Information</h5>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="field-label">Name</label>
+              <div class="field-value">{{ affiliate.name }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Email</label>
+              <div class="field-value">{{ affiliate.email }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Affiliate Code</label>
+              <div class="d-flex align-items-center gap-2">
+                <code class="code-pill">
+                  {{ affiliate.code }}
+                </code>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">WhatsApp</label>
+              <div class="field-value">
+                {{ affiliate.whatsappNumber || 'N/A' }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Created Date</label>
+              <div class="field-value">{{ getCreatedDate() }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Referral Link -->
+        <div
+          class="info-section mt-4"
+          data-aos="fade-up"
+          data-aos-delay="200"
+          data-aos-duration="700"
+        >
+          <h5 class="section-title">Referral Link</h5>
+
+          <div class="ref-link-wrapper">
+            <input
+              type="text"
+              class="ref-input"
+              [value]="affiliateLink"
+              readonly
+            />
+
+            <button
+              type="button"
+              class="btn-copy-link"
+              (click)="copyLink()"
+            >
+              <i-lucide name="copy" class="me-1 icon-sm"></i-lucide>
+              <span *ngIf="!linkCopied">Copy</span>
+              <span *ngIf="linkCopied" class="copied-state">
+                <i class="fe fe-check me-1"></i> Copied
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: stats cards -->
+      <div class="col-lg-5">
+        <div
+          class="stats-grid"
+          data-aos="fade-left"
+          data-aos-delay="150"
+          data-aos-duration="700"
+        >
+          <div class="stat-card leads">
+            <div class="stat-label">Total Leads</div>
+            <div class="stat-value">{{ affiliate.leadsCount }}</div>
+          </div>
+
+          <div class="stat-card completed">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value">{{ affiliate.completedCount }}</div>
+          </div>
+
+          <div class="stat-card pending">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value">{{ getPending() }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer border-0 pt-0">
+  <button
+    type="button"
+    class="btn btn-light me-2"
+    (click)="activeModal.dismiss()"
+  >
+    Close
+  </button>
+</div>

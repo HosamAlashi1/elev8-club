@@ -1,0 +1,576 @@
+.video-questions-content {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #000000 0%, #0A0F1E 50%, #000000 100%);
+  position: relative;
+  overflow: hidden;
+  padding-top: 7rem;
+}
+
+/* Floating Golden Orbs */
+.video-questions-content .floating-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.video-questions-content .orb-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(207, 174, 88, 0.6) 0%, transparent 70%);
+  top: 10%;
+  right: 10%;
+  animation: float1 20s ease-in-out infinite;
+}
+
+.video-questions-content .orb-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+  bottom: 20%;
+  left: 5%;
+  animation: float2 25s ease-in-out infinite;
+}
+
+.video-questions-content .orb-3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(10, 30, 63, 0.8) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  animation: float3 30s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.1); }
+  66% { transform: translate(-20px, 30px) scale(0.9); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(0.95); }
+  66% { transform: translate(35px, -25px) scale(1.05); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* Enhanced Animated Background - Luxury Trading Theme */
+.video-questions-content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 15% 25%, rgba(207, 174, 88, 0.12) 0%, transparent 35%),
+    radial-gradient(circle at 85% 70%, rgba(255, 215, 0, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(10, 30, 63, 0.2) 0%, transparent 60%);
+  animation: gradientShift 25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Floating Particles */
+.video-questions-content::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(207, 174, 88, 0.4), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(255, 215, 0, 0.3), transparent),
+    radial-gradient(3px 3px at 80% 10%, rgba(207, 174, 88, 0.5), transparent),
+    radial-gradient(2px 2px at 40% 80%, rgba(255, 215, 0, 0.4), transparent),
+    radial-gradient(3px 3px at 90% 50%, rgba(207, 174, 88, 0.3), transparent);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: particlesFloat 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.6;
+  }
+  33% {
+    transform: scale(1.1) rotate(5deg);
+    opacity: 0.8;
+  }
+  66% {
+    transform: scale(0.95) rotate(-3deg);
+    opacity: 0.7;
+  }
+}
+
+@keyframes particlesFloat {
+  0%, 100% {
+    background-position: 0% 0%;
+    opacity: 1;
+  }
+  50% {
+    background-position: 100% 100%;
+    opacity: 0.6;
+  }
+}
+
+/* Golden Waves Effect */
+.video-questions-content {
+  background: 
+    linear-gradient(180deg, #000000 0%, #0A1E3F 50%, #000000 100%);
+}
+
+/* Trading Animation Background */
+.trading-animation-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* Candlesticks Animation */
+.candlesticks-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding: 0 5%;
+  opacity: 0.3;
+}
+
+.candlestick {
+  width: 60px;
+  height: 200px;
+  position: relative;
+  animation: candlestickMove 4s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.candlestick .wick {
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent 0%, #CFAE58 50%, transparent 100%);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.candlestick .body {
+  position: absolute;
+  width: 100%;
+  height: 60%;
+  bottom: 20%;
+  background: linear-gradient(180deg, rgba(207, 174, 88, 0.3), rgba(207, 174, 88, 0.6));
+  border: 2px solid #CFAE58;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(207, 174, 88, 0.5);
+}
+
+.candlestick.bullish .body {
+  background: linear-gradient(180deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.6));
+  border-color: #4CAF50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+.candlestick.bullish .wick {
+  background: linear-gradient(180deg, transparent 0%, #4CAF50 50%, transparent 100%);
+}
+
+@keyframes candlestickMove {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+    opacity: 0.5;
+  }
+  25% {
+    transform: scaleY(1.2) translateY(-10px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleY(0.8) translateY(5px);
+    opacity: 0.6;
+  }
+  75% {
+    transform: scaleY(1.1) translateY(-5px);
+    opacity: 0.7;
+  }
+}
+
+/* Dynamic Chart Lines */
+.chart-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.25;
+}
+
+.chart-path {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: drawLine 8s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(207, 174, 88, 0.6));
+}
+
+.path-2 {
+  animation-delay: 1s;
+}
+
+.path-3 {
+  animation-delay: 2s;
+}
+
+@keyframes drawLine {
+  0% {
+    stroke-dashoffset: 2000;
+    opacity: 0;
+  }
+  20% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -2000;
+    opacity: 0;
+  }
+}
+
+/* Trading Numbers */
+.trading-numbers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.number {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  animation: numberFloat 6s ease-in-out infinite;
+}
+
+.number.up {
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+  animation: numberFloatUp 6s ease-in-out infinite;
+}
+
+.number.down {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);
+  animation: numberFloatDown 6s ease-in-out infinite;
+}
+
+@keyframes numberFloatUp {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) scale(1.1);
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes numberFloatDown {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50px) scale(1.1);
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Golden Price Waves */
+.golden-waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(207, 174, 88, 0.1) 25%, 
+    rgba(255, 215, 0, 0.15) 50%, 
+    rgba(207, 174, 88, 0.1) 75%, 
+    transparent 100%);
+  animation: waveMove 15s linear infinite;
+}
+
+.wave-2 {
+  animation-duration: 20s;
+  animation-delay: 2s;
+  opacity: 0.7;
+}
+
+.wave-3 {
+  animation-duration: 25s;
+  animation-delay: 4s;
+  opacity: 0.5;
+}
+
+@keyframes waveMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Trading Indicators */
+.trading-indicators {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.indicator {
+  position: absolute;
+}
+
+.indicator-1 {
+  top: 20%;
+  right: 15%;
+}
+
+.indicator-2 {
+  top: 50%;
+  left: 20%;
+}
+
+.indicator-3 {
+  bottom: 30%;
+  right: 25%;
+}
+
+.indicator-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFD700, #CFAE58);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  animation: indicatorPulse 2s ease-in-out infinite;
+}
+
+.indicator-line {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, #CFAE58, transparent);
+  animation: indicatorLineExtend 3s ease-in-out infinite;
+}
+
+@keyframes indicatorPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+}
+
+@keyframes indicatorLineExtend {
+  0%, 100% {
+    width: 0;
+    opacity: 0;
+  }
+  50% {
+    width: 100px;
+    opacity: 1;
+  }
+}
+
+/* Price Ticker */
+.price-ticker {
+  position: absolute;
+  top: 10%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(10, 30, 63, 0.4) 20%, 
+    rgba(10, 30, 63, 0.4) 80%, 
+    transparent 100%);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  animation: tickerSlide 30s linear infinite;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+  min-width: 200px;
+}
+
+.ticker-symbol {
+  color: #CFAE58;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-shadow: 0 0 10px rgba(207, 174, 88, 0.5);
+}
+
+.ticker-price {
+  color: white;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+}
+
+.ticker-change {
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.ticker-change.up {
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.15);
+  animation: priceUp 0.5s ease;
+}
+
+.ticker-change.down {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.15);
+  animation: priceDown 0.5s ease;
+}
+
+@keyframes tickerSlide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes priceUp {
+  0% {
+    transform: translateY(5px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes priceDown {
+  0% {
+    transform: translateY(-5px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Ensure content is above background */
+.video-questions-content > app-top-progress-bar {
+  position: relative;
+  z-index: 10000;
+  display: block;
+}
+
+.video-questions-content > app-video-hero-section,
+.video-questions-content > app-question-form-section {
+  position: relative;
+  z-index: 10;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .candlestick {
+    width: 40px;
+  }
+
+  .number {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .price-ticker {
+    font-size: 0.85rem;
+  }
+
+  .indicator-line {
+    width: 50px;
+  }
+}

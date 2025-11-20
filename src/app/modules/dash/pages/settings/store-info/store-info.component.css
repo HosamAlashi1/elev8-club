@@ -12,7 +12,7 @@
   height: 44px;
 }
 .soft-input:focus {
-  border-color: #5BBDB7;
+  border-color: #CFAE58;
   box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.15);
 }
 
@@ -42,7 +42,7 @@ textarea.soft-input {
 }
 
 .logo-dropzone.dragover{
-  border-color: #5BBDB7;
+  border-color: #CFAE58;
   background: #f8fffe;
 }
 

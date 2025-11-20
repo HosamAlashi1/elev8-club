@@ -27,7 +27,7 @@
     <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
       <label class="form-label d-flex justify-content-between align-items-center">
         Permissions
-        <a class="small" (click)="toggleSelectAll(!allSelected)" [style.color]="'#5BBDB7'">
+        <a class="small" (click)="toggleSelectAll(!allSelected)" [style.color]="'#CFAE58'">
           {{ allSelected ? 'Unselect All' : 'Select All' }}
         </a>
       </label>
@@ -38,7 +38,7 @@
       >
         <!-- 🔹 Spinner أثناء تحميل الصلاحيات -->
         <div *ngIf="isLoading$ | async" class="loader-overlay d-flex justify-content-center align-items-center">
-          <div class="spinner-border" role="status" [style.color]="'#5BBDB7'">
+          <div class="spinner-border" role="status" [style.color]="'#CFAE58'">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -58,7 +58,7 @@
               class="fw-bold text-uppercase small text-secondary border-bottom pb-2 mt-3 mb-2 d-flex justify-content-between align-items-center"
             >
               <span>{{ g.name }}</span>
-              <a class="small" (click)="toggleGroup(g, !isGroupAllChecked(g))" [style.color]="'#5BBDB7'">
+              <a class="small" (click)="toggleGroup(g, !isGroupAllChecked(g))" [style.color]="'#CFAE58'">
                 {{ isGroupAllChecked(g) ? 'Unselect group' : 'Select group' }}
               </a>
             </div>

@@ -1,0 +1,150 @@
+<div class="page-container">
+    <h2 class="page-title" data-aos="fade-right" data-aos-delay="100">
+        Affiliates
+    </h2>
+
+    <div class="content" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-4 border-0 my-3"
+            data-aos="zoom-in" data-aos-delay="300">
+
+            <!-- Left side (search) -->
+            <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
+                <!-- Search -->
+                <div class="search-wrap position-relative flex-grow-1" style="max-width: 260px;" data-aos="fade-left"
+                    data-aos-delay="400">
+                    <i class="fe fe-search text-muted position-absolute"></i>
+                    <input [(ngModel)]="searchText" class="form-control ps-5"
+                        placeholder="Search by name, email or code..." (ngModelChange)="onSearchChange()" />
+                </div>
+            </div>
+
+            <!-- Right side (Add button) -->
+            <div data-aos="fade-left" data-aos-delay="500">
+                <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+                    <i class="fe fe-plus"></i>
+                    Add Affiliate
+                </button>
+            </div>
+        </div>
+
+        <div class="card mb-0">
+            <div class="table-responsive mb-2">
+                <table class="table table-sm table-nowrap card-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="w-20">Name</th>
+                            <th class="w-10">Code</th>
+                            <th class="w-20">Email</th>
+                            <th class="w-20">WhatsApp</th>
+                            <th class="w-10">Leads</th>
+                            <th class="w-10">Completed</th>
+                            <th class="w-10">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Skeletons -->
+                    <tbody *ngIf="(isLoading$ | async)">
+                        <tr *ngFor="let _ of [].constructor(size)">
+                            <td *ngFor="let __ of [].constructor(7)">
+                                <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                    [theme]="{ width: '60%', height: '20px', 'border-radius': '6px', margin: '0' }">
+                                </ngx-skeleton-loader>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <!-- Data -->
+                    <tbody *ngIf="!(isLoading$ | async)">
+                        <tr *ngFor="let aff of paginatedAffiliates">
+                            <td>
+                                <div class="fw-semibold text-dark">{{ aff.name }}</div>
+                            </td>
+
+                            <td>
+                                <div class="copy-container">
+
+                                    <code class="affiliate-code">
+      {{ aff.code }}
+    </code>
+
+                                    <!-- زر النسخ -->
+                                    <button class="copy-btn" *ngIf="!aff.copied" (click)="copyLink(aff)"
+                                        aria-label="Copy">
+                                        <i class="fe fe-copy"></i>
+                                    </button>
+
+                                    <!-- Copied ✓ -->
+                                    <div class="copied-indicator" *ngIf="aff.copied">
+                                        <i class="fe fe-check"></i>
+                                        <span>Copied</span>
+                                    </div>
+
+                                </div>
+                            </td>
+
+
+                            <td class="text-muted">{{ aff.email }}</td>
+                            <td class="text-muted">{{ aff.whatsappNumber }}</td>
+
+                            <td>
+                                <span class="badge-leads">{{ aff.leadsCount }}</span>
+                            </td>
+
+                            <td>
+                                <span class="badge-completed">{{ aff.completedCount }}</span>
+                            </td>
+
+                            <td>
+                                <div class="btn-group dropstart">
+                                    <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                        <i class="fe fe-more-vertical black-menu fs-3"></i>
+                                    </span>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" (click)="view(aff)">
+                                                <i class="fe fe-eye me-2"></i>View
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" (click)="edit(aff)">
+                                                <i class="fe fe-edit me-2"></i>Edit
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <hr class="m-2" />
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" (click)="delete(aff)">
+                                                <i class="fe fe-trash-2 text-danger me-2"></i>
+                                                <span class="text-danger">Delete</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <app-no-results [isLoading$]="isLoading$" [totalRecords]="totalCount"></app-no-results>
+
+            <!-- Footer -->
+            <div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <small class="text-muted">
+                    Showing {{ paginatedAffiliates.length ? ( (page-1)*size + 1 ) : 0 }}
+                    -
+                    {{ (page-1)*size + paginatedAffiliates.length }}
+                    of {{ totalCount }} affiliates
+                </small>
+
+                <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size"
+                    (pageChange)="list($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

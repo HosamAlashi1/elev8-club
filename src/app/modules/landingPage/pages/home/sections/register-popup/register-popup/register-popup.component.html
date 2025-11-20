@@ -77,8 +77,8 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="submit-button">
-          <span>تأكيد التسجيل والانضمام للتحدي</span>
+        <button type="submit" class="submit-button" [disabled]="isSubmitting">
+          <span>{{ isSubmitting ? 'جاري التسجيل...' : 'تأكيد التسجيل والانضمام للتحدي' }}</span>
         </button>
 
       </form>

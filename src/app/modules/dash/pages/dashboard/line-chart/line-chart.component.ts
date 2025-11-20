@@ -21,14 +21,13 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   ]
 })
 export class LineChartComponent implements OnInit, OnChanges {
-  @Input() revenueData: { month: string; sales: number }[] = [];
+  @Input() revenueData: { date: string; count: number }[] = [];
   chartOptionsRevenue: any;
   showChart: boolean = true;
   animationState: string = 'initial';
 
   constructor() {
-    // تحميل الداتا الابتدائية مباشرة
-    this.loadInitialData();
+    this.chartOptionsRevenue = this.buildChart([], []);
   }
 
   ngOnInit() {
@@ -39,52 +38,34 @@ export class LineChartComponent implements OnInit, OnChanges {
     if (changes['revenueData'] && this.revenueData?.length > 0) {
       // تشغيل أنيميشن التحديث
       this.animationState = 'updated-' + Date.now();
-      
-      const categories = this.revenueData.map(x => x.month);
-      const data = this.revenueData.map(x => x.sales);
+
+      // تحويل التواريخ من YYYY-MM-DD إلى تنسيق قابل للقراءة
+      const categories = this.revenueData.map(x => this.formatDate(x.date));
+      const data = this.revenueData.map(x => x.count);
       this.chartOptionsRevenue = this.buildChart(categories, data);
     }
   }
 
-  loadInitialData() {
-    // داتا ابتدائية لآخر 6 شهور بصفر revenue
-    const initialData = this.generateLastSixMonthsData(0);
-
-    const categories = initialData.map(x => x.month);
-    const data = initialData.map(x => x.sales);
-    this.chartOptionsRevenue = this.buildChart(categories, data);
-  }
-
-  // توليد داتا لآخر 6 شهور
-  generateLastSixMonthsData(defaultSales: number = 0): { month: string; sales: number }[] {
-    const currentDate = new Date();
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-    const data: { month: string; sales: number }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-      const monthName = monthNames[date.getMonth()];
-      data.push({ month: monthName, sales: defaultSales });
-    }
-    
-    return data;
+  formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
   }
 
   buildChart(categories: string[], data: number[]) {
     return {
       series: [
         {
-          name: 'Revenue',
+          name: 'Leads',
           data
         }
       ],
       chart: {
-        type: 'line',
+        type: 'area',
         height: 350,
         width: '100%',
-        zoom: { enabled: false },
         toolbar: { show: false },
-        parentHeightOffset: 0,
+        zoom: { enabled: false },
         animations: {
           enabled: true,
           easing: 'easeinout',
@@ -97,87 +78,138 @@ export class LineChartComponent implements OnInit, OnChanges {
             enabled: true,
             speed: 350
           }
-        }
+        },
+        dropShadow: {
+          enabled: true,
+          top: 2,
+          left: 0,
+          blur: 4,
+          opacity: 0.1,
+          color: '#E4C98A'
+        },
+        parentHeightOffset: 0
       },
+
+      // استجابة الشاشات الصغيرة
       responsive: [
         {
           breakpoint: 768,
           options: {
-            chart: {
-              height: 250
-            },
-            legend: {
-              position: 'bottom'
-            }
+            chart: { height: 260 },
           }
         },
         {
           breakpoint: 576,
           options: {
-            chart: {
-              height: 200
-            },
+            chart: { height: 200 },
             xaxis: {
               labels: {
-                style: {
-                  fontSize: '11px'
-                }
+                rotate: -45,
+                style: { fontSize: '10px' }
               }
             }
           }
         }
       ],
+
+      // الـ X Axis
       xaxis: {
         categories,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
         labels: {
+          rotate: 0,
           style: {
-            fontSize: '13px',
-            colors: Array(categories.length).fill('#6b7280')
+            colors: '#64748b',
+            fontSize: '12px',
+            fontWeight: 500
           }
         }
       },
+
+      // الـ Y Axis
       yaxis: {
         labels: {
           style: {
-            colors: ['#6b7280']
+            colors: '#64748b',
+            fontSize: '12px',
+            fontWeight: 500
           },
-          formatter: function (value: number) {
-            return '$' + (value / 1000).toFixed(0) + 'k';
-          }
-        }
+          formatter: (val: number) => Math.floor(val).toString()
+        },
+        min: 0
       },
+
       dataLabels: { enabled: false },
+
       stroke: {
         curve: 'smooth',
-        width: 3
+        width: 3,
+        lineCap: 'round'
       },
-      colors: ['#5BBDB7'],
-      markers: {
-        size: 5,
-        colors: ['#fff'],
-        strokeColors: '#5BBDB7',
-        strokeWidth: 2,
-        hover: {
-          size: 7
+
+      colors: ['#E4C98A'],
+
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'light',
+          shadeIntensity: 0.3,
+          type: 'vertical',
+          opacityFrom: 0.5,
+          opacityTo: 0.05,
+          stops: [0, 70, 100]
         }
       },
-      tooltip: { 
-        enabled: true,
+
+      markers: {
+        size: 5,
+        strokeWidth: 2,
+        strokeColors: '#ffffff',
+        colors: ['#E4C98A'],
+        hover: {
+          size: 7,
+          sizeOffset: 2
+        }
+      },
+
+      tooltip: {
+        theme: 'light',
+        style: {
+          fontSize: '13px',
+          fontFamily: 'inherit'
+        },
         y: {
-          formatter: function (value: number) {
-            return '$' + value.toLocaleString();
+          formatter: (v: number) => `${v} leads`
+        },
+        marker: {
+          show: true
+        }
+      },
+
+      grid: {
+        strokeDashArray: 4,
+        borderColor: 'rgba(228,201,138,0.15)',
+        padding: {
+          top: 10,
+          bottom: 10,
+          left: 15,
+          right: 15
+        },
+        yaxis: {
+          lines: {
+            show: true
+          }
+        },
+        xaxis: {
+          lines: {
+            show: false
           }
         }
       },
-      legend: {
-        show: true,
-        position: 'bottom',
-        labels: { colors: '#5BBDB7' }
-      },
-      grid: {
-        borderColor: '#f0f0f0',
-        strokeDashArray: 3
-      }
+
+      legend: { show: false }
     };
   }
+
 }

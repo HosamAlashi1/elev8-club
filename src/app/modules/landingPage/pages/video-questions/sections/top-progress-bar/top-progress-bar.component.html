@@ -1,0 +1,18 @@
+<div [@slideDown] class="top-progress-bar">
+  <div class="container">
+    <p class="progress-text">
+      اكتمل تسجيلك بنسبة 
+      <span class="highlight">70%</span> شاهد 
+      <span class="highlight">الفيديو</span> وأجب على 
+      <span class="highlight">الأسئلة</span> بالأسفل
+    </p>
+    
+    <div class="progress-wrapper">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressValue">
+          <div class="progress-glow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

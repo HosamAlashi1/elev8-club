@@ -1,0 +1,220 @@
+<div class="modal-header border-0 pb-0">
+  <div class="d-flex align-items-center gap-3">
+    <div class="lead-avatar">
+      <span>{{ getInitial() }}</span>
+    </div>
+    <div>
+      <h4 class="modal-title mb-1">Lead Details</h4>
+      <p class="modal-subtitle mb-0 text-muted">
+        {{ lead.email }} <span *ngIf="lead.phone"> • {{ lead.phone }}</span>
+      </p>
+    </div>
+  </div>
+
+  <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body pt-3 pb-4">
+  <div
+    class="lead-wrapper"
+    data-aos="zoom-in"
+    data-aos-duration="600"
+  >
+    <div class="row g-4">
+
+      <!-- Personal Information -->
+      <div
+        class="col-12 col-lg-6"
+        data-aos="fade-up"
+        data-aos-delay="100"
+        data-aos-duration="700"
+      >
+        <div class="info-section">
+          <h5 class="section-title">Personal Information</h5>
+
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="field-label">Full Name</label>
+              <div class="field-value">{{ lead.fullName }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Email</label>
+              <div class="field-value">{{ lead.email }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Phone</label>
+              <div class="field-value">{{ lead.phone || 'N/A' }}</div>
+            </div>
+
+            <div class="col-md-12">
+              <label class="field-label">Location</label>
+              <div class="field-value">
+                <ng-container *ngIf="lead.city || lead.country; else noLoc">
+                  {{ lead.city }}{{ lead.city && lead.country ? ', ' : '' }}{{ lead.country }}
+                </ng-container>
+                <ng-template #noLoc>N/A</ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Affiliate Information + status -->
+      <div class="col-12 col-lg-6">
+        <!-- Affiliate -->
+        <div
+          class="info-section mb-3"
+          data-aos="fade-up"
+          data-aos-delay="150"
+          data-aos-duration="700"
+        >
+          <h5 class="section-title">Affiliate Information</h5>
+
+          <div class="row g-3">
+            <div class="col-md-7">
+              <label class="field-label">Affiliate Name</label>
+              <div class="field-value">{{ lead.affiliateName || 'Unknown' }}</div>
+            </div>
+
+            <div class="col-md-5">
+              <label class="field-label">Affiliate Code</label>
+              <div class="field-value">
+                <code class="code-pill">
+                  {{ lead.affiliateCode || 'N/A' }}
+                </code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status & Timeline -->
+        <div
+          class="info-section"
+          data-aos="fade-up"
+          data-aos-delay="220"
+          data-aos-duration="700"
+        >
+          <h5 class="section-title">Status & Timeline</h5>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="field-label">Status</label>
+              <div class="field-value">
+                <span [class]="getStatusClass()">
+                  {{ getStatusLabel() }}
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="field-label">Created At</label>
+              <div class="field-value">{{ getCreatedDate() }}</div>
+            </div>
+
+            <div class="col-md-4" *ngIf="lead.step === 2">
+              <label class="field-label">Completed At</label>
+              <div class="field-value">{{ getCompletedDate() }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questionnaire Answers -->
+      <div
+        class="col-12"
+        *ngIf="lead.step === 2 && lead.answers"
+        data-aos="fade-up"
+        data-aos-delay="280"
+        data-aos-duration="700"
+      >
+        <div class="info-section">
+          <h5 class="section-title">Questionnaire Answers</h5>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="field-label">Experience Level</label>
+              <div class="field-value">
+                {{ getExperienceLabel(lead.answers.experienceLevel) }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Ready Amount</label>
+              <div class="field-value">
+                {{ lead.answers.readyAmount || 'N/A' }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Ready in 24h</label>
+              <div class="field-value">
+                <span
+                  class="answer-pill"
+                  [class.yes]="lead.answers.readyIn24h === 'yes'"
+                  [class.no]="lead.answers.readyIn24h !== 'yes'"
+                >
+                  {{ lead.answers.readyIn24h === 'yes' ? 'Yes' : 'No' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Tried Elev8 Before</label>
+              <div class="field-value">
+                <span
+                  class="answer-pill"
+                  [class.info]="lead.answers.triedElev8Before === 'yes'"
+                  [class.no]="lead.answers.triedElev8Before !== 'yes'"
+                >
+                  {{ lead.answers.triedElev8Before === 'yes' ? 'Yes' : 'No' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="field-label">Main Goal</label>
+              <div class="field-value">
+                {{ getGoalLabel(lead.answers.mainGoal) }}
+              </div>
+            </div>
+
+            <div class="col-md-6" *ngIf="lead.answers.location">
+              <label class="field-label">Preferred Location</label>
+              <div class="field-value">
+                {{ lead.answers.location }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Consent -->
+      <div
+        class="col-12"
+        data-aos="fade-up"
+        data-aos-delay="350"
+        data-aos-duration="700"
+      >
+        <div class="consent-box" [class.granted]="lead.consent" [class.denied]="!lead.consent">
+          <div class="d-flex align-items-center gap-2">
+            <div class="consent-dot"></div>
+            <div class="consent-text">
+              <span class="consent-label">Consent Status:</span>
+              <span *ngIf="lead.consent" class="ms-1">User has given consent</span>
+              <span *ngIf="!lead.consent" class="ms-1">No consent given</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer border-0 pt-0">
+  <button type="button" class="btn btn-light" (click)="activeModal.dismiss()">
+    Close
+  </button>
+</div>

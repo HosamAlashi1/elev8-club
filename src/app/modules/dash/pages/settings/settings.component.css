@@ -43,11 +43,11 @@
 }
 
 .tab-btn:hover {
-  color: #5BBDB7;
+  color: #CFAE58;
 }
 
 .tab-btn.active {
-  color: #5BBDB7 !important;
+  color: #CFAE58 !important;
 }
 
 /* Underline المتحرك */
@@ -55,7 +55,7 @@
   position: absolute;
   bottom: -2px;
   height: 4px;
-  background: linear-gradient(90deg, #21d1c5, #5bbdb7);
+  background: linear-gradient(90deg, #21d1c5, #CFAE58);
   border-radius: 2px 2px 0 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ApexChart, ApexLegend } from 'ng-apexcharts';
+import { FirebaseService } from '../../../services/firebase.service';
+import { Version, Lead } from '../../../../core/models';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,166 +11,150 @@ import { ApexChart, ApexLegend } from 'ng-apexcharts';
 export class DashboardComponent implements OnInit {
   // Dashboard stats
   numbers: number[] = [0, 0, 0, 0];
-  targetNumbers: number[] = [124563, 1234, 856, 5678]; // static
+  targetNumbers: number[] = [0, 0, 0, 0];
   duration: number = 2000;
   startTime: number = 0;
 
-  topAuthors = [
-    { name: 'J.K. Rowling', sales: 124, img: 'assets/img/person.png' },
-    { name: 'J.K. Rowling', sales: 124, img: 'assets/img/person.png' },
-    { name: 'J.K. Rowling', sales: 124, img: 'assets/img/person.png' }
-  ];
+  currentVersion: Version | null = null;
 
-  categoryChart = {
-    series: [44, 33, 23], // Fiction, Children’s, Academic
-    chart: {
-      type: 'donut' as const,   //  cast to literal
-      height: 240
-    } as ApexChart,
-    labels: ['Fiction', "Children's", 'Academic'],
-    colors: ['#34d399', '#fbbf24', '#3b82f6', '#ef4444'],
-    legend: {
-      position: 'bottom' as const,  //  cast to literal
-      labels: { colors: '#6b7280' }
-    } as ApexLegend
-  };
+  // Chart data
+  leadsPerDayData: { date: string; count: number }[] = [];
 
-  // Refund Rate data
-  refundRate = {
-    rate: '0.8%',
-    change: '-0.3% vs last month',
-    changeColor: '#16A34A'
-  };
-
-  // Revenue data (سيتم تحميلها من الخدمة)
-  revenueData: { month: string; sales: number }[] = [];
-
-  // Recent Orders data
-  recentOrders: any[] = [
-    {
-      book: 'The Great Gatsby',
-      customer: 'Sarah Johnson',
-      date: '2024-01-15',
-      status: 'completed',
-      amount: 24.99,
-      img: 'assets/img/dashboard/dashboard/recent-orders/book1.png'
-    },
-    {
-      book: 'To Kill a Mockingbird',
-      customer: 'Michael Brown',
-      date: '2024-01-14',
-      status: 'processing',
-      amount: 19.99,
-      img: 'assets/img/dashboard/dashboard/recent-orders/book2.png'
-    },
-    {
-      book: '1984',
-      customer: 'Emily Davis',
-      date: '2024-01-14',
-      status: 'pending',
-      amount: 29.99,
-      img: 'assets/img/dashboard/dashboard/recent-orders/book3.png'
-    },
-  ];
-
-  // Dashboard cards (static)
+  // Dashboard cards
   dashboardCards = [
     {
-      label: 'Total Sales',
-      icon: 'fe fe-dollar-sign',
-      iconClass: 'icon-sales',
-      change: '12.5%',
-      prefix: '$'
-    },
-    {
-      label: 'Total Orders',
-      icon: 'fe fe-shopping-bag',
-      iconClass: 'icon-orders',
-      change: '8.3%',
-      prefix: ''
-    },
-    {
-      label: 'Active Books',
-      icon: 'fe fe-book',
-      iconClass: 'icon-books',
-      change: '24',
-      prefix: ''
-    },
-    {
-      label: 'Total Customers',
+      label: 'Total Leads',
       icon: 'fe fe-users',
+      iconClass: 'icon-sales',
+      prefix: ''
+    },
+    {
+      label: 'Completed',
+      icon: 'fe fe-check-circle',
+      iconClass: 'icon-orders',
+      prefix: ''
+    },
+    {
+      label: 'Pending',
+      icon: 'fe fe-clock',
+      iconClass: 'icon-books',
+      prefix: ''
+    },
+    {
+      label: 'Active Affiliates',
+      icon: 'fe fe-user-plus',
       iconClass: 'icon-customers',
-      change: '145',
       prefix: ''
     }
   ];
 
-  // Top Selling Books data
-  topSellingBooks = [
-    {
-      title: 'The Midnight Library',
-      img: 'assets/img/dashboard/dashboard/top-selling/book1.png',
-      sold: 1234,
-      target: 1500
-    },
-    {
-      title: 'Project Hail Mary',
-      img: 'assets/img/dashboard/dashboard/top-selling/book2.png',
-      sold: 987,
-      target: 1000
-    },
-    {
-      title: 'Dune',
-      img: 'assets/img/dashboard/dashboard/top-selling/book3.png',
-      sold: 876,
-      target: 1000
-    },
-    {
-      title: 'The Silent Patient',
-      img: 'assets/img/dashboard/dashboard/top-selling/book4.png',
-      sold: 765,
-      target: 800
-    }
-  ];
+  constructor(private firebaseService: FirebaseService) { }
 
   ngOnInit(): void {
     this.startTime = performance.now();
-    this.animateNumbers();
-
-    // تحميل داتا الـ revenue بعد فترة (محاكاة API call)
-    this.loadRevenueData();
-
-    console.log('Dashboard initialized');
+    this.loadCurrentVersion();
   }
 
-  // تحميل داتا الـ revenue
-  loadRevenueData(): void {
-    // محاكاة API call - نصف ثانية تأخير
-    setTimeout(() => {
-      // إنشاء داتا لآخر 6 شهور
-      this.revenueData = this.generateLastSixMonthsRevenue();
-    }, 500);
+  loadCurrentVersion(): void {
+    console.log('🔍 Fetching current version...');
+    this.firebaseService.getCurrentVersion().subscribe({
+      next: (version: Version | null) => {
+        console.log('✅ Current version received:', version);
+        this.currentVersion = version;
+        if (version) {
+          console.log('📊 Version found, loading dashboard data...');
+          this.loadDashboardData();
+        } else {
+          console.warn('⚠️ No current version found in Firebase');
+        }
+      },
+      error: (err: any) => {
+        console.error('❌ Error loading current version:', err);
+      }
+    });
   }
 
-  // توليد داتا revenue لآخر 6 شهور
-  generateLastSixMonthsRevenue(): { month: string; sales: number }[] {
-    const currentDate = new Date();
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    const revenueData: { month: string; sales: number }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-      const monthName = monthNames[date.getMonth()];
-      // أرقام متدرجة ومنطقية
-      const baseSales = 50000;
-      const variation = Math.floor(Math.random() * 40000); // تنويع بين 0-40k
-      const growth = i * 5000; // نمو تدريجي
-      const sales = baseSales + variation + growth;
-
-      revenueData.push({ month: monthName, sales });
+  loadDashboardData(): void {
+    if (!this.currentVersion) {
+      console.warn('⚠️ No current version available');
+      return;
     }
 
-    return revenueData;
+    console.log('📊 Loading dashboard data for version:', this.currentVersion.name, 'Key:', this.currentVersion.key);
+
+    // جلب جميع البيانات دفعة واحدة
+    forkJoin({
+      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion.key),
+      allAffiliates: this.firebaseService.getAllAffiliates()
+    }).subscribe({
+      next: (data) => {
+        const leads = data.allLeads;
+        const affiliates = data.allAffiliates;
+
+        // Card 1: Total Leads
+        const totalLeads = leads.length;
+
+        // Card 2: Completed Leads (step = 2)
+        const completedLeads = leads.filter((l: Lead) => l.step === 2).length;
+
+        // Card 3: Pending Leads (step = 1)
+        const pendingLeads = leads.filter((l: Lead) => l.step === 1).length;
+
+        // Card 4: Active Affiliates (unique affiliateKey من الليدز)
+        const uniqueAffiliateKeys = new Set(
+          leads
+            .filter((l: Lead) => l.affiliateKey)
+            .map((l: Lead) => l.affiliateKey)
+        );
+        const activeAffiliates = uniqueAffiliateKeys.size;
+
+        // تحديث الأرقام للأنيميشن
+        this.targetNumbers = [totalLeads, completedLeads, pendingLeads, activeAffiliates];
+        console.log('📈 Statistics:', {
+          totalLeads,
+          completedLeads,
+          pendingLeads,
+          activeAffiliates
+        });
+
+        // تحضير بيانات الشارت: Leads Per Day
+        this.leadsPerDayData = this.buildLeadsPerDayChart(leads);
+        console.log('📊 Chart data points:', this.leadsPerDayData.length);
+
+        this.animateNumbers();
+      },
+      error: (err: any) => {
+        console.error('❌ Error loading dashboard data:', err);
+      }
+    });
+  }
+
+  buildLeadsPerDayChart(leads: Lead[]): { date: string; count: number }[] {
+    const dateMap: { [key: string]: number } = {};
+    const today = new Date();
+
+    // Initialize last 7 days with 0 count
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      dateMap[dateStr] = 0;
+    }
+
+    // Count leads per day (only for last 7 days)
+    leads.forEach((lead: Lead) => {
+      if (lead.createdAt) {
+        const dateStr = lead.createdAt.split('T')[0];
+        if (dateMap.hasOwnProperty(dateStr)) {
+          dateMap[dateStr]++;
+        }
+      }
+    });
+
+    // Convert to array sorted by date
+    return Object.entries(dateMap)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => a.date.localeCompare(b.date));
   }
 
   // Animate dashboard number counters

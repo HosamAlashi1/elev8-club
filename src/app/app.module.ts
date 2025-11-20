@@ -11,7 +11,6 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from '@angular/common';
-import { AuthInterceptor } from './interceptors/auth-interceptor';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { TranslateModule } from '@ngx-translate/core';
 import { LottieModule } from 'ngx-lottie';
@@ -55,9 +54,7 @@ export function playerFactory() {
     // AngularFireStorageModule,
   ],
   providers: [
-    DatePipe,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-  
+    DatePipe,  
   ],
   bootstrap: [AppComponent]
 })

@@ -60,15 +60,15 @@
 
 /* Hover */
 .sidebar .nav-link:hover {
-    background: rgba(91, 189, 183, 0.1);
-    color: #5BBDB7;
+    background: rgba(228, 201, 138, 0.12);
+    color: #E4C98A;
     transform: translateX(2px);
 }
 
 /* Active */
 .sidebar .nav-link.active {
-    background: rgba(91, 189, 183, 0.1);
-    color: #5BBDB7;
+    background: rgba(228, 201, 138, 0.12);
+    color: #E4C98A;
     font-weight: 600;
 }
 
@@ -80,7 +80,7 @@
     bottom: 6px;
     width: 4px;
     /* border-radius: 4px; */
-    background-color: #5BBDB7;
+    background-color: #E4C98A;
     height: 50px;
 }
 
@@ -143,8 +143,8 @@
 }
 
 .sub-menu .nav-link:hover {
-    background: rgba(91, 189, 183, 0.1);
-    color: #5BBDB7;
+    background: rgba(228, 201, 138, 0.12);
+    color: #E4C98A;
 }
 
 /* Toggle Icon */
@@ -158,8 +158,8 @@
 }
 
 .toggle-icon:hover {
-    background-color: rgba(91, 189, 183, 0.1);
-    color: #5BBDB7;
+    background-color: rgba(228, 201, 138, 0.12);
+    color: #E4C98A;
 }
 
 /* Responsive */
@@ -230,4 +230,28 @@
     100% {
         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
     }
+}
+
+/* شعار نصّي بدل اللوجو */
+.brand-text {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    font-family: 'Poppins', sans-serif;
+    color: #4B5563;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.brand-text span {
+    color: #E4C98A;
+    /* الذهبي الأساسي */
+}
+
+/* عند التصغير… يختفي الشعار مثل اللوجو */
+.sidebar.collapsed .brand-text {
+    transform: scale(0) translateX(-10px);
+    opacity: 0;
 }

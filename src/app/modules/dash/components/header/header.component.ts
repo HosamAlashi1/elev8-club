@@ -23,7 +23,8 @@ export class HeaderComponent implements OnInit {
     private notificationService: NotificationService,
     private modalService: NgbModal
   ) {
-    this.user = this.publicService.getUserData();
+    this.user = JSON.parse(localStorage.getItem('elev8-club-data') || '{}');
+
     this.unreadCount$ = this.notificationService.unreadCount$;
   }
 
@@ -45,7 +46,7 @@ export class HeaderComponent implements OnInit {
     modalRef.result.then(
       (confirmed) => {
         if (confirmed) {
-          this.authService.logout();
+          this.authService.SignOut();
         }
       },
       () => {

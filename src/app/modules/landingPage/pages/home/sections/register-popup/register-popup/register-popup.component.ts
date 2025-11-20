@@ -1,5 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FirebaseService } from '../../../../../../services/firebase.service';
+import { Version, Affiliate, Lead } from '../../../../../../../core/models';
 
 interface FormData {
   fullName: string;
@@ -32,7 +35,7 @@ interface FormData {
     ])
   ]
 })
-export class RegisterPopupComponent {
+export class RegisterPopupComponent implements OnInit {
   @Input() isOpen: boolean = false;
   @Output() closePopup = new EventEmitter<void>();
 
@@ -41,6 +44,36 @@ export class RegisterPopupComponent {
     email: '',
     whatsapp: ''
   };
+
+  private currentVersion: Version | null = null;
+  private currentAffiliate: Affiliate | null = null;
+  private affiliateCode: string | null = null;
+  isSubmitting = false;
+
+  constructor(
+    private firebaseService: FirebaseService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    // قراءة ref code من الـ URL أو localStorage
+    this.route.queryParams.subscribe(params => {
+      this.affiliateCode = params['ref'] || localStorage.getItem('affiliateCode') || null;
+      
+      // جلب النسخة الحالية
+      this.firebaseService.getCurrentVersion().subscribe(version => {
+        this.currentVersion = version;
+      });
+
+      // جلب بيانات الأفلييت إذا كان موجود
+      if (this.affiliateCode) {
+        this.firebaseService.getAffiliateByCode(this.affiliateCode).subscribe(affiliate => {
+          this.currentAffiliate = affiliate;
+        });
+      }
+    });
+  }
 
   onClose(): void {
     this.closePopup.emit();
@@ -55,12 +88,58 @@ export class RegisterPopupComponent {
   onSubmit(event: Event): void {
     event.preventDefault();
     
-    // Handle form submission
-    console.log('Form submitted:', this.formData);
-    alert('شكراً لتسجيلك! سنتواصل معك عبر واتساب خلال 24 ساعة.');
+    if (this.isSubmitting) return;
     
-    // Reset form and close
-    this.formData = { fullName: '', email: '', whatsapp: '' };
-    this.onClose();
+    // التحقق من صحة البيانات
+    if (!this.formData.fullName || !this.formData.email || !this.formData.whatsapp) {
+      alert('الرجاء ملء جميع الحقول');
+      return;
+    }
+
+    if (!this.currentVersion) {
+      alert('حدث خطأ، الرجاء المحاولة مرة أخرى');
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    // إنشاء كائن Lead
+    const leadData: Omit<Lead, 'key'> = {
+      versionKey: this.currentVersion.key,
+      affiliateKey: this.currentAffiliate?.key,
+      affiliateCode: this.affiliateCode || undefined,
+      fullName: this.formData.fullName,
+      email: this.formData.email,
+      phone: this.formData.whatsapp,
+      step: 1,
+      consent: true,
+      createdAt: new Date().toISOString()
+    };
+
+    // حفظ البيانات في Firebase
+    this.firebaseService.addLead(leadData)
+      .then(leadKey => {
+        console.log('Lead created successfully:', leadKey);
+        
+        // إغلاق الـ popup
+        this.onClose();
+        
+        // التوجيه لصفحة الأسئلة مع تمرير leadKey
+        this.router.navigate(['/video-questions'], {
+          queryParams: {
+            lead: leadKey,
+            ref: this.affiliateCode || undefined
+          }
+        });
+        
+        // إعادة تعيين النموذج
+        this.formData = { fullName: '', email: '', whatsapp: '' };
+        this.isSubmitting = false;
+      })
+      .catch(error => {
+        console.error('Error creating lead:', error);
+        alert('حدث خطأ أثناء التسجيل، الرجاء المحاولة مرة أخرى');
+        this.isSubmitting = false;
+      });
   }
 }

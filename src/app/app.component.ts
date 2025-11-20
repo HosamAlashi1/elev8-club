@@ -59,16 +59,26 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
+
+        const htmlTag = document.documentElement; // <html>
+
         if (
           event.urlAfterRedirects.startsWith('/dashboard') ||
-          event.urlAfterRedirects.startsWith('/audio-portal') ||
           event.urlAfterRedirects.startsWith('/auth') ||
           event.urlAfterRedirects.startsWith('/error')
         ) {
+          // نحول للإنجليزي
+          htmlTag.setAttribute('lang', 'en');
+          htmlTag.setAttribute('dir', 'ltr');
+
           this.loadCSS('/assets/css/dashboard.css');
           this.loadCSS('/assets/css/theme.bundle.css');
           this.removeCSS('/assets/css/landingPage.css');
         } else {
+          // نرجعه عربي
+          htmlTag.setAttribute('lang', 'ar');
+          htmlTag.setAttribute('dir', 'rtl');
+
           this.loadCSS('/assets/css/landingPage.css');
           this.removeCSS('/assets/css/dashboard.css');
           this.removeCSS('/assets/css/theme.bundle.css');

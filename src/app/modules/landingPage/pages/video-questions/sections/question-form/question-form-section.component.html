@@ -1,0 +1,118 @@
+<div class="question-form-section" style="direction: rtl;">
+  <div class="container">
+
+    <!-- Success CTA View -->
+    <div *ngIf="showCTA" @fadeInUp class="cta-wrapper" data-aos="fade-up" data-aos-duration="800">
+      <div class="success-content">
+        
+        <!-- Success Icon -->
+        <div @scaleIn class="success-icon-wrapper">
+          <lucide-icon name="check-circle-2" class="success-icon" [size]="80"></lucide-icon>
+        </div>
+
+        <!-- Success Message -->
+        <h3 class="success-title">
+          ممتاز! أجوبتك وصلتنا بنجاح
+        </h3>
+
+        <!-- CTA Button -->
+        <button 
+          class="cta-button"
+          (click)="completeRegistration()">
+          <span class="cta-text">
+             اضغط هنا لإكمال تسجيلك والانضمام الآن
+            <lucide-icon name="arrow-right" class="arrow-icon" [size]="20"></lucide-icon>
+          </span>
+        </button>
+
+        <!-- Warning Text -->
+        <p class="warning-text">
+          الأماكن محدودة — لا تؤجل قرارك.
+        </p>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          بمجرد إكمال التسجيل، راح تتحول على واتس أحد مستشارينا الماليين وسوف يصلك
+          إيميل تأكيد مع رابط الانضمام مجموعة التحدي الخاصة.
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Form View -->
+    <div *ngIf="!showCTA">
+      
+      <!-- Intro Text (First Question Only) -->
+      <div *ngIf="currentQuestion === 0" @fadeInUp class="intro-wrapper" data-aos="fade-down" data-aos-duration="600">
+        <p class="intro-title">
+          لنساعدك بأفضل شكل خلال التحدي جاوب على الأسئلة التالية بدقة
+        </p>
+        <p class="intro-subtitle">في أقل من 60 ثانية</p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div @fadeInUp class="progress-section" data-aos="fade-up" data-aos-duration="600">
+        <div class="progress-header">
+          <span class="progress-label">
+            السؤال {{ currentQuestion + 1 }} من {{ questions.length }}
+          </span>
+          <span class="answered-count">
+            <lucide-icon name="check-circle-2" class="check-icon" [size]="20"></lucide-icon>
+            {{ answeredCount }}/{{ questions.length }}
+          </span>
+        </div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progress"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div @slideInOut class="question-card" data-aos="zoom-in" data-aos-duration="700">
+        <h3 class="question-title">{{ currentQ.text }}</h3>
+
+        <!-- Radio Options -->
+        <div *ngIf="currentQ.type === 'radio' && currentQ.options" class="options-wrapper">
+          <div 
+            *ngFor="let option of currentQ.options; let i = index"
+            class="option-item"
+            [class.selected]="answers[currentQ.id] === option"
+            (click)="handleAnswer(option)"
+            [@fadeInUp]="{ value: '', params: { delay: i * 100 } }">
+            <div class="radio-wrapper">
+              <input 
+                type="radio" 
+                [id]="'option-' + i"
+                [name]="'question-' + currentQ.id"
+                [value]="option"
+                [checked]="answers[currentQ.id] === option"
+                class="radio-input">
+              <div class="radio-custom"></div>
+            </div>
+            <label [for]="'option-' + i" class="option-label">
+              {{ option }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Text Input -->
+        <div *ngIf="currentQ.type === 'text'" class="text-input-wrapper">
+          <input 
+            type="text"
+            [(ngModel)]="answers[currentQ.id]"
+            placeholder="أدخل إجابتك هنا..."
+            class="text-input">
+          <button 
+            (click)="handleNext()"
+            [disabled]="!canProceed"
+            class="next-button">
+            التالي
+            <lucide-icon name="arrow-right" class="arrow-icon" [size]="20"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

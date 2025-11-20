@@ -1,26 +1,18 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { PublicService } from '../../services/public.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
+export class AuthGuard {
 
-  constructor(
-    private authService: AuthService,
-    private publicService: PublicService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService) { }
 
-  canActivate(): boolean {
-    const token = this.publicService.getAuthToken();
-
-    if (token) {
+  canActivate() {
+    const currentUser = localStorage.getItem('elev8-club-data');
+    if (currentUser) {
       return true;
     }
 
-    this.authService.logout();
-    return false;
+    this.authService.SignOut();
+    return false; 
   }
 }
-

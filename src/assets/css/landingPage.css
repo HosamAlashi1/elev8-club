@@ -1,95 +1,718 @@
 /* ========================================
-   🌌 ANIMATED BACKGROUND
+   🌌 LUXURY TRADING ANIMATED BACKGROUND
    ======================================== */
 
-/* Animated Background Container */
+
+html,
+body {
+  direction: rtl;
+  text-align: right;
+  font-family: "Tajawal", sans-serif;
+  background: #000000;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Main Container */
 .home-content {
   position: relative;
-  background: #000000;
+  background: linear-gradient(180deg, #000000 0%, #0A0F1E 50%, #000814 100%);
   overflow: hidden;
   --scroll-opacity: 0.15;
   --scroll-translate: 0px;
 }
 
-/* Background Layer 1: Moving Gradients */
-.home-content::before {
-  content: "";
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(207, 174, 88, var(--scroll-opacity)) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(10, 30, 63, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(207, 174, 88, 0.05) 0%, transparent 50%);
-  animation: gradientMove 25s ease-in-out infinite;
-  transform: translateY(calc(var(--scroll-translate) * -0.5));
-  pointer-events: none;
-  z-index: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Background Layer 2: Floating Orbs */
-.home-content::after {
-  content: "";
+/* Luxury Trading Background Container */
+.luxury-trading-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(207, 174, 88, 0.03) 0%, transparent 25%),
-    radial-gradient(circle at 85% 85%, rgba(10, 54, 120, 0.05) 0%, transparent 30%),
-    radial-gradient(circle at 50% 50%, rgba(207, 174, 88, 0.02) 0%, transparent 40%);
-  animation: orbFloat 30s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.3;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
-@keyframes gradientMove {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  33% {
-    transform: translate(10%, -10%) rotate(120deg);
-  }
-  66% {
-    transform: translate(-10%, 10%) rotate(240deg);
-  }
+/* ===== Layer 1: Animated Grid ===== */
+.grid-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.15;
+  display: none; /* تعطيل لتحسين الأداء */
 }
 
-@keyframes orbFloat {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
+.grid-svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes gridPulse {
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
     opacity: 0.6;
   }
-  33% {
-    transform: translate(-5%, 5%) scale(1.1);
+}
+
+/* ===== Layer 2: Dynamic Candlestick Chart ===== */
+.candlestick-chart {
+  position: absolute;
+  bottom: 15%;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 5%;
+  opacity: 0.25;
+  will-change: transform;
+}
+
+.chart-candlestick {
+  position: absolute;
+  width: 45px;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: candleGrow 4s ease-in-out infinite;
+  transform-origin: bottom;
+  will-change: transform;
+}
+
+.candle-wick-top,
+.candle-wick-bottom {
+  width: 2px;
+  background: linear-gradient(180deg, transparent, #CFAE58, transparent);
+  flex: 1;
+}
+
+.candle-body {
+  width: 100%;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(207, 174, 88, 0.4), rgba(207, 174, 88, 0.7));
+  border: 2px solid #CFAE58;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(207, 174, 88, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.candle-body::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: candleShine 2s linear infinite;
+}
+
+.chart-candlestick.bullish .candle-body {
+  background: linear-gradient(180deg, rgba(76, 175, 80, 0.4), rgba(76, 175, 80, 0.7));
+  border-color: #4CAF50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.5), inset 0 0 10px rgba(76, 175, 80, 0.2);
+}
+
+.chart-candlestick.bullish .candle-wick-top,
+.chart-candlestick.bullish .candle-wick-bottom {
+  background: linear-gradient(180deg, transparent, #4CAF50, transparent);
+}
+
+.chart-candlestick.bearish .candle-body {
+  background: linear-gradient(180deg, rgba(244, 67, 54, 0.4), rgba(244, 67, 54, 0.7));
+  border-color: #F44336;
+  box-shadow: 0 0 20px rgba(244, 67, 54, 0.5), inset 0 0 10px rgba(244, 67, 54, 0.2);
+}
+
+.chart-candlestick.bearish .candle-wick-top,
+.chart-candlestick.bearish .candle-wick-bottom {
+  background: linear-gradient(180deg, transparent, #F44336, transparent);
+}
+
+@keyframes candleGrow {
+
+  0%,
+  100% {
+    transform: scaleY(0.9);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes candleShine {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* ===== Layer 3: Flowing Chart Lines ===== */
+.chart-flow-lines {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  opacity: 0.25;
+  display: none; /* تعطيل لتحسين الأداء */
+}
+
+.flow-path {
+  animation: pathFlow 12s ease-in-out infinite;
+}
+
+.path-2 {
+  animation-delay: 2s;
+}
+
+.path-3 {
+  animation-delay: 4s;
+}
+
+@keyframes pathFlow {
+
+  0%,
+  100% {
+    stroke-dasharray: 100 100;
+    stroke-dashoffset: 200;
+    opacity: 0.3;
+  }
+
+  50% {
+    stroke-dasharray: 100 100;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.line-dot {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* ===== Layer 4: Floating Price Particles ===== */
+.price-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.particle {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  backdrop-filter: none; /* إزالة blur لتحسين الأداء */
+  animation: particleFloat 10s ease-in-out infinite;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.particle.profit {
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+  text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+.particle:not(.profit) {
+  color: #CFAE58;
+  background: rgba(207, 174, 88, 0.12);
+  border: 1px solid rgba(207, 174, 88, 0.3);
+  box-shadow: 0 0 15px rgba(207, 174, 88, 0.3);
+  text-shadow: 0 0 8px rgba(207, 174, 88, 0.6);
+}
+
+@keyframes particleFloat {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(-80px) scale(1.05);
+    opacity: 0.9;
+  }
+
+  90% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translateY(-150px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* ===== Layer 5: Golden Liquid Waves ===== */
+.liquid-waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 35%;
+  overflow: hidden;
+}
+
+.wave-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.liquid-wave {
+  animation: liquidFlow 20s ease-in-out infinite;
+}
+
+.wave-2 {
+  animation-duration: 25s;
+  animation-delay: 3s;
+}
+
+.wave-3 {
+  animation-duration: 30s;
+  animation-delay: 6s;
+}
+
+@keyframes liquidFlow {
+
+  0%,
+  100% {
+    transform: translateX(0) scaleY(1);
+  }
+
+  50% {
+    transform: translateX(-15%) scaleY(1.1);
+  }
+}
+
+/* ===== Layer 6: Trading Volume Bars ===== */
+.volume-bars {
+  position: absolute;
+  bottom: 5%;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 3%;
+  opacity: 0.25;
+}
+
+.volume-bar {
+  position: absolute;
+  width: 2.5%;
+  background: linear-gradient(180deg, rgba(207, 174, 88, 0.6), rgba(207, 174, 88, 0.2));
+  border-radius: 2px 2px 0 0;
+  animation: volumePulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(207, 174, 88, 0.3);
+}
+
+.volume-bar.high-volume {
+  background: linear-gradient(180deg, rgba(76, 175, 80, 0.7), rgba(76, 175, 80, 0.3));
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+  animation-duration: 1.5s;
+}
+
+@keyframes volumePulse {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scaleY(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* ===== Layer 7: Geometric Shapes ===== */
+.geometric-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.15;
+  display: none; /* تعطيل لتحسين الأداء */
+}
+
+.shape {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  animation: shapeRotate 25s linear infinite;
+  will-change: transform;
+}
+
+.triangle-up {
+  top: 15%;
+  right: 20%;
+  filter: drop-shadow(0 0 15px rgba(76, 175, 80, 0.4));
+}
+
+.triangle-down {
+  top: 60%;
+  left: 15%;
+  filter: drop-shadow(0 0 15px rgba(244, 67, 54, 0.4));
+  animation-direction: reverse;
+}
+
+.hexagon {
+  top: 40%;
+  right: 10%;
+  filter: drop-shadow(0 0 15px rgba(207, 174, 88, 0.4));
+  animation-duration: 25s;
+}
+
+@keyframes shapeRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.2);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.3;
+  }
+}
+
+/* ===== Layer 8: Market Data Ticker ===== */
+.market-ticker-scroll {
+  position: absolute;
+  top: 8%;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(10, 15, 30, 0.6) 5%,
+      rgba(10, 15, 30, 0.6) 95%,
+      transparent 100%);
+  backdrop-filter: none; /* إزالة blur */
+  border-top: 1px solid rgba(207, 174, 88, 0.2);
+  border-bottom: 1px solid rgba(207, 174, 88, 0.2);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ticker-content {
+  display: flex;
+  gap: 3rem;
+  animation: tickerScroll 50s linear infinite;
+  padding: 0 2rem;
+  will-change: transform;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.ticker-symbol {
+  color: #CFAE58;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-shadow: 0 0 10px rgba(207, 174, 88, 0.5);
+}
+
+.ticker-price {
+  color: #ffffff;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+}
+
+.ticker-change {
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.ticker-change.up {
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.15);
+}
+
+.ticker-change.down {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.15);
+}
+
+/* ===== Layer 9: Pulsing Order Book ===== */
+.order-book-visual {
+  position: absolute;
+  top: 25%;
+  right: 3%;
+  width: 250px;
+  height: 300px;
+  display: none; /* تعطيل لتحسين الأداء */
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0.25;
+}
+
+.order-line {
+  height: 18px;
+  border-radius: 3px;
+  animation: orderPulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.order-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: orderFlow 2s linear infinite;
+}
+
+.buy-order {
+  background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.5));
+  border-right: 2px solid rgba(76, 175, 80, 0.7);
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.sell-order {
+  background: linear-gradient(90deg, transparent, rgba(244, 67, 54, 0.5));
+  border-right: 2px solid rgba(244, 67, 54, 0.7);
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+}
+
+@keyframes orderPulse {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes orderFlow {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+/* ===== Layer 10: Glowing Trading Signals ===== */
+.trading-signals {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* تعطيل لتحسين الأداء */
+}
+
+.signal {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: signalPulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.signal-icon {
+  font-size: 1.5rem;
+  font-weight: 900;
+  z-index: 2;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.signal-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: signalRipple 3s ease-out infinite;
+}
+
+.buy-signal .signal-icon {
+  color: #4CAF50;
+}
+
+.buy-signal .signal-pulse {
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.4), transparent);
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.6);
+}
+
+.sell-signal .signal-icon {
+  color: #F44336;
+}
+
+.sell-signal .signal-pulse {
+  background: radial-gradient(circle, rgba(244, 67, 54, 0.4), transparent);
+  box-shadow: 0 0 30px rgba(244, 67, 54, 0.6);
+}
+
+@keyframes signalPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes signalRipple {
+  0% {
+    transform: scale(0.5);
     opacity: 0.8;
   }
-  66% {
-    transform: translate(5%, -5%) scale(0.9);
-    opacity: 0.7;
+
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
   }
 }
 
 /* Ensure content is above background */
-.home-content > * {
+.home-content>app-hero-section,
+.home-content>app-stats-section,
+.home-content>app-features-section,
+.home-content>app-before-after-section,
+.home-content>app-journey-section,
+.home-content>app-video-testimonials-section,
+.home-content>app-suitable-check-section,
+.home-content>app-written-testimonials-section,
+.home-content>app-big-cta-section,
+.home-content>app-faq-section,
+.home-content>app-contact-section {
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
-/* Parallax Effect on Scroll */
-@media (prefers-reduced-motion: no-preference) {
-  .home-content::before {
-    animation: gradientMove 25s ease-in-out infinite, parallaxBg 1s linear infinite;
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .luxury-trading-bg {
+    opacity: 0.25;
+  }
+
+  .order-book-visual {
+    display: none;
+  }
+
+  .shape {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .candlestick-chart {
+    opacity: 0.2;
   }
 }
 
-@keyframes parallaxBg {
-  to {
-    transform: translateY(-2px);
+@media (max-width: 768px) {
+  .luxury-trading-bg {
+    opacity: 0.2;
+  }
+
+  .candlestick-chart {
+    height: 30%;
+    opacity: 0.15;
+  }
+
+  .chart-candlestick {
+    width: 30px;
+  }
+
+  .order-book-visual,
+  .geometric-shapes,
+  .chart-flow-lines,
+  .trading-signals {
+    display: none;
+  }
+
+  .particle {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    animation-duration: 12s;
+  }
+
+  .ticker-symbol,
+  .ticker-price {
+    font-size: 0.8rem;
+  }
+
+  .market-ticker-scroll {
+    height: 40px;
+  }
+  
+  .price-particles .particle:nth-child(n+4) {
+    display: none; /* إظهار 3 particles فقط على الموبايل */
   }
 }
 
@@ -135,17 +758,19 @@
   0% {
     box-shadow:
       0 0 22px rgba(238, 209, 142, 0.45),
-      0 14px 30px rgba(0,0,0,0.55);
+      0 14px 30px rgba(0, 0, 0, 0.55);
   }
+
   50% {
     box-shadow:
       0 0 40px rgba(238, 209, 142, 0.85),
-      0 18px 40px rgba(0,0,0,0.7);
+      0 18px 40px rgba(0, 0, 0, 0.7);
   }
+
   100% {
     box-shadow:
       0 0 22px rgba(238, 209, 142, 0.45),
-      0 14px 30px rgba(0,0,0,0.55);
+      0 14px 30px rgba(0, 0, 0, 0.55);
   }
 }
 
@@ -154,7 +779,7 @@
   content: "";
   position: absolute;
   inset: -45%;
-  background: radial-gradient(circle, rgba(255,245,200,0.35), transparent 75%);
+  background: radial-gradient(circle, rgba(255, 245, 200, 0.35), transparent 75%);
   opacity: 0.45;
   animation: ctaGlow 4s ease-in-out infinite;
 }
@@ -168,12 +793,10 @@
   width: 55%;
   height: 100%;
 
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255,255,255,0.60) 45%,
-    transparent 100%
-  );
+  background: linear-gradient(120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.60) 45%,
+      transparent 100%);
 
   transform: skewX(-20deg);
   animation: ctaShine 4s ease-in-out infinite;
@@ -188,7 +811,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
+
   border-radius: 50%;
   background: rgba(255, 250, 230, 0.55);
 
@@ -201,10 +824,12 @@
     opacity: 0.35;
     transform: translate(-50%, -50%) scale(0.2);
   }
+
   70% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(2.7);
   }
+
   100% {
     opacity: 0;
   }
@@ -230,9 +855,12 @@
 
 /* نبض ناعم */
 @keyframes ctaBreath {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.015);
   }
@@ -240,13 +868,55 @@
 
 /* توهج الخلفية */
 @keyframes ctaGlow {
-  0%, 100% { opacity: 0.40; }
-  50% { opacity: 0.65; }
+
+  0%,
+  100% {
+    opacity: 0.40;
+  }
+
+  50% {
+    opacity: 0.65;
+  }
 }
 
 /* لمعان يتحرك */
 @keyframes ctaShine {
-  0% { left: -150%; }
-  60% { left: 150%; }
-  100% { left: 150%; }
+  0% {
+    left: -150%;
+  }
+
+  60% {
+    left: 150%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+
+/* ========== سكرول بار ذهبي ========== */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+  border-left: 1px solid rgba(207, 174, 88, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #CFAE58 0%, #B8944A 100%);
+  border-radius: 6px;
+  border: 2px solid #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #D4B76A 0%, #CFAE58 100%);
+  box-shadow: 0 0 10px rgba(207, 174, 88, 0.5);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #CFAE58 #0A0A0A;
 }

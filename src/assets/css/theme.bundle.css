@@ -3318,35 +3318,41 @@ fieldset:disabled .btn {
 
 /* زر أساسي */
 .btn-custom {
-  --bs-btn-color: #fff !important;    
-  --bs-btn-bg: #5BBDB7 !important; /* اللون الأساسي */
-  --bs-btn-border-color: #5BBDB7 !important;
+  --bs-btn-color: #fff !important;
 
+  /* الذهب الفاتح الجديد */
+  --bs-btn-bg: #F4D892 !important;           /* الأساسي */
+  --bs-btn-border-color: #F4D892 !important;
+
+  /* Hover */
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #4ca79f; /* أغمق شوي */
-  --bs-btn-hover-border-color: #4ca79f;
+  --bs-btn-hover-bg: #E8C67A;                /* أغمق لمسة */
+  --bs-btn-hover-border-color: #E8C67A;
 
-  --bs-btn-focus-shadow-rgb: 91, 189, 183;
+  /* Focus */
+  --bs-btn-focus-shadow-rgb: 244, 216, 146;
 
+  /* Active */
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #3c8e86; /* أغمق أكثر */
-  --bs-btn-active-border-color: #3c8e86;
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(91, 189, 183, 0.3);
+  --bs-btn-active-bg: #D9B86D;               /* أغمق بمرحلة */
+  --bs-btn-active-border-color: #D9B86D;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(217, 184, 109, 0.35);
 
+  /* Disabled */
   --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #9ddbd7;
-  --bs-btn-disabled-border-color: #9ddbd7;
+  --bs-btn-disabled-bg: #F2E3BD;
+  --bs-btn-disabled-border-color: #F2E3BD;
 }
 
 /* زر بخط خارجي */
 .btn-outline-custom {
-  --bs-btn-color: #5BBDB7;
-  --bs-btn-border-color: #5BBDB7;
+  --bs-btn-color: #CFAE58;
+  --bs-btn-border-color: #CFAE58;
   --bs-btn-bg: transparent;
 
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #5BBDB7;
-  --bs-btn-hover-border-color: #5BBDB7;
+  --bs-btn-hover-bg: #CFAE58;
+  --bs-btn-hover-border-color: #CFAE58;
 
   --bs-btn-focus-shadow-rgb: 91, 189, 183;
 
@@ -3355,9 +3361,9 @@ fieldset:disabled .btn {
   --bs-btn-active-border-color: #3c8e86;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(91, 189, 183, 0.3);
 
-  --bs-btn-disabled-color: #5BBDB7;
+  --bs-btn-disabled-color: #CFAE58;
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #5BBDB7;
+  --bs-btn-disabled-border-color: #CFAE58;
 }
 
 

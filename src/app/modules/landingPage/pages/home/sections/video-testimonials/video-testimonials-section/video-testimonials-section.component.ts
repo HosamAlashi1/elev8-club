@@ -24,38 +24,38 @@ export class VideoTestimonialsSectionComponent {
   videos: VideoState[] = [
     {
       url: "assets/videos/video1.mp4",
-      name: "سارة العلي",
-      location: "دبي، الإمارات",
+      name: "هيثم",
+      location: "سوريا",
       duration: "0:22"
     },
     {
       url: "assets/videos/video2.mp4",
-      name: "أحمد محمد",
-      location: "القاهرة، مصر",
+      name: "ابو بكر",
+      location: "ليبيا ",
       duration: "0:28"
     },
     {
       url: "assets/videos/video3.mp4",
-      name: "محمد الأحمد",
-      location: "الرياض، السعودية",
+      name: "هيثم",
+      location: "تركيا",
       duration: "0:31"
     },
     {
       url: "assets/videos/video4.mp4",
-      name: "ليلى حسن",
-      location: "عمّان، الأردن",
+      name: "لويس",
+      location: "لبنان",
       duration: "0:25"
     },
     {
       url: "assets/videos/video5.mp4",
-      name: "خالد يوسف",
-      location: "أبوظبي، الإمارات",
+      name: "أمل",
+      location: "المغرب",
       duration: "0:29"
     },
     {
       url: "assets/videos/video6.mp4",
-      name: "نور سمير",
-      location: "العراق",
+      name: "أنصار",
+      location: "فلسطين",
       duration: "0:26"
     }
   ];
@@ -219,19 +219,25 @@ export class VideoTestimonialsSectionComponent {
 
   // ========== شاشة كاملة ==========
   toggleFullscreen(videoElement: HTMLVideoElement) {
-    const elem = videoElement.parentElement as any;
+    const videoBox = videoElement.closest('.video-box') as any;
     
     if (!document.fullscreenElement) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
+      // تفعيل الشاشة الكاملة
+      if (videoBox.requestFullscreen) {
+        videoBox.requestFullscreen();
+      } else if (videoBox.webkitRequestFullscreen) {
+        videoBox.webkitRequestFullscreen();
+      } else if (videoBox.msRequestFullscreen) {
+        videoBox.msRequestFullscreen();
       }
     } else {
+      // الخروج من الشاشة الكاملة
       if (document.exitFullscreen) {
         document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
       }
     }
   }

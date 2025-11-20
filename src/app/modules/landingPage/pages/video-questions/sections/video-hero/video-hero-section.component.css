@@ -1,0 +1,448 @@
+.video-hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem 4rem;
+  background: transparent;
+  direction: rtl;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Title Section */
+.title-wrapper {
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.main-title {
+  font-size: 1.25rem;
+  color: white;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.sub-title {
+  font-size: 1.25rem;
+  color: white;
+  line-height: 1.6;
+}
+
+/* Video Container */
+.video-container {
+  position: relative;
+  max-width: 1024px;
+  margin: 0 auto 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 
+    0 0 60px rgba(207, 174, 88, 0.4),
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border: 2px solid #CFAE58;
+  background: #000;
+  aspect-ratio: 16 / 9;
+  transition: all 0.4s ease;
+}
+
+.video-container:hover {
+  box-shadow: 
+    0 0 80px rgba(207, 174, 88, 0.6),
+    0 25px 70px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateY(-5px);
+}
+
+.video-player {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+/* Play Overlay */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: background 0.3s ease;
+  z-index: 2;
+}
+
+.play-overlay:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.play-button {
+  width: 5rem;
+  height: 5rem;
+  background: #CFAE58;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(207, 174, 88, 0.5);
+}
+
+.play-button:hover {
+  background: #FFD700;
+  transform: scale(1.1);
+}
+
+.play-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: white;
+  margin-left: 0.25rem;
+}
+
+.play-text {
+  color: #CFAE58;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* Video Controls */
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(10, 30, 63, 0.8) 40%,
+    rgba(0, 0, 0, 0.6) 70%, 
+    transparent 100%);
+  padding: 2.5rem 1rem 1rem;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 3;
+  backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(207, 174, 88, 0.1);
+}
+
+.video-controls.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.video-controls:not(.visible) {
+  transform: translateY(10px);
+}
+
+/* Progress Container */
+.progress-container {
+  margin-bottom: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.progress-container:hover .progress-bar {
+  height: 6px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: visible;
+  position: relative;
+  transition: height 0.2s ease;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #CFAE58 0%, #FFD700 50%, #CFAE58 100%);
+  transition: width 0.1s linear;
+  position: relative;
+  margin-left: auto;
+  margin-right: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(207, 174, 88, 0.5);
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #FFD700, #CFAE58);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8), 0 0 20px rgba(207, 174, 88, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-container:hover .progress-fill::after {
+  opacity: 1;
+}
+
+/* Controls Row */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  direction: rtl;
+  padding: 0 0.5rem;
+}
+
+.controls-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.controls-right {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.controls-left {
+  justify-content: flex-end;
+}
+
+.control-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.control-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(207, 174, 88, 0.1);
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.control-btn:hover::before {
+  opacity: 1;
+}
+
+.control-btn:hover {
+  color: #CFAE58;
+  transform: scale(1.1);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.time-display {
+  color: white;
+  font-size: 0.875rem;
+  font-family: monospace;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(207, 174, 88, 0.2);
+}
+
+/* Play Button Specific */
+.play-btn {
+  background: rgba(207, 174, 88, 0.15);
+  border: 1px solid rgba(207, 174, 88, 0.3);
+}
+
+.play-btn:hover {
+  background: rgba(207, 174, 88, 0.25);
+  border-color: #CFAE58;
+}
+
+/* Fullscreen Button Specific */
+.fullscreen-btn {
+  background: rgba(10, 30, 63, 0.3);
+  border: 1px solid rgba(207, 174, 88, 0.2);
+}
+
+.fullscreen-btn:hover {
+  background: rgba(10, 30, 63, 0.5);
+  border-color: #CFAE58;
+}
+
+/* Volume Button inside control */
+.volume-btn {
+  padding: 0.4rem;
+}
+
+/* Volume Control */
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(10, 30, 63, 0.3);
+  padding: 0.5rem 0.75rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(207, 174, 88, 0.2);
+  transition: all 0.3s ease;
+}
+
+.volume-control:hover {
+  background: rgba(10, 30, 63, 0.5);
+  border-color: rgba(207, 174, 88, 0.4);
+  box-shadow: 0 0 15px rgba(207, 174, 88, 0.2);
+}
+
+.volume-slider {
+  width: 70px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to left, rgba(207, 174, 88, 0.3), rgba(207, 174, 88, 0.3));
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  direction: ltr;
+  transition: all 0.2s ease;
+}
+
+.volume-slider:hover {
+  background: linear-gradient(to left, rgba(207, 174, 88, 0.5), rgba(207, 174, 88, 0.5));
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #CFAE58, #FFD700);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(207, 174, 88, 0.5);
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  background: linear-gradient(135deg, #FFD700, #CFAE58);
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #CFAE58, #FFD700);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(207, 174, 88, 0.5);
+}
+
+.volume-slider::-moz-range-thumb:hover {
+  background: linear-gradient(135deg, #FFD700, #CFAE58);
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .video-hero-section {
+    padding: 10rem 2rem 4rem;
+  }
+
+  .main-title,
+  .sub-title {
+    font-size: 1.875rem;
+  }
+
+  .time-display {
+    font-size: 1rem;
+  }
+
+  .volume-slider {
+    width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls-row {
+    padding: 0 0.25rem;
+  }
+
+  .controls-group {
+    gap: 0.5rem;
+  }
+
+  .volume-slider {
+    width: 50px;
+  }
+
+  .time-display {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .volume-control {
+    display: none;
+  }
+
+  .controls-row {
+    gap: 0.5rem;
+  }
+
+  .control-btn {
+    padding: 0.5rem;
+  }
+
+  .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .play-button {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .play-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .fullscreen-btn {
+    display: none;
+  }
+}

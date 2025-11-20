@@ -4,10 +4,8 @@
         <div class="container-fluid">
             <div class="header-body border-0">
                 <div class="row align-items-center">
-                    <div class="col d-flex">
-                        <h1 class="header-title fw-bold">
-                            Dashboard Overview
-                        </h1>
+                    <div class="col">
+                        <h1 class="header-title fw-bold">Dashboard Overview</h1>
                     </div>
                 </div>
             </div>
@@ -15,102 +13,32 @@
     </div>
 
     <div class="container-fluid">
-        <!-- Stat Cards -->
-        <div class="row g-4">
-            <div class="col-md-3" *ngFor="let card of dashboardCards; let i = index" data-aos="fade-up"
-                [attr.data-aos-delay]="(i * 150).toString()" data-aos-duration="700">
-                <div class="stat-card">
-                    <!-- Icon -->
-                    <div class="stat-icon mb-3" [ngClass]="card.iconClass">
-                        <i [class]="card.icon"></i>
-                    </div>
-
-                    <!-- Label -->
-                    <div class="stat-label">{{ card.label }}</div>
-
-                    <!-- Value + Change -->
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="stat-value">{{ card.prefix }} {{ numbers[i] | number }}</div>
-                        <div class="stat-change" *ngIf="card.change">+{{ card.change }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- Analytics Charts -->
-        <div class="row mt-4">
-            <!-- Line Chart -->
-            <div class="col-md-12 equal-height-col">
-                <app-line-chart [revenueData]="revenueData"></app-line-chart>
-            </div>
-        </div>
-
-        <div class="row g-4" style="max-height: 387px;">
-            <!-- Top Author -->
-            <div class="col-md-4" data-aos="fade-up" data-aos-duration="700" data-aos-delay="0">
-                <div class="card shadow-sm h-85">
-                    <div class="card-header fw-bolder fs-3" data-aos="fade-down" data-aos-duration="600">
-                        Top Author
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-4" *ngFor="let author of topAuthors; let i = index"
-                            data-aos="fade-right" [attr.data-aos-delay]="(i * 150).toString()" data-aos-duration="600">
-                            <img [src]="author.img" class="rounded-circle me-3" width="64" height="64" alt="Author">
-                            <div>
-                                <div class="fw-bold">{{ author.name }}</div>
-                                <small class="fs-4" style="color: #4B5563;">
-                                    {{ author.sales }} books sold this month
-                                </small>
-                            </div>
+        <!-- Dashboard Content -->
+        <ng-container>
+            <!-- Stat Cards Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3" *ngFor="let card of dashboardCards; let i = index">
+                    <div class="stat-card">
+                        <!-- Icon -->
+                        <div class="stat-icon mb-3" [ngClass]="card.iconClass">
+                            <i [class]="card.icon"></i>
                         </div>
+
+                        <!-- Label -->
+                        <div class="stat-label">{{ card.label }}</div>
+
+                        <!-- Value -->
+                        <div class="stat-value">{{ card.prefix }}{{ numbers[i] | number }}</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Best-Selling Category -->
-            <div class="col-md-4" data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
-                <div class="card shadow-sm h-85">
-                    <div class="card-header fw-bolder fs-3" data-aos="fade-down" data-aos-duration="600">
-                        Best-Selling Category
-                    </div>
-                    <div class="card-body d-flex justify-content-center align-items-center">
-                        <div class="chart-wrapper" data-aos="zoom-in" data-aos-duration="800">
-                            <apx-chart [series]="categoryChart.series" [chart]="categoryChart.chart"
-                                [labels]="categoryChart.labels" [colors]="categoryChart.colors"
-                                [legend]="categoryChart.legend">
-                            </apx-chart>
-                        </div>
-                    </div>
+            <!-- Leads Per Day Chart -->
+            <div class="row mt-4">
+                <div class="col-md-12 equal-height-col">
+                    <app-line-chart [revenueData]="leadsPerDayData"></app-line-chart>
                 </div>
             </div>
-
-            <!-- Refund Rate -->
-            <div class="col-md-4" data-aos="fade-up" data-aos-duration="700" data-aos-delay="300">
-                <div class="card shadow-sm h-85 text-center">
-                    <div class="card-header fw-bolder fs-3" data-aos="fade-down" data-aos-duration="600">
-                        Refund Rate
-                    </div>
-                    <div class="card-body d-flex flex-column justify-content-center" data-aos="fade-up"
-                        data-aos-delay="200" data-aos-duration="800">
-                        <h1 class="fw-bolder m-1" style="font-size: 2.5rem;">0.8%</h1>
-                        <div style="color: #16A34A;">-0.3% vs last month</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div class="row">
-            <div class="col-12">
-                <app-recent-orders [orders]="recentOrders"></app-recent-orders>
-            </div>
-        </div>
-
-        <!-- Top Selling Books -->
-        <app-top-selling-books [topSellingBooks]="topSellingBooks"></app-top-selling-books>
-
-        <!-- top selling -->
+        </ng-container>
     </div>
 </div>

@@ -11,13 +11,13 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-sm btn-light" (click)="activeModal.dismiss()">
         <i class="fe fe-x me-2"></i>Close</button>
-    <button class="btn btn-sm btn-danger" [disabled]="(httpService.getLoading('deleteAction') | async)"
+    <button class="btn btn-sm btn-danger" [disabled]="(httpService.getLoading('deleteAction') | async) || isDeleting"
         (click)="delete()">
-        <ng-container *ngIf="(httpService.getLoading('deleteAction') | async)">
+        <ng-container *ngIf="(httpService.getLoading('deleteAction') | async) || isDeleting">
             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             <span>Deleting ...</span>
         </ng-container>
-        <ng-container *ngIf="!(httpService.getLoading('deleteAction') | async)">
+        <ng-container *ngIf="!(httpService.getLoading('deleteAction') | async) && !isDeleting">
             <i class="fe fe-trash-2 me-2"></i>
             <span>Delete</span>
         </ng-container>

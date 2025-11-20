@@ -25,11 +25,11 @@
 }
 
 .select-button:hover:not(.disabled) {
-  border-color: #5BBDB7; /* 🔧 نفس لون hover المدخلات */
+  border-color: #CFAE58; /* 🔧 نفس لون hover المدخلات */
 }
 
 .select-button.open {
-  border-color: #5BBDB7; /* 🔧 نفس لون focus المدخلات */
+  border-color: #CFAE58; /* 🔧 نفس لون focus المدخلات */
   box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.15); /* 🔧 نفس box-shadow المدخلات */
   outline: none;
   transform: scale(1.01); /* 🔧 نفس animation المدخلات */
@@ -169,7 +169,7 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #5BBDB7; /* 🔧 نفس لون focus المدخلات */
+  border-color: #CFAE58; /* 🔧 نفس لون focus المدخلات */
   box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.15); /* 🔧 نفس box-shadow المدخلات */
   transform: scale(1.01); /* 🔧 نفس تأثير المدخلات */
   animation: focusPulse 0.25s ease; /* 🔧 نفس animation المدخلات */
@@ -183,7 +183,7 @@
 }
 
 .select-button.open {
-  border-color: #5BBDB7; /* 🔧 نفس لون focus المدخلات */
+  border-color: #CFAE58; /* 🔧 نفس لون focus المدخلات */
   box-shadow: 0 0 0 3px rgba(91, 189, 183, 0.15); /* 🔧 نفس box-shadow المدخلات */
   outline: none;
   transform: scale(1.01); /* 🔧 نفس animation المدخلات */

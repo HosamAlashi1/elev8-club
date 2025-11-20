@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { LandingPageComponent } from './landingPage.component';
 
 import { HomeComponent } from './pages/home/home.component';
+import { VideoQuestionsComponent } from './pages/video-questions/video-questions.component';
 
 
 const routes: Routes = [
@@ -17,6 +18,11 @@ const routes: Routes = [
         path: 'home',
         component: HomeComponent,
         data: { animation: 'HomePage' }
+      },
+      {
+        path: 'video-questions',
+        component: VideoQuestionsComponent,
+        data: { animation: 'VideoQuestionsPage' }
       },
     ]
   }

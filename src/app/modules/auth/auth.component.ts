@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 export class AuthComponent {
 
   options = {
-    path: '/assets/json/book-animation.json',
+    path: '/assets/json/trading-animation.json',
     autoplay: true
   };
 }

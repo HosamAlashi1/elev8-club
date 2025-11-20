@@ -1,0 +1,32 @@
+<div
+  *ngIf="isVisible"
+  @slideFade
+  class="live-reg fixed"
+  role="status"
+  aria-live="polite"
+>
+  <div class="box">
+    <div class="left-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="#CFAE58" stroke-width="1.5" fill="none"></circle>
+        <path d="M7.5 12.5l2.5 2.5L16.5 9" stroke="#CFAE58" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="content">
+      <div class="title">
+        <span class="name">{{ registrations[currentIndex].name }}</span>
+        <span class="dash">–</span>
+        <span class="country">{{ registrations[currentIndex].country }}</span>
+      </div>
+      <div class="cta">
+        <span>سجّل الآن</span>
+        <svg class="check-small" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 12.5l3 3L18 7" stroke="#CFAE58" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="pulse" aria-hidden="true"></div>
+  </div>
+</div>

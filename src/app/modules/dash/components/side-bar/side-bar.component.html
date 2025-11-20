@@ -1,19 +1,17 @@
 <div class="mobile-overlay" *ngIf="isMobile && !isCollapsed" (click)="toggleSidebar()"></div>
 <nav [ngClass]="{ sidebar: true, collapsed: isCollapsed }" (click)="onSidebarClick($event)">
   <div class="sidebar-header d-flex align-items-center justify-content-between ps-2 mt-4 mb-4">
-    <a [routerLink]="'/dashboard'" *ngIf="!isCollapsed" class="">
-      <img src="assets/img/landing/logo.svg" alt="Logo" class="logo">
-    </a>
+    <div class="brand-text" *ngIf="!isCollapsed">
+      Elev8 <span>Club</span>
+    </div>
 
     <i class="toggle-icon" [ngClass]="isCollapsed ? 'fe fe-menu' : 'fe fe-chevron-left'" (click)="toggleSidebar()">
     </i>
   </div>
 
   <ul class="nav flex-column">
-    <li *ngFor="let item of menu" 
-    class="nav-item mx-3 my-2"
-    [ngClass]="{ 'has-children': item.children, open: item.open }"
-    [hidden]="!(item.permissions.length === 0 || publicService.hasAnyPermission(item.permissions))">
+    <li *ngFor="let item of menu" class="nav-item mx-3 my-2"
+      [ngClass]="{ 'has-children': item.children, open: item.open }">
 
       <a class="nav-link" [routerLink]="item.children ? null : item.route" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" (click)="handleClick(item)"

@@ -25,44 +25,27 @@ export class SidebarComponent implements OnInit, OnDestroy {
       label: 'Dashboard',
       icon: 'home',
       route: '/dashboard',
-      permissions: [] // الداشبورد مفتوحة لأي مستخدم عامل لوج إن
     },
     {
-      label: 'Admins',
-      icon: 'user-cog',
-      route: '/dashboard/admins',
-      permissions: ['VIEW_ADMINS']
-    },
-    {
-      label: 'Catalog',
-      icon: 'package',
-      route: '/dashboard/catalog',
-      permissions: ['VIEW_BOOKS', 'VIEW_CATEGORIES', 'VIEW_FILES'] // لازم واحدة منهم على الأقل
-    },
-    {
-      label: 'Orders',
-      icon: 'shopping-cart',
-      route: '/dashboard/orders',
-      permissions: ['VIEW_ORDERS']
-    },
-    {
-      label: 'Users',
+      label: 'Affiliates',
       icon: 'users',
-      route: '/dashboard/users',
-      permissions: ['VIEW_AUTHORS', 'VIEW_EDITORS', 'VIEW_CUSTOMERS'] // لازم واحدة منهم على الأقل
+      route: '/dashboard/affiliates',
     },
     {
-      label: 'Reports',
-      icon: 'bar-chart-2',
-      route: '/dashboard/reports',
-      permissions: ['MANAGE_LOGS']
+      label: 'Leads',
+      icon: 'user-check',
+      route: '/dashboard/leads',
     },
-    {
-      label: 'Settings',
-      icon: 'settings',
-      route: '/dashboard/settings',
-      permissions: ['MANAGE_ROLES']
-    }
+    // {
+    //   label: 'Admins',
+    //   icon: 'user-cog',
+    //   route: '/dashboard/admins',
+    // },
+    // {
+    //   label: 'Settings',
+    //   icon: 'settings',
+    //   route: '/dashboard/settings',
+    // }
   ];
 
   constructor(
@@ -70,21 +53,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     public publicService: PublicService,
     private router: Router,
-    private httpService: HttpService,
-    private api: ApiAdminService
   ) { }
 
   ngOnInit(): void {
     this.onResize();
     this.user = this.publicService.getUserData();
-    this.getUnreadContactMessagesCount();
-    this.getUnreadOrdersCount();
-
-    // تحديث العداد كل 30 ثانية
-    this.countUpdateInterval = setInterval(() => {
-      this.getUnreadContactMessagesCount();
-      this.getUnreadOrdersCount();
-    }, 30000);
 
     // استمع لتغيير التنقل واضبط القائمة تلقائيًا
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
@@ -132,7 +105,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   /** تسجيل الخروج */
   logout(): void {
-    this.authService.logout();
+    this.authService.SignOut();
   }
 
   /** تبديل حالة السايدبار */
@@ -150,16 +123,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   /** عند الضغط على عنصر فيه children */
   handleClick(item: any): void {
-
-    // إذا كان الرابط هو رسائل الاتصال، قم بتعليم جميع الرسائل كمقروئة
-    if (item.route === '/dashboard/contact-messages') {
-      this.markAllContactMessagesAsRead();
-    }
-
-    // إذا كان الرابط هو الطلبات، قم بتعليم جميع الطلبات كمقروئة
-    if (item.route === '/dashboard/orders') {
-      this.markAllOrdersAsRead();
-    }
 
     if (item.children) {
       if (this.isCollapsed) {
@@ -185,74 +148,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.menu.forEach(i => {
       if (i !== item && i.children) {
         i.open = false;
-      }
-    });
-  }
-
-  /** التحقق إذا كان العنصر هو رسائل الاتصال لإظهار العدد */
-  isContactMessagesItem(item: any): boolean {
-    return item.route === '/dashboard/contact-messages';
-  }
-
-  /** التحقق إذا كان العنصر هو الطلبات لإظهار العدد */
-  isOrdersItem(item: any): boolean {
-    return item.route === '/dashboard/orders';
-  }
-
-  /** تعليم جميع رسائل الاتصال كمقروئة عند الضغط على رابط رسائل الاتصال */
-  markAllContactMessagesAsRead(): void {
-    const url = `${this.api.contactMessages.markAllRead}`;
-    this.httpService.action(url, {}, 'markAllContactMessagesReadFromSidebar').subscribe({
-      next: (res: any) => {
-        // تم تعليم جميع رسائل الاتصال كمقروئة بصمت
-        this.unreadContactMessagesCount = 0; // إخفاء العدد
-      },
-      error: () => {
-        // يمكن إضافة معالجة للأخطاء هنا إذا لزم الأمر
-      }
-    });
-  }
-
-  /** جلب عدد رسائل الاتصال غير المقروئة */
-  getUnreadContactMessagesCount(): void {
-    const url = `${this.api.contactMessages.unreadCount}`;
-    this.httpService.listGet(url, 'unreadContactMessagesCountSidebar').subscribe({
-      next: (res: any) => {
-        if (res?.status && res?.data) {
-          this.unreadContactMessagesCount = res.data.unread_count;
-        }
-      },
-      error: () => {
-        console.error('Failed to get unread contact messages count');
-      }
-    });
-  }
-
-  /** تعليم جميع الطلبات كمقروئة عند الضغط على رابط الطلبات */
-  markAllOrdersAsRead(): void {
-    const url = `${this.api.orders.markAllRead}`;
-    this.httpService.action(url, {}, 'markAllOrdersReadFromSidebar').subscribe({
-      next: (res: any) => {
-        // تم تعليم جميع الطلبات كمقروئة بصمت
-        this.unreadOrdersCount = 0; // إخفاء العدد
-      },
-      error: () => {
-        // يمكن إضافة معالجة للأخطاء هنا إذا لزم الأمر
-      }
-    });
-  }
-
-  /** جلب عدد الطلبات غير المقروءة */
-  getUnreadOrdersCount(): void {
-    const url = `${this.api.orders.unreadCount}`;
-    this.httpService.listGet(url, 'unreadOrdersCountSidebar').subscribe({
-      next: (res: any) => {
-        if (res?.status && res?.data) {
-          this.unreadOrdersCount = res.data.unread_count;
-        }
-      },
-      error: () => {
-        console.error('Failed to get unread orders count');
       }
     });
   }

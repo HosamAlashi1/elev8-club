@@ -58,23 +58,23 @@ export class PublicService {
     return deviceId;
   }
 
-  async getFCMToken(): Promise<string | null> {
-    try {
-      const messaging = getMessaging(app);
-      const token = await getToken(messaging, {
-        vapidKey: environment.firebase.vapidKey,
-      });
+  // async getFCMToken(): Promise<string | null> {
+  //   try {
+  //     const messaging = getMessaging(app);
+  //     const token = await getToken(messaging, {
+  //       vapidKey: environment.firebase.vapidKey,
+  //     });
 
-      if (token) {
-        localStorage.setItem(`${environment.prefix}-fcm-token`, token);
-        return token;
-      }
+  //     if (token) {
+  //       localStorage.setItem(`${environment.prefix}-fcm-token`, token);
+  //       return token;
+  //     }
 
-      return null;
-    } catch (error) {
-      return null;
-    }
-  }
+  //     return null;
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // }
 
   public getAuthToken(): string | null {
     const data = this.decryptStorage();

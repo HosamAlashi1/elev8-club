@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LandingService, LandingPageData } from '../../../services/landing.service';
 
@@ -42,17 +42,46 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   showContent = false;
 
+  // Trading Animation Data
+  candlesticks: Array<{position: number, delay: number, bullish: boolean}> = [];
+  priceParticles: Array<{x: number, y: number, delay: number, value: string, isProfit: boolean}> = [];
+  volumeBars: Array<{position: number, height: number, delay: number, isHigh: boolean}> = [];
+  marketTickers: Array<{symbol: string, price: string, change: number}> = [];
+  buyOrders: Array<{width: number, delay: number}> = [];
+  sellOrders: Array<{width: number, delay: number}> = [];
+  buySignals: Array<{x: number, y: number, delay: number}> = [];
+  sellSignals: Array<{x: number, y: number, delay: number}> = [];
+  
+  private animationInterval: any;
+  
+  // لحفظ ref code
+  affiliateCode: string | null = null;
+
   constructor(
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    // قراءة ref code من الـ URL
+    this.route.queryParams.subscribe(params => {
+      this.affiliateCode = params['ref'] || null;
+      // حفظ الكود في localStorage للحفاظ عليه
+      if (this.affiliateCode) {
+        localStorage.setItem('affiliateCode', this.affiliateCode);
+      }
+    });
+
     // إخفاء اللودر (إن وجد في index)
     this.hideInitialLoader();
     
     // إضافة scroll effect للخلفية
     this.initScrollAnimation();
+    
+    // Initialize trading animations
+    this.initTradingAnimations();
+    this.startAnimationUpdates();
   }
   
   private initScrollAnimation(): void {
@@ -89,7 +118,84 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.cd.detectChanges();
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+    }
+  }
+  
+  private initTradingAnimations(): void {
+    // Generate candlesticks
+    this.candlesticks = Array.from({length: 12}, (_, i) => ({
+      position: 5 + (i * 7.5),
+      delay: i * 0.3,
+      bullish: Math.random() > 0.5
+    }));
+    
+    // Generate price particles
+    this.priceParticles = Array.from({length: 20}, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 5,
+      value: Math.random() > 0.5 ? `+${(Math.random() * 5).toFixed(2)}%` : `$${(Math.random() * 1000 + 500).toFixed(0)}`,
+      isProfit: Math.random() > 0.5
+    }));
+    
+    // Generate volume bars
+    this.volumeBars = Array.from({length: 30}, (_, i) => ({
+      position: i * 3.3,
+      height: 20 + Math.random() * 60,
+      delay: i * 0.1,
+      isHigh: Math.random() > 0.6
+    }));
+    
+    // Market tickers
+    this.marketTickers = [
+      {symbol: 'BTC/USD', price: '$42,150', change: 2.34},
+      {symbol: 'ETH/USD', price: '$3,250', change: -1.21},
+      {symbol: 'GOLD', price: '$2,045', change: 0.85},
+      {symbol: 'EUR/USD', price: '1.0850', change: -0.45},
+      {symbol: 'S&P 500', price: '4,567', change: 1.12},
+      {symbol: 'NASDAQ', price: '14,230', change: 1.85},
+      {symbol: 'OIL', price: '$78.50', change: -2.10}
+    ];
+    
+    // Order book
+    this.buyOrders = Array.from({length: 8}, () => ({
+      width: 30 + Math.random() * 50,
+      delay: Math.random() * 2
+    }));
+    
+    this.sellOrders = Array.from({length: 8}, () => ({
+      width: 30 + Math.random() * 50,
+      delay: Math.random() * 2
+    }));
+    
+    // Trading signals
+    this.buySignals = Array.from({length: 4}, () => ({
+      x: 10 + Math.random() * 80,
+      y: 20 + Math.random() * 60,
+      delay: Math.random() * 4
+    }));
+    
+    this.sellSignals = Array.from({length: 4}, () => ({
+      x: 10 + Math.random() * 80,
+      y: 20 + Math.random() * 60,
+      delay: Math.random() * 4
+    }));
+  }
+  
+  private startAnimationUpdates(): void {
+    this.animationInterval = setInterval(() => {
+      // Update market tickers with random changes
+      this.marketTickers = this.marketTickers.map(ticker => ({
+        ...ticker,
+        change: ticker.change + (Math.random() - 0.5) * 0.5
+      }));
+      
+      this.cd.detectChanges();
+    }, 3000);
+  }
 
   ngAfterViewInit(): void {
     this.cd.detectChanges();

@@ -1,12 +1,19 @@
 <div class="bg-auth p-5 border rounded-4 shadow-sm">
+
   <h1 class="display-4 text-center mb-3">Sign in</h1>
   <p class="text-muted text-center mb-5">Please enter login information</p>
 
-  <form [formGroup]="form" novalidate (ngSubmit)="submit()">
-    <ngb-alert *ngIf="uiState().message" [type]="uiState().type" (closed)="showmessage(false, '')">
-      {{ uiState().message }}
+  <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+
+    <!-- Alert -->
+    <ngb-alert 
+      *ngIf="message" 
+      [type]="messageType" 
+      (closed)="showMsg(false, '')">
+      {{ message }}
     </ngb-alert>
 
+    <!-- Email -->
     <div class="form-group mb-3">
       <label class="form-label">E-mail :</label>
       <input
@@ -15,12 +22,13 @@
         formControlName="email"
         placeholder="Enter your email"
         [ngClass]="{
-          'is-invalid': uiState().submitted && f['email'].invalid,
-          'is-valid': uiState().submitted && f['email'].valid
+          'is-invalid': f.email.invalid && loginForm.touched,
+          'is-valid': f.email.valid && loginForm.touched
         }"
       />
     </div>
 
+    <!-- Password -->
     <div class="form-group mb-4">
       <label class="form-label">Password :</label>
       <input
@@ -29,24 +37,27 @@
         formControlName="password"
         placeholder="Enter your password"
         [ngClass]="{
-          'is-invalid': uiState().submitted && f['password'].invalid,
-          'is-valid': uiState().submitted && f['password'].valid
+          'is-invalid': f.password.invalid && loginForm.touched,
+          'is-valid': f.password.valid && loginForm.touched
         }"
       />
     </div>
 
+    <!-- Submit -->
     <button
       type="submit"
       class="btn btn-lg w-100 btn-custom"
-      [disabled]="(authService.isAuthLoading$ | async)"
+      [disabled]="isLoginLoading"
     >
-      <ng-container *ngIf="(authService.isAuthLoading$ | async); else notLoading">
-        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-        <span>Signing in ...</span>
+      <ng-container *ngIf="isLoginLoading; else ready">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Signing in...
       </ng-container>
-      <ng-template #notLoading>
-        <span>Sign in</span>
+
+      <ng-template #ready>
+        Sign in
       </ng-template>
     </button>
+
   </form>
 </div>

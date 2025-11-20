@@ -4,14 +4,13 @@ export const environment = {
   prefix: 'Elev8 Club-dev',
   cryptoKey: 'Elev8 ClubSuperSecretKey123',
   firebase: {
-    apiKey: "AIzaSyAPX-kca3_cIjki2AIEg8mi5MUJUbGz8_8",
-    authDomain: "Elev8 Club-audio.firebaseapp.com",
-    projectId: "Elev8 Club-audio",
-    storageBucket: "Elev8 Club-audio.firebasestorage.app",
-    messagingSenderId: "1044486499990",
-    appId: "1:1044486499990:web:bb16a44aaed6f409991cb7",
-    measurementId: "G-ZCFC8J61Q5",
-    vapidKey: "BOCKlWpxx6d0Qd6IWbSkusFFotE__CEZ8P-WmcOE-Cx5FfDhk7O1p0PsZT8JKyOKYfdb-3ZVXeDusT8Pq-bBXko",
-    // clientId: '74191178738-k7o1c5guvbgdoc58ugmnhl90vs233rbv.apps.googleusercontent.com'
+    apiKey: "AIzaSyAssOG7bw4BGipTDITaOdbdsRfwctu5MaY",
+    authDomain: "elev8-club.firebaseapp.com",
+    databaseURL: "https://elev8-club-default-rtdb.firebaseio.com",
+    projectId: "elev8-club",
+    storageBucket: "elev8-club.firebasestorage.app",
+    messagingSenderId: "642324793888",
+    appId: "1:642324793888:web:e2e27e218dd60c7d5aca45",
+    measurementId: "G-H4HYFB0DNV"
   }
 };

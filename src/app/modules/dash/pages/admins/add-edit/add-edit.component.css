@@ -1,5 +1,5 @@
 .drag-over {
-  border-color: #5BBDB7 !important;
+  border-color: #CFAE58 !important;
   background-color: #f0fdfa;
   /* أخضر فاتح يوحي بقبول الملف */
 }
@@ -11,7 +11,7 @@
 }
 
 .upload-box.drag-over {
-  border-color: #5BBDB7 !important;
+  border-color: #CFAE58 !important;
   background-color: #f0fdfa;
   /* أخضر فاتح */
 }

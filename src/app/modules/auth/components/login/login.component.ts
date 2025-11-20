@@ -1,10 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { ToastrsService } from '../../../services/toater.service';
-import { environment } from 'src/environments/environment';
-import * as CryptoJS from 'crypto-js';
+import { Router } from '@angular/router';
+import { FirebaseService } from 'src/app/modules/services/firebase.service';
 
 @Component({
   selector: 'app-login',
@@ -13,80 +11,65 @@ import * as CryptoJS from 'crypto-js';
 })
 export class LoginComponent implements OnInit {
 
-  form: ReturnType<FormBuilder['group']>;
-  uiState = signal({
-    submitted: false,
-    message: '',
-    type: 'success' as 'success' | 'danger'
-  });
+  loginForm: FormGroup;
+  message: string;
+  messageType: string;
+  isLoginLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    public authService: AuthService,
-    private toast: ToastrsService
+    private ngZone: NgZone,
+    private authService: AuthService,
+    private service: FirebaseService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+    this.loginForm = this.fb.group({
+      email: [null, [Validators.required, Validators.email]],
+      password: [null, Validators.required]
     });
   }
 
   get f() {
-    return this.form.controls;
+    return this.loginForm.controls;
   }
 
-  showmessage(success: boolean, message: string) {
-    this.uiState.update(state => ({
-      ...state,
-      message: message,
-      type: success ? 'success' : 'danger'
-    }));
+  showMsg(success: boolean, msg: string) {
+    this.message = msg;
+    this.messageType = success ? 'success' : 'danger';
+    this.changeDetectorRef.detectChanges();
   }
-
   submit() {
-    this.uiState.update(state => ({ ...state, submitted: true }));
+    this.message = '';
+    this.messageType = '';
+    this.isLoginLoading = true;
 
-    if (this.form.valid) {
-      const { email, password } = this.form.value;
-      this.showmessage(false, '');
+    this.authService.SignIn(this.f.email.value, this.f.password.value)
+      .then((res: any) => {
+        const user = res.user;
 
-      this.authService.login(email, password ,1).subscribe({ // 1 for admin login , 2 for author , 3 for editor , 4 for customer login
-        next: (res: any) => {
-          if (res?.status === true && res?.data?.access_token) {
-            // Prepare data
-            const payload = {
-              user: res.data.data,
-              token: res.data.access_token,
-              permissions: res.data.permissions
-            };
-
-            // Encrypt before saving
-            const encrypted = CryptoJS.AES.encrypt(
-              JSON.stringify(payload),
-              environment.cryptoKey
-            ).toString();
-
-            localStorage.setItem(`${environment.prefix}-data`, encrypted);
-
-            this.router.navigate(['/dashboard']);
-          } else {
-            this.showmessage(false, res?.message ?? 'Login failed');
-          }
-        },
-        error: (err: any) => {
-          if (err.status === 422) {
-            this.showmessage(false, 'The credentials you entered are incorrect.');
-          } else if (err?.response?.message) {
-            this.showmessage(false, err.errormessage);
-          } else {
-            this.showmessage(false, 'Something went wrong. Please try again.');
-          }
+        if (!user.emailVerified) {  
+          this.authService.SendVerificationMail();
+          this.showMsg(false, 'Please verify your email.');
+          this.isLoginLoading = false;
+          return;
         }
+
+        localStorage.setItem('elev8-club-data', JSON.stringify(user));
+        this.ngZone.run(() => {
+          this.router.navigate(['/dashboard']);
+        });
+
+      }).catch((error) => {
+        console.error(error);
+        this.showMsg(false, 'Wrong email or password.');
+        this.isLoginLoading = false;
       });
-    }
   }
+
+
+
 
 }

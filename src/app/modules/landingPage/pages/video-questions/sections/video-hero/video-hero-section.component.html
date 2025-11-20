@@ -1,0 +1,111 @@
+<section class="video-hero-section">
+  <div class="container">
+    
+    <!-- Title -->
+    <div [@fadeInUp]="{ value: '', params: { delay: 200 } }" class="title-wrapper" data-aos="fade-up" data-aos-duration="800">
+      <h2 class="main-title">
+        قم بمشاهدة الفيديو والإجابة على الأسئلة بالأسفل
+      </h2>
+      <h2 class="sub-title">
+        لاكتمال اشتراكك
+      </h2>
+    </div>
+
+    <!-- Video Container -->
+    <div [@scaleIn] class="video-container" 
+         (mouseenter)="showControls = true" 
+         (mouseleave)="showControls = false"
+         data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="200">
+      
+      <video 
+        #videoPlayer
+        class="video-player"
+        [class.playing]="isPlaying"
+        (click)="togglePlay()">
+        <source src="assets/videos/video1.mp4" type="video/mp4">
+        المتصفح الخاص بك لا يدعم تشغيل الفيديو.
+      </video>
+
+      <!-- Play Button Overlay -->
+      <div class="play-overlay" *ngIf="!isPlaying" (click)="togglePlay()">
+        <div class="play-button">
+          <svg class="play-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+          </svg>
+        </div>
+        <p class="play-text">انقر لتشغيل الفيديو</p>
+      </div>
+
+      <!-- Custom Controls -->
+      <div class="video-controls" [class.visible]="showControls || !isPlaying">
+        
+        <!-- Progress Bar -->
+        <div class="progress-container" (click)="seek($event)">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progress"></div>
+          </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="controls-row">
+          
+          <!-- Right Side (RTL) - Play/Pause & Time -->
+          <div class="controls-group controls-right">
+            <button class="control-btn play-btn" (click)="togglePlay()" aria-label="تشغيل/إيقاف">
+              <svg *ngIf="!isPlaying" class="icon" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+              </svg>
+              <svg *ngIf="isPlaying" class="icon" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zM12.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z" />
+              </svg>
+            </button>
+
+            <!-- Time Display -->
+            <span class="time-display">
+              {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+            </span>
+          </div>
+
+          <!-- Left Side (RTL) - Volume & Fullscreen -->
+          <div class="controls-group controls-left">
+            
+            <!-- Fullscreen -->
+            <button class="control-btn fullscreen-btn" (click)="toggleFullscreen()" aria-label="ملء الشاشة">
+              <svg *ngIf="!isFullscreen" class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              </svg>
+              <svg *ngIf="isFullscreen" class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+              </svg>
+            </button>
+
+            <!-- Volume Control -->
+            <div class="volume-control">
+              <button class="control-btn volume-btn" (click)="toggleMute()" aria-label="كتم الصوت">
+                <svg *ngIf="!isMuted && volume > 0.5" class="icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.5 3.75a.75.75 0 00-1.264-.546L5.203 7H2.667a.75.75 0 00-.75.75v4.5c0 .414.336.75.75.75h2.536l4.033 3.796a.75.75 0 001.264-.546V3.75zM16.713 7.51a.75.75 0 10-1.026 1.094 3.75 3.75 0 010 2.812.75.75 0 101.026 1.094 5.25 5.25 0 000-4.999z" />
+                  <path d="M18.596 5.106a.75.75 0 00-1.06 1.061 6.75 6.75 0 010 9.546.75.75 0 001.06 1.06 8.25 8.25 0 000-11.667z" />
+                </svg>
+                <svg *ngIf="!isMuted && volume <= 0.5 && volume > 0" class="icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.5 3.75a.75.75 0 00-1.264-.546L5.203 7H2.667a.75.75 0 00-.75.75v4.5c0 .414.336.75.75.75h2.536l4.033 3.796a.75.75 0 001.264-.546V3.75zM14.738 7.51a.75.75 0 10-1.026 1.094 3.75 3.75 0 010 2.812.75.75 0 101.026 1.094 5.25 5.25 0 000-4.999z" />
+                </svg>
+                <svg *ngIf="isMuted || volume === 0" class="icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.5 3.75a.75.75 0 00-1.264-.546L5.203 7H2.667a.75.75 0 00-.75.75v4.5c0 .414.336.75.75.75h2.536l4.033 3.796a.75.75 0 001.264-.546V3.75zM14.97 5.47a.75.75 0 00-1.06 1.06L15.44 8l-1.53 1.47a.75.75 0 101.06 1.06l1.47-1.53 1.47 1.53a.75.75 0 101.06-1.06L16.44 8l1.53-1.47a.75.75 0 00-1.06-1.06l-1.47 1.53-1.47-1.53z" />
+                </svg>
+              </button>
+              <input 
+                type="range" 
+                class="volume-slider" 
+                min="0" 
+                max="1" 
+                step="0.1" 
+                [value]="volume"
+                (input)="changeVolume($event)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
