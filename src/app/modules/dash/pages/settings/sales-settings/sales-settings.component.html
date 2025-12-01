@@ -1,0 +1,72 @@
+<div class="sales-settings">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">Sales Items</h3>
+    <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+      <i class="fe fe-plus"></i>
+      Add Sales Item
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="row g-3">
+    <div class="col-md-6 col-lg-4" *ngFor="let _ of [].constructor(3)">
+      <div class="sales-card">
+        <ngx-skeleton-loader count="2" appearance="line" [theme]="{ width: '55%', height: '16px', 'border-radius': '6px' }"></ngx-skeleton-loader>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Items Grid -->
+  <div *ngIf="!isLoading" class="row g-3">
+    <div class="col-md-6 col-lg-4" *ngFor="let item of salesItems">
+      <div class="sales-card">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="flex-grow-1">
+            <label class="card-label">WhatsApp Number</label>
+            <div class="whatsapp-number">
+              <i class="fe fe-phone me-2 text-success"></i>
+              {{ item.whatsapp_number }}
+            </div>
+          </div>
+          <div class="btn-group dropstart">
+            <span data-bs-toggle="dropdown" aria-expanded="false" role="button" class="action-icon">
+              <i class="fe fe-more-vertical"></i>
+            </span>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" (click)="edit(item)">
+                  <i class="fe fe-edit me-2"></i>
+                  Edit
+                </a>
+              </li>
+              <li>
+                <hr class="m-2" />
+              </li>
+              <li>
+                <a class="dropdown-item text-danger" (click)="delete(item)">
+                  <i class="fe fe-trash-2 me-2"></i>
+                  Delete
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!isLoading && salesItems.length === 0" class="empty-state">
+    <i class="fe fe-inbox empty-icon"></i>
+    <p class="text-muted mb-0">No sales items found</p>
+    <small class="text-muted">Click "Add Sales Item" to create one</small>
+  </div>
+
+  <!-- Footer -->
+  <div *ngIf="!isLoading && salesItems.length > 0" class="mt-4">
+    <small class="text-muted">
+      Total: {{ salesItems.length }} sales item{{ salesItems.length !== 1 ? 's' : '' }}
+    </small>
+  </div>
+</div>

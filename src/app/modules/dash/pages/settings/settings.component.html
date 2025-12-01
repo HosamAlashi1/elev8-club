@@ -7,55 +7,19 @@
       <button
         #tabBtn
         class="tab-btn"
-        [class.active]="activeTab === 'store-info'"
-        (click)="setTab('store-info')"
+        [class.active]="activeTab === 'sales-settings'"
+        (click)="setTab('sales-settings')"
         data-aos="fade-up" data-aos-delay="300">
-        Store Info
+        Sales Settings
       </button>
 
       <button
         #tabBtn
         class="tab-btn"
-        [class.active]="activeTab === 'payments'"
-        (click)="setTab('payments')"
+        [class.active]="activeTab === 'general-settings'"
+        (click)="setTab('general-settings')"
         data-aos="fade-up" data-aos-delay="350">
-        Payments
-      </button>
-
-      <button
-        #tabBtn
-        class="tab-btn"
-        [class.active]="activeTab === 'shipping'"
-        (click)="setTab('shipping')"
-        data-aos="fade-up" data-aos-delay="400">
-        Shipping
-      </button>
-
-      <button
-        #tabBtn
-        class="tab-btn"
-        [class.active]="activeTab === 'taxes'"
-        (click)="setTab('taxes')"
-        data-aos="fade-up" data-aos-delay="450">
-        Taxes
-      </button>
-
-      <button
-        #tabBtn
-        class="tab-btn"
-        [class.active]="activeTab === 'constants'"
-        (click)="setTab('constants')"
-        data-aos="fade-up" data-aos-delay="500">
-        Constants
-      </button>
-
-      <button
-        #tabBtn
-        class="tab-btn"
-        [class.active]="activeTab === 'roles-permissions'"
-        (click)="setTab('roles-permissions')"
-        data-aos="fade-up" data-aos-delay="550">
-        Roles & permissions
+        General Settings
       </button>
 
       <!-- Underline المتحرك -->
@@ -67,28 +31,12 @@
 
     <!-- Tab content -->
     <div class="tab-content p-4" [@tabSlide]="activeTab" data-aos="fade-in" data-aos-delay="600">
-      <ng-container *ngIf="activeTab === 'store-info'">
-        <app-store-info></app-store-info>
+      <ng-container *ngIf="activeTab === 'sales-settings'">
+        <app-sales-settings></app-sales-settings>
       </ng-container>
 
-      <ng-container *ngIf="activeTab === 'payments'">
-        <app-payments></app-payments>
-      </ng-container>
-
-      <ng-container *ngIf="activeTab === 'shipping'">
-        <app-shipping></app-shipping>
-      </ng-container>
-
-      <ng-container *ngIf="activeTab === 'taxes'">
-        <app-taxes></app-taxes>
-      </ng-container>
-
-      <ng-container *ngIf="activeTab === 'constants'">
-        <app-constants></app-constants>
-      </ng-container>
-
-      <ng-container *ngIf="activeTab === 'roles-permissions'">
-        <app-roles-permissions></app-roles-permissions>
+      <ng-container *ngIf="activeTab === 'general-settings'">
+        <app-general-settings></app-general-settings>
       </ng-container>
     </div>
   </div>

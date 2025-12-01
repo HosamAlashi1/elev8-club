@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { ActivatedRoute } from '@angular/router';
+import { MetaPixelService } from '../../../../../services/meta-pixel.service';
 
 @Component({
   selector: 'app-video-hero-section',
@@ -32,9 +34,20 @@ export class VideoHeroSectionComponent implements OnInit {
   isFullscreen = false;
   progress = 0;
 
-  constructor() { }
+  private leadKey: string | null = null;
+  private hasTrackedPlay = false;
+  private hasTrackedComplete = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private metaPixel: MetaPixelService
+  ) { }
 
   ngOnInit(): void {
+    // Get leadKey from URL params
+    this.route.queryParams.subscribe(params => {
+      this.leadKey = params['lead'] || null;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -47,10 +60,22 @@ export class VideoHeroSectionComponent implements OnInit {
     video.addEventListener('timeupdate', () => {
       this.currentTime = video.currentTime;
       this.progress = (video.currentTime / video.duration) * 100;
+      
+      // Stage 8: Track Video Complete (when 95% watched)
+      if (this.progress >= 95 && !this.hasTrackedComplete) {
+        this.metaPixel.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
+        this.hasTrackedComplete = true;
+      }
     });
 
     video.addEventListener('ended', () => {
       this.isPlaying = false;
+      
+      // Stage 8: Track Video Complete (if not already tracked)
+      if (!this.hasTrackedComplete) {
+        this.metaPixel.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
+        this.hasTrackedComplete = true;
+      }
     });
   }
 
@@ -60,6 +85,12 @@ export class VideoHeroSectionComponent implements OnInit {
       video.pause();
     } else {
       video.play();
+      
+      // Stage 8: Track Video Play (first play only)
+      if (!this.hasTrackedPlay) {
+        this.metaPixel.trackVideoPlay('challenge_intro_video', this.leadKey || undefined);
+        this.hasTrackedPlay = true;
+      }
     }
     this.isPlaying = !this.isPlaying;
   }

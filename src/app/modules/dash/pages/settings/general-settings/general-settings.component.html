@@ -1,0 +1,80 @@
+<div class="general-settings">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Settings Form -->
+  <div *ngIf="!isLoading" class="settings-form">
+    <div class="row g-4">
+      <!-- Sender Email -->
+      <div class="col-md-6">
+        <label class="form-label">Sender Email <span class="text-danger">*</span></label>
+        <input 
+          type="email" 
+          class="form-control" 
+          [(ngModel)]="settings.sender_email">
+        <small class="text-muted d-block mt-1">Current: {{ settings.sender_email || 'Not set' }}</small>
+      </div>
+
+      <!-- Sender Name -->
+      <div class="col-md-6">
+        <label class="form-label">Sender Name <span class="text-danger">*</span></label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="settings.sender_name">
+        <small class="text-muted d-block mt-1">Current: {{ settings.sender_name || 'Not set' }}</small>
+      </div>
+
+      <!-- SendGrid Key -->
+      <div class="col-md-12">
+        <label class="form-label">SendGrid Key</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="settings.sendgrid_key">
+        <small class="text-muted d-block mt-1">Current: {{ settings.sendgrid_key ? '••••••••••••' + settings.sendgrid_key.slice(-8) : 'Not set' }}</small>
+      </div>
+
+      <!-- Start Counter Date -->
+      <div class="col-md-6">
+        <label class="form-label">Start Counter Date</label>
+        <input 
+          type="datetime-local" 
+          class="form-control" 
+          [(ngModel)]="startCounterDateLocal">
+        <small class="text-muted d-block mt-1">Current: {{ startCounterDateLocal || 'Not set' }}</small>
+      </div>
+
+      <!-- WhatsApp Link -->
+      <div class="col-md-6">
+        <label class="form-label">WhatsApp Link</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="settings.whatsapp_link">
+        <small class="text-muted d-block mt-1">Current: {{ settings.whatsapp_link || 'Not set' }}</small>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-4 text-end">
+      <button 
+        class="btn btn-custom px-4" 
+        (click)="saveSettings()"
+        [disabled]="isSaving">
+        <span *ngIf="!isSaving">
+          <i class="bi bi-check-circle me-2"></i>
+          Save Changes
+        </span>
+        <span *ngIf="isSaving">
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Saving...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

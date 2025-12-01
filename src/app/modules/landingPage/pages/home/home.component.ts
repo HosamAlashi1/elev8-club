@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrateg
 import { RouterOutlet, ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LandingService, LandingPageData } from '../../../services/landing.service';
+import { MetaPixelService } from '../../../services/meta-pixel.service';
 
 @Component({
   selector: 'app-home',
@@ -60,7 +61,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private metaPixel: MetaPixelService
   ) {}
 
   ngOnInit(): void {
@@ -106,11 +108,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   // حالة فتح/إغلاق الـ modal
   isRegistrationPopupOpen = false;
 
-  // فتح نافذة التسجيل
-  openRegistrationPopup = () => {
+  // فتح نافذة التسجيل (Base Method)
+  private openRegistrationPopup = (source: string = 'unknown') => {
     this.isRegistrationPopupOpen = true;
+    
+    // Stage 3: Track Lead Intent (Opening Registration Modal)
+    this.metaPixel.trackLeadIntent(source, {
+      affiliate_code: this.affiliateCode || 'none'
+    });
+    
     this.cd.detectChanges();
   }
+
+  // Wrapper Methods for Each Section
+  openPopupFromHero = () => this.openRegistrationPopup('hero');
+  openPopupFromFeatures = () => this.openRegistrationPopup('features');
+  openPopupFromBeforeAfter = () => this.openRegistrationPopup('before_after');
+  openPopupFromJourney = () => this.openRegistrationPopup('journey');
+  openPopupFromVideoTestimonials = () => this.openRegistrationPopup('video_testimonials');
+  openPopupFromSuitableCheck = () => this.openRegistrationPopup('suitable_check');
+  openPopupFromWrittenTestimonials = () => this.openRegistrationPopup('written_testimonials');
+  openPopupFromBigCta = () => this.openRegistrationPopup('big_cta');
 
   // إغلاق نافذة التسجيل
   closeRegistrationPopup = () => {

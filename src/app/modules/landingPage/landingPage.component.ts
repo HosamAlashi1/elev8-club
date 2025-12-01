@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AnimationOptions } from 'ngx-lottie';
 import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOverlayService.service';
 import { LandingService } from '../services/landing.service';
+import { MetaPixelService } from '../services/meta-pixel.service';
 
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-landing-page',
@@ -23,7 +25,6 @@ export class LandingPageComponent implements OnInit {
   currentYear: number;
   lottieConfig: LottieOverlayConfig = { visible: false, options: { path: '' } };
 
-  // Properties for layout data
   pre: any = null;
   settings: { [key: string]: string } = {};
   showContent = false;
@@ -32,15 +33,37 @@ export class LandingPageComponent implements OnInit {
     private lottieService: LottieOverlayService,
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
+    private router: Router,
+    private metaPixel: MetaPixelService,
   ) {
     this.lottieService.state$.subscribe(config => this.lottieConfig = config);
     this.currentYear = new Date().getFullYear();
   }
 
   ngOnInit(): void {
-    // فرض اتجاه LTR للوحة التحكم
     this.enforceDashboardDirection();
 
+    // تتبّع الصفحات داخل اللاندينج فقط
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      )
+      .subscribe((event) => {
+        const url = event.urlAfterRedirects;
+
+        // Stage 1: PageView رسمي
+        this.metaPixel.trackPageView(url);
+
+        // Stage 2: ViewContent - الصفحة الأولى (الخطوة 1)
+        if (url.includes('/home')) {
+          this.metaPixel.trackViewContent(1, 'landing_step_1', { page_name: 'Home' });
+        }
+
+        // Stage 2: ViewContent - الصفحة الثانية (الخطوة 2)
+        if (url.includes('/video-questions')) {
+          this.metaPixel.trackViewContent(2, 'landing_step_2', { page_name: 'Video Questions' });
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -51,9 +74,6 @@ export class LandingPageComponent implements OnInit {
     return outlet?.activatedRouteData?.['animation'];
   }
 
-  /**
-   * Force LTR direction for dashboard
-   */
   private enforceDashboardDirection(): void {
     const htmlElement = document.documentElement;
     const bodyElement = document.body;
@@ -61,11 +81,5 @@ export class LandingPageComponent implements OnInit {
     htmlElement.dir = 'ltr';
     htmlElement.lang = 'en';
     bodyElement.classList.remove('rtl-mode', 'arabic-font');
-  }
-
-
-  private hideInitialLoader(): void {
-    const loader = document.getElementById('lottie-loader');
-    if (loader) loader.style.display = 'none';
   }
 }

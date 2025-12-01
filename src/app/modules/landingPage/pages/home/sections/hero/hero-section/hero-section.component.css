@@ -441,10 +441,60 @@
 /* العدّاد */
 .hero-countdown {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* Countdown Status Label */
+.countdown-status-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #CFAE58;
+  text-align: center;
+  padding: 8px 24px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, rgba(207, 174, 88, 0.1), rgba(207, 174, 88, 0.05));
+  border: 1px solid rgba(207, 174, 88, 0.3);
+  animation: labelGlow 2s ease-in-out infinite;
+}
+
+.countdown-status-label.not-started {
+  color: #FFD700;
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.countdown-status-label.active {
+  color: #4CAF50;
+  border-color: rgba(76, 175, 80, 0.4);
+  animation: labelGlowActive 2s ease-in-out infinite;
+}
+
+@keyframes labelGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(207, 174, 88, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(207, 174, 88, 0.4);
+  }
+}
+
+@keyframes labelGlowActive {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  }
+}
+
+/* Countdown Cards Wrapper */
+.countdown-cards-wrapper {
+  display: flex;
   justify-content: center;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 32px;
 }
 
 .countdown-card {
@@ -539,6 +589,49 @@
   background: #cfad58c5;
 }
 
+/* Challenge Ended Message */
+.challenge-ended {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 30px;
+  margin-bottom: 32px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(207, 174, 88, 0.08), rgba(207, 174, 88, 0.03));
+  border: 2px solid rgba(207, 174, 88, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.ended-icon {
+  font-size: 4rem;
+  animation: iconBounce 2s ease-in-out infinite;
+}
+
+.ended-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #CFAE58;
+  margin: 0;
+}
+
+.ended-text {
+  font-size: 1.1rem;
+  color: #a7aab3;
+  margin: 0;
+  max-width: 400px;
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .hero-section {
@@ -551,12 +644,37 @@
   }
 
   .hero-countdown {
+    gap: 16px;
+  }
+
+  .countdown-status-label {
+    font-size: 1rem;
+    padding: 6px 18px;
+  }
+
+  .countdown-cards-wrapper {
     gap: 10px;
   }
 
   .countdown-card {
     min-width: 76px;
     padding-inline: 10px;
+  }
+
+  .challenge-ended {
+    padding: 30px 20px;
+  }
+
+  .ended-icon {
+    font-size: 3rem;
+  }
+
+  .ended-title {
+    font-size: 1.5rem;
+  }
+
+  .ended-text {
+    font-size: 1rem;
   }
 
   .btn-cta {

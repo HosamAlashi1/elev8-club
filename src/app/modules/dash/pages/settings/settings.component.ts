@@ -25,7 +25,7 @@ import { trigger, transition, style, animate, query, group } from '@angular/anim
   ]
 })
 export class SettingsComponent implements AfterViewInit {
-  activeTab: string = 'store-info';
+  activeTab: string = 'sales-settings';
 
   // underline control
   @ViewChildren('tabBtn', { read: ElementRef }) tabBtns!: QueryList<ElementRef>;

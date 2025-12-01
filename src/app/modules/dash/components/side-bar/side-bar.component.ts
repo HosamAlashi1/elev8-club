@@ -41,11 +41,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     //   icon: 'user-cog',
     //   route: '/dashboard/admins',
     // },
-    // {
-    //   label: 'Settings',
-    //   icon: 'settings',
-    //   route: '/dashboard/settings',
-    // }
+    {
+      label: 'Settings',
+      icon: 'settings',
+      route: '/dashboard/settings',
+    }
   ];
 
   constructor(

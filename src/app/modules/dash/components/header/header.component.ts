@@ -25,12 +25,12 @@ export class HeaderComponent implements OnInit {
   ) {
     this.user = JSON.parse(localStorage.getItem('elev8-club-data') || '{}');
 
-    this.unreadCount$ = this.notificationService.unreadCount$;
+    // this.unreadCount$ = this.notificationService.unreadCount$;
   }
 
   ngOnInit(): void {
     // Load unread count for admin
-    this.notificationService.refreshUnreadCount('admin').subscribe();
+    // this.notificationService.refreshUnreadCount('admin').subscribe();
   }
 
   toggleNotifications(event: Event): void {

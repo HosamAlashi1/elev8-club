@@ -9,7 +9,7 @@ import { Version, Affiliate, Lead } from '../../core/models';
 })
 export class FirebaseService {
 
-  constructor(private db: AngularFireDatabase) {}
+  constructor(private db: AngularFireDatabase) { }
 
   /** =======================
    *  LIST – جلب قائمة كاملة
@@ -48,6 +48,14 @@ export class FirebaseService {
   }
 
   /** ===========================
+   *  GET OBJECT – جلب كائن واحد ثابت
+   *  مثل /settings أو /sales/meta
+   ============================ */
+  public getObject(path: string): Observable<any | null> {
+    return this.db.object(path).valueChanges();
+  }
+
+  /** ===========================
    *  ADD – إضافة عنصر جديد
    ============================ */
   public add(path: string, data: any) {
@@ -55,10 +63,19 @@ export class FirebaseService {
   }
 
   /** ===========================
-   *  UPDATE – تحديث عنصر
+   *  UPDATE – تحديث عنصر داخل list
+   *  مثال: update('affiliates', affiliateKey, data)
    ============================ */
   public update(path: string, key: string, data: any) {
     return this.db.object(`${path}/${key}`).update(data);
+  }
+
+  /** ===========================
+   *  UPDATE OBJECT – تحديث كائن واحد
+   *  مثال: updateObject('settings', data)
+   ============================ */
+  public updateObject(path: string, data: any) {
+    return this.db.object(path).update(data);
   }
 
   /** ===========================
@@ -203,17 +220,9 @@ export class FirebaseService {
   // ==========================================
 
   /** إضافة Lead جديد (الخطوة الأولى) */
-  public addLead(lead: Omit<Lead, 'key'>): Promise<string> {
-    const leadData: Lead = {
-      ...lead,
-      step: 1,
-      consent: true,
-      createdAt: new Date().toISOString()
-    };
-    
-    return this.db.list('leads').push(leadData).then(ref => {
+  public addLead(lead: any): Promise<string> {
+    return this.db.list('leads').push(lead).then(ref => {
       const leadKey = ref.key || '';
-      // حفظ الـ key داخل الـ object
       return this.db.object(`leads/${leadKey}`).update({ key: leadKey }).then(() => leadKey);
     });
   }
@@ -225,10 +234,10 @@ export class FirebaseService {
       step: 2,
       completedAt: new Date().toISOString()
     };
-    
+
     if (country) updateData.country = country;
     if (city) updateData.city = city;
-    
+
     return this.db.object(`leads/${leadKey}`).update(updateData);
   }
 
@@ -254,23 +263,23 @@ export class FirebaseService {
 
   /** جلب Leads لنسخة + أفلييت معين */
   public getLeadsByVersionAndAffiliate(versionKey: string, affiliateCode: string): Observable<Lead[]> {
-    return this.db.list<Lead>('leads', ref => 
+    return this.db.list<Lead>('leads', ref =>
       ref.orderByChild('versionKey').equalTo(versionKey)
     )
-    .snapshotChanges()
-    .pipe(
-      map(changes => {
-        const items = changes.map(c => {
-          const val = c.payload.val() as Lead;
-          return {
-            ...val,
-            key: c.payload.key || val.key || ''
-          };
-        });
-        // فلترة إضافية على الأفلييت
-        return items.filter(item => item.affiliateCode === affiliateCode);
-      })
-    );
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          const items = changes.map(c => {
+            const val = c.payload.val() as Lead;
+            return {
+              ...val,
+              key: c.payload.key || val.key || ''
+            };
+          });
+          // فلترة إضافية على الأفلييت
+          return items.filter(item => item.affiliateCode === affiliateCode);
+        })
+      );
   }
 
   /** عدّ Leads حسب step معين */
@@ -284,17 +293,17 @@ export class FirebaseService {
 
   /** عد Leads لنسخة معينة حسب step (إذا لم يتم تحديد step، يتم حساب الكل) */
   public countLeadsByVersionAndStep(versionKey: string, step?: 1 | 2): Observable<number> {
-    return this.db.list<Lead>('leads', ref => 
+    return this.db.list<Lead>('leads', ref =>
       ref.orderByChild('versionKey').equalTo(versionKey)
     )
-    .snapshotChanges()
-    .pipe(
-      map(changes => {
-        const items = changes.map(c => c.payload.val() as Lead);
-        // إذا تم تحديد step، فلتر حسبه، وإلا احسب الكل
-        return step ? items.filter(item => item.step === step).length : items.length;
-      })
-    );
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          const items = changes.map(c => c.payload.val() as Lead);
+          // إذا تم تحديد step، فلتر حسبه، وإلا احسب الكل
+          return step ? items.filter(item => item.step === step).length : items.length;
+        })
+      );
   }
 
   /** إحصائيات Affiliate (عدد Leads + Completed) */
@@ -311,7 +320,7 @@ export class FirebaseService {
   public getTopAffiliates(versionKey: string, limit: number = 5): Observable<any[]> {
     return this.getAllAffiliates().pipe(
       map(affiliates => {
-        // نحتاج نجيب الليدز لكل أفلييت
+        // نحتاج نجيب الليدز لكل أفلييت (لاحقاً)
         return affiliates.map(aff => ({
           ...aff,
           leadsCount: 0,
@@ -327,7 +336,7 @@ export class FirebaseService {
       map(leads => {
         const dateMap: { [key: string]: number } = {};
         const today = new Date();
-        
+
         // Initialize last N days
         for (let i = days - 1; i >= 0; i--) {
           const date = new Date(today);
@@ -360,4 +369,5 @@ export class FirebaseService {
   public deleteAffiliate(affiliateKey: string): Promise<void> {
     return this.db.object(`affiliates/${affiliateKey}`).remove();
   }
+
 }

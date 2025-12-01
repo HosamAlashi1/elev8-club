@@ -85,7 +85,7 @@ export class LeadsComponent implements OnInit {
           const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
           return {
             ...lead,
-            affiliateName: affiliate?.name || 'Unknown',
+            affiliateName: affiliate?.name || 'none',
             affiliateCode: affiliate?.code || lead.affiliateCode
           };
         });

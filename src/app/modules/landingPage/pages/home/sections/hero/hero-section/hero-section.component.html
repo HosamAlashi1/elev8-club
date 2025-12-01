@@ -76,27 +76,41 @@
     </p>
 
     <!-- العداد -->
-    <div class="hero-countdown" aria-label="العدّ التنازلي" data-aos="zoom-in" data-aos-delay="350">
-
-      <div class="countdown-card countdown-card--1">
-        <div class="countdown-value">05</div>
-        <div class="countdown-label">أيام</div>
+    <div class="hero-countdown" *ngIf="showCountdown" aria-label="العدّ التنازلي" data-aos="zoom-in" data-aos-delay="350">
+      
+      <!-- Countdown Label -->
+      <div class="countdown-status-label" [class.not-started]="challengeStatus === 'not-started'" [class.active]="challengeStatus === 'active'">
+        {{ countdownLabel }}
       </div>
 
-      <div class="countdown-card countdown-card--2">
-        <div class="countdown-value">14</div>
-        <div class="countdown-label">ساعات</div>
-      </div>
+      <div class="countdown-cards-wrapper">
+        <div class="countdown-card countdown-card--1">
+          <div class="countdown-value" [@flipAnimation]="countdown.days">{{ countdown.days | number:'2.0-0' }}</div>
+          <div class="countdown-label">أيام</div>
+        </div>
 
-      <div class="countdown-card countdown-card--3">
-        <div class="countdown-value">32</div>
-        <div class="countdown-label">دقائق</div>
-      </div>
+        <div class="countdown-card countdown-card--2">
+          <div class="countdown-value" [@flipAnimation]="countdown.hours">{{ countdown.hours | number:'2.0-0' }}</div>
+          <div class="countdown-label">ساعات</div>
+        </div>
 
-      <div class="countdown-card countdown-card--4">
-        <div class="countdown-value">47</div>
-        <div class="countdown-label">ثواني</div>
+        <div class="countdown-card countdown-card--3">
+          <div class="countdown-value" [@flipAnimation]="countdown.minutes">{{ countdown.minutes | number:'2.0-0' }}</div>
+          <div class="countdown-label">دقائق</div>
+        </div>
+
+        <div class="countdown-card countdown-card--4">
+          <div class="countdown-value" [@flipAnimation]="countdown.seconds">{{ countdown.seconds | number:'2.0-0' }}</div>
+          <div class="countdown-label">ثواني</div>
+        </div>
       </div>
+    </div>
+
+    <!-- Challenge Ended Message -->
+    <div class="challenge-ended" *ngIf="challengeStatus === 'ended'" data-aos="zoom-in" data-aos-delay="350">
+      <div class="ended-icon"></div>
+      <h3 class="ended-title">انتهى التحدي</h3>
+      <p class="ended-text">شكراً لاهتمامك! تابعنا للإعلان عن التحدي القادم</p>
     </div>
 
     <!-- زر CTA -->

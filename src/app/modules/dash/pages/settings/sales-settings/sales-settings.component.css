@@ -1,0 +1,72 @@
+.sales-settings {
+  padding: 0;
+}
+
+.sales-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.sales-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #CFAE58;
+  transform: translateY(-2px);
+}
+
+.card-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.whatsapp-number {
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.whatsapp-number i {
+  font-size: 1.1rem;
+}
+
+.action-icon {
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.action-icon:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 2px dashed #e5e7eb;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+/* Dropdown styling */
+.dropdown-item.text-danger:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}

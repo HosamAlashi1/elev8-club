@@ -1,0 +1,52 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ isEdit ? 'Edit Sales Item' : 'Add New Sales Item' }}</h4>
+    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row">
+      <!-- WhatsApp Number -->
+      <div class="col-12 mb-3">
+        <label class="form-label">WhatsApp Number <span class="text-danger">*</span></label>
+        <input 
+          class="form-control" 
+          formControlName="whatsapp_number" 
+          placeholder="+201001112233"
+          [ngClass]="{ 'is-invalid': submitted && f['whatsapp_number'].invalid, 'is-valid': submitted && f['whatsapp_number'].valid }" />
+        <div *ngIf="submitted && f['whatsapp_number'].invalid" class="invalid-feedback">
+          WhatsApp number is required
+        </div>
+        <small class="text-muted">Include country code (e.g., +966 for Saudi Arabia)</small>
+      </div>
+
+      <!-- Counter -->
+      <!-- <div class="col-12 mb-3">
+        <label class="form-label">Counter <span class="text-danger">*</span></label>
+        <input 
+          class="form-control" 
+          formControlName="counter" 
+          type="number"
+          min="0"
+          placeholder="0"
+          [ngClass]="{ 'is-invalid': submitted && f['counter'].invalid, 'is-valid': submitted && f['counter'].valid }" />
+        <div *ngIf="submitted && f['counter'].invalid" class="invalid-feedback">
+          Counter is required (minimum 0)
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-custom" [disabled]="isSubmitting">
+      <ng-container *ngIf="isSubmitting">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Saving...
+      </ng-container>
+      <ng-container *ngIf="!isSubmitting">
+        {{ isEdit ? 'Update' : 'Add' }} Sales Item
+      </ng-container>
+    </button>
+  </div>
+</form>

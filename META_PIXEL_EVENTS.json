@@ -1,0 +1,420 @@
+{
+  "meta_pixel_implementation": {
+    "version": "1.0.0",
+    "status": "production_ready",
+    "implementation_date": "2025-11-21",
+    "pixel_id": "PIXEL_ID_HERE",
+    "total_events": 11,
+    "standard_events": 6,
+    "custom_events": 5
+  },
+  "events": [
+    {
+      "stage": 1,
+      "event_name": "PageView",
+      "event_type": "standard",
+      "trigger": "On route change",
+      "location": "landingPage.component.ts",
+      "method": "ngOnInit() → router.events.subscribe()",
+      "parameters": {
+        "page_path": "string (e.g., '/home')"
+      },
+      "example": {
+        "page_path": "/home"
+      },
+      "frequency": "Every page navigation",
+      "business_value": "Track total visitor count and page flow"
+    },
+    {
+      "stage": 2,
+      "event_name": "ViewContent",
+      "event_type": "standard",
+      "trigger": "When landing on /home or /video-questions",
+      "location": "landingPage.component.ts",
+      "method": "ngOnInit() → router.events.subscribe()",
+      "parameters": {
+        "step": "number (1 or 2)",
+        "page": "string (landing_step_1 or landing_step_2)",
+        "page_name": "string (Home or Video Questions)"
+      },
+      "example": {
+        "step": 1,
+        "page": "landing_step_1",
+        "page_name": "Home"
+      },
+      "frequency": "Once per page view",
+      "business_value": "Identify funnel stage progression"
+    },
+    {
+      "stage": 3,
+      "event_name": "Lead",
+      "event_type": "standard",
+      "status": "intent",
+      "trigger": "When registration modal opens",
+      "location": "home.component.ts",
+      "method": "openRegistrationPopup(source)",
+      "parameters": {
+        "status": "string (always 'intent')",
+        "source": "string (hero, features, before_after, journey, video_testimonials, suitable_check, written_testimonials, big_cta)",
+        "affiliate_code": "string or 'none'"
+      },
+      "example": {
+        "status": "intent",
+        "source": "hero",
+        "affiliate_code": "ABC123"
+      },
+      "frequency": "Once per modal open",
+      "business_value": "Track lead intent and identify best-performing sections"
+    },
+    {
+      "stage": 3,
+      "event_name": "OpenRegistrationModal",
+      "event_type": "custom",
+      "trigger": "When registration modal opens (duplicate of Lead intent for custom tracking)",
+      "location": "home.component.ts",
+      "method": "openRegistrationPopup(source)",
+      "parameters": {
+        "source": "string (hero, features, before_after, journey, video_testimonials, suitable_check, written_testimonials, big_cta)",
+        "affiliate_code": "string or 'none'"
+      },
+      "example": {
+        "source": "big_cta",
+        "affiliate_code": "ABC123"
+      },
+      "frequency": "Once per modal open",
+      "business_value": "Custom event for easier filtering in Meta Events Manager"
+    },
+    {
+      "stage": 4,
+      "event_name": "Lead",
+      "event_type": "standard",
+      "status": "submitted",
+      "trigger": "When registration form is successfully submitted",
+      "location": "register-popup.component.ts",
+      "method": "onSubmit() → firebaseService.addLead().then()",
+      "parameters": {
+        "status": "string (always 'submitted')",
+        "lead_id": "string (Firebase generated key)",
+        "full_name": "string",
+        "email": "string",
+        "phone": "string",
+        "affiliate_code": "string or 'none'"
+      },
+      "example": {
+        "status": "submitted",
+        "lead_id": "lead_xyz123",
+        "full_name": "أحمد محمد",
+        "email": "ahmed@example.com",
+        "phone": "+972501234567",
+        "affiliate_code": "ABC123"
+      },
+      "frequency": "Once per successful form submission",
+      "business_value": "Primary conversion event - actual lead captured"
+    },
+    {
+      "stage": 5,
+      "event_name": "QuestionFormStarted",
+      "event_type": "custom",
+      "trigger": "When user answers first question in video-questions page",
+      "location": "question-form-section.component.ts",
+      "method": "handleAnswer() - first time only",
+      "parameters": {
+        "lead_id": "string (from URL params)"
+      },
+      "example": {
+        "lead_id": "lead_xyz123"
+      },
+      "frequency": "Once per lead (first answer only)",
+      "business_value": "Track engagement with question form"
+    },
+    {
+      "stage": 6,
+      "event_name": "QuestionFormProgress",
+      "event_type": "custom",
+      "trigger": "When user answers each question",
+      "location": "question-form-section.component.ts",
+      "method": "handleAnswer() - on every answer",
+      "parameters": {
+        "lead_id": "string",
+        "question": "number (current question number)",
+        "total": "number (always 6)",
+        "progress": "number (percentage: 17, 33, 50, 67, 83, 100)"
+      },
+      "example": {
+        "lead_id": "lead_xyz123",
+        "question": 3,
+        "total": 6,
+        "progress": 50
+      },
+      "frequency": "6 times per lead (once per question)",
+      "business_value": "Identify drop-off points in question form"
+    },
+    {
+      "stage": 7,
+      "event_name": "CompleteRegistration",
+      "event_type": "standard",
+      "trigger": "When all questions are answered and saved to Firebase",
+      "location": "question-form-section.component.ts",
+      "method": "submitAnswers() → firebaseService.completeLead().then()",
+      "parameters": {
+        "lead_id": "string",
+        "questions_count": "number (always 6)",
+        "country": "string",
+        "city": "string"
+      },
+      "example": {
+        "lead_id": "lead_xyz123",
+        "questions_count": 6,
+        "country": "Jordan",
+        "city": "Amman"
+      },
+      "frequency": "Once per lead completion",
+      "business_value": "Most important conversion - full registration completed"
+    },
+    {
+      "stage": 8,
+      "event_name": "Contact",
+      "event_type": "standard",
+      "trigger": "When user clicks WhatsApp contact button",
+      "location": "question-form-section.component.ts",
+      "method": "completeRegistration()",
+      "parameters": {
+        "lead_id": "string",
+        "method": "string (always 'whatsapp')",
+        "destination": "string (WhatsApp number)",
+        "user_name": "string",
+        "affiliate_code": "string or 'none'"
+      },
+      "example": {
+        "lead_id": "lead_xyz123",
+        "method": "whatsapp",
+        "destination": "972598046069",
+        "user_name": "أحمد محمد",
+        "affiliate_code": "ABC123"
+      },
+      "frequency": "Once per lead (if clicked)",
+      "business_value": "Final conversion - lead reached out for contact"
+    },
+    {
+      "stage": 9,
+      "event_name": "VideoPlay",
+      "event_type": "custom",
+      "optional": true,
+      "trigger": "When user plays video in video-questions page (first play only)",
+      "location": "video-hero-section.component.ts",
+      "method": "togglePlay()",
+      "parameters": {
+        "video_id": "string (always 'challenge_intro_video')",
+        "lead_id": "string or undefined"
+      },
+      "example": {
+        "video_id": "challenge_intro_video",
+        "lead_id": "lead_xyz123"
+      },
+      "frequency": "Once per lead",
+      "business_value": "Measure video engagement"
+    },
+    {
+      "stage": 9,
+      "event_name": "VideoComplete",
+      "event_type": "custom",
+      "optional": true,
+      "trigger": "When video reaches 95% or ends",
+      "location": "video-hero-section.component.ts",
+      "method": "video.addEventListener('timeupdate') or 'ended'",
+      "parameters": {
+        "video_id": "string (always 'challenge_intro_video')",
+        "lead_id": "string or undefined"
+      },
+      "example": {
+        "video_id": "challenge_intro_video",
+        "lead_id": "lead_xyz123"
+      },
+      "frequency": "Once per lead (if completed)",
+      "business_value": "Measure video completion rate and impact on form completion"
+    }
+  ],
+  "sources": {
+    "description": "Source attribution for registration modal opens",
+    "tracked_in": "OpenRegistrationModal and Lead (status: intent) events",
+    "values": [
+      {
+        "source": "hero",
+        "description": "Hero Section - Top CTA",
+        "location": "Hero Section at top of page"
+      },
+      {
+        "source": "features",
+        "description": "Features Section",
+        "location": "Features section showcasing platform benefits"
+      },
+      {
+        "source": "before_after",
+        "description": "Before/After Section",
+        "location": "Before/After comparison section"
+      },
+      {
+        "source": "journey",
+        "description": "Journey Section",
+        "location": "User journey timeline section"
+      },
+      {
+        "source": "video_testimonials",
+        "description": "Video Testimonials Section",
+        "location": "Section with video testimonials"
+      },
+      {
+        "source": "suitable_check",
+        "description": "Suitable Check Section",
+        "location": "Section checking if user is suitable for challenge"
+      },
+      {
+        "source": "written_testimonials",
+        "description": "Written Testimonials Section",
+        "location": "Section with text testimonials"
+      },
+      {
+        "source": "big_cta",
+        "description": "Big CTA Section",
+        "location": "Large CTA section near bottom of page"
+      }
+    ]
+  },
+  "funnel_stages": {
+    "stage_1": {
+      "name": "Landing Page View",
+      "events": ["PageView", "ViewContent"],
+      "expected_rate": "100%",
+      "description": "User arrives at landing page"
+    },
+    "stage_2": {
+      "name": "Lead Intent",
+      "events": ["Lead (intent)", "OpenRegistrationModal"],
+      "expected_rate": "15-25%",
+      "description": "User shows interest by opening registration modal"
+    },
+    "stage_3": {
+      "name": "Lead Submission",
+      "events": ["Lead (submitted)"],
+      "expected_rate": "60-80% of modal opens",
+      "description": "User submits registration form with basic info"
+    },
+    "stage_4": {
+      "name": "Questions Page View",
+      "events": ["PageView", "ViewContent"],
+      "expected_rate": "95-100% of submissions",
+      "description": "User lands on video-questions page"
+    },
+    "stage_5": {
+      "name": "Question Form Engagement",
+      "events": ["QuestionFormStarted", "QuestionFormProgress"],
+      "expected_rate": "85-95% of arrivals",
+      "description": "User starts answering questions"
+    },
+    "stage_6": {
+      "name": "Registration Complete",
+      "events": ["CompleteRegistration"],
+      "expected_rate": "70-85% of form starts",
+      "description": "User completes all questions"
+    },
+    "stage_7": {
+      "name": "Contact Initiated",
+      "events": ["Contact"],
+      "expected_rate": "50-70% of completions",
+      "description": "User clicks WhatsApp contact button"
+    },
+    "stage_8": {
+      "name": "Video Engagement (Optional)",
+      "events": ["VideoPlay", "VideoComplete"],
+      "expected_rate": "Variable",
+      "description": "User watches intro video"
+    }
+  },
+  "campaign_recommendations": {
+    "cold_traffic": {
+      "objective": "Lead Generation",
+      "optimization_event": "Lead (status: submitted)",
+      "audience": "Broad interest targeting",
+      "budget": "$50-100/day",
+      "description": "Acquire new leads from cold traffic"
+    },
+    "retargeting_modal_openers": {
+      "objective": "Conversions",
+      "optimization_event": "CompleteRegistration",
+      "audience": "OpenRegistrationModal BUT NOT Lead (submitted)",
+      "budget": "$20-30/day",
+      "description": "Re-engage users who opened modal but didn't submit"
+    },
+    "retargeting_incomplete_questions": {
+      "objective": "Conversions",
+      "optimization_event": "CompleteRegistration",
+      "audience": "QuestionFormStarted BUT NOT CompleteRegistration",
+      "budget": "$15-20/day",
+      "description": "Re-engage users who started but didn't complete questions"
+    },
+    "lookalike_quality_leads": {
+      "objective": "Conversions",
+      "optimization_event": "CompleteRegistration",
+      "audience": "1-2% Lookalike of Contact event",
+      "budget": "$80-120/day",
+      "description": "Find users similar to those who contacted via WhatsApp"
+    }
+  },
+  "files_modified": [
+    "src/index.html",
+    "src/app/modules/services/meta-pixel.service.ts",
+    "src/app/modules/landingPage/landingPage.component.ts",
+    "src/app/modules/landingPage/pages/home/home.component.ts",
+    "src/app/modules/landingPage/pages/home/home.component.html",
+    "src/app/modules/landingPage/pages/home/sections/register-popup/register-popup/register-popup.component.ts",
+    "src/app/modules/landingPage/pages/video-questions/sections/question-form/question-form-section.component.ts",
+    "src/app/modules/landingPage/pages/video-questions/sections/video-hero/video-hero-section.component.ts"
+  ],
+  "documentation_files": [
+    "META_PIXEL_IMPLEMENTATION_GUIDE.md",
+    "META_PIXEL_QUICK_START.md",
+    "IMPLEMENTATION_SUMMARY.md",
+    "FUNNEL_VISUALIZATION.txt",
+    "META_PIXEL_EVENTS.json"
+  ],
+  "deployment_checklist": {
+    "pre_production": [
+      "✅ Code implementation complete",
+      "✅ No TypeScript errors",
+      "✅ Helper methods created in MetaPixelService",
+      "✅ All 8 stages implemented",
+      "✅ Documentation written"
+    ],
+    "production_steps": [
+      "⚠️ Replace PIXEL_ID_HERE in index.html",
+      "⚠️ Test all events in Meta Events Manager Test Events",
+      "⚠️ Verify parameters are correct",
+      "⚠️ Create Custom Conversions in Meta",
+      "⚠️ Set up Custom Audiences",
+      "⚠️ Launch ad campaigns"
+    ]
+  },
+  "troubleshooting": {
+    "events_not_showing": [
+      "Check if Pixel ID is correct in index.html",
+      "Verify fbq is loaded (type 'fbq' in browser console)",
+      "Use Facebook Pixel Helper Chrome extension",
+      "Disable ad blockers",
+      "Check browser console for errors"
+    ],
+    "duplicate_pageview": [
+      "Remove fbq('track', 'PageView') from index.html if using Angular routing"
+    ],
+    "leadkey_null": [
+      "User opened /video-questions directly without registration",
+      "Already handled with redirect in question-form-section.component.ts"
+    ]
+  },
+  "meta": {
+    "implementation_by": "AI Assistant",
+    "implementation_date": "2025-11-21",
+    "version": "1.0.0",
+    "status": "Production Ready",
+    "next_steps": "Replace Pixel ID and deploy"
+  }
+}

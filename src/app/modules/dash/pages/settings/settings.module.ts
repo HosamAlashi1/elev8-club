@@ -10,24 +10,16 @@ import { MdbDropdownModule } from 'mdb-angular-ui-kit/dropdown';
 import { MdbRippleModule } from 'mdb-angular-ui-kit/ripple';
 import { SharedModule } from '../../shared/shared.module';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { StoreInfoComponent } from './store-info/store-info.component';
-import { PaymentsComponent } from './payments/payments.component';
-import { ShippingComponent } from './shipping/shipping.component';
-import { TaxesComponent } from './taxes/taxes.component';
-import { ConstantsComponent } from './constants/constants.component';
-import { RolesPermissionsComponent } from './roles-permissions/roles-permissions.component';
-import { AddEditRoleComponent } from './roles-permissions/add-edit/add-edit.component';
+import { SalesSettingsComponent } from './sales-settings/sales-settings.component';
+import { GeneralSettingsComponent } from './general-settings/general-settings.component';
+import { AddEditSalesItemComponent } from './sales-settings/add-edit-sales-item/add-edit-sales-item.component';
 
 @NgModule({
   declarations: [
     SettingsComponent,
-    StoreInfoComponent,
-    PaymentsComponent,
-    ShippingComponent,
-    TaxesComponent,
-    ConstantsComponent,
-    RolesPermissionsComponent,
-    AddEditRoleComponent
+    SalesSettingsComponent,
+    GeneralSettingsComponent,
+    AddEditSalesItemComponent
   ],
   imports: [
     CommonModule,

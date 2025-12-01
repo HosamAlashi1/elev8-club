@@ -1,0 +1,33 @@
+.general-settings {
+  padding: 0;
+}
+
+.settings-form {
+  background: #fff;
+  padding: 0;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-control {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #CFAE58;
+  box-shadow: 0 0 0 0.2rem rgba(207, 174, 88, 0.15);
+}
+
+small.text-muted {
+  font-size: 0.8rem;
+  color: #6c757d;
+}

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../../../../../services/firebase.service';
+import { MetaPixelService } from '../../../../../../services/meta-pixel.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
 
 interface FormData {
@@ -53,14 +54,15 @@ export class RegisterPopupComponent implements OnInit {
   constructor(
     private firebaseService: FirebaseService,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private metaPixel: MetaPixelService
+  ) { }
 
   ngOnInit(): void {
     // قراءة ref code من الـ URL أو localStorage
     this.route.queryParams.subscribe(params => {
       this.affiliateCode = params['ref'] || localStorage.getItem('affiliateCode') || null;
-      
+
       // جلب النسخة الحالية
       this.firebaseService.getCurrentVersion().subscribe(version => {
         this.currentVersion = version;
@@ -87,9 +89,9 @@ export class RegisterPopupComponent implements OnInit {
 
   onSubmit(event: Event): void {
     event.preventDefault();
-    
+
     if (this.isSubmitting) return;
-    
+
     // التحقق من صحة البيانات
     if (!this.formData.fullName || !this.formData.email || !this.formData.whatsapp) {
       alert('الرجاء ملء جميع الحقول');
@@ -104,10 +106,8 @@ export class RegisterPopupComponent implements OnInit {
     this.isSubmitting = true;
 
     // إنشاء كائن Lead
-    const leadData: Omit<Lead, 'key'> = {
+    const leadData: any = {
       versionKey: this.currentVersion.key,
-      affiliateKey: this.currentAffiliate?.key,
-      affiliateCode: this.affiliateCode || undefined,
       fullName: this.formData.fullName,
       email: this.formData.email,
       phone: this.formData.whatsapp,
@@ -116,14 +116,30 @@ export class RegisterPopupComponent implements OnInit {
       createdAt: new Date().toISOString()
     };
 
+    // ضيف affiliateKey فقط لو موجود
+    if (this.currentAffiliate?.key) {
+      leadData.affiliateKey = this.currentAffiliate.key;
+    }
+
+    // ضيف affiliateCode فقط لو موجود
+    if (this.affiliateCode) {
+      leadData.affiliateCode = this.affiliateCode;
+    }
+
     // حفظ البيانات في Firebase
     this.firebaseService.addLead(leadData)
       .then(leadKey => {
-        console.log('Lead created successfully:', leadKey);
-        
+
+        // Stage 4: Track Lead Submission
+        this.metaPixel.trackLeadSubmission(leadKey, this.affiliateCode || undefined, {
+          full_name: this.formData.fullName,
+          email: this.formData.email,
+          phone: this.formData.whatsapp
+        });
+
         // إغلاق الـ popup
         this.onClose();
-        
+
         // التوجيه لصفحة الأسئلة مع تمرير leadKey
         this.router.navigate(['/video-questions'], {
           queryParams: {
@@ -131,7 +147,7 @@ export class RegisterPopupComponent implements OnInit {
             ref: this.affiliateCode || undefined
           }
         });
-        
+
         // إعادة تعيين النموذج
         this.formData = { fullName: '', email: '', whatsapp: '' };
         this.isSubmitting = false;

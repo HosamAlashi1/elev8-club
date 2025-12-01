@@ -9,14 +9,14 @@
     <!-- Right Section -->
     <div class="user-section">
       <!-- 🔔 Notifications -->
-      <div class="notification-wrapper">
+      <!-- <div class="notification-wrapper">
         <button class="notification-btn" (click)="toggleNotifications($event)">
           <i class="bi bi-bell"></i>
           <span class="notification-badge" *ngIf="(unreadCount$ | async) as count" [class.zero]="count === 0">
             {{ count > 99 ? '99+' : count }}
           </span>
         </button>
-      </div>
+      </div> -->
 
       <!-- User Profile Dropdown -->
       <div class="dropdown">
@@ -72,9 +72,3 @@
 </header>
 <!-- 🔹 End Header -->
 
-<!-- Notifications Drawer -->
-<app-notifications-drawer 
-  [isOpen]="isNotificationsOpen" 
-  [context]="'admin'" 
-  (close)="isNotificationsOpen = false">
-</app-notifications-drawer>
