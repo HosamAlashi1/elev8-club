@@ -21,8 +21,12 @@
         #videoPlayer
         class="video-player"
         [class.playing]="isPlaying"
+        preload="metadata"
+        playsinline
+        webkit-playsinline
+        x-webkit-airplay="allow"
         (click)="togglePlay()">
-        <source src="assets/videos/video1.mp4" type="video/mp4">
+        <source src="assets/videos/here_1.mp4" type="video/mp4">
         المتصفح الخاص بك لا يدعم تشغيل الفيديو.
       </video>
 
@@ -37,7 +41,11 @@
       </div>
 
       <!-- Custom Controls -->
-      <div class="video-controls" [class.visible]="showControls || !isPlaying">
+      <div class="video-controls" 
+           [class.visible]="showControls || !isPlaying"
+           [class.mobile-hidden]="isPlaying"
+           (touchstart)="onTouchControls($event)"
+           (click)="onClickControls($event)">
         
         <!-- Progress Bar -->
         <div class="progress-container" (click)="seek($event)">

@@ -7,8 +7,10 @@
     <router-outlet #outlet="outlet"></router-outlet>
   </main>
 
+  <!-- Live Registrations (فقط صفحة الهوم) -->
+  <app-live-registrations *ngIf="showLiveRegistrations"></app-live-registrations>
+  
   <!-- Footer (ثابت لكل الصفحات) -->
-  <app-live-registrations></app-live-registrations>
   <app-footer></app-footer>
 
 </div>

@@ -47,6 +47,23 @@
   object-fit: contain;
   display: block;
   background: #000;
+  /* iOS Safari: Force show poster/first frame */
+  -webkit-background-size: cover;
+  background-size: cover;
+}
+
+/* iOS-specific: Ensure poster shows */
+@supports (-webkit-touch-callout: none) {
+  .video-element {
+    /* Force hardware acceleration for iOS */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Show poster/first frame before playing */
+  .video-element:not(.playing) {
+    background: #000;
+  }
 }
 
 /* في حالة الشاشة الكاملة */

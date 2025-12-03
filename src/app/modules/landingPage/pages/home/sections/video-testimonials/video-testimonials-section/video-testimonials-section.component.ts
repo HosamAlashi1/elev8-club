@@ -5,11 +5,13 @@ interface VideoState {
   name: string;
   location: string;
   duration: string;
+  poster?: string;
   currentTime?: number;
   totalDuration?: number;
   isPlaying?: boolean;
   volume?: number;
   isMuted?: boolean;
+  isLoaded?: boolean;
 }
 
 @Component({
@@ -74,8 +76,10 @@ export class VideoTestimonialsSectionComponent {
       v.isPlaying = false;
       v.volume = 100;
       v.isMuted = false;
+      v.isLoaded = false;
     });
     this.updateVisible();
+    this.generateThumbnails();
   }
 
   updateVisible() {
@@ -144,6 +148,36 @@ export class VideoTestimonialsSectionComponent {
 
   onLoadedMetadata(videoState: VideoState, videoElement: HTMLVideoElement) {
     videoState.totalDuration = videoElement.duration;
+  }
+
+  onVideoLoaded(videoState: VideoState, videoElement: HTMLVideoElement) {
+    videoState.isLoaded = true;
+    // Force load first frame for iOS
+    if (!videoState.poster && videoElement.currentTime === 0) {
+      videoElement.currentTime = 0.1;
+      setTimeout(() => {
+        videoElement.currentTime = 0;
+      }, 100);
+    }
+  }
+
+  onVideoCanPlay(videoState: VideoState, videoElement: HTMLVideoElement) {
+    videoState.isLoaded = true;
+  }
+
+  // Generate thumbnails dynamically if poster images don't exist
+  generateThumbnails() {
+    // This will attempt to load first frame of each video
+    // iOS Safari will show poster or first frame once loaded
+    setTimeout(() => {
+      const videoElements = document.querySelectorAll('.video-element') as NodeListOf<HTMLVideoElement>;
+      videoElements.forEach((video, index) => {
+        if (this.videos[index] && !this.videos[index].isLoaded) {
+          // Force iOS to load first frame
+          video.load();
+        }
+      });
+    }, 500);
   }
 
   getProgress(videoState: VideoState): number {

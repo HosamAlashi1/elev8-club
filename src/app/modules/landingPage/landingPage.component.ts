@@ -28,6 +28,7 @@ export class LandingPageComponent implements OnInit {
   pre: any = null;
   settings: { [key: string]: string } = {};
   showContent = false;
+  showLiveRegistrations = false;
 
   constructor(
     private lottieService: LottieOverlayService,
@@ -43,6 +44,9 @@ export class LandingPageComponent implements OnInit {
   ngOnInit(): void {
     this.enforceDashboardDirection();
 
+    // Check initial route
+    this.checkRoute(this.router.url);
+
     // تتبّع الصفحات داخل اللاندينج فقط
     this.router.events
       .pipe(
@@ -50,6 +54,9 @@ export class LandingPageComponent implements OnInit {
       )
       .subscribe((event) => {
         const url = event.urlAfterRedirects;
+
+        // Check if we should show live registrations
+        this.checkRoute(url);
 
         // Stage 1: PageView رسمي
         this.metaPixel.trackPageView(url);
@@ -64,6 +71,11 @@ export class LandingPageComponent implements OnInit {
           this.metaPixel.trackViewContent(2, 'landing_step_2', { page_name: 'Video Questions' });
         }
       });
+  }
+
+  private checkRoute(url: string): void {
+    // Show live registrations only on home page
+    this.showLiveRegistrations = url.includes('/home');
   }
 
   ngAfterViewInit(): void {

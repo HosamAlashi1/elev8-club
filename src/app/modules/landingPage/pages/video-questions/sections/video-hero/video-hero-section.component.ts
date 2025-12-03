@@ -37,6 +37,7 @@ export class VideoHeroSectionComponent implements OnInit {
   private leadKey: string | null = null;
   private hasTrackedPlay = false;
   private hasTrackedComplete = false;
+  private controlsTimeout: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -140,6 +141,33 @@ export class VideoHeroSectionComponent implements OnInit {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  onTouchControls(event: TouchEvent): void {
+    // Show controls on touch
+    this.showControls = true;
+    
+    // Auto-hide controls after 3 seconds when playing
+    if (this.isPlaying) {
+      this.resetControlsTimeout();
+    }
+  }
+
+  onClickControls(event: MouseEvent): void {
+    // Prevent hiding controls when clicking on controls
+    event.stopPropagation();
+  }
+
+  private resetControlsTimeout(): void {
+    if (this.controlsTimeout) {
+      clearTimeout(this.controlsTimeout);
+    }
+    
+    this.controlsTimeout = setTimeout(() => {
+      if (this.isPlaying) {
+        this.showControls = false;
+      }
+    }, 3000);
   }
 
 }

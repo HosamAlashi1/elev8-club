@@ -18,9 +18,17 @@
                 <div class="video-box" [class.playing]="isPlaying(v)">
 
                     <!-- الفيديو الحقيقي -->
-                    <video #player class="video-element" [src]="v.url" preload="metadata"
-                        (click)="togglePlayPause(v, player)" (timeupdate)="onTimeUpdate(v, player)"
-                        (loadedmetadata)="onLoadedMetadata(v, player)" (ended)="onVideoEnded(v, player)"></video>
+                    <video #player class="video-element" [src]="v.url" 
+                        preload="metadata"
+                        playsinline
+                        webkit-playsinline
+                        x-webkit-airplay="allow"
+                        (click)="togglePlayPause(v, player)" 
+                        (timeupdate)="onTimeUpdate(v, player)"
+                        (loadedmetadata)="onLoadedMetadata(v, player)" 
+                        (loadeddata)="onVideoLoaded(v, player)"
+                        (canplay)="onVideoCanPlay(v, player)"
+                        (ended)="onVideoEnded(v, player)"></video>
 
                     <!-- زر التشغيل الكبير (يظهر عند الإيقاف) -->
                     <button class="play-btn-overlay" *ngIf="!isPlaying(v)" (click)="togglePlayPause(v, player)">
