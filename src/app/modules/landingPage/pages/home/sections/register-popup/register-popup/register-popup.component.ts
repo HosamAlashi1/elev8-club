@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../../../../../services/firebase.service';
-import { MetaPixelService } from '../../../../../../services/meta-pixel.service';
+import { GtmService } from '../../../../../../services/gtm.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
 
 interface FormData {
@@ -55,7 +55,7 @@ export class RegisterPopupComponent implements OnInit {
     private firebaseService: FirebaseService,
     private router: Router,
     private route: ActivatedRoute,
-    private metaPixel: MetaPixelService
+    private gtm: GtmService
   ) { }
 
   ngOnInit(): void {
@@ -131,7 +131,7 @@ export class RegisterPopupComponent implements OnInit {
       .then(leadKey => {
 
         // Stage 4: Track Lead Submission
-        this.metaPixel.trackLeadSubmission(leadKey, this.affiliateCode || undefined, {
+        this.gtm.trackLeadSubmission(leadKey, this.affiliateCode || undefined, {
           full_name: this.formData.fullName,
           email: this.formData.email,
           phone: this.formData.whatsapp

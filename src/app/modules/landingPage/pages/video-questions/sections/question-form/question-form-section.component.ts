@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../../../../../services/firebase.service';
-import { MetaPixelService } from '../../../../../services/meta-pixel.service';
+import { GtmService } from '../../../../../services/gtm.service';
 import { Lead, LeadAnswers, Affiliate } from '../../../../../../core/models';
 
 interface Question {
@@ -101,7 +101,7 @@ export class QuestionFormSectionComponent implements OnInit {
     private firebaseService: FirebaseService,
     private route: ActivatedRoute,
     private router: Router,
-    private metaPixel: MetaPixelService
+    private gtm: GtmService
   ) { }
 
   ngOnInit(): void {
@@ -162,14 +162,14 @@ export class QuestionFormSectionComponent implements OnInit {
 
     // Stage 5: Track Question Form Start (first interaction)
     if (!this.hasTrackedFormStart && this.leadKey) {
-      this.metaPixel.trackQuestionFormStarted(this.leadKey);
+      this.gtm.trackQuestionFormStarted(this.leadKey);
       this.hasTrackedFormStart = true;
     }
 
     // Stage 5: Track Question Form Progress
     if (this.leadKey) {
       const answeredCount = Object.keys(this.answers).length;
-      this.metaPixel.trackQuestionFormProgress(
+      this.gtm.trackQuestionFormProgress(
         this.leadKey,
         answeredCount,
         this.questions.length
@@ -224,7 +224,7 @@ export class QuestionFormSectionComponent implements OnInit {
         
         // Stage 6: Track Complete Registration
         if (this.leadKey) {
-          this.metaPixel.trackCompleteRegistration(this.leadKey, {
+          this.gtm.trackCompleteRegistration(this.leadKey, {
             questions_count: this.questions.length,
             country: country,
             city: city
@@ -324,7 +324,7 @@ export class QuestionFormSectionComponent implements OnInit {
 
     // Stage 7: Track WhatsApp Contact
     if (this.leadKey) {
-      this.metaPixel.trackWhatsAppContact(this.leadKey, whatsappNumber, {
+      this.gtm.trackWhatsAppContact(this.leadKey, whatsappNumber, {
         user_name: userName,
         location: location,
         affiliate_code: this.affiliateCode || 'none'

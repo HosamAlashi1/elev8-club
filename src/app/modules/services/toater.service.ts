@@ -21,7 +21,7 @@ export class ToastrsService {
     this.toast.success(
       message,
       title || '',
-      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast success-toast' }
+      { ...this.baseConfig }
     );
   }
 
@@ -29,7 +29,7 @@ export class ToastrsService {
     this.toast.error(
       message,
       title || '',
-      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast error-toast', timeOut: 5000 }
+      { ...this.baseConfig }
     );
   }
 
@@ -37,7 +37,7 @@ export class ToastrsService {
     this.toast.info(
       message,
       title || '',
-      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast info-toast' }
+      { ...this.baseConfig }
     );
   }
 
@@ -45,7 +45,7 @@ export class ToastrsService {
     this.toast.warning(
       message,
       title || '',
-      { ...this.baseConfig, toastClass: 'ngx-toastr custom-toast warning-toast' }
+      { ...this.baseConfig }
     );
   }
 }

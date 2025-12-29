@@ -26,7 +26,7 @@ export class ViewAffiliateComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.affiliate) {
-      this.affiliateLink = `${window.location.origin}/home?ref=${this.affiliate.code}`;
+      this.affiliateLink = `${window.location.origin}/#/home?ref=${this.affiliate.code}`;
     }
   }
 

@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
-import { MetaPixelService } from '../../../../../services/meta-pixel.service';
+import { GtmService } from '../../../../../services/gtm.service';
+import Hls from 'hls.js';
 
 @Component({
   selector: 'app-video-hero-section',
@@ -22,7 +23,7 @@ import { MetaPixelService } from '../../../../../services/meta-pixel.service';
     ])
   ]
 })
-export class VideoHeroSectionComponent implements OnInit {
+export class VideoHeroSectionComponent implements OnInit, AfterViewInit {
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
   
   isPlaying = false;
@@ -33,6 +34,7 @@ export class VideoHeroSectionComponent implements OnInit {
   isMuted = false;
   isFullscreen = false;
   progress = 0;
+  isIOS = false;
 
   private leadKey: string | null = null;
   private hasTrackedPlay = false;
@@ -41,11 +43,13 @@ export class VideoHeroSectionComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private metaPixel: MetaPixelService
-  ) { }
+    private gtm: GtmService
+  ) {}
 
   ngOnInit(): void {
-    // Get leadKey from URL params
+    this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
     this.route.queryParams.subscribe(params => {
       this.leadKey = params['lead'] || null;
     });
@@ -53,7 +57,41 @@ export class VideoHeroSectionComponent implements OnInit {
 
   ngAfterViewInit(): void {
     const video = this.videoPlayer.nativeElement;
-    
+
+    // -------------------------------
+    //        H L S   L O A D E R
+    // -------------------------------
+    const hlsSource = 'assets/videos/hls_here_1/here_1.m3u8';
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        maxBufferLength: 30,
+        maxMaxBufferLength: 60
+      });
+
+      hls.loadSource(hlsSource);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log("HLS Manifest loaded successfully");
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error("HLS ERROR:", data);
+      });
+
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = hlsSource;
+    }
+
+    // -------------------------------
+    //         EXISTING EVENTS
+    // -------------------------------
+
+    video.volume = this.volume;
+    video.muted = false;
+    this.isMuted = false;
+
     video.addEventListener('loadedmetadata', () => {
       this.duration = video.duration;
     });
@@ -61,20 +99,18 @@ export class VideoHeroSectionComponent implements OnInit {
     video.addEventListener('timeupdate', () => {
       this.currentTime = video.currentTime;
       this.progress = (video.currentTime / video.duration) * 100;
-      
-      // Stage 8: Track Video Complete (when 95% watched)
+
       if (this.progress >= 95 && !this.hasTrackedComplete) {
-        this.metaPixel.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
+        this.gtm.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
         this.hasTrackedComplete = true;
       }
     });
 
     video.addEventListener('ended', () => {
       this.isPlaying = false;
-      
-      // Stage 8: Track Video Complete (if not already tracked)
+
       if (!this.hasTrackedComplete) {
-        this.metaPixel.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
+        this.gtm.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
         this.hasTrackedComplete = true;
       }
     });
@@ -82,14 +118,14 @@ export class VideoHeroSectionComponent implements OnInit {
 
   togglePlay(): void {
     const video = this.videoPlayer.nativeElement;
+
     if (this.isPlaying) {
       video.pause();
     } else {
       video.play();
-      
-      // Stage 8: Track Video Play (first play only)
+
       if (!this.hasTrackedPlay) {
-        this.metaPixel.trackVideoPlay('challenge_intro_video', this.leadKey || undefined);
+        this.gtm.trackVideoPlay('challenge_intro_video', this.leadKey || undefined);
         this.hasTrackedPlay = true;
       }
     }
@@ -100,7 +136,6 @@ export class VideoHeroSectionComponent implements OnInit {
     const video = this.videoPlayer.nativeElement;
     const progressBar = event.currentTarget as HTMLElement;
     const rect = progressBar.getBoundingClientRect();
-    // RTL: Calculate from right to left
     const pos = (rect.right - event.clientX) / rect.width;
     video.currentTime = pos * video.duration;
   }
@@ -125,13 +160,9 @@ export class VideoHeroSectionComponent implements OnInit {
     if (!container) return;
 
     if (!this.isFullscreen) {
-      if (container.requestFullscreen) {
-        container.requestFullscreen();
-      }
+      if (container.requestFullscreen) container.requestFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      if (document.exitFullscreen) document.exitFullscreen();
     }
     this.isFullscreen = !this.isFullscreen;
   }
@@ -144,30 +175,51 @@ export class VideoHeroSectionComponent implements OnInit {
   }
 
   onTouchControls(event: TouchEvent): void {
-    // Show controls on touch
     this.showControls = true;
-    
-    // Auto-hide controls after 3 seconds when playing
-    if (this.isPlaying) {
-      this.resetControlsTimeout();
-    }
+    if (this.isPlaying) this.resetControlsTimeout();
   }
 
   onClickControls(event: MouseEvent): void {
-    // Prevent hiding controls when clicking on controls
     event.stopPropagation();
   }
 
   private resetControlsTimeout(): void {
-    if (this.controlsTimeout) {
-      clearTimeout(this.controlsTimeout);
-    }
-    
+    if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
+
     this.controlsTimeout = setTimeout(() => {
-      if (this.isPlaying) {
-        this.showControls = false;
-      }
+      if (this.isPlaying) this.showControls = false;
     }, 3000);
+  }
+
+  onVideoLoaded(): void {
+    console.log('Video data loaded successfully');
+    const video = this.videoPlayer.nativeElement;
+    video.volume = this.volume;
+  }
+
+  onVideoCanPlay(): void {
+    console.log('Video can play - ready for playback');
+  }
+
+  onVideoPlay(): void {
+    this.isPlaying = true;
+    if (!this.hasTrackedPlay) {
+      this.gtm.trackVideoPlay('challenge_intro_video', this.leadKey || undefined);
+      this.hasTrackedPlay = true;
+    }
+  }
+
+  onVideoPause(): void {
+    this.isPlaying = false;
+  }
+
+  onVideoError(event: Event): void {
+    console.error('Video failed to load:', event);
+    const video = event.target as HTMLVideoElement;
+    if (video.error) {
+      console.error('Error code:', video.error.code);
+      console.error('Error message:', video.error.message);
+    }
   }
 
 }

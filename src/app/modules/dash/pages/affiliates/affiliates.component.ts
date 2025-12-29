@@ -146,7 +146,7 @@ export class AffiliatesComponent implements OnInit {
   }
 
   copyLink(aff: any): void {
-    const link = `${window.location.origin}/home?ref=${aff.code}`;
+    const link = `${window.location.origin}/#/home?ref=${aff.code}`;
 
     navigator.clipboard.writeText(link).then(() => {
       aff.copied = true;

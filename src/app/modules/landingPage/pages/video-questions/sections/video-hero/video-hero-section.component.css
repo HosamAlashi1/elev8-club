@@ -58,6 +58,7 @@
   margin: 0 auto 2rem;
   border-radius: 1rem;
   overflow: hidden;
+  box-sizing: border-box;
   box-shadow: 
     0 0 60px rgba(207, 174, 88, 0.4),
     0 20px 60px rgba(0, 0, 0, 0.6),
@@ -68,6 +69,8 @@
   transition: all 0.4s ease;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  /* iOS Safari fix */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .video-container:hover {
@@ -79,12 +82,17 @@
 }
 
 .video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
   cursor: pointer;
-  object-fit: contain;
+  object-fit: cover;
   background: #000;
+  border-radius: 1rem;
+  box-sizing: border-box;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
@@ -100,7 +108,52 @@
 
 /* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  .video-container {
+    isolation: isolate;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    overflow: hidden;
+    /* Force border rendering */
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    /* Prevent border clipping */
+    padding: 0;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #CFAE58;
+  }
+  
   .video-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: auto;
+    display: block;
+    z-index: 1;
+    object-fit: cover;
+    border-radius: 1rem;
+    /* Ensure video fills container exactly */
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  
+  .play-overlay {
+    z-index: 2;
+    isolation: isolate;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  
+  .video-controls {
+    z-index: 3;
+    isolation: isolate;
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
   }

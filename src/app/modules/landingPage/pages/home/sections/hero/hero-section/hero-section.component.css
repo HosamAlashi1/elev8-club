@@ -457,10 +457,14 @@
 
 /* المحتوى الأساسي */
 .hero-inner {
+  position: relative;
   max-width: 960px;
   margin: 0 auto;
   text-align: center;
   color: #ffffff;
+  z-index: 10;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* === الشريط العلوي مطابق للصورة 100% === */
@@ -1000,6 +1004,25 @@
 /* iOS specific fixes */
 @supports (-webkit-touch-callout: none) {
   /* This targets iOS Safari specifically */
+  
+  .hero-section {
+    isolation: isolate;
+  }
+  
+  .hero-inner {
+    position: relative;
+    z-index: 10;
+    isolation: isolate;
+  }
+  
+  .hero-bg,
+  .hero-bg-line,
+  .trading-chart-overlay,
+  .golden-wave,
+  .trading-particles {
+    z-index: -1;
+    isolation: isolate;
+  }
   
   .hero-countdown,
   .countdown-card,

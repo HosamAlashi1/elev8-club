@@ -4,7 +4,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { AnimationOptions } from 'ngx-lottie';
 import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOverlayService.service';
 import { LandingService } from '../services/landing.service';
-import { MetaPixelService } from '../services/meta-pixel.service';
+import { GtmService } from '../services/gtm.service';
 
 import { filter } from 'rxjs/operators';
 
@@ -35,7 +35,7 @@ export class LandingPageComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
     private router: Router,
-    private metaPixel: MetaPixelService,
+    private gtm: GtmService,
   ) {
     this.lottieService.state$.subscribe(config => this.lottieConfig = config);
     this.currentYear = new Date().getFullYear();
@@ -59,16 +59,16 @@ export class LandingPageComponent implements OnInit {
         this.checkRoute(url);
 
         // Stage 1: PageView رسمي
-        this.metaPixel.trackPageView(url);
+        this.gtm.trackPageView(url);
 
         // Stage 2: ViewContent - الصفحة الأولى (الخطوة 1)
         if (url.includes('/home')) {
-          this.metaPixel.trackViewContent(1, 'landing_step_1', { page_name: 'Home' });
+          this.gtm.trackViewContent(1, 'landing_step_1', { page_name: 'Home' });
         }
 
         // Stage 2: ViewContent - الصفحة الثانية (الخطوة 2)
         if (url.includes('/video-questions')) {
-          this.metaPixel.trackViewContent(2, 'landing_step_2', { page_name: 'Video Questions' });
+          this.gtm.trackViewContent(2, 'landing_step_2', { page_name: 'Video Questions' });
         }
       });
   }

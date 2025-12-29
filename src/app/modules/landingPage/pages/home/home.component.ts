@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrateg
 import { RouterOutlet, ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LandingService, LandingPageData } from '../../../services/landing.service';
-import { MetaPixelService } from '../../../services/meta-pixel.service';
+import { GtmService } from '../../../services/gtm.service';
 
 @Component({
   selector: 'app-home',
@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private landingService: LandingService,
     private route: ActivatedRoute,
-    private metaPixel: MetaPixelService
+    private gtm: GtmService
   ) {}
 
   ngOnInit(): void {
@@ -113,7 +113,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isRegistrationPopupOpen = true;
     
     // Stage 3: Track Lead Intent (Opening Registration Modal)
-    this.metaPixel.trackLeadIntent(source, {
+    this.gtm.trackLeadIntent(source, {
       affiliate_code: this.affiliateCode || 'none'
     });
     
