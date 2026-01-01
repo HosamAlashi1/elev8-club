@@ -8,16 +8,16 @@
   <div class="hero-bg-line hero-bg-line--2"></div>
 
   <!-- ============ Trading Background Effects ============ -->
-  
+
   <!-- Trading Chart Lines (خطوط الرسم البياني) -->
   <div class="trading-chart-overlay">
     <svg class="chart-line chart-line-1" viewBox="0 0 1200 400" preserveAspectRatio="none">
-      <polyline points="0,300 150,250 300,280 450,180 600,200 750,120 900,150 1050,80 1200,100" 
-                fill="none" stroke="rgba(207,174,88,0.15)" stroke-width="2"/>
+      <polyline points="0,300 150,250 300,280 450,180 600,200 750,120 900,150 1050,80 1200,100" fill="none"
+        stroke="rgba(207,174,88,0.15)" stroke-width="2" />
     </svg>
     <svg class="chart-line chart-line-2" viewBox="0 0 1200 400" preserveAspectRatio="none">
-      <polyline points="0,200 150,180 300,220 450,140 600,160 750,100 900,130 1050,70 1200,90" 
-                fill="none" stroke="rgba(207,174,88,0.08)" stroke-width="1.5"/>
+      <polyline points="0,200 150,180 300,220 450,140 600,160 750,100 900,130 1050,70 1200,90" fill="none"
+        stroke="rgba(207,174,88,0.08)" stroke-width="1.5" />
     </svg>
   </div>
 
@@ -42,10 +42,11 @@
     <span class="particle particle-12">$</span>
   </div>
 
-  <div class="hero-inner content-container">
+  <div class="hero-inner content-container" data-aos="fade-up" data-aos-delay="50">
 
     <!-- الشريط العلوي -->
-    <div class="hero-top-pill" data-aos="fade-down" data-aos-delay="100">
+    <div class="hero-top-pill" data-aos="fade-down" data-aos-delay="120" data-aos-duration="700"
+      data-aos-easing="ease-out-cubic">
       <span class="pill-dot">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path
@@ -60,61 +61,75 @@
     </div>
 
     <!-- العنوان الرئيسي -->
-    <h1 class="hero-title heading-3d" data-aos="fade-up" data-aos-delay="150">
+    <h1 class="hero-title heading-3d" data-aos="fade-left" data-aos-delay="500" data-aos-duration="1000"
+      data-aos-easing="ease-out-back">
       خلال <span>7 أيام</span>، رح نساعد
       <span class="highlight-gold">10,000</span> شخص
       يبدأوا التداول مجاناً!
     </h1>
 
     <!-- النصوص الفرعية -->
-    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="220">
+    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="320" data-aos-duration="700">
       أول وآخر مرة نقدّم فيها التحدي مجاناً 100%.
     </p>
 
-    <p class="hero-text" data-aos="fade-up" data-aos-delay="260">
+    <p class="hero-text" data-aos="fade-up" data-aos-delay="380" data-aos-duration="700">
       انضم الآن وابدأ رحلتك للتداول بثقة وبطريقة احترافية.
     </p>
 
     <!-- العداد -->
-    <div class="hero-countdown" *ngIf="showCountdown" aria-label="العدّ التنازلي" data-aos="zoom-in" data-aos-delay="350">
-      
+    <div class="hero-countdown" *ngIf="showCountdown" aria-label="العدّ التنازلي" data-aos="zoom-in"
+      data-aos-delay="450" data-aos-duration="800">
+
       <!-- Countdown Label -->
-      <div class="countdown-status-label" [class.not-started]="challengeStatus === 'not-started'" [class.active]="challengeStatus === 'active'">
+      <div class="countdown-status-label" [class.not-started]="challengeStatus === 'not-started'"
+        [class.active]="challengeStatus === 'active'">
         {{ countdownLabel }}
       </div>
 
       <div class="countdown-cards-wrapper">
         <div class="countdown-card countdown-card--1">
-          <div class="countdown-value" [@flipAnimation]="countdown.days">{{ countdown.days | number:'2.0-0' }}</div>
+          <div class="countdown-value" [@flipAnimation]="countdown.days">
+            {{ countdown.days | number:'2.0-0' }}
+          </div>
           <div class="countdown-label">أيام</div>
         </div>
 
         <div class="countdown-card countdown-card--2">
-          <div class="countdown-value" [@flipAnimation]="countdown.hours">{{ countdown.hours | number:'2.0-0' }}</div>
+          <div class="countdown-value" [@flipAnimation]="countdown.hours">
+            {{ countdown.hours | number:'2.0-0' }}
+          </div>
           <div class="countdown-label">ساعات</div>
         </div>
 
         <div class="countdown-card countdown-card--3">
-          <div class="countdown-value" [@flipAnimation]="countdown.minutes">{{ countdown.minutes | number:'2.0-0' }}</div>
+          <div class="countdown-value" [@flipAnimation]="countdown.minutes">
+            {{ countdown.minutes | number:'2.0-0' }}
+          </div>
           <div class="countdown-label">دقائق</div>
         </div>
 
         <div class="countdown-card countdown-card--4">
-          <div class="countdown-value" [@flipAnimation]="countdown.seconds">{{ countdown.seconds | number:'2.0-0' }}</div>
+          <div class="countdown-value" [@flipAnimation]="countdown.seconds">
+            {{ countdown.seconds | number:'2.0-0' }}
+          </div>
           <div class="countdown-label">ثواني</div>
         </div>
       </div>
     </div>
 
     <!-- Challenge Ended Message -->
-    <div class="challenge-ended" *ngIf="challengeStatus === 'ended'" data-aos="zoom-in" data-aos-delay="350">
+    <div class="challenge-ended" *ngIf="challengeStatus === 'ended'" data-aos="zoom-in" data-aos-delay="450"
+      data-aos-duration="800">
       <div class="ended-icon"></div>
       <h3 class="ended-title">انتهى التحدي</h3>
-      <p class="ended-text">شكراً لاهتمامك! تابعنا للإعلان عن التحدي القادم</p>
+      <p class="ended-text">
+        شكراً لاهتمامك! تابعنا للإعلان عن التحدي القادم
+      </p>
     </div>
 
     <!-- زر CTA -->
-    <div class="hero-cta-wrapper" data-aos="zoom-in-up" data-aos-delay="450">
+    <div class="hero-cta-wrapper" data-aos="zoom-in-up" data-aos-delay="560" data-aos-duration="900">
       <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
         <span class="btn-cta-text">سجّل الآن وابدأ التحدي</span>
 
@@ -126,15 +141,15 @@
 
         <div class="ripple-gold"></div>
       </button>
-
     </div>
 
     <!-- المميزات -->
-    <ul class="hero-benefits mt-5" data-aos="fade-up" data-aos-delay="530">
+    <ul class="hero-benefits mt-5" data-aos="fade-up" data-aos-delay="680" data-aos-duration="700">
       <li><span class="benefit-dot"></span>تدريب عملي</li>
       <li><span class="benefit-dot"></span>مجموعة داعمة</li>
       <li><span class="benefit-dot"></span>100% مجاني</li>
     </ul>
 
   </div>
+
 </section>

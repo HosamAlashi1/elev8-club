@@ -94,7 +94,7 @@ export class AppComponent implements OnInit {
       (AOS as any).init({
         duration: 800,
         once: true,
-        offset: 0,
+        offset: -30,
         anchorPlacement: 'top-center',
         mirror: false
       });

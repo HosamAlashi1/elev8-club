@@ -85,15 +85,6 @@
 }
 
 
-@media (max-width: 768px) {
-  [data-aos] {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
-
 .modal-xxl .modal-dialog {
   max-width: 90% !important;  /* أكبر من xl */
   width: 90% !important;

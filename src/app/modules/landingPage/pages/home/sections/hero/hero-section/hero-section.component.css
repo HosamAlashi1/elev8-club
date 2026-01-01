@@ -467,6 +467,101 @@
   transform: translateZ(0);
 }
 
+/* ============================================
+   AOS Animation Initial States & Overrides
+   ============================================ */
+
+/* Initial hidden states for AOS elements */
+.hero-inner[data-aos] {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.hero-inner[data-aos].aos-animate {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.hero-top-pill[data-aos] {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.hero-top-pill[data-aos].aos-animate {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.hero-title[data-aos] {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.hero-title[data-aos].aos-animate {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.hero-subtitle[data-aos],
+.hero-text[data-aos] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.hero-subtitle[data-aos].aos-animate,
+.hero-text[data-aos].aos-animate {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.hero-countdown[data-aos] {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.hero-countdown[data-aos].aos-animate {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.hero-cta-wrapper[data-aos] {
+  opacity: 0;
+  transform: scale(0.95) translateY(15px);
+}
+
+.hero-cta-wrapper[data-aos].aos-animate {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.hero-benefits[data-aos] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.hero-benefits[data-aos].aos-animate {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.challenge-ended[data-aos] {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.challenge-ended[data-aos].aos-animate {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
 /* === الشريط العلوي مطابق للصورة 100% === */
 .hero-top-pill {
   display: inline-flex;
