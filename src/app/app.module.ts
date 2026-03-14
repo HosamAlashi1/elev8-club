@@ -18,6 +18,7 @@ import player from 'lottie-web';
 import { SharedModule } from './modules/dash/shared/shared.module';
 
 import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireFunctionsModule } from '@angular/fire/compat/functions';
 import { environment } from '../environments/environment';
 import { PublicSharedModule } from './modules/shared/public-shared.module';
 
@@ -49,7 +50,8 @@ export function playerFactory() {
       defaultLanguage: 'en'
     }),
     LottieModule.forRoot({ player: playerFactory }),
-    AngularFireModule.initializeApp(environment.firebase)
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireFunctionsModule
     // AngularFireDatabaseModule,
     // AngularFireStorageModule,
   ],

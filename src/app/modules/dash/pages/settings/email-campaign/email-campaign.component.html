@@ -1,0 +1,192 @@
+<div class="email-campaign-container">
+  <div class="row g-4">
+    <!-- Left Column: Email Composer -->
+    <div class="col-lg-8">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-4">
+            <i class="fe fe-mail me-2"></i>
+            Compose Email Campaign
+          </h5>
+
+          <!-- Subject -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Email Subject <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="emailSubject"
+              placeholder="Enter email subject..."
+              maxlength="100"
+            />
+            <small class="text-muted">{{ emailSubject.length }}/100 characters</small>
+          </div>
+
+          <!-- Rich Text Editor -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Email Content <span class="text-danger">*</span>
+            </label>
+            <quill-editor
+              [(ngModel)]="emailContent"
+              [modules]="quillModules"
+              [styles]="{ height: '350px' }"
+              placeholder="Write your email content here..."
+            ></quill-editor>
+          </div>
+
+          <!-- Preview Toggle -->
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-outline-secondary btn-sm"
+              (click)="togglePreview()"
+              [disabled]="!emailContent"
+            >
+              <i class="fe" [class.fe-eye]="!showPreview" [class.fe-eye-off]="showPreview"></i>
+              {{ showPreview ? 'Hide' : 'Show' }} Preview
+            </button>
+          </div>
+
+          <!-- Preview Section -->
+          <div class="preview-section mt-4" *ngIf="showPreview && emailContent">
+            <div class="card bg-light">
+              <div class="card-header bg-white">
+                <h6 class="mb-0">Email Preview</h6>
+              </div>
+              <div class="card-body">
+                <div class="mb-2">
+                  <strong>Subject:</strong> {{ emailSubject || '(No subject)' }}
+                </div>
+                <hr />
+                <div [innerHTML]="emailContent" class="email-preview-content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Campaign Details & Filters -->
+    <div class="col-lg-4">
+      <!-- Campaign Stats -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="fe fe-bar-chart-2 me-2"></i>
+            Campaign Stats
+          </h5>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-label">Total Leads</div>
+              <div class="stat-value" *ngIf="!isLoadingLeads">{{ allLeads.length }}</div>
+              <div class="stat-value" *ngIf="isLoadingLeads">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-label">Targeted Recipients</div>
+              <div class="stat-value text-primary">{{ targetedLeadsCount }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Recipients -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="fe fe-filter me-2"></i>
+            Filter Recipients
+          </h5>
+
+          <!-- Test Mode Toggle -->
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="testModeSwitch"
+                [(ngModel)]="testMode"
+                (ngModelChange)="updateTargetedCount()"
+              />
+              <label class="form-check-label" for="testModeSwitch">
+                <strong>Test Mode</strong>
+              </label>
+            </div>
+            <small class="text-muted" *ngIf="testMode">
+              Email will be sent only to: {{ testEmail }}
+            </small>
+          </div>
+
+          <hr *ngIf="testMode" />
+
+          <div class="mb-3" *ngIf="!testMode">
+            <label class="form-label">Status Filter</label>
+            <select
+              class="form-select"
+              [(ngModel)]="filterStatus"
+              (ngModelChange)="updateTargetedCount()"
+            >
+              <option value="all">All Leads</option>
+              <option value="completed">Completed Only</option>
+              <option value="pending">Pending Only</option>
+            </select>
+          </div>
+
+          <div class="alert alert-info mb-0" *ngIf="testMode">
+            <i class="fe fe-info me-2"></i>
+            <small>Test mode: Email will be sent to {{ testEmail }} only</small>
+          </div>
+
+          <div class="alert alert-info mb-0" *ngIf="!testMode && targetedLeadsCount > 0">
+            <i class="fe fe-info me-2"></i>
+            <small>{{ targetedLeadsCount }} lead(s) will receive this email</small>
+          </div>
+
+          <div class="alert alert-warning mb-0" *ngIf="!testMode && targetedLeadsCount === 0 && !isLoadingLeads">
+            <i class="fe fe-alert-triangle me-2"></i>
+            <small>No leads match the selected criteria</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Send Button -->
+      <div class="card">
+        <div class="card-body">
+          <button
+            class="btn btn-custom w-100"
+            [disabled]="!canSend()"
+            (click)="sendCampaign()"
+          >
+            <span *ngIf="!isSending">
+              <i class="fe fe-send me-2"></i>
+              Send Campaign
+            </span>
+            <span *ngIf="isSending">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Sending...
+            </span>
+          </button>
+
+          <button
+            class="btn btn-outline-secondary w-100 mt-2"
+            (click)="resetForm()"
+            [disabled]="isSending"
+          >
+            <i class="fe fe-x me-2"></i>
+            Reset Form
+          </button>
+
+          <div class="mt-3 text-muted small">
+            <i class="fe fe-info me-1"></i>
+            Emails will be sent using SendGrid API
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

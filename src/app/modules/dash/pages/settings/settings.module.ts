@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { QuillModule } from 'ngx-quill';
 import { SettingsComponent } from './settings.component';
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -13,13 +14,15 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { SalesSettingsComponent } from './sales-settings/sales-settings.component';
 import { GeneralSettingsComponent } from './general-settings/general-settings.component';
 import { AddEditSalesItemComponent } from './sales-settings/add-edit-sales-item/add-edit-sales-item.component';
+import { EmailCampaignComponent } from './email-campaign/email-campaign.component';
 
 @NgModule({
   declarations: [
     SettingsComponent,
     SalesSettingsComponent,
     GeneralSettingsComponent,
-    AddEditSalesItemComponent
+    AddEditSalesItemComponent,
+    EmailCampaignComponent
   ],
   imports: [
     CommonModule,
@@ -36,6 +39,7 @@ import { AddEditSalesItemComponent } from './sales-settings/add-edit-sales-item/
     MdbDropdownModule,
     MdbRippleModule,
     SharedModule,
+    QuillModule.forRoot()
   ]
 })
 export class SettingsModule { }

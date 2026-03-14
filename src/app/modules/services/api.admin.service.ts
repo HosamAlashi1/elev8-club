@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 const API_BASE_URL = `${environment.apiUrl}/`;
@@ -8,6 +10,8 @@ const API_BASE_URL = `${environment.apiUrl}/`;
 })
 // Dashboard & Admin - Admin APIs
 export class ApiAdminService {
+	constructor(private fns: AngularFireFunctions) {}
+
 	// Dashboard
 	public dashboard = {
 		home: API_BASE_URL + 'home', // POST
@@ -180,5 +184,15 @@ export class ApiAdminService {
 		readAll: API_BASE_URL + 'admins/notifications/read-all', // POST
 		hideAll: API_BASE_URL + 'admins/notifications/hide-all', // POST
 		unread: API_BASE_URL + 'admins/unread-notifications', // GET
+	}
+
+	/**
+	 * Send bulk email campaign to leads
+	 * @param emailData - { subject: string, htmlContent: string, recipients: string[] }
+	 * @returns Observable with response
+	 */
+	sendBulkEmail(emailData: { subject: string; htmlContent: string; recipients: string[] }): Observable<any> {
+		const callable = this.fns.httpsCallable('sendBulkEmail');
+		return callable(emailData);
 	}
 }

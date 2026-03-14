@@ -51,7 +51,7 @@ export class LeadsComponent implements OnInit {
     private toastr: ToastrsService,
     private publicService: PublicService
   ) {
-    this.size = this.publicService.getNumOfRows(450, 68);
+    this.size = this.publicService.getNumOfRows(450, 67.87);
     this.sizeOptions = [
       { value: this.size, label: `${this.size} rows` },
       { value: 10, label: '10 rows' },

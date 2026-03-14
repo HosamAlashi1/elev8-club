@@ -22,6 +22,15 @@
         General Settings
       </button>
 
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'email-campaign'"
+        (click)="setTab('email-campaign')"
+        data-aos="fade-up" data-aos-delay="400">
+        Email Campaign
+      </button>
+
       <!-- Underline المتحرك -->
       <div
         class="tab-underline-dynamic"
@@ -37,6 +46,10 @@
 
       <ng-container *ngIf="activeTab === 'general-settings'">
         <app-general-settings></app-general-settings>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'email-campaign'">
+        <app-email-campaign></app-email-campaign>
       </ng-container>
     </div>
   </div>

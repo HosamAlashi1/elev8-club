@@ -237,7 +237,7 @@ export class QuestionFormSectionComponent implements OnInit {
         // Stage 6: Track Complete Registration
         if (this.leadKey) {
           this.gtm.trackCompleteRegistration(this.leadKey, {
-            questions_count: this.questions.length,
+            questions_count: this.questions.length, 
             country: country,
             city: city
           });
@@ -253,72 +253,73 @@ export class QuestionFormSectionComponent implements OnInit {
       });
   }
 
-  completeRegistration(): void {
-    // جلب أرقام المبيعات من Firebase
-    this.firebaseService.list('sales').pipe(take(1)).subscribe({
-      next: (salesItems: any[]) => {
-        if (!salesItems || salesItems.length === 0) {
-          console.error('No sales items found');
-          return;
-        }
-
-        // إيجاد الـ sales item اللي ما تم assign له من أطول فترة (Round Robin)
-        const sortedSales = salesItems.sort((a, b) => {
-          const lastAssignedA = a.last_assigned_at || 0;
-          const lastAssignedB = b.last_assigned_at || 0;
-
-          // الأقدم أولاً (اللي ما تم assign له من أطول فترة)
-          return lastAssignedA - lastAssignedB;
-        });
-
-        const selectedSales = sortedSales[0];
-        const whatsappNumber = (selectedSales.whatsapp_number).replace(/[^0-9]/g, '');
-        const salesKey = selectedSales.key;
-        const assignedAt = Date.now();
-
-        // تحديث الـ Lead بإضافة معلومات الـ Sales المُخصّص
-        if (this.leadKey && salesKey) {
-          const assignedSalesData = {
-            assigned_sales: {
-              sales_id: salesKey,
-              whatsapp_number: whatsappNumber,
-              assigned_at: assignedAt,
-              assigned_via: 'whatsapp'
-            }
-          };
-
-          this.firebaseService.update('leads', this.leadKey, assignedSalesData)
-            .then(() => {
-              console.log(`Lead ${this.leadKey} assigned to sales ${salesKey}`);
-            })
-            .catch(err => {
-              console.error('Error assigning sales to lead:', err);
-              // لا نوقف التنفيذ - نكمل فتح واتساب
-            });
-        }
-
-        // تحديث الـ counter والـ last_assigned_at للـ sales المختار
-        if (salesKey) {
-          const newCounter = (selectedSales.counter || 0) + 1;
-          this.firebaseService.update('sales', salesKey, {
-            counter: newCounter,
-            last_assigned_at: assignedAt
-          })
-            .then(() => {
-              console.log(`Updated sales ${salesKey}: counter=${newCounter}, assigned_at=${assignedAt}`);
-            })
-            .catch(err => {
-              console.error('Error updating sales counter:', err);
-            });
-        }
-
-        // فتح واتساب
-        this.openWhatsApp(whatsappNumber);
-      },
-      error: (err) => {
-        console.error('Error loading sales items:', err);
+  async completeRegistration(): Promise<void> {
+    try {
+      // جلب أرقام المبيعات من Firebase
+      const salesItems = await this.firebaseService.list('sales').pipe(take(1)).toPromise();
+      
+      if (!salesItems || salesItems.length === 0) {
+        console.error('No sales items found');
+        return;
       }
-    });
+
+      // ترتيب Sales حسب counter (للتوزيع العادل)
+      const sortedSales = salesItems.sort((a, b) => {
+        return (a.counter || 0) - (b.counter || 0);
+      });
+
+      // اختيار sales بناءً على hash من leadKey (توزيع عادل ومضمون)
+      let selectedIndex = 0;
+      if (this.leadKey) {
+        // تحويل leadKey لـ number بسيط
+        const hash = this.leadKey.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        selectedIndex = hash % salesItems.length;
+      }
+
+      const selectedSales = sortedSales[selectedIndex];
+      const whatsappNumber = (selectedSales.whatsapp_number).replace(/[^0-9]/g, '');
+      const salesKey = selectedSales.key;
+      const assignedAt = Date.now();
+
+      console.log(`Selected sales index ${selectedIndex}/${salesItems.length}: ${salesKey}`);
+
+      // تحديث last_assigned_at والـ counter للـ sales المختار
+      if (salesKey) {
+        await this.firebaseService.update('sales', salesKey, {
+          last_assigned_at: assignedAt,
+          counter: (selectedSales.counter || 0) + 1
+        });
+        console.log(`Updated sales ${salesKey}: counter=${(selectedSales.counter || 0) + 1}, at ${assignedAt}`);
+      }
+
+      // تحديث الـ Lead بإضافة معلومات الـ Sales المُخصّص
+      if (this.leadKey && salesKey) {
+        const assignedSalesData = {
+          assigned_sales: {
+            sales_id: salesKey,
+            whatsapp_number: whatsappNumber,
+            assigned_at: assignedAt,
+            assigned_via: 'whatsapp'
+          }
+        };
+
+        await this.firebaseService.update('leads', this.leadKey, assignedSalesData);
+        console.log(`Lead ${this.leadKey} assigned to sales ${salesKey}`);
+      }
+
+      // فتح واتساب بعد ما نتأكد إنه الـ updates خلصت
+      this.openWhatsApp(whatsappNumber);
+      
+    } catch (err) {
+      console.error('Error in completeRegistration:', err);
+      // في حالة الخطأ، حاول فتح واتساب على أي حال
+      this.firebaseService.list('sales').pipe(take(1)).subscribe(sales => {
+        if (sales && sales.length > 0) {
+          const whatsappNumber = sales[0].whatsapp_number.replace(/[^0-9]/g, '');
+          this.openWhatsApp(whatsappNumber);
+        }
+      });
+    }
   }
 
   private openWhatsApp(whatsappNumber: string): void {
@@ -365,14 +366,18 @@ export class QuestionFormSectionComponent implements OnInit {
 
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-    // حاول الفتح مباشرةً
+    // محاولة 1: فتح في نافذة جديدة
     const newWindow = window.open(url, '_blank');
+    
+    // محاولة 2: إذا فشلت المحاولة الأولى (popup blocked أو عدم دعم)
+    setTimeout(() => {
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        // Fallback: استخدام window.location في نفس النافذة
+        console.log('Popup blocked, redirecting in same window...');
+        window.location.href = url;
+      }
+    }, 100);
 
-    // إذا فشلت، جرّب حل بديل
-    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-      // ممكن تعرض لهم رسالة أو تحاول بطريقة أخرى
-      alert('يبدو أن المتصفح منع فتح واتساب مباشرةً. الرجاء فتح الرابط يدوياً: ' + url);
-    }
   }
 
   // دوال مساعدة لتحويل الإجابات

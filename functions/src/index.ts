@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {google} from "googleapis";
+import * as sgMail from "@sendgrid/mail";
 
 admin.initializeApp();
 
@@ -107,3 +108,120 @@ export const onLeadUpdated = functions.firestore
       }
     }
   });
+
+/**
+ * Firebase Function لإرسال الإيميلات الجماعية
+ * تستقبل: subject, htmlContent, recipients[]
+ */
+export const sendBulkEmail = functions.https.onCall(async (data, context) => {
+  // التحقق من أن المستخدم مصادق عليه
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated to send emails"
+    );
+  }
+
+  const {subject, htmlContent, recipients} = data;
+
+  // التحقق من البيانات المطلوبة
+  if (!subject || !htmlContent || !recipients || !Array.isArray(recipients)) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Missing required fields: subject, htmlContent, or recipients"
+    );
+  }
+
+  if (recipients.length === 0) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Recipients array is empty"
+    );
+  }
+
+  try {
+    // جلب إعدادات البريد من Firebase
+    const settingsSnapshot = await admin.database()
+      .ref("settings")
+      .once("value");
+
+    const settings = settingsSnapshot.val();
+
+    if (!settings || !settings.sendgrid_key) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "SendGrid API key not configured in settings"
+      );
+    }
+
+    // تهيئة SendGrid
+    sgMail.setApiKey(settings.sendgrid_key);
+
+    const senderEmail = settings.sender_email ||
+      "noreply@elev8club.com";
+    const senderName = settings.sender_name || "Elev8 Club";
+
+    // إرسال الإيميلات على دفعات (100 لكل دفعة)
+    const BATCH_SIZE = 100;
+    const batches = [];
+    let successCount = 0;
+    let failedCount = 0;
+
+    for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
+      const batch = recipients.slice(i, i + BATCH_SIZE);
+      batches.push(batch);
+    }
+
+    const batchMsg = "📧 Sending to " + recipients.length +
+      " recipients in " + batches.length + " batches";
+    console.log(batchMsg);
+
+    // معالجة كل دفعة
+    for (const batch of batches) {
+      const emailPromises = batch.map(async (email: string) => {
+        try {
+          await sgMail.send({
+            to: email,
+            from: {
+              email: senderEmail,
+              name: senderName,
+            },
+            subject: subject,
+            html: htmlContent,
+          });
+          successCount++;
+          return {email, success: true};
+        } catch (error) {
+          console.error("Failed to send to " + email + ":", error);
+          failedCount++;
+          return {email, success: false};
+        }
+      });
+
+      await Promise.all(emailPromises);
+    }
+
+    const completeMsg = "✅ Email campaign completed: " +
+      successCount + " sent, " + failedCount + " failed";
+    console.log(completeMsg);
+
+    const resultMsg = "Email sent to " + successCount +
+      " out of " + recipients.length + " recipients";
+
+    return {
+      success: true,
+      totalRecipients: recipients.length,
+      successCount,
+      failedCount,
+      message: resultMsg,
+    };
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ?
+      error.message : "Unknown error";
+    console.error("❌ Error sending bulk emails:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to send emails: " + errorMessage
+    );
+  }
+});

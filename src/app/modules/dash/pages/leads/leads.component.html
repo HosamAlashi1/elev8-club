@@ -48,10 +48,11 @@
                             <th class="w-15">Email</th>
                             <th class="w-10">Phone</th>
                             <th class="w-10">Location</th>
-                            <th class="w-15">Affiliate</th>
+                            <th class="w-10">Affiliate</th>
+                            <th class="w-10">Sales</th>
                             <th class="w-10">Status</th>
                             <th class="w-10">Created At</th>
-                            <th class="w-10">Actions</th>
+                            <th class="w-8">Actions</th>
                         </tr>
                     </thead>
 
@@ -59,9 +60,9 @@
 
                      <tbody *ngIf="(isLoading$ | async)">
                         <tr *ngFor="let _ of [].constructor(size)">
-                            <td *ngFor="let __ of [].constructor(8)" style="padding:18.75px 10px;">
+                            <td *ngFor="let __ of [].constructor(9)" style="padding:19.0198px 10px;">
                                 <ngx-skeleton-loader appearance="line" animation="progress-dark"
-                                    [theme]="{ width: '60%', height: '24px', 'border-radius': '6px', margin: '0' }">
+                                    [theme]="{ width: '60%', height: '24.01px', 'border-radius': '6px', margin: '0' }">
                                 </ngx-skeleton-loader>
                             </td>
                         </tr>
@@ -85,6 +86,18 @@
                             <td class="text-muted">
                                 <div>{{ lead.affiliateName }}</div>
                                 <small class="text-muted">{{ lead.affiliateCode }}</small>
+                            </td>
+
+                            <td class="text-muted">
+                                <div *ngIf="lead.assigned_sales" class="text-success fw-semibold">
+                                    <i class="fe fe-check-circle me-1"></i>Assigned
+                                </div>
+                                <small *ngIf="lead.assigned_sales" class="text-muted">
+                                    {{ lead.assigned_sales.whatsapp_number }}
+                                </small>
+                                <span *ngIf="!lead.assigned_sales" class="text-muted">
+                                    <i class="fe fe-minus-circle me-1"></i>Not Assigned
+                                </span>
                             </td>
 
                             <td>
