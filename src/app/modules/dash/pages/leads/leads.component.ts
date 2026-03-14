@@ -11,6 +11,13 @@ import { PublicService } from 'src/app/modules/services/public.service';
 interface LeadWithAffiliate extends Lead {
   affiliateName?: string;
   affiliateCode?: string;
+  assigned_sales?: {
+    sales_id: string;
+    whatsapp_number: string;
+    assigned_at: number;
+    assigned_via: string;
+  };
+  salesName?: string;
 }
 
 @Component({
@@ -25,14 +32,18 @@ export class LeadsComponent implements OnInit {
   allLeads: LeadWithAffiliate[] = [];
   currentVersion: Version | null = null;
   affiliates: Affiliate[] = [];
+  salesList: any[] = [];
 
   // Filters
   searchText = '';
+  selectedSalesId = '';
 
   // Pagination
   page = 1;
   size = 10;
   totalCount = 0;
+  sizeOptions: { value: number; label: string }[] = [];
+  salesOptions: { value: string; label: string }[] = [];
 
   constructor(
     private firebaseService: FirebaseService,
@@ -41,6 +52,15 @@ export class LeadsComponent implements OnInit {
     private publicService: PublicService
   ) {
     this.size = this.publicService.getNumOfRows(450, 68);
+    this.sizeOptions = [
+      { value: this.size, label: `${this.size} rows` },
+      { value: 10, label: '10 rows' },
+      { value: 25, label: '25 rows' },
+      { value: 50, label: '50 rows' },
+      { value: 100, label: '100 rows' },
+      { value: 250, label: '250 rows' },
+      { value: 500, label: '500 rows' }
+    ];
   }
 
   ngOnInit(): void {
@@ -69,6 +89,20 @@ export class LeadsComponent implements OnInit {
   loadAffiliates(): void {
     this.firebaseService.getAllAffiliates().subscribe(affiliates => {
       this.affiliates = affiliates;
+      this.loadSales();
+    });
+  }
+
+  loadSales(): void {
+    this.firebaseService.list('sales').subscribe((sales: any[]) => {
+      this.salesList = sales || [];
+      this.salesOptions = [
+        { value: '', label: 'All Sales' },
+        ...this.salesList.map(s => ({
+          value: s.key,
+          label: s.name || s.whatsapp_number
+        }))
+      ];
       this.loadLeads();
     });
   }
@@ -80,17 +114,19 @@ export class LeadsComponent implements OnInit {
 
     this.firebaseService.getLeadsByVersion(this.currentVersion.key).subscribe(
       leads => {
-        // Add affiliate information to each lead
+        // Add affiliate and sales information to each lead
         this.allLeads = leads.map(lead => {
           const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
+          const sales = lead.assigned_sales ? this.salesList.find(s => s.key === lead.assigned_sales?.sales_id) : null;
           return {
             ...lead,
             affiliateName: affiliate?.name || 'none',
-            affiliateCode: affiliate?.code || lead.affiliateCode
+            affiliateCode: affiliate?.code || lead.affiliateCode,
+            salesName: sales?.name || (lead.assigned_sales ? 'Assigned' : 'Not Assigned')
           };
-        });
+        }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-        this.applyFilters(false); // ما نرجّع اللودر من هنا لأنه جوّا بيتعامل
+        this.applyFilters(false, false); // ما نرجّع اللودر ولا نعيد تعيين الصفحة
       },
       error => {
         console.error('Error loading leads:', error);
@@ -104,10 +140,11 @@ export class LeadsComponent implements OnInit {
    * applyFilters
    * لما نبحث أو نفلتر، نفعّل لودر بسيط
    */
-  applyFilters(withLoading: boolean = true): void {
+  applyFilters(withLoading: boolean = true, resetPage: boolean = true): void {
     const run = () => {
       let filtered = [...this.allLeads];
 
+      // فلتر البحث
       if (this.searchText.trim()) {
         const search = this.searchText.toLowerCase();
         filtered = filtered.filter(l =>
@@ -118,9 +155,24 @@ export class LeadsComponent implements OnInit {
         );
       }
 
+      // فلتر Sales
+      if (this.selectedSalesId) {
+        filtered = filtered.filter(l => l.assigned_sales?.sales_id === this.selectedSalesId);
+      }
+
       this.leads = filtered;
       this.totalCount = filtered.length;
-      this.page = 1;
+      
+      // نرجع للصفحة الأولى فقط لو كان بحث جديد أو فلتر
+      if (resetPage) {
+        this.page = 1;
+      } else {
+        // نتأكد إن الصفحة الحالية لسه صالحة
+        const maxPage = Math.ceil(this.totalCount / this.size) || 1;
+        if (this.page > maxPage) {
+          this.page = maxPage;
+        }
+      }
     };
 
     if (withLoading) {
@@ -138,6 +190,11 @@ export class LeadsComponent implements OnInit {
     this.setTableLoading(() => {
       this.page = page;
     });
+  }
+
+  onSizeChange(): void {
+    this.page = 1;
+    this.list(this.page);
   }
 
   /**

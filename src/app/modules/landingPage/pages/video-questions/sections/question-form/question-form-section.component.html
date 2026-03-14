@@ -101,7 +101,9 @@
             type="text"
             [(ngModel)]="answers[currentQ.id]"
             placeholder="أدخل إجابتك هنا..."
-            class="text-input">
+            class="text-input"
+            required
+            (keydown.enter)="onEnterKey($event)">
           <button 
             (click)="handleNext()"
             [disabled]="!canProceed"

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { FirebaseService } from '../../../../../services/firebase.service';
 import { GtmService } from '../../../../../services/gtm.service';
 import { Lead, LeadAnswers, Affiliate } from '../../../../../../core/models';
@@ -26,11 +27,11 @@ interface Question {
     trigger('slideInOut', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateX(60px) scale(0.95)' }),
-        animate('200ms cubic-bezier(0.25, 0.8, 0.25, 1)', 
+        animate('200ms cubic-bezier(0.25, 0.8, 0.25, 1)',
           style({ opacity: 1, transform: 'translateX(0) scale(1)' }))
       ]),
       transition(':leave', [
-        animate('150ms cubic-bezier(0.55, 0, 0.55, 0.2)', 
+        animate('150ms cubic-bezier(0.55, 0, 0.55, 0.2)',
           style({ opacity: 0, transform: 'translateX(-60px) scale(0.95)' }))
       ])
     ]),
@@ -89,7 +90,7 @@ export class QuestionFormSectionComponent implements OnInit {
   currentQuestion = 0;
   answers: { [key: string]: string } = {};
   showCTA = false;
-  
+
   private leadKey: string | null = null;
   private currentLead: Lead | null = null;
   private affiliateCode: string | null = null;
@@ -150,7 +151,11 @@ export class QuestionFormSectionComponent implements OnInit {
   }
 
   get canProceed(): boolean {
-    return this.answers[this.currentQ.id] !== undefined && this.answers[this.currentQ.id] !== '';
+    const answer = this.answers[this.currentQ.id];
+    if (!answer || answer.trim() === '') {
+      return false;
+    }
+    return true;
   }
 
   get answeredCount(): number {
@@ -189,11 +194,18 @@ export class QuestionFormSectionComponent implements OnInit {
   }
 
   handleNext(): void {
+    if (!this.canProceed) return;
+
     if (this.currentQuestion < this.questions.length - 1) {
       this.currentQuestion++;
     } else {
       this.submitAnswers();
     }
+  }
+
+  onEnterKey(event: Event): void {
+    event.preventDefault();
+    this.handleNext();
   }
 
   private submitAnswers(): void {
@@ -221,7 +233,7 @@ export class QuestionFormSectionComponent implements OnInit {
     this.firebaseService.completeLead(this.leadKey, answersData, country, city)
       .then(() => {
         console.log('Lead completed successfully');
-        
+
         // Stage 6: Track Complete Registration
         if (this.leadKey) {
           this.gtm.trackCompleteRegistration(this.leadKey, {
@@ -230,7 +242,7 @@ export class QuestionFormSectionComponent implements OnInit {
             city: city
           });
         }
-        
+
         this.showCTA = true;
         this.isSubmitting = false;
       })
@@ -243,37 +255,57 @@ export class QuestionFormSectionComponent implements OnInit {
 
   completeRegistration(): void {
     // جلب أرقام المبيعات من Firebase
-    this.firebaseService.list('sales').subscribe({
+    this.firebaseService.list('sales').pipe(take(1)).subscribe({
       next: (salesItems: any[]) => {
         if (!salesItems || salesItems.length === 0) {
-          // إذا لم يوجد sales، استخدم رقم افتراضي
-          this.openWhatsApp('972598046069');
+          console.error('No sales items found');
           return;
         }
 
-        // إيجاد الـ sales item بأقل counter
+        // إيجاد الـ sales item اللي ما تم assign له من أطول فترة (Round Robin)
         const sortedSales = salesItems.sort((a, b) => {
-          const counterA = a.counter || 0;
-          const counterB = b.counter || 0;
-          
-          // إذا الـ counter متساوي، استخدم الـ key للترتيب
-          if (counterA === counterB) {
-            return (a.key || '').localeCompare(b.key || '');
-          }
-          
-          return counterA - counterB;
+          const lastAssignedA = a.last_assigned_at || 0;
+          const lastAssignedB = b.last_assigned_at || 0;
+
+          // الأقدم أولاً (اللي ما تم assign له من أطول فترة)
+          return lastAssignedA - lastAssignedB;
         });
 
         const selectedSales = sortedSales[0];
-        const whatsappNumber = (selectedSales.whatsapp_number || '972598046069').replace(/[^0-9]/g, '');
+        const whatsappNumber = (selectedSales.whatsapp_number).replace(/[^0-9]/g, '');
         const salesKey = selectedSales.key;
+        const assignedAt = Date.now();
 
-        // زيادة الـ counter للـ sales المختار
+        // تحديث الـ Lead بإضافة معلومات الـ Sales المُخصّص
+        if (this.leadKey && salesKey) {
+          const assignedSalesData = {
+            assigned_sales: {
+              sales_id: salesKey,
+              whatsapp_number: whatsappNumber,
+              assigned_at: assignedAt,
+              assigned_via: 'whatsapp'
+            }
+          };
+
+          this.firebaseService.update('leads', this.leadKey, assignedSalesData)
+            .then(() => {
+              console.log(`Lead ${this.leadKey} assigned to sales ${salesKey}`);
+            })
+            .catch(err => {
+              console.error('Error assigning sales to lead:', err);
+              // لا نوقف التنفيذ - نكمل فتح واتساب
+            });
+        }
+
+        // تحديث الـ counter والـ last_assigned_at للـ sales المختار
         if (salesKey) {
           const newCounter = (selectedSales.counter || 0) + 1;
-          this.firebaseService.update('sales', salesKey, { counter: newCounter })
+          this.firebaseService.update('sales', salesKey, {
+            counter: newCounter,
+            last_assigned_at: assignedAt
+          })
             .then(() => {
-              console.log(`Updated sales counter for ${salesKey} to ${newCounter}`);
+              console.log(`Updated sales ${salesKey}: counter=${newCounter}, assigned_at=${assignedAt}`);
             })
             .catch(err => {
               console.error('Error updating sales counter:', err);
@@ -285,17 +317,15 @@ export class QuestionFormSectionComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading sales items:', err);
-        // في حالة الخطأ، استخدم رقم افتراضي
-        this.openWhatsApp('972598046069');
       }
     });
   }
 
   private openWhatsApp(whatsappNumber: string): void {
     const userName = this.currentLead?.fullName || 'عميل جديد';
+    const userEmail = this.currentLead?.email || '';
     const country = this.currentLead?.country || '';
     const city = this.currentLead?.city || '';
-    const location = country && city ? `من ${country} - ${city}` : country || city || '';
 
     // Extract answers (use empty strings as fallback)
     const experience = this.answers['experienceLevel'] || '';
@@ -303,6 +333,7 @@ export class QuestionFormSectionComponent implements OnInit {
     const readyIn24h = this.answers['readyIn24h'] || '';
     const triedBefore = this.answers['triedElev8Before'] || '';
     const mainGoal = this.answers['mainGoal'] || '';
+    const location = this.answers['location'] || '';
 
     // Build the message exactly as requested
     const message = `مرحباً فريق Elev8 Club،\n\n` +
@@ -310,6 +341,7 @@ export class QuestionFormSectionComponent implements OnInit {
       `هذه نبذة بسيطة عن وضعي عشان تقدروا تساعدوني أبدأ بالطريقة الصحيحة:\n\n` +
       `أنا خبرتي في التداول: ${experience}\n` +
       `وحالياً متواجد في: ${location}\n` +
+      `وإيميلي: ${userEmail}\n` +
       `وعندي مبلغ جاهز للبدء حوالي: ${readyAmount}\n` +
       `وأنا جاهز أبدأ خلال 24 ساعة: ${readyIn24h}\n` +
       `بالنسبة لخدمات Elev8 Club: ${triedBefore}\n` +
@@ -331,7 +363,16 @@ export class QuestionFormSectionComponent implements OnInit {
       });
     }
 
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+    // حاول الفتح مباشرةً
+    const newWindow = window.open(url, '_blank');
+
+    // إذا فشلت، جرّب حل بديل
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      // ممكن تعرض لهم رسالة أو تحاول بطريقة أخرى
+      alert('يبدو أن المتصفح منع فتح واتساب مباشرةً. الرجاء فتح الرابط يدوياً: ' + url);
+    }
   }
 
   // دوال مساعدة لتحويل الإجابات

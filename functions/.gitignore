@@ -1,0 +1,20 @@
+# Compiled JavaScript files
+lib/**/*.js
+lib/**/*.js.map
+
+# TypeScript v1 declaration files
+typings/
+
+# Node.js dependency directory
+node_modules/
+*.local
+
+# Service Account - IMPORTANT: Never commit this file!
+service-account.json
+
+# Firebase cache
+.firebase/
+
+# Logs
+*.log
+npm-debug.log*

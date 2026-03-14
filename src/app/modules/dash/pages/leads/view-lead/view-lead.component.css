@@ -156,6 +156,19 @@
   color: #374151;
 }
 
+/* WhatsApp link */
+.whatsapp-link {
+  color: #25d366;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.whatsapp-link:hover {
+  color: #128c7e;
+  text-decoration: underline;
+}
+
 /* Responsive tweaks */
 @media (max-width: 768px) {
   .lead-wrapper {

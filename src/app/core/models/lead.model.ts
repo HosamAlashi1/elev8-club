@@ -22,4 +22,10 @@ export interface Lead {
   answers?: LeadAnswers;
   createdAt: string;
   completedAt?: string;
+  assigned_sales?: {
+    sales_id: string;
+    whatsapp_number: string;
+    assigned_at: number;
+    assigned_via: string;
+  };
 }

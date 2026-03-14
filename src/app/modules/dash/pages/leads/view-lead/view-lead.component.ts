@@ -6,6 +6,13 @@ import { Lead } from '../../../../../core/models';
 interface LeadWithAffiliate extends Lead {
   affiliateName?: string;
   affiliateCode?: string;
+  assigned_sales?: {
+    sales_id: string;
+    whatsapp_number: string;
+    assigned_at: number;
+    assigned_via: string;
+  };
+  salesName?: string;
 }
 
 @Component({
@@ -67,5 +74,20 @@ export class ViewLeadComponent implements OnInit {
 
   getStatusClass(): string {
     return this.lead.step === 2 ? 'status-pill completed' : 'status-pill pending';
+  }
+
+  getAssignedDate(): string {
+    if (!this.lead.assigned_sales?.assigned_at) return 'N/A';
+    return new Date(this.lead.assigned_sales.assigned_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  hasAssignedSales(): boolean {
+    return !!this.lead.assigned_sales;
   }
 }

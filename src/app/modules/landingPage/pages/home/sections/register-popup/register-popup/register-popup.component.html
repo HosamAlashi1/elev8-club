@@ -11,7 +11,8 @@
       <!-- Close Button -->
       <button class="close-button" (click)="onClose()" type="button">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </button>
 
@@ -22,51 +23,63 @@
       </div>
 
       <!-- Form -->
-      <form class="registration-form" (ngSubmit)="onSubmit($event)" data-aos="fade-up" data-aos-delay="200">
+      <form class="registration-form" (ngSubmit)="onSubmit($event)" >
 
         <!-- Full Name -->
-        <div class="form-group">
-          <label for="fullName" class="form-label">الاسم الكامل</label>
-          <input 
-            id="fullName"
-            type="text"
-            required
-            [(ngModel)]="formData.fullName"
-            name="fullName"
-            class="form-input"
-            placeholder="أدخل اسمك الكامل"
-            dir="rtl"
-          />
+        <div class="form-group" data-aos="fade-up" data-aos-delay="200">
+          <label for="fullName" class="form-label">الاسم الكامل <span class="required-star">*</span></label>
+          <input id="fullName" type="text" required [(ngModel)]="formData.fullName" name="fullName" class="form-input"
+            placeholder="أدخل اسمك الكامل" dir="rtl"
+            (keydown.enter)="$event.preventDefault(); focusNextField('email')" />
         </div>
 
         <!-- Email -->
-        <div class="form-group">
-          <label for="email" class="form-label">البريد الإلكتروني</label>
-          <input 
-            id="email"
-            type="email"
-            required
-            [(ngModel)]="formData.email"
-            name="email"
-            class="form-input"
-            placeholder="example@email.com"
-            dir="ltr"
-          />
+        <div class="form-group" data-aos="fade-up" data-aos-delay="200">
+          <label for="email" class="form-label">البريد الإلكتروني <span class="required-star">*</span></label>
+          <input id="email" type="email" required [(ngModel)]="formData.email" name="email" class="form-input"
+            placeholder="example@email.com" dir="ltr"
+            (keydown.enter)="$event.preventDefault(); focusNextField('whatsapp')" />
         </div>
 
-        <!-- WhatsApp -->
-        <div class="form-group">
-          <label for="whatsapp" class="form-label">رقم الواتساب</label>
-          <input 
-            id="whatsapp"
-            type="tel"
-            required
-            [(ngModel)]="formData.whatsapp"
-            name="whatsapp"
-            class="form-input"
-            placeholder="+966 XX XXX XXXX"
-            dir="ltr"
-          />
+        <!-- WhatsApp --> 
+        <div class="form-group form-group-dropdown">
+          <label for="whatsapp" class="form-label">رقم الواتساب <span class="required-star">*</span></label>
+          <div class="phone-input-container">
+
+            <!-- Custom Dropdown -->
+            <div class="custom-dropdown" [class.open]="isDropdownOpen">
+              <div class="dropdown-selected" (click)="toggleDropdown()">
+                <img [src]="getSelectedCountryFlag()" alt="flag" class="flag-img">
+                <span class="selected-code">{{ selectedCountryCode }}</span>
+                <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12">
+                  <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none" />
+                </svg>
+              </div>
+              <div class="dropdown-list" *ngIf="isDropdownOpen">
+                <!-- Search Input -->
+                <div class="dropdown-search">
+                  <input type="text" [(ngModel)]="searchQuery" name="countrySearch" class="search-input"
+                    placeholder="ابحث برقم أو رمز الدولة..." (click)="$event.stopPropagation()" dir="rtl">
+                </div>
+                <!-- Countries List -->
+                <div class="dropdown-items-wrapper">
+                  <div *ngFor="let country of filteredCountries" class="dropdown-item"
+                    [class.selected]="country.code === selectedCountryCode" (click)="selectCountry(country.code)">
+                    <img [src]="country.flag" alt="flag" class="flag-img">
+                    <span class="country-code">{{ country.code }}</span>
+                    <span class="country-name">{{ country.countryAr || country.country }}</span>
+                  </div>
+                  <div *ngIf="filteredCountries.length === 0" class="no-results">
+                    لا توجد نتائج
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input id="whatsapp" type="tel" required [(ngModel)]="formData.whatsapp" name="whatsapp"
+              class="form-input phone-input" placeholder="رقم الجوال (أرقام فقط)" dir="ltr" pattern="[0-9]*"
+              inputmode="numeric" (keydown.enter)="$event.preventDefault(); onSubmit($event)" />
+          </div>
+
         </div>
 
         <!-- Info Box -->
