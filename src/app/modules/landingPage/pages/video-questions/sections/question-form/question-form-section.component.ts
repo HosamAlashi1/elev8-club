@@ -350,7 +350,7 @@ export class QuestionFormSectionComponent implements OnInit {
       `بعرف إنه عندكم ضغط رسائل كبير وبقدّر وقتكم جداً،\n` +
       `بس كل اللي بحتاجه الآن — إيش الخطوة الجاية مباشرة عشان أبدأ؟\n` +
       `جاهز أمشي معكم خطوة بخطوة وأطبق كل التعليمات بإذن الله.\n\n` +
-      `بانتظار توجيهكم 🙏🔥`;
+      `بانتظار توجيهكم.`;
 
     // Debug log the message
     console.log('WhatsApp message to send:', message);

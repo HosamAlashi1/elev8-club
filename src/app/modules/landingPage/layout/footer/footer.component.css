@@ -2,7 +2,7 @@
   background: #000000;
   color: rgba(255, 255, 255, 0.85);
   padding: 48px 0;
-  border-top: 1px solid rgba(207, 174, 88, 0.2);
+  border-top: 1px solid rgb(var(--lp-accent-rgb) / 0.2);
   direction: rtl;
 }
 
@@ -154,19 +154,19 @@
 .divider-line {
   height: 1px;
   width: 64px;
-  background: linear-gradient(90deg, transparent, #CFAE58);
+  background: linear-gradient(90deg, transparent, var(--lp-accent));
 }
 
 .divider-left {
-  background: linear-gradient(90deg, transparent, #CFAE58);
+  background: linear-gradient(90deg, transparent, var(--lp-accent));
 }
 
 .divider-right {
-  background: linear-gradient(90deg, #CFAE58, transparent);
+  background: linear-gradient(90deg, var(--lp-accent), transparent);
 }
 
 .logo-text {
-  color: #CFAE58;
+  color: var(--lp-accent);
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: 0.5px;

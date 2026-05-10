@@ -1,0 +1,79 @@
+<section class="wf-section">
+
+  <div class="wf-bg-glow wf-bg-glow--1"></div>
+  <div class="wf-bg-glow wf-bg-glow--2"></div>
+
+  <div class="wf-inner content-container">
+
+    <!-- Title -->
+    <div class="wf-title-block" data-aos="fade-up" data-aos-delay="60">
+      <div class="wf-eyebrow">سؤال مشروع</div>
+      <h2 class="wf-main-title">ليش بيشتغل هاد بطريقة مجانية؟</h2>
+      <p class="wf-subtitle">سؤال كويس — وهاد هو الجواب الصريح</p>
+    </div>
+
+    <!-- Two col layout: reasons + image -->
+    <div class="wf-layout">
+
+      <!-- Reasons cards -->
+      <div class="wf-reasons-col">
+        <div
+          class="wf-reason-card"
+          *ngFor="let r of reasons; let i = index"
+          data-aos="fade-right"
+          [attr.data-aos-delay]="150 + i * 120"
+        >
+          <div class="wf-reason-icon">
+            <lucide-angular [name]="r.icon" class="wf-lucide-icon"></lucide-angular>
+          </div>
+          <div class="wf-reason-body">
+            <h3 class="wf-reason-title">{{ r.title }}</h3>
+            <p class="wf-reason-desc">{{ r.desc }}</p>
+          </div>
+          <div class="wf-reason-glow"></div>
+        </div>
+      </div>
+
+      <!-- Summary card -->
+      <div class="wf-summary-col" data-aos="fade-left" data-aos-delay="200">
+        <div class="wf-summary-card">
+          <div class="wf-summary-quote">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" style="opacity:0.5">
+              <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" stroke="var(--lp-accent)" stroke-width="1.8"/>
+              <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" stroke="var(--lp-accent)" stroke-width="1.8"/>
+            </svg>
+          </div>
+
+          <div class="wf-summary-text">
+            <p>بكل صراحة — أنا أشارك هذا مجانًا <strong class="wf-gold">لأن مصالحنا مشتركة.</strong></p>
+            <p>أنت تتداول وتنجح → أنا أستفيد من شراكتي مع البروكر.</p>
+            <p>يعني نجاحك هو نجاحي — ولهذا السبب بالضبط أنا محفّز إنك تنجح فعلياً بشكل حقيقي.</p>
+          </div>
+
+          <div class="wf-summary-divider"></div>
+
+          <div class="wf-free-badge">
+            <div class="wf-free-badge-num">100%</div>
+            <div class="wf-free-badge-lbl">مجاني بالكامل</div>
+          </div>
+
+          <p class="wf-summary-note">حتى أكثر عدد ممكن من الناس يقدروا يبدأوا ويجحوا بالطريقة الصحيحة.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="wf-cta-wrapper" data-aos="zoom-in" data-aos-delay="700">
+      <p class="wf-cta-text">التسجيل مجاني — والمقاعد محدودة</p>
+      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+        <span class="btn-cta-text">احجز مقعدك مجانًا الآن</span>
+        <svg class="btn-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="ripple-gold"></div>
+      </button>
+    </div>
+
+  </div>
+</section>

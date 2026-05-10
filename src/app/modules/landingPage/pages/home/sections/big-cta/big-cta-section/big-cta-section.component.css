@@ -1,5 +1,5 @@
 .big-cta-section {
-  padding: 100px 0;
+  padding: 50px 0;
   background: linear-gradient(180deg, #000000 0%, #0A1E3F 50%, #000000 100%);
   position: relative;
   overflow: hidden;
@@ -14,7 +14,7 @@
   transform: translate(-50%, -50%);
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, rgba(207, 174, 88, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgb(var(--lp-accent-rgb) / 0.2) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
   animation: glowPulse 6s ease-in-out infinite;
@@ -43,7 +43,7 @@
   position: absolute;
   width: 8px;
   height: 8px;
-  background: #CFAE58;
+  background: var(--lp-accent);
   border-radius: 50%;
   opacity: 0;
 }
@@ -102,10 +102,17 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: rgba(207, 174, 88, 0.2);
+  background: rgb(var(--lp-accent-rgb) / 0.2);
   border-radius: 50%;
   margin-bottom: 32px;
   animation: iconFloat 3s ease-in-out infinite;
+}
+
+.sparkles-lucide-icon {
+  width: 40px;
+  height: 28px;
+  color: var(--lp-accent-soft);
+  filter: drop-shadow(0 0 10px rgb(var(--lp-accent-soft-rgb) / 0.3));
 }
 
 @keyframes iconFloat {
@@ -118,6 +125,35 @@
   66% {
     transform: rotate(-10deg) scale(1.05);
   }
+}
+
+/* Event Badge */
+.event-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 24px;
+  border-radius: 50px;
+  border: 1px solid rgb(var(--lp-accent-rgb) / 0.5);
+  background: rgb(var(--lp-accent-rgb) / 0.08);
+  color: var(--lp-accent);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 24px;
+  animation: badgePulse 3s ease-in-out infinite;
+}
+
+.event-badge-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--lp-accent-rgb) / 0); }
+  50% { box-shadow: 0 0 16px 4px rgb(var(--lp-accent-rgb) / 0.25); }
 }
 
 /* Main Title */
@@ -181,7 +217,7 @@
 }
 
 .highlight-gold {
-  color: #CFAE58;
+  color: var(--lp-accent);
   font-weight: 600;
 }
 
@@ -197,7 +233,7 @@
     margin-bottom: 24px;
   }
 
-  .sparkles-icon svg {
+  .sparkles-lucide-icon {
     width: 30px;
     height: 30px;
   }

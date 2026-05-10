@@ -1,0 +1,65 @@
+<section class="cr-section">
+
+  <div class="cr-bg-glow cr-bg-glow--1"></div>
+  <div class="cr-bg-glow cr-bg-glow--2"></div>
+
+  <div class="cr-inner content-container">
+
+    <!-- Title -->
+    <div class="cr-title-block" data-aos="fade-up" data-aos-delay="60">
+      <div class="cr-eyebrow">ملخص</div>
+      <h2 class="cr-main-title">مراجعة سريعة لتفاصيل التحدي</h2>
+    </div>
+
+    <!-- Review Grid -->
+    <div class="cr-grid">
+      <div
+        class="cr-card"
+        *ngFor="let item of reviewItems; let i = index"
+        data-aos="fade-up"
+        [attr.data-aos-delay]="120 + i * 100"
+      >
+        <div class="cr-card-icon">
+          <lucide-angular [name]="item.icon" class="cr-lucide-icon"></lucide-angular>
+        </div>
+        <h3 class="cr-card-question">{{ item.question }}</h3>
+        <ul class="cr-card-points">
+          <li *ngFor="let p of item.points" class="cr-point">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="cr-point-icon">
+              <path d="M20 6L9 17l-5-5" stroke="var(--lp-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ p }}</span>
+          </li>
+        </ul>
+        <div class="cr-card-glow"></div>
+      </div>
+    </div>
+
+    <!-- Challenge Story Banner (Page 13 content) -->
+    <div class="cr-story-banner" data-aos="fade-up" data-aos-delay="600">
+      <div class="cr-story-label">قصة التحدي</div>
+      <h3 class="cr-story-title">تحدي elev8 club</h3>
+      <div class="cr-story-body">
+        <p>قبل عدة أشهر، قدّمت النسخة الأولى من التحدي.</p>
+        <p>والأشخاص اللي طبّقوا فعلًا الخطوات اللي شرحتها، قدروا يحققوا آلاف الدولارات خلال أقل من 30 يوم.</p>
+        <p>بالبداية فكرنا إنها ممكن تكون مجرد صدفة... لذلك كررنا التجربة مرة ثانية بالنسخة 2.0</p>
+        <p class="cr-story-highlight">والنتيجة؟ ناس أكثر بدأت تحقق نتائج حقيقية خلال أسبوع.</p>
+        <p>وهنا فهمنا إن الموضوع مش حظ. <strong class="cr-gold">النظام فعلاً يشتغل ويتطور.</strong></p>
+        <p class="cr-story-date">و الآن، راح أشرحلك كل شيء خطوة بخطوة في النسخة الجديدة من هذا التحدي المباشر.</p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cr-cta-wrapper" data-aos="zoom-in" data-aos-delay="800">
+      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+        <span class="btn-cta-text">احجز مقعدك مجانًا الآن</span>
+        <svg class="btn-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="ripple-gold"></div>
+      </button>
+      <p class="cr-cta-note">مجانًا 100% · يوم واحد فقط · أماكن محدودة</p>
+    </div>
+
+  </div>
+</section>

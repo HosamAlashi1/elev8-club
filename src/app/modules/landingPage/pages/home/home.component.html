@@ -1,21 +1,21 @@
 <div class="home-content animate-route">
 
-
   <app-hero-section [onOpenRegistration]="openPopupFromHero"></app-hero-section>
   <app-stats-section></app-stats-section>
+  <app-who-am-i-section></app-who-am-i-section>
+  <app-how-it-works-section [onOpenRegistration]="openPopupFromHowItWorks"></app-how-it-works-section>
   <app-features-section [onOpenRegistration]="openPopupFromFeatures"></app-features-section>
-  <app-before-after-section [onOpenRegistration]="openPopupFromBeforeAfter"></app-before-after-section>
-  <app-journey-section [onOpenRegistration]="openPopupFromJourney"></app-journey-section>
-  <app-video-testimonials-section [onOpenRegistration]="openPopupFromVideoTestimonials"></app-video-testimonials-section>
+  <app-challenge-review-section [onOpenRegistration]="openPopupFromChallengeReview"></app-challenge-review-section>
   <app-suitable-check-section [onOpenRegistration]="openPopupFromSuitableCheck"></app-suitable-check-section>
+  <app-video-testimonials-section [onOpenRegistration]="openPopupFromVideoTestimonials"></app-video-testimonials-section>
   <app-written-testimonials-section [onOpenRegistration]="openPopupFromWrittenTestimonials"></app-written-testimonials-section>
+  <app-why-free-section [onOpenRegistration]="openPopupFromWhyFree"></app-why-free-section>
   <app-big-cta-section [onOpenRegistration]="openPopupFromBigCta"></app-big-cta-section>
   <app-faq-section></app-faq-section>
   <app-contact-section></app-contact-section>
 
-  <!-- Registration Modal -->
-  <app-register-popup 
-    [isOpen]="isRegistrationPopupOpen" 
+  <app-register-popup
+    [isOpen]="isRegistrationPopupOpen"
     (closePopup)="closeRegistrationPopup()">
   </app-register-popup>
 

@@ -14,7 +14,7 @@
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(207, 174, 88, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgb(var(--lp-accent-rgb) / 0.05) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -34,7 +34,7 @@
 }
 
 .highlight-gold {
-  color: #CFAE58;
+  color: var(--lp-accent);
 }
 
 .subtitle {
@@ -66,7 +66,7 @@
 .card-content {
   position: relative;
   background: linear-gradient(135deg, rgba(10, 30, 63, 0.6), rgba(0, 0, 0, 0.4));
-  border: 1px solid rgba(207, 174, 88, 0.3);
+  border: 1px solid rgb(var(--lp-accent-rgb) / 0.3);
   border-radius: 16px;
   padding: 40px 32px;
   text-align: center;
@@ -75,7 +75,7 @@
 }
 
 .social-card:hover .card-content {
-  border-color: #CFAE58;
+  border-color: var(--lp-accent);
 }
 
 /* Icon Wrapper */
@@ -85,7 +85,7 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: rgba(207, 174, 88, 0.1);
+  background: rgb(var(--lp-accent-rgb) / 0.1);
   border: 2px solid;
   border-radius: 50%;
   margin-bottom: 16px;

@@ -229,11 +229,11 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
 
   get countdownLabel(): string {
     if (this.challengeStatus === 'not-started') {
-      return 'يبدأ التحدي خلال';
+      return 'يبدأ الويبينار خلال';
     } else if (this.challengeStatus === 'active') {
-      return 'مضى على التحدي';
+      return 'الويبينار يجري الآن';
     } else {
-      return 'انتهى التحدي';
+      return 'انتهى الويبينار';
     }
   }
 

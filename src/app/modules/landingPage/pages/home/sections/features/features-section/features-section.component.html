@@ -6,22 +6,28 @@
 
         <!-- العنوان -->
         <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
-            <h2 class="main-title">كل ما تحتاجه لتبدأ التداول بثقة</h2>
-            <p class="subtitle">خلال 7 أيام فقط</p>
+            <h2 class="main-title">جزء من يلي راح تتعلمه</h2>
+            <p class="subtitle">في جلسة واحدة مجانية — يوم واحد فقط</p>
         </div>
 
         <!-- الجريد -->
         <div class="features-grid">
 
             <div class="feature-card" *ngFor="let f of features; let i = index" data-aos="fade-up"
-                [attr.data-aos-delay]="150 + i * 120">
+                [attr.data-aos-delay]="150 + i * 120"
+                [class.feature-card--bonus]="f.part === 'BONUS'">
 
-                <!-- الأيقونة — يمين -->
+                <!-- شارة الجزء -->
+                <div class="part-badge" [class.part-badge--bonus]="f.part === 'BONUS'">
+                    {{ f.part }}
+                </div>
+
+                <!-- الأيقونة -->
                 <div class="icon-box">
                     <lucide-angular [name]="f.icon" class="icon"></lucide-angular>
                 </div>
 
-                <!-- المحتوى — يسار (لكن بعرض محدود) -->
+                <!-- المحتوى -->
                 <div class="content-box">
                     <h3 class="feature-title">{{ f.title }}</h3>
                     <p class="feature-desc">{{ f.description }}</p>
@@ -36,9 +42,9 @@
 
         <!-- النص التحفيزي -->
         <div class="motivation-wrapper" data-aos="fade-up" data-aos-delay="900">
-            <p class="motivation-text">"إنت بس التزم 7 أيام، وإحنا بنتكفّل بالباقي!"</p>
+            <p class="motivation-text">"ساعتان مع خبراء Elev8 رح تغيّر طريقة تفكيرك بالتداول للأبد!"</p>
             <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-                <span class="btn-cta-text"> سجّل الآن وابدأ وانتهز الفرصة</span>
+                <span class="btn-cta-text">سجّل الآن في الويبينار المجاني</span>
 
                 <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
                     <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"

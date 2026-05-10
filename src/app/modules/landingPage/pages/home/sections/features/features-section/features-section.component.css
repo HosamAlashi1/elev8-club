@@ -1,6 +1,6 @@
 /* سكشن المميزات */
 .features-section {
-  padding: 90px 0;
+  padding: 50px 0;
   position: relative;
   background: #000;
   overflow: hidden;
@@ -13,7 +13,7 @@
   inset: 0;
   opacity: 0.06;
   pointer-events: none;
-  background-image: radial-gradient(circle at 2px 2px, #CFAE58 1px, transparent 0);
+  background-image: radial-gradient(circle at 2px 2px, var(--lp-accent) 1px, transparent 0);
   background-size: 40px 40px;
 }
 
@@ -34,7 +34,7 @@
   font-size: 46px;
   color: #fff;
   font-weight: 700;
-  text-shadow: 0 0 22px rgba(207, 174, 88, 0.6);
+  text-shadow: 0 0 22px rgb(var(--lp-accent-rgb) / 0.6);
 }
 
 .subtitle {
@@ -58,7 +58,7 @@
   border-radius: 18px;
 
   background: linear-gradient(135deg, #07172f 0%, #020203 100%);
-  border: 1px solid rgba(207, 174, 88, 0.28);
+  border: 1px solid rgb(var(--lp-accent-rgb) / 0.28);
   backdrop-filter: blur(4px);
 
   /* أهم نقطة: أيقونة يمين، النص يسار + عرض محدود */
@@ -75,10 +75,10 @@
 }
 
 .feature-card:hover {
-  border-color: #CFAE58;
+  border-color: var(--lp-accent);
   transform: translateY(-4px);
   box-shadow:
-    0 0 22px rgba(207, 174, 88, 0.55),
+    0 0 22px rgb(var(--lp-accent-rgb) / 0.55),
     0 14px 32px rgba(0, 0, 0, 0.65);
 }
 
@@ -86,7 +86,7 @@
 .hover-glow {
   position: absolute;
   inset: -40%;
-  background: radial-gradient(circle, rgba(207, 174, 88, 0.08), transparent 65%);
+  background: radial-gradient(circle, rgb(var(--lp-accent-rgb) / 0.08), transparent 65%);
   opacity: 0;
   transition: 0.3s ease;
   filter: blur(14px);
@@ -107,13 +107,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(207, 174, 88, 0.25);
+  box-shadow: 0 0 0 1px rgb(var(--lp-accent-rgb) / 0.25);
 
   transition: 0.25s ease;
 }
 
 .feature-card:hover .icon-box {
-  background: rgba(207, 174, 88, 0.22);
+  background: rgb(var(--lp-accent-rgb) / 0.22);
   transform: translateY(-2px) scale(1.05);
 }
 
@@ -144,6 +144,49 @@
   line-height: 1.8;
 }
 
+/* ============ PART BADGE ============ */
+.feature-card {
+  position: relative;
+}
+
+.part-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--lp-accent);
+  background: rgb(var(--lp-accent-rgb) / 0.12);
+  border: 1px solid rgb(var(--lp-accent-rgb) / 0.35);
+  border-radius: 6px;
+  padding: 3px 9px;
+  text-transform: uppercase;
+  transition: 0.25s ease;
+}
+
+.feature-card:hover .part-badge {
+  background: rgb(var(--lp-accent-rgb) / 0.22);
+  border-color: rgb(var(--lp-accent-rgb) / 0.6);
+}
+
+.part-badge--bonus {
+  color: #4fc3a1;
+  background: rgba(79, 195, 161, 0.1);
+  border-color: rgba(79, 195, 161, 0.35);
+}
+
+.feature-card--bonus {
+  border-color: rgba(79, 195, 161, 0.3);
+}
+
+.feature-card--bonus:hover {
+  border-color: rgba(79, 195, 161, 0.7);
+  box-shadow:
+    0 0 22px rgba(79, 195, 161, 0.3),
+    0 14px 32px rgba(0, 0, 0, 0.65);
+}
+
 /* CTA تحت السكشن (لو مستخدمه) */
 .motivation-wrapper {
   text-align: center;
@@ -151,10 +194,10 @@
 }
 
 .motivation-text {
-  color: #CFAE58;
+  color: var(--lp-accent);
   font-size: 26px;
   margin-bottom: 22px;
-  text-shadow: 0 0 18px rgba(207, 174, 88, 0.45);
+  text-shadow: 0 0 18px rgb(var(--lp-accent-rgb) / 0.45);
 }
 
 /* موبايل */

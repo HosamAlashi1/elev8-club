@@ -36,7 +36,39 @@ import { VideoQuestionsComponent } from './pages/video-questions/video-questions
 import { TopProgressBarComponent } from './pages/video-questions/sections/top-progress-bar/top-progress-bar.component';
 import { VideoHeroSectionComponent } from './pages/video-questions/sections/video-hero/video-hero-section.component';
 import { QuestionFormSectionComponent } from './pages/video-questions/sections/question-form/question-form-section.component';
-import { LucideAngularModule, GraduationCap, TrendingUp, Bot, MessageCircle, Globe, Trophy, Check, CheckCircle2, XCircle, ArrowRight } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  GraduationCap,
+  TrendingUp,
+  Bot,
+  MessageCircle,
+  Globe,
+  Trophy,
+  Check,
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
+  Handshake,
+  CircleDollarSign,
+  Target,
+  BriefcaseBusiness,
+  House,
+  Laptop,
+  Building2,
+  Theater,
+  Gift,
+  Users,
+  Rocket,
+  CalendarDays,
+  Sparkles,
+  Clock3,
+  Quote,
+  RadioTower
+} from 'lucide-angular';
+import { WhoAmISectionComponent } from './pages/home/sections/who-am-i/who-am-i-section/who-am-i-section.component';
+import { HowItWorksSectionComponent } from './pages/home/sections/how-it-works/how-it-works-section/how-it-works-section.component';
+import { WhyFreeSectionComponent } from './pages/home/sections/why-free/why-free-section/why-free-section.component';
+import { ChallengeReviewSectionComponent } from './pages/home/sections/challenge-review/challenge-review-section/challenge-review-section.component';
 
 
 
@@ -69,6 +101,10 @@ export function playerFactory() {
     TopProgressBarComponent,
     VideoHeroSectionComponent,
     QuestionFormSectionComponent,
+    WhoAmISectionComponent,
+    HowItWorksSectionComponent,
+    WhyFreeSectionComponent,
+    ChallengeReviewSectionComponent,
     // NavbarComponent,
   ],
   imports: [
@@ -94,7 +130,23 @@ export function playerFactory() {
       Check,
       CheckCircle2,
       XCircle,
-      ArrowRight
+      ArrowRight,
+      Handshake,
+      CircleDollarSign,
+      Target,
+      BriefcaseBusiness,
+      House,
+      Laptop,
+      Building2,
+      Theater,
+      Gift,
+      Users,
+      Rocket,
+      CalendarDays,
+      Sparkles,
+      Clock3,
+      Quote,
+      RadioTower
     })
   ],
   providers: [

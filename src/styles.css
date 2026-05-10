@@ -1,6 +1,20 @@
 
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  --lp-accent: #f8f36a;
+  --lp-accent-hot: #fffb00;
+  --lp-accent-soft: #feffad;
+  --lp-accent-muted: #d9d45a;
+  --lp-accent-deep: #a8a400;
+  --lp-accent-ink: #11130a;
+  --lp-accent-rgb: 248 243 106;
+  --lp-accent-hot-rgb: 255 251 0;
+  --lp-accent-soft-rgb: 254 255 173;
+  --lp-accent-gradient: linear-gradient(290deg, #feffad 0%, #fffb00 30.2858%, #feffad 67.2878%, #fffb00 100%);
+  --lp-accent-button: linear-gradient(290deg, #feffad 0%, #f8f36a 34%, #fffed1 66%, #fffb00 100%);
+}
+
 .modal-image .modal-content {
     background-color: rgba(255, 255, 255, 0.3);
 }
@@ -58,26 +72,26 @@
 
 
 .form-check-input:checked {
-  background-color: #CFAE58;
-  border-color: #CFAE58;
+  background-color: var(--lp-accent);
+  border-color: var(--lp-accent);
 }
 
 .form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem rgba(228, 201, 138, 0.12);
+  box-shadow: 0 0 0 0.2rem rgb(var(--lp-accent-soft-rgb) / 0.12);
 }
 
 /* كل حقول الإدخال */
 .form-control:focus,
 .form-select:focus {
-  border-color: #CFAE58;
-  box-shadow: 0 0 0 0.2rem rgba(228, 201, 138, 0.12);
+  border-color: var(--lp-accent);
+  box-shadow: 0 0 0 0.2rem rgb(var(--lp-accent-soft-rgb) / 0.12);
   outline: none; /* نشيل الافتراضي */
 }
 
 /* تشيك بوكس وراديو */
 .form-check-input:focus {
-  border-color: #CFAE58;
-  box-shadow: 0 0 0 0.2rem rgba(228, 201, 138, 0.12);
+  border-color: var(--lp-accent);
+  box-shadow: 0 0 0 0.2rem rgb(var(--lp-accent-soft-rgb) / 0.12);
 }
 
 .cursor-pointer {

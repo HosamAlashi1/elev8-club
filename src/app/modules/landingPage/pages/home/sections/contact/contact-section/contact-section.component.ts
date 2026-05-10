@@ -21,7 +21,7 @@ export class ContactSectionComponent {
       name: 'Email',
       handle: 'info@elev8club.com',
       link: 'mailto:info@elev8club.com',
-      color: '#CFAE58'
+      color: 'var(--lp-accent)'
     },
     {
       icon: 'send',

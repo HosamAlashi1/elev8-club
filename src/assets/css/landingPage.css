@@ -2,6 +2,20 @@
    🌌 LUXURY TRADING ANIMATED BACKGROUND
    ======================================== */
 
+:root {
+  --lp-accent: #f8f36a;
+  --lp-accent-hot: #fffb00;
+  --lp-accent-soft: #feffad;
+  --lp-accent-muted: #d9d45a;
+  --lp-accent-deep: #a8a400;
+  --lp-accent-ink: #11130a;
+  --lp-accent-rgb: 248 243 106;
+  --lp-accent-hot-rgb: 255 251 0;
+  --lp-accent-soft-rgb: 254 255 173;
+  --lp-accent-gradient: linear-gradient(290deg, #feffad 0%, #fffb00 30.2858%, #feffad 67.2878%, #fffb00 100%);
+  --lp-accent-button: linear-gradient(290deg, #feffad 0%, #f8f36a 34%, #fffed1 66%, #fffb00 100%);
+}
+
 
 html,
 body {
@@ -61,17 +75,17 @@ body {
   cursor: pointer;
 
   font-size: 1.2rem;
-  font-weight: 400;
-  color: #fff;
+  font-weight: 800;
+  color: var(--lp-accent-ink);
 
   position: relative;
   overflow: hidden;
 
-  background: linear-gradient(180deg, #e4c57c 0%, #c8a455 100%);
+  background: var(--lp-accent-button);
 
   /* توهج أساسي */
   box-shadow:
-    0 0 30px rgba(238, 209, 142, 0.55),
+    0 0 30px rgb(var(--lp-accent-soft-rgb) / 0.55),
     0 14px 30px rgba(0, 0, 0, 0.55);
 
   animation:
@@ -83,19 +97,19 @@ body {
 @keyframes ctaOuterGlow {
   0% {
     box-shadow:
-      0 0 22px rgba(238, 209, 142, 0.45),
+      0 0 22px rgb(var(--lp-accent-soft-rgb) / 0.45),
       0 14px 30px rgba(0, 0, 0, 0.55);
   }
 
   50% {
     box-shadow:
-      0 0 40px rgba(238, 209, 142, 0.85),
+      0 0 40px rgb(var(--lp-accent-soft-rgb) / 0.85),
       0 18px 40px rgba(0, 0, 0, 0.7);
   }
 
   100% {
     box-shadow:
-      0 0 22px rgba(238, 209, 142, 0.45),
+      0 0 22px rgb(var(--lp-accent-soft-rgb) / 0.45),
       0 14px 30px rgba(0, 0, 0, 0.55);
   }
 }
@@ -108,14 +122,14 @@ body {
   left: -45%;
   right: -45%;
   bottom: -45%;
-  background: radial-gradient(circle, rgba(255, 245, 200, 0.35), transparent 75%);
+  background: radial-gradient(circle, rgb(var(--lp-accent-soft-rgb) / 0.42), transparent 75%);
   opacity: 0.45;
   animation: ctaGlow 4s ease-in-out infinite;
   -webkit-animation: ctaGlow 4s ease-in-out infinite;
 }
 
 /* لمعان ينساب فوق الزر */
-.btn-cta::after {
+/* .btn-cta::after {
   content: "";
   position: absolute;
   top: 0;
@@ -130,7 +144,7 @@ body {
 
   transform: skewX(-20deg);
   animation: ctaShine 4s ease-in-out infinite;
-}
+} */
 
 /* ============ Ripple Gold Animation (ابتكار) ============ */
 .btn-cta .ripple-gold {
@@ -143,7 +157,7 @@ body {
   transform: translate(-50%, -50%);
 
   border-radius: 50%;
-  background: rgba(255, 250, 230, 0.55);
+  background: rgb(var(--lp-accent-soft-rgb) / 0.55);
 
   opacity: 0;
   animation: rippleGold 3.8s ease-out infinite;
@@ -169,6 +183,23 @@ body {
 .btn-cta:hover {
   transform: translateY(-1px) scale(1.03);
   filter: brightness(1.07);
+}
+
+.btn-cta .btn-cta-text,
+.btn-cta .btn-cta-icon,
+.btn-cta .hero-cta-icon-left,
+.btn-cta lucide-angular,
+.btn-cta svg {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-cta svg [stroke] {
+  stroke: currentColor !important;
+}
+
+.btn-cta svg [fill]:not([fill="none"]) {
+  fill: currentColor !important;
 }
 
 /* Active */
@@ -231,22 +262,22 @@ body {
 
 ::-webkit-scrollbar-track {
   background: #0A0A0A;
-  border-left: 1px solid rgba(207, 174, 88, 0.1);
+  border-left: 1px solid rgb(var(--lp-accent-rgb) / 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #CFAE58 0%, #B8944A 100%);
+  background: linear-gradient(180deg, var(--lp-accent) 0%, var(--lp-accent-deep) 100%);
   border-radius: 6px;
   border: 2px solid #0A0A0A;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #D4B76A 0%, #CFAE58 100%);
-  box-shadow: 0 0 10px rgba(207, 174, 88, 0.5);
+  background: linear-gradient(180deg, var(--lp-accent-soft) 0%, var(--lp-accent) 100%);
+  box-shadow: 0 0 10px rgb(var(--lp-accent-rgb) / 0.5);
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #CFAE58 #0A0A0A;
+  scrollbar-color: var(--lp-accent) #0A0A0A;
 }
