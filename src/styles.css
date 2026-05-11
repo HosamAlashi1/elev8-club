@@ -2,17 +2,29 @@
 /* You can add global styles to this file, and also import other style files */
 
 :root {
-  --lp-accent: #f8f36a;
-  --lp-accent-hot: #fffb00;
-  --lp-accent-soft: #feffad;
-  --lp-accent-muted: #d9d45a;
-  --lp-accent-deep: #a8a400;
+  --lp-font-body: "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --lp-font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-bg: #05070b;
+  --lp-bg-2: #07111f;
+  --lp-panel: #0d1522;
+  --lp-panel-soft: #121d2d;
+  --lp-text: #f8fafc;
+  --lp-muted: #aab3c3;
+  --lp-accent: #fff200;
+  --lp-accent-hot: #ffff4d;
+  --lp-accent-soft: #fff78a;
+  --lp-accent-muted: #f3e600;
+  --lp-accent-deep: #b8ad00;
   --lp-accent-ink: #11130a;
-  --lp-accent-rgb: 248 243 106;
-  --lp-accent-hot-rgb: 255 251 0;
-  --lp-accent-soft-rgb: 254 255 173;
-  --lp-accent-gradient: linear-gradient(290deg, #feffad 0%, #fffb00 30.2858%, #feffad 67.2878%, #fffb00 100%);
-  --lp-accent-button: linear-gradient(290deg, #feffad 0%, #f8f36a 34%, #fffed1 66%, #fffb00 100%);
+  --lp-cyan: #20e5f2;
+  --lp-coral: #ff3b30;
+  --lp-accent-rgb: 255 242 0;
+  --lp-accent-hot-rgb: 255 255 77;
+  --lp-accent-soft-rgb: 255 247 138;
+  --lp-cyan-rgb: 32 229 242;
+  --lp-coral-rgb: 255 59 48;
+  --lp-accent-gradient: linear-gradient(135deg, #fffde1 0%, #fff200 48%, #ffdd00 100%);
+  --lp-accent-button: linear-gradient(135deg, #ffffe8 0%, #fff45c 42%, #fff200 72%, #ffffff 145%);
 }
 
 .modal-image .modal-content {
@@ -22,42 +34,47 @@
 
 /* شكل عام */
 .custom-toast {
-  border-radius: 12px !important;
-  padding: 12px 16px !important;
-  font-size: 0.95rem;
-  font-weight: 500;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
-  backdrop-filter: blur(8px);
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  min-height: auto !important;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.45;
+  background: rgb(5 14 24 / 0.92) !important;
+  color: var(--lp-text) !important;
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.18) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.32) !important;
+  backdrop-filter: blur(10px);
 }
 
 .toast-close-button {
-  color: #666 !important;
+  color: rgba(255,255,255,0.78) !important;
   opacity: 0.7 !important;
 }
 
 /* ألوان حسب الحالة */
 .status-toast {
-  background: #ECFDF5 !important;
-  color: #065F46 !important;
-  border-left: 5px solid #10B981 !important;
+  background: rgb(5 14 24 / 0.92) !important;
+  color: #dffcf2 !important;
+  border-left: 3px solid #20e5f2 !important;
 }
 
 .error-toast {
-  background: #FEF2F2 !important;
-  color: #991B1B !important;
-  border-left: 5px solid #EF4444 !important;
+  background: rgb(5 14 24 / 0.92) !important;
+  color: #ffe3e0 !important;
+  border-left: 3px solid #ff3b30 !important;
 }
 
 .info-toast {
-  background: #EFF6FF !important;
-  color: #1E3A8A !important;
-  border-left: 5px solid #3B82F6 !important;
+  background: rgb(5 14 24 / 0.92) !important;
+  color: #e5f9ff !important;
+  border-left: 3px solid #20e5f2 !important;
 }
 
 .warning-toast {
-  background: #FFFBEB !important;
-  color: #92400E !important;
-  border-left: 5px solid #F59E0B !important;
+  background: rgb(5 14 24 / 0.92) !important;
+  color: #fffbd0 !important;
+  border-left: 3px solid var(--lp-accent) !important;
 }
 
 /* أنيميشن دخول */

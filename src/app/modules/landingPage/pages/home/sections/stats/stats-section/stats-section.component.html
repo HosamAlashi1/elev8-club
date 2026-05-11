@@ -1,77 +1,31 @@
 <section class="stats-section">
+  <div class="stats-inner">
+    <div class="stats-headline" data-aos="fade-up" data-aos-delay="80">
+      <h2>هاي الطريقة البسيطة حققت آلاف الدولارات للمشاركين السابقين</h2>
+      <p>أول مرة أطلقنا فيها هذا التحدي كان 30 يوم، والمرة الثانية 7 أيام، والمرة هاي مختلفة تماماً.</p>
+    </div>
 
-  <!-- العنوان -->
-  <div class="stats-headline" data-aos="fade-up" data-aos-delay="80">
-    <div class="stats-eyebrow">نتائج حقيقية من أشخاص حقيقيين</div>
-    <h2 class="stats-main-title">هاي الطريقة البسيطة حققت آلاف الدولارات للمشاركين السابقين</h2>
-    <p class="stats-desc">أول مرة أطلقنا فيها هذا التحدي كان <strong>30 يوم</strong>، والمرة الثانية <strong>7 أيام</strong>، والمرة هاي مختلفة تمامًا.</p>
+    <div class="stats-row" data-aos="fade-up" data-aos-delay="160">
+      <div class="stat-pill">
+        <span>عداد آلاف الدولارات</span>
+      </div>
+      <div class="stat-pill stat-pill--featured">
+        <strong>50K</strong>
+        <span>طلاب</span>
+      </div>
+      <div class="stat-pill">
+        <span>مختلف دول العالم</span>
+      </div>
+    </div>
+
+    <div class="stats-copy" data-aos="fade-up" data-aos-delay="260">
+      <p>أغلبهم ما كان عنده أي خبرة سابقة. كثير منهم كانوا لسه موظفين بوظائف 9-5، وبعضهم أصلاً ما كان يعرف شو يعني بزنس أونلاين أو تداول قبل ما يبدأ.</p>
+      <p class="stats-copy-highlight">ومع ذلك... هذا النظام البسيط ساعدهم يتجاوزوا كل التوقعات ويحققوا مجتمعين آلاف الدولارات أونلاين.</p>
+    </div>
+
+    <button class="btn-cta btn-cta-primary btn-cta-lg" type="button" (click)="onOpenRegistration()">
+      <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+      <div class="ripple-gold"></div>
+    </button>
   </div>
-
-  <div class="stats-container">
-
-    <!-- CARD 1 — آلاف الدولارات -->
-    <div class="stat-card stat-card--primary" data-aos="fade-up" data-aos-delay="150">
-      <div class="stat-icon-wrapper">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" class="stat-icon">
-          <circle cx="12" cy="12" r="10" stroke="#D8B868" stroke-width="1.8"/>
-          <path d="M12 6v12M9 9.5c0-1.5 1.34-2.5 3-2.5s3 1 3 2.5-1.34 2.5-3 2.5-3 1-3 2.5 1.34 2.5 3 2.5 3-1 3-2.5" stroke="#D8B868" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="stat-number" #counterDollars>$10M+</div>
-      <div class="stat-label">آلاف الدولارات حققها المشاركون</div>
-      <div class="stat-sublabel">نظام مثبت بنتائج حقيقية منذ 2020</div>
-      <div class="stat-glow"></div>
-    </div>
-
-    <!-- CARD 2 — 50K طالب -->
-    <div class="stat-card" data-aos="fade-up" data-aos-delay="250">
-      <div class="stat-icon-wrapper">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" class="stat-icon">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#D8B868" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="9" cy="7" r="4" stroke="#D8B868" stroke-width="1.8"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#D8B868" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="stat-number">50,000+</div>
-      <div class="stat-label">طالب من مختلف دول العالم</div>
-      <div class="stat-sublabel">أغلبهم بدأوا بدون أي خبرة سابقة</div>
-      <div class="stat-glow"></div>
-    </div>
-
-    <!-- CARD 3 — 30 يوم -->
-    <div class="stat-card" data-aos="fade-up" data-aos-delay="350">
-      <div class="stat-icon-wrapper">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" class="stat-icon">
-          <circle cx="12" cy="12" r="10" stroke="#D8B868" stroke-width="1.8"/>
-          <path d="M12 6v6l4 2" stroke="#D8B868" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="stat-number">30 يوم</div>
-      <div class="stat-label">لأول نتيجة في النسخة الأولى</div>
-      <div class="stat-sublabel">والنسخة الثانية حققت نتائج خلال أسبوع</div>
-      <div class="stat-glow"></div>
-    </div>
-
-    <!-- CARD 4 — 0$ -->
-    <div class="stat-card stat-card--free" data-aos="fade-up" data-aos-delay="450">
-      <div class="stat-icon-wrapper">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" class="stat-icon">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#D8B868" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="stat-number stat-free-num">مجاني</div>
-      <div class="stat-label">100% بدون أي تكلفة</div>
-      <div class="stat-sublabel">ويبينار حصري — Swap-Free حلال</div>
-      <div class="stat-glow"></div>
-    </div>
-
-  </div>
-
-  <!-- النص التحفيزي -->
-  <div class="stats-footer" data-aos="fade-up" data-aos-delay="550">
-    <p>أغلبهم ما كان عنده أي خبرة سابقة. كثير منهم كانوا لسه موظفين بوظائف 9–5.</p>
-    <p>وبعضهم أصلًا ما كان يعرف شو يعني "تداول" قبل ما يبدأ.</p>
-    <p class="stats-footer-highlight">ومع ذلك... هذا النظام البسيط ساعدهم يتجاوزوا كل التوقعات.</p>
-  </div>
-
 </section>

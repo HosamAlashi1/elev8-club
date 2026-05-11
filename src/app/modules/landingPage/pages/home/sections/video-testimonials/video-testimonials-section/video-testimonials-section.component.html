@@ -1,199 +1,23 @@
-<section class="video-section" data-aos="fade-up">
-
-    <div class="container">
-
-        <!-- Title -->
-        <div class="title-wrapper" data-aos="fade-up" data-aos-delay="80">
-            <div class="vt-eyebrow">نتائج حقيقية</div>
-            <h2 class="section-title">هاد النظام ينجح مهما كان وضعك الحالي</h2>
-            <p class="vt-subtitle">
-                أول مرتين أطلقنا فيهم هذا التحدي المباشر...<br>
-                شفنا أشخاص من ظروف وحياة مختلفة تمامًا يحققوا نتائج حقيقية
-            </p>
-        </div>
-
-        <!-- Card 1: زادة -->
-        <div class="vt-row-card" data-aos="fade-up" data-aos-delay="150">
-
-            <!-- Info Side -->
-            <div class="vt-info-side">
-                <div class="vt-badge">قصة نجاح</div>
-                <div class="vt-big-amount">$120,000</div>
-                <div class="vt-person-name">زادة</div>
-                <p class="vt-person-desc">
-                    اللي قدرت تحقق أكثر من <strong>$120,000</strong>
-                    بينما كانت بنفس الوقت تعتني بطفلين في المنزل.
-                </p>
-                <div class="vt-proof-tag">
-                    <span class="vt-proof-dot"></span>
-                    نتيجة حقيقية موثّقة
-                </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="vt-divider"></div>
-
-            <!-- Video Side -->
-            <div class="vt-video-side">
-                <div class="vt-video-box" [class.playing]="isPlaying(visibleVideos[0])">
-                    <video #player0 class="vt-video-el"
-                        [src]="visibleVideos[0]?.url"
-                        preload="metadata" playsinline webkit-playsinline
-                        (click)="togglePlayPause(visibleVideos[0], player0)"
-                        (timeupdate)="onTimeUpdate(visibleVideos[0], player0)"
-                        (loadedmetadata)="onLoadedMetadata(visibleVideos[0], player0)"
-                        (loadeddata)="onVideoLoaded(visibleVideos[0], player0)"
-                        (canplay)="onVideoCanPlay(visibleVideos[0], player0)"
-                        (ended)="onVideoEnded(visibleVideos[0], player0)">
-                    </video>
-
-                    <!-- Play Button -->
-                    <button class="vt-play-btn" *ngIf="!isPlaying(visibleVideos[0])"
-                        (click)="togglePlayPause(visibleVideos[0], player0)">
-                        <div class="vt-play-ring"></div>
-                        <div class="vt-play-circle">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                                <path d="M8 5V19L19 12L8 5Z" fill="white"/>
-                            </svg>
-                        </div>
-                    </button>
-
-                    <!-- Controls -->
-                    <div class="vt-controls" [class.visible]="isPlaying(visibleVideos[0])">
-                        <div class="vt-progress-wrap" (click)="seekTo(visibleVideos[0], player0, $event)">
-                            <div class="vt-progress-track">
-                                <div class="vt-progress-fill" [style.width.%]="getProgress(visibleVideos[0])"></div>
-                            </div>
-                        </div>
-                        <div class="vt-ctrl-row">
-                            <button class="vt-ctrl-btn vt-play-pause"
-                                (click)="togglePlayPause(visibleVideos[0], player0); $event.stopPropagation()">
-                                <svg *ngIf="!isPlaying(visibleVideos[0])" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M8 5V19L19 12L8 5Z" fill="white"/>
-                                </svg>
-                                <svg *ngIf="isPlaying(visibleVideos[0])" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <rect x="6" y="4" width="4" height="16" fill="white"/>
-                                    <rect x="14" y="4" width="4" height="16" fill="white"/>
-                                </svg>
-                            </button>
-                            <span class="vt-time-label">
-                                {{ formatTime(getCurrentTime(visibleVideos[0])) }} / {{ getDuration(visibleVideos[0]) }}
-                            </span>
-                            <div class="vt-ctrl-spacer"></div>
-                            <button class="vt-ctrl-btn"
-                                (click)="toggleFullscreen(player0); $event.stopPropagation()">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                    <path d="M8 3H5C4.46957 3 3.96086 3.21071 3.58579 3.58579C3.21071 3.96086 3 4.46957 3 5V8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M21 8V5C21 4.46957 20.7893 3.96086 20.4142 3.58579C20.0391 3.21071 19.5304 3 19 3H16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M16 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M3 16V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="vt-card-glow"></div>
-        </div>
-
-        <!-- Card 2: ارماندو -->
-        <div class="vt-row-card vt-row-card--featured" data-aos="fade-up" data-aos-delay="300">
-
-            <!-- Info Side -->
-            <div class="vt-info-side">
-                <div class="vt-badge vt-badge--gold">النجم الصاعد</div>
-                <div class="vt-age-label">عمره 19 سنة</div>
-                <div class="vt-big-amount">$111,000</div>
-                <div class="vt-person-name">ارماندو</div>
-                <p class="vt-person-desc">
-                    شاب عمره 19 سنة فقط، جاء من عائلة مهاجرة بسيطة... وقدر يحقق أكثر من
-                    <strong>$111,000</strong> واشترى لنفسه سيارة McLaren.
-                </p>
-                <div class="vt-proof-tag">
-                    <span class="vt-proof-dot"></span>
-                    بدأ من الصفر بالكامل
-                </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="vt-divider"></div>
-
-            <!-- Video Side -->
-            <div class="vt-video-side">
-                <div class="vt-video-box" [class.playing]="isPlaying(visibleVideos[1])">
-                    <video #player1 class="vt-video-el"
-                        [src]="visibleVideos[1]?.url"
-                        preload="metadata" playsinline webkit-playsinline
-                        (click)="togglePlayPause(visibleVideos[1], player1)"
-                        (timeupdate)="onTimeUpdate(visibleVideos[1], player1)"
-                        (loadedmetadata)="onLoadedMetadata(visibleVideos[1], player1)"
-                        (loadeddata)="onVideoLoaded(visibleVideos[1], player1)"
-                        (canplay)="onVideoCanPlay(visibleVideos[1], player1)"
-                        (ended)="onVideoEnded(visibleVideos[1], player1)">
-                    </video>
-
-                    <button class="vt-play-btn" *ngIf="!isPlaying(visibleVideos[1])"
-                        (click)="togglePlayPause(visibleVideos[1], player1)">
-                        <div class="vt-play-ring"></div>
-                        <div class="vt-play-circle">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                                <path d="M8 5V19L19 12L8 5Z" fill="white"/>
-                            </svg>
-                        </div>
-                    </button>
-
-                    <div class="vt-controls" [class.visible]="isPlaying(visibleVideos[1])">
-                        <div class="vt-progress-wrap" (click)="seekTo(visibleVideos[1], player1, $event)">
-                            <div class="vt-progress-track">
-                                <div class="vt-progress-fill" [style.width.%]="getProgress(visibleVideos[1])"></div>
-                            </div>
-                        </div>
-                        <div class="vt-ctrl-row">
-                            <button class="vt-ctrl-btn vt-play-pause"
-                                (click)="togglePlayPause(visibleVideos[1], player1); $event.stopPropagation()">
-                                <svg *ngIf="!isPlaying(visibleVideos[1])" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M8 5V19L19 12L8 5Z" fill="white"/>
-                                </svg>
-                                <svg *ngIf="isPlaying(visibleVideos[1])" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <rect x="6" y="4" width="4" height="16" fill="white"/>
-                                    <rect x="14" y="4" width="4" height="16" fill="white"/>
-                                </svg>
-                            </button>
-                            <span class="vt-time-label">
-                                {{ formatTime(getCurrentTime(visibleVideos[1])) }} / {{ getDuration(visibleVideos[1]) }}
-                            </span>
-                            <div class="vt-ctrl-spacer"></div>
-                            <button class="vt-ctrl-btn"
-                                (click)="toggleFullscreen(player1); $event.stopPropagation()">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                    <path d="M8 3H5C4.46957 3 3.96086 3.21071 3.58579 3.58579C3.21071 3.96086 3 4.46957 3 5V8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M21 8V5C21 4.46957 20.7893 3.96086 20.4142 3.58579C20.0391 3.21071 19.5304 3 19 3H16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M16 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M3 16V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="vt-card-glow"></div>
-        </div>
-
-        <!-- Bottom CTA -->
-        <div class="bottom-text" data-aos="fade-up" data-aos-delay="500">
-            <p class="q">"حاب تكون التجربة الجاية؟"</p>
-            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-                <span class="btn-cta-text">سجّل في الويبينار المجاني الآن!</span>
-                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <div class="ripple-gold"></div>
-            </button>
-        </div>
-
+<section class="video-section">
+  <div class="vt-inner">
+    <div class="section-head" data-aos="fade-up" data-aos-delay="80">
+      <span class="eyebrow">نتائج من النسخ السابقة</span>
+      <h2>هاد النظام ينجح مهما كان وضعك الحالي</h2>
+      <p>أول مرتين أطلقنا فيهم هذا التحدي المباشر... شفنا أشخاص من ظروف وحياة مختلفة تماماً يحققوا نتائج حقيقية.</p>
     </div>
 
+    <div class="proof-layout">
+      <article class="proof-card" *ngFor="let story of stories; let i = index" data-aos="fade-up" [attr.data-aos-delay]="140 + i * 130">
+        <div class="proof-copy">
+          <span class="proof-badge">{{ story.badge }}</span>
+          <h3>{{ story.name }}</h3>
+          <strong>{{ story.amount }}</strong>
+          <p>{{ story.description }}</p>
+        </div>
+        <div class="proof-image">
+          <img [src]="story.image" [alt]="story.name" loading="lazy">
+        </div>
+      </article>
+    </div>
+  </div>
 </section>

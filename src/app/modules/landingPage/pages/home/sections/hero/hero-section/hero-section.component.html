@@ -1,210 +1,91 @@
 <section class="hero-section">
-
-  <!-- خلفية الجراديانت -->
   <div class="hero-bg"></div>
-
-  <!-- الخطوط المنحنية المتحركة -->
-  <div class="hero-bg-line hero-bg-line--1"></div>
-  <div class="hero-bg-line hero-bg-line--2"></div>
-
-  <!-- ============ Trading Background Effects ============ -->
-
-  <!-- Trading Chart Lines (خطوط الرسم البياني) -->
-  <div class="trading-chart-overlay">
-    <svg class="chart-line chart-line-1" viewBox="0 0 1200 400" preserveAspectRatio="none">
-      <polyline points="0,300 150,250 300,280 450,180 600,200 750,120 900,150 1050,80 1200,100" fill="none"
-        stroke="rgb(var(--lp-accent-rgb) / 0.15)" stroke-width="2" />
-    </svg>
-    <svg class="chart-line chart-line-2" viewBox="0 0 1200 400" preserveAspectRatio="none">
-      <polyline points="0,200 150,180 300,220 450,140 600,160 750,100 900,130 1050,70 1200,90" fill="none"
-        stroke="rgb(var(--lp-accent-rgb) / 0.08)" stroke-width="1.5" />
+  <div class="hero-grid"></div>
+  <div class="hero-floor-grid"></div>
+  <div class="hero-market-lines" aria-hidden="true">
+    <svg viewBox="0 0 1200 320" preserveAspectRatio="none">
+      <polyline class="market-line market-line--gold" points="0,220 130,188 250,214 380,128 520,154 660,92 800,132 940,74 1080,104 1200,58" />
+      <polyline class="market-line market-line--cyan" points="0,260 160,238 300,246 430,188 570,204 730,142 850,168 1000,126 1200,148" />
     </svg>
   </div>
-
-  <!-- Golden Trading Waves (موجات ذهبية) -->
-  <div class="golden-wave golden-wave-1"></div>
-  <div class="golden-wave golden-wave-2"></div>
-  <div class="golden-wave golden-wave-3"></div>
-
-  <!-- Currency Particles (جزيئات العملات) -->
-  <div class="trading-particles">
-    <span class="particle particle-1">$</span>
-    <span class="particle particle-2">€</span>
-    <span class="particle particle-3">£</span>
-    <span class="particle particle-4">¥</span>
-    <!-- <span class="particle particle-5">↗</span> -->
-    <span class="particle particle-6">₿</span>
-    <span class="particle particle-7">$</span>
-    <!-- <span class="particle particle-8">↗</span> -->
-    <span class="particle particle-9">€</span>
-    <!-- <span class="particle particle-10">↘</span> -->
-    <span class="particle particle-11">¥</span>
-    <span class="particle particle-12">$</span>
-  </div>
+  <div class="hero-orbit hero-orbit--one"></div>
+  <div class="hero-orbit hero-orbit--two"></div>
 
   <div class="hero-inner content-container" data-aos="fade-up" data-aos-delay="50">
-
-    <!-- الشريط العلوي -->
-    <div class="hero-top-pill" data-aos="fade-down" data-aos-delay="100" data-aos-duration="700"
-      data-aos-easing="ease-out-cubic">
-      <span class="pill-dot" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="4" fill="var(--lp-accent-soft)"/>
-          <circle cx="12" cy="12" r="4" fill="var(--lp-accent-soft)" opacity="0.4">
-            <animate attributeName="r" values="4;10;4" dur="2s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-      </span>
-      <span class="pill-live-icon-wrap" aria-hidden="true">
-        <lucide-angular name="RadioTower" class="pill-live-icon" [size]="14"></lucide-angular>
-      </span>
-      <span class="pill-text">مباشر الآن — الأماكن محدودة، سجّل قبل الامتلاء!</span>
+    <div class="hero-alert" data-aos="fade-down" data-aos-delay="60">
+      <span class="alert-dot"></span>
+      <strong>جلسة مباشرة مجانية باستخدام الذكاء الاصطناعي</strong>
     </div>
 
-    <!-- معلومات التدريب المباشر -->
-    <div class="hero-training-info" data-aos="fade-up" data-aos-delay="180" data-aos-duration="700">
-      <div class="training-info-compact">
-        <div class="training-info-item">
-          <span class="info-icon-wrap" aria-hidden="true">
-            <lucide-angular name="CalendarDays" class="info-icon" [size]="16"></lucide-angular>
-          </span>
-          <span class="info-label">تحدي مجاني مباشر</span>
-        </div>
-        <span class="info-sep">|</span>
-        <div class="training-info-item">
-          <span class="info-icon-wrap" aria-hidden="true">
-            <lucide-angular name="Clock3" class="info-icon" [size]="16"></lucide-angular>
-          </span>
-          <span class="info-text">الساعة 9:00 مساءً — ساعة واحدة فقط</span>
-        </div>
-        <span class="info-sep">|</span>
-        <div class="training-info-item">
-          <span class="info-icon-wrap" aria-hidden="true">
-            <lucide-angular name="Globe" class="info-icon" [size]="16"></lucide-angular>
-          </span>
-          <span class="info-text">أونلاين — 100% مجاني</span>
-        </div>
+    <div class="hero-visual" data-aos="zoom-in" data-aos-delay="120">
+      <img src="assets/images/canva/khalil-pill.jpg" alt="خليل القصاصية يقدم جلسة الويبينار المجانية" loading="eager" />
+      <div class="hero-visual-badge">
+        <span class="live-dot"></span>
+        <strong>تحدي مباشر</strong>
       </div>
     </div>
 
-    <!-- العنوان الرئيسي مع Typewriter -->
-    <div class="hero-title-wrapper" data-aos="fade-up" data-aos-delay="300" data-aos-duration="900">
-      <p class="hero-pretitle">عرضت هذا النظام على مبتدئين بالكامل مرتين... وقدروا يحققوا آلاف الدولارات خلال أقل من 30 يوم فقط...</p>
-      <h1 class="hero-title heading-3d">
-        أتحداك تبني دخل يومي
-        <span class="highlight-gold typewriter-amount">$272</span>
-        أونلاين<br>
-        <span class="hero-title-sub">— خلال ساعة واحدة فقط باستخدام <span class="highlight-gold">الذكاء الاصطناعي</span></span>
+    <div class="hero-copy" data-aos="fade-up" data-aos-delay="180">
+      <h1 class="hero-title" aria-label="أتحداك تبني دخل يومي 272 دولار أونلاين خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي">
+        <span class="hero-title-frame">
+          <span class="hero-title-line hero-title-main typewriter-reveal typewriter-reveal--one">أتحداك تبني دخل يومي</span>
+          <span class="hero-title-line hero-earning-line typewriter-reveal typewriter-reveal--two">
+            <span class="title-slash">/</span>
+            <span class="amount-highlight">$272</span>
+            أونلاين
+          </span>
+        </span>
+        <span class="hero-title-line hero-title-subline typewriter-reveal typewriter-reveal--three">
+          <span class="subline-dash">—</span>
+          خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي
+        </span>
       </h1>
-      <p class="hero-subtitle-new">والآن جاء دورك تعملها خلال ساعة وحدة</p>
+      <p class="hero-kicker">
+        عرضت هذا النظام على مبتدئين بالكامل مرتين... وقدروا يحققوا آلاف الدولارات
+        خلال أقل من 30 يوم فقط... والآن جاء دورك تعملها خلال ساعة وحدة.
+      </p>
     </div>
 
-    <!-- العداد -->
-    <div class="hero-countdown" *ngIf="showCountdown" aria-label="العدّ التنازلي" data-aos="zoom-in"
-      data-aos-delay="450" data-aos-duration="800">
-
-      <!-- Countdown Label -->
+    <div class="hero-countdown" *ngIf="showCountdown" aria-label="العد التنازلي" data-aos="fade-up" data-aos-delay="340">
       <div class="countdown-status-label" [class.not-started]="challengeStatus === 'not-started'"
         [class.active]="challengeStatus === 'active'">
         {{ countdownLabel }}
       </div>
 
       <div class="countdown-cards-wrapper">
-        <div class="countdown-card countdown-card--1">
-          <div class="countdown-value" [@flipAnimation]="countdown.days">
-            {{ countdown.days | number:'2.0-0' }}
-          </div>
+        <div class="countdown-card">
+          <div class="countdown-value" [@flipAnimation]="countdown.days">{{ countdown.days | number:'2.0-0' }}</div>
           <div class="countdown-label">أيام</div>
         </div>
-
-        <div class="countdown-card countdown-card--2">
-          <div class="countdown-value" [@flipAnimation]="countdown.hours">
-            {{ countdown.hours | number:'2.0-0' }}
-          </div>
+        <div class="countdown-card">
+          <div class="countdown-value" [@flipAnimation]="countdown.hours">{{ countdown.hours | number:'2.0-0' }}</div>
           <div class="countdown-label">ساعات</div>
         </div>
-
-        <div class="countdown-card countdown-card--3">
-          <div class="countdown-value" [@flipAnimation]="countdown.minutes">
-            {{ countdown.minutes | number:'2.0-0' }}
-          </div>
+        <div class="countdown-card">
+          <div class="countdown-value" [@flipAnimation]="countdown.minutes">{{ countdown.minutes | number:'2.0-0' }}</div>
           <div class="countdown-label">دقائق</div>
         </div>
-
-        <div class="countdown-card countdown-card--4">
-          <div class="countdown-value" [@flipAnimation]="countdown.seconds">
-            {{ countdown.seconds | number:'2.0-0' }}
-          </div>
+        <div class="countdown-card">
+          <div class="countdown-value" [@flipAnimation]="countdown.seconds">{{ countdown.seconds | number:'2.0-0' }}</div>
           <div class="countdown-label">ثواني</div>
         </div>
       </div>
     </div>
 
-    <!-- Challenge Ended Message -->
-    <div class="challenge-ended" *ngIf="challengeStatus === 'ended'" data-aos="zoom-in" data-aos-delay="450"
-      data-aos-duration="800">
-      <div class="ended-icon"></div>
-      <h3 class="ended-title">انتهى الويبينار</h3>
-      <p class="ended-text">
-        شكراً لاهتمامك! تابعنا للإعلان عن الويبينار القادم
-      </p>
-    </div>
-
-    <!-- زر CTA -->
-    <div class="hero-cta-wrapper" data-aos="zoom-in-up" data-aos-delay="560" data-aos-duration="900">
+    <div class="hero-cta-wrapper" data-aos="zoom-in-up" data-aos-delay="420">
       <button class="btn-cta btn-cta-primary btn-cta-lg hero-cta-btn" (click)="onOpenRegistration()">
-        <span class="hero-cta-pulse"></span>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="hero-cta-icon-left">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="btn-cta-text">احجز مقعدك مجانًا</span>
+        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
         <svg class="btn-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div class="ripple-gold"></div>
       </button>
-      <div class="hero-cta-note">
-        <span class="hero-note-item">
-          <lucide-angular name="Check" class="hero-note-icon" [size]="13"></lucide-angular>
-          مجاني 100%
-        </span>
-        <span class="hero-note-sep">|</span>
-        <span class="hero-note-item">
-          <lucide-angular name="Check" class="hero-note-icon" [size]="13"></lucide-angular>
-          بدون أي خبرة سابقة
-        </span>
-        <span class="hero-note-sep">|</span>
-        <span class="hero-note-item">
-          <lucide-angular name="Check" class="hero-note-icon" [size]="13"></lucide-angular>
-          Swap-Free حلال
-        </span>
+
+      <div class="hero-trust-row">
+        <span><lucide-angular name="Check" [size]="14"></lucide-angular> مجاني 100%</span>
+        <span><lucide-angular name="Check" [size]="14"></lucide-angular> بدون أي خبرة سابقة</span>
+        <span><lucide-angular name="Check" [size]="14"></lucide-angular> Swap-Free حلال</span>
       </div>
     </div>
-
-    <!-- المميزات / Social Proof -->
-    <div class="hero-social-proof" data-aos="fade-up" data-aos-delay="700" data-aos-duration="700">
-      <div class="proof-item">
-        <span class="proof-num">50,000+</span>
-        <span class="proof-lbl">طالب استفاد</span>
-      </div>
-      <div class="proof-divider"></div>
-      <div class="proof-item">
-        <span class="proof-num">$272</span>
-        <span class="proof-lbl">متوسط دخل يومي</span>
-      </div>
-      <div class="proof-divider"></div>
-      <div class="proof-item">
-        <span class="proof-num">30 يوم</span>
-        <span class="proof-lbl">لأول نتيجة</span>
-      </div>
-      <div class="proof-divider"></div>
-      <div class="proof-item">
-        <span class="proof-num">ساعة</span>
-        <span class="proof-lbl">للتطبيق الأول</span>
-      </div>
-    </div>
-
   </div>
-
 </section>

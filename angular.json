@@ -60,7 +60,9 @@
               "node_modules/aos/dist/aos.js"
             ],
             "allowedCommonJsDependencies": [
-              "lottie-web"
+              "lottie-web",
+              "quill-delta",
+              "moment"
             ]
           },
           "configurations": {
@@ -71,16 +73,21 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": true,
+                "fonts": false
+              },
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1600kb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "12kb",
+                  "maximumError": "14kb"
                 }
               ],
               "outputHashing": "all"

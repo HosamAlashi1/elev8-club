@@ -1,69 +1,31 @@
 <section class="target-section" data-aos="fade-up">
-
-  <div class="bg-blur"></div>
-
-  <div class="container">
-
-    <!-- العنوان -->
-    <div class="title-wrapper" data-aos="fade-up" data-aos-delay="80">
-      <div class="section-eyebrow">الجمهور المستهدف</div>
+  <div class="target-inner">
+    <div class="section-head" data-aos="fade-up" data-aos-delay="80">
+      <span class="section-index">02</span>
       <h2 class="main-title">مين بيحتاج هاد؟</h2>
-      <p class="section-subtitle">هذا التحدي مصمم لأشخاص يريدون تغيير واقعهم المالي — بغض النظر عن خبرتهم السابقة</p>
+      <p class="section-subtitle">إذا كنت ضمن واحد من هذه الحالات، فهذا التحدي معمول لك.</p>
     </div>
 
-    <!-- الـ 6 Persona Cards -->
+    <div class="target-note" data-aos="fade-up" data-aos-delay="110">
+      <span>الهدف من هذا الجزء</span>
+      <p>تفهم هل التحدي مناسب لك قبل ما تدخل في التفاصيل: كيف يعمل النظام، ولماذا الفرصة مختلفة الآن.</p>
+    </div>
+
     <div class="personas-grid">
-      <div
+      <article
         class="persona-card"
         *ngFor="let p of personas; let i = index"
         data-aos="fade-up"
-        [attr.data-aos-delay]="150 + i * 80"
+        [attr.data-aos-delay]="120 + i * 70"
       >
-        <div class="persona-icon">
+        <div class="persona-icon" aria-hidden="true">
           <lucide-angular [name]="p.icon" class="persona-lucide-icon"></lucide-angular>
         </div>
-        <h3 class="persona-title">{{ p.title }}</h3>
-        <p class="persona-desc">{{ p.desc }}</p>
-        <div class="persona-check">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M20 6L9 17l-5-5" stroke="var(--lp-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>مناسب لك</span>
+        <div class="persona-content">
+          <h3 class="persona-title">{{ p.title }}</h3>
+          <p class="persona-desc">{{ p.desc }}</p>
         </div>
-        <div class="persona-glow"></div>
-      </div>
+      </article>
     </div>
-
-    <!-- مش مناسب -->
-    <div class="not-suitable-block" data-aos="fade-up" data-aos-delay="700">
-      <div class="not-suitable-header">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="#ff6b6b" stroke-width="2"/>
-          <path d="M15 9l-6 6M9 9l6 6" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <h3 class="not-suitable-title">مش مناسب إذا كنت...</h3>
-      </div>
-      <div class="not-suitable-list">
-        <div class="not-suitable-item" *ngFor="let item of notSuitable">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6l12 12" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>{{ item }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="cta-wrapper" data-aos="zoom-in" data-aos-delay="850">
-      <p class="target-cta-text">إذا وجدت نفسك في أي من هذه الأوصاف — <strong>هذا التحدي صُمِّم لك بالضبط.</strong></p>
-      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجانًا الآن</span>
-        <svg class="btn-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="ripple-gold"></div>
-      </button>
-    </div>
-
   </div>
 </section>

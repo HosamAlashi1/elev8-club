@@ -1,127 +1,26 @@
-<section class="testimonials-section" data-aos="fade-up" data-aos-duration="900">
-
-    <div class="bg-blur"></div>
-
-    <div class="container">
-
-        <!-- Hero Block -->
-        <div class="wt-hero" data-aos="fade-up" data-aos-delay="80" data-aos-duration="900">
-
-            <div class="wt-hero-text">
-                <div class="wt-eyebrow">سكرينات</div>
-                <h2 class="main-title">
-                    عندي حرفيًا مئات الـ&nbsp;<span class="highlight">screenshots</span><br>ومئات النتائج
-                </h2>
-                <p class="subtitle">لأشخاص قدروا يحققوا نتائج حقيقية باستخدام هذا النظام</p>
-            </div>
-
-            <div class="wt-hero-img-wrap" data-aos="zoom-in" data-aos-delay="220" data-aos-duration="900">
-                <div class="wt-img-glow"></div>
-                <img src="assets/images/canva/trading-screenshot.png"
-                     alt="trading result screenshot"
-                     class="wt-screenshot-img" />
-            </div>
-
-        </div>
-
-        <!-- Promise Block -->
-        <div class="wt-promise-block" data-aos="fade-up" data-aos-delay="150">
-            <div class="wt-promise-date">يوم الجلسة المباشرة</div>
-            <div class="wt-promise-items">
-                <div class="wt-promise-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M20 6L9 17l-5-5" stroke="var(--lp-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span>راح أفرجيك بشكل مباشر، قدام الكاميرا، خطوة بخطوة — كيف ناس كثير قدروا يبدأوا بالتداول بالطريقة الصح</span>
-                </div>
-                <div class="wt-promise-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M20 6L9 17l-5-5" stroke="var(--lp-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span>مش حكي نظري — خلال آخر ربع ساعة من الجلسة راح نطبّق التداول بشكل مباشر <strong>live</strong></span>
-                </div>
-                <div class="wt-promise-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M20 6L9 17l-5-5" stroke="var(--lp-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span>وبنهاية الجلسة، رح يكون عندك وضوح كامل عن كيف تبدأ التداول <strong>بدون عشوائية</strong></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonials Grid -->
-        <div class="testimonials-wrapper" data-aos="fade-up" data-aos-delay="200" data-aos-duration="900">
-
-            <div class="testimonials-grid">
-                <div class="testimonial-item" *ngFor="let testimonial of visibleTestimonials; let i = index"
-                    data-aos="zoom-in" [attr.data-aos-delay]="250 + (i * 120)" data-aos-duration="800">
-
-                    <div class="testimonial-card">
-
-                        <div class="rating">
-                            <svg *ngFor="let star of getStars(testimonial.rating)" width="20" height="20"
-                                viewBox="0 0 24 24" fill="var(--lp-accent)">
-                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                            </svg>
-                        </div>
-
-                        <div class="quote-icon">
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 21C3 17.4 5.4 15 9 15C10.5 15 11.8 15.6 12.7 16.5C11.9 14.4 11.1 12.3 9 10.5C9 10.5 7.5 9 6 9V7C11.5 7 13 11.5 13 15V21H3Z" fill="var(--lp-accent)" opacity="0.3"/>
-                                <path d="M14 21C14 17.4 16.4 15 20 15C21.5 15 22.8 15.6 23.7 16.5C22.9 14.4 22.1 12.3 20 10.5C20 10.5 18.5 9 17 9V7C22.5 7 24 11.5 24 15V21H14Z" fill="var(--lp-accent)" opacity="0.3"/>
-                            </svg>
-                        </div>
-
-                        <p class="message">{{ testimonial.message }}</p>
-
-                        <div class="user-info">
-                            <div class="user-details">
-                                <h4 class="user-name">{{ testimonial.name }}</h4>
-                                <p class="user-country">{{ testimonial.country }}</p>
-                            </div>
-                        </div>
-
-                        <div class="card-glow"></div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="navigation-wrapper" data-aos="fade-up" data-aos-delay="800">
-                <div class="slider-navigation">
-                    <button class="nav-button" (click)="prevPage()" [disabled]="currentPage === 0">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                    <button class="nav-button" (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="pagination-dots">
-                    <button *ngFor="let page of pages" class="dot" [class.active]="currentPage === page"
-                        (click)="goToPage(page)"></button>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- CTA -->
-        <div class="cta-wrapper" data-aos="fade-up" data-aos-delay="900" data-aos-duration="900">
-            <p class="cta-text">جاهز تكون من الناجحين؟</p>
-            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-                <span class="btn-cta-text">ابدأ رحلتك الآن مجاناً</span>
-                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <div class="ripple-gold"></div>
-            </button>
-        </div>
-
+<section class="screens-section">
+  <div class="screens-inner">
+    <div class="screens-head" data-aos="fade-left" data-aos-delay="80">
+      <span class="screens-eyebrow">سكرينات</span>
+      <h2>عندي حرفياً مئات الـ screenshots ومئات النتائج</h2>
+      <p>لأشخاص قدروا يحققوا نتائج حقيقية باستخدام هذا النظام.</p>
     </div>
 
+    <div class="screens-media" data-aos="zoom-in" data-aos-delay="180">
+      <img src="assets/images/canva/trading-screenshot.png" alt="نتيجة تداول حقيقية" loading="lazy">
+    </div>
+
+    <div class="screens-details" data-aos="fade-up" data-aos-delay="220">
+      <div class="promise-card">
+        <div class="promise-summary">
+          <span class="promise-fragment" *ngFor="let point of proofPoints">{{ point }}</span>
+        </div>
+      </div>
+
+      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+        <div class="ripple-gold"></div>
+      </button>
+    </div>
+  </div>
 </section>

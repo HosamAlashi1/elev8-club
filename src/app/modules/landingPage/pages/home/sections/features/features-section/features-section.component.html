@@ -1,61 +1,43 @@
-<section class="features-section" data-aos="fade-up" data-aos-offset="150">
-    <!-- خلفية منقّطة -->
-    <div class="bg-pattern"></div>
-
-    <div class="content-wrapper">
-
-        <!-- العنوان -->
-        <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
-            <h2 class="main-title">جزء من يلي راح تتعلمه</h2>
-            <p class="subtitle">في جلسة واحدة مجانية — يوم واحد فقط</p>
-        </div>
-
-        <!-- الجريد -->
-        <div class="features-grid">
-
-            <div class="feature-card" *ngFor="let f of features; let i = index" data-aos="fade-up"
-                [attr.data-aos-delay]="150 + i * 120"
-                [class.feature-card--bonus]="f.part === 'BONUS'">
-
-                <!-- شارة الجزء -->
-                <div class="part-badge" [class.part-badge--bonus]="f.part === 'BONUS'">
-                    {{ f.part }}
-                </div>
-
-                <!-- الأيقونة -->
-                <div class="icon-box">
-                    <lucide-angular [name]="f.icon" class="icon"></lucide-angular>
-                </div>
-
-                <!-- المحتوى -->
-                <div class="content-box">
-                    <h3 class="feature-title">{{ f.title }}</h3>
-                    <p class="feature-desc">{{ f.description }}</p>
-                </div>
-
-                <!-- التوهج -->
-                <div class="hover-glow"></div>
-
-            </div>
-
-        </div>
-
-        <!-- النص التحفيزي -->
-        <div class="motivation-wrapper" data-aos="fade-up" data-aos-delay="900">
-            <p class="motivation-text">"ساعتان مع خبراء Elev8 رح تغيّر طريقة تفكيرك بالتداول للأبد!"</p>
-            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-                <span class="btn-cta-text">سجّل الآن في الويبينار المجاني</span>
-
-                <svg class="btn-cta-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 17L9.5 10.5L14 15L21 8" stroke="white" stroke-width="2.2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M16 8H21V13" stroke="white" stroke-width="2.2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-
-                <div class="ripple-gold"></div>
-            </button>
-        </div>
-
+<section class="features-section" data-aos="fade-up">
+  <div class="features-inner">
+    <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
+      <span class="feature-eyebrow">محتوى الجلسة</span>
+      <h2 class="main-title">جزء من يلي راح تتعلمه</h2>
     </div>
+
+    <div class="features-grid">
+      <article class="feature-card" *ngFor="let f of features | slice:0:4; let i = index" data-aos="fade-up" [attr.data-aos-delay]="150 + i * 110">
+        <div class="feature-card-meta">
+          <span class="icon-box" aria-hidden="true">
+            <lucide-angular
+              [name]="f.icon"
+              [size]="f.iconSize || 14"
+              class="icon"
+              [style.transform]="'translate(' + (f.iconOffsetX || 0) + 'px, ' + (f.iconOffsetY || 0) + 'px)'"
+            ></lucide-angular>
+          </span>
+          <span class="part-badge">{{ f.part }}</span>
+        </div>
+
+        <div class="feature-card-body">
+          <h3 class="feature-title">{{ f.title }}</h3>
+          <p class="feature-desc">{{ f.description }}</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="final-part" data-aos="fade-up" data-aos-delay="620">
+      <div class="final-part-copy">
+        <span class="part-badge part-badge--bonus">{{ features[4].part }}</span>
+        <h3>{{ features[4].title }}</h3>
+        <p>{{ features[4].description }}</p>
+        <p class="final-note">وحتى أوضحلك الصورة أكثر... كل هذا راح أشرحه إلك بالكامل مجاناً 100%.</p>
+      </div>
+
+      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+        <div class="ripple-gold"></div>
+      </button>
+    </div>
+  </div>
 </section>

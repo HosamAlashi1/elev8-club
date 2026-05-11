@@ -1,123 +1,129 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 
-interface Testimonial {
-  name: string;
-  country: string;
-  image: string;
-  rating: number;
-  message: string;
-}
+type SlideItem = {
+  src: string;
+  alt: string;
+};
 
 @Component({
   selector: 'app-written-testimonials-section',
-  templateUrl: './written-testimonials-section.component.html',
+  template: `
+    <section class="screens-section">
+      <div class="screens-inner">
+        <div class="screens-content" data-aos="fade-left" data-aos-delay="80">
+          <div class="screens-head">
+            <span class="screens-eyebrow">سكرينات</span>
+            <h2>عندي حرفياً مئات الـ screenshots ومئات النتائج</h2>
+            <p>لأشخاص قدروا يحققوا نتائج حقيقية باستخدام هذا النظام.</p>
+          </div>
+
+          <div class="screens-slider" data-aos="zoom-in" data-aos-delay="160">
+            <swiper-container
+              #screensSwiper
+              class="screens-swiper"
+              init="false"
+              dir="rtl"
+              aria-label="Screenshots slider"
+            >
+              <swiper-slide *ngFor="let slide of slides">
+                <figure class="screen-card">
+                  <img [src]="slide.src" [alt]="slide.alt" loading="lazy">
+                </figure>
+              </swiper-slide>
+            </swiper-container>
+          </div>
+
+          <div class="screens-details" data-aos="fade-up" data-aos-delay="220">
+            <div class="promise-copy">
+              <p class="promise-inline">
+                <ng-container *ngFor="let point of proofPoints; let last = last">
+                  <span>{{ point }}</span>
+                  <span class="promise-separator" *ngIf="!last">•</span>
+                </ng-container>
+              </p>
+            </div>
+
+            <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
+              <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+              <div class="ripple-gold"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  `,
   styleUrls: ['./written-testimonials-section.component.css']
 })
-export class WrittenTestimonialsSectionComponent implements OnInit {
+export class WrittenTestimonialsSectionComponent implements AfterViewInit, OnDestroy {
   @Input() onOpenRegistration!: () => void;
+  @ViewChild('screensSwiper') private screensSwiper?: ElementRef<any>;
 
-  currentPage: number = 0;
-  itemsPerPage: number = 3;
-
-  testimonials: Testimonial[] = [
+  readonly slides: SlideItem[] = [
     {
-      name: "مروة",
-      country: "فلسطين",
-      image: "assets/img/testimonials/person1.png",
-      rating: 5,
-      message:
-        "تجربتي كانت مميزة بمجتمع Elev8 Club. مجتمع ناري وتجربة عظيمة، خصوصًا إنك تكون فايت المجال مع ناس خبرة وزي الكوتش محمد ما شاء الله بشرح بطريقة عظيمة وسلسة. من الصفر إلى 80% خلال شهر! تعلمت تحليل، مناطق دخول صحيحة، ومتى نقفل الصفقة. من 100$ إلى 524$ خلال شهر. شكراً كوتش خليل على الفرصة العظيمة."
+      src: 'assets/images/canva/trading-screenshot.png',
+      alt: 'نتيجة تداول حقيقية'
     },
-
     {
-      name: "وجدي",
-      country: "تركيا",
-      image: "assets/img/testimonials/person2.png",
-      rating: 5,
-      message:
-        "تجربة من أحلى الفترات اللي مريت فيها. دخلت متحمس وما كنت متوقع قديش ممكن أستفيد. أول أسبوعين صعبين، بس مع الوقت فهمت السوق وصرت أتعامل مع الخسارة بوعي. اكتشفت إن التداول تفكير وصبر والتزام. الدعم ما وقف ولا لحظة. شكراً لفريق Elev8 Club على المتابعة الحقيقية وتغيير طريقة تفكيري."
+      src: 'assets/images/canva/video-proof-massy.png',
+      alt: 'لقطة أرباح من المشاركين'
     },
-
     {
-      name: "عزّت",
-      country: "فلسطين",
-      image: "assets/img/testimonials/person3.png",
-      rating: 5,
-      message:
-        "كنت داخل المجال صفر، لا تحليل ولا منصات. بس مع Elev8 Club تغيّر كل شيء. الفريق علّمنا الأساس من أول وجديد وبصبر. مش بس تعليم، دعم نفسي وتشجيع. صراحة صادقين وما وعدونا بالثراء السريع. تعلمت كيف أفكر وكيف أتحكم بعاطفتي. شكراً من القلب، أنتم غيرتوا طريقتي بالتداول."
+      src: 'assets/images/canva/video-proof-salah.png',
+      alt: 'إثبات نتائج إضافي'
     },
-
     {
-      name: "هديل",
-      country: "سوريا",
-      image: "assets/img/testimonials/person4.png",
-      rating: 5,
-      message:
-        "أول ما سمعت عن التداول ما كنت فاهمة شيء. حاولت أتعلم أونلاين بلا فائدة. لما شفت فرصة Elev8 Club ما توقعت تكون حقيقية. حضرت أول الجلسات مسجّل وبعدها تحمست للأونلاين. تعلمت إنه التداول تفكير ونفسية وصبر. عطيتوني معلومات ما حدا بيعطيها. صرت أحلل لحالي وأستمتع. شكراً لأنكم ما بس علمتوني التداول… علمتوني أتحكم بنفسي وبقراراتي."
-    },
-
-    {
-      name: "زيد",
-      country: "لبنان",
-      image: "assets/img/testimonials/person5.png",
-      rating: 5,
-      message:
-        "بلشت قبل أسبوع وشفت تقدم ممتاز. رغم إني ما لحقت كل الصفقات لكن ربحت 30%. شكراً للفريق كامل على المعلومات والدعم والتعب يلي عم تقدموه."
-    },
-
-    {
-      name: "بشار",
-      country: "سوريا",
-      image: "assets/img/testimonials/person6.png",
-      rating: 5,
-      message:
-        "تغيّرت نظرتي للسوق 140 درجة. صرت أعرف تحركات السوق وأخد قرارات دخول صحيحة. حضرت المحاضرات ولخصتها كلها بدفتر. دخلت صفقة واحدة وربحت 22$. شكراً لكم على كل المساعدة والدعم."
-    },
-
-    {
-      name: "أحمد",
-      country: "سوريا",
-      image: "assets/img/testimonials/person7.png",
-      rating: 5,
-      message:
-        "أحلى مجتمع وأفضل أسلوب تعليم مر عليّ. تبسيط المعلومة وإعطاء الزبدة بدون حكي فاضي كان شيء رهيب. شكراً على كل شيء والحماس مليون لنكمل الأسبوع."
+      src: 'assets/images/canva/elev8-instagram.jpg',
+      alt: 'نتيجة من حساب اجتماعي'
     }
   ];
 
-  ngOnInit() {
-    // تهيئة البيانات
+  readonly proofPoints = [
+    'راح أفرجيك بشكل مباشر، قدام الكاميرا، خطوة بخطوة.',
+    'مش حكي نظري. في آخر ربع ساعة راح نطبق التداول live.',
+    'بنهاية الجلسة رح يكون عندك وضوح كامل عن كيف تبدأ بدون عشوائية.'
+  ];
+
+  ngAfterViewInit(): void {
+    this.initializeSwiper();
   }
 
-  get visibleTestimonials(): Testimonial[] {
-    const start = this.currentPage * this.itemsPerPage;
-    return this.testimonials.slice(start, start + this.itemsPerPage);
+  ngOnDestroy(): void {
+    this.screensSwiper?.nativeElement?.swiper?.destroy?.(true, true);
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.testimonials.length / this.itemsPerPage);
-  }
+  private initializeSwiper(): void {
+    const swiperElement = this.screensSwiper?.nativeElement;
 
-  get pages(): number[] {
-    return Array(this.totalPages).fill(0).map((_, i) => i);
-  }
-
-  nextPage(): void {
-    if (this.currentPage < this.totalPages - 1) {
-      this.currentPage++;
+    if (!swiperElement) {
+      return;
     }
-  }
 
-  prevPage(): void {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-    }
-  }
+    Object.assign(swiperElement, {
+      slidesPerView: 1,
+      slidesPerGroup: 1,
+      spaceBetween: 14,
+      speed: 900,
+      grabCursor: true,
+      loop: this.slides.length > 1,
+      autoplay: this.slides.length > 1
+        ? {
+            delay: 3200,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+          }
+        : false,
+      pagination: {
+        clickable: true
+      },
+      breakpoints: {
+        681: {
+          slidesPerView: 2,
+          slidesPerGroup: 1,
+          spaceBetween: 14
+        }
+      }
+    });
 
-  goToPage(page: number): void {
-    this.currentPage = page;
-  }
-
-  getStars(rating: number): number[] {
-    return Array(rating).fill(0);
+    swiperElement.initialize?.();
   }
 }

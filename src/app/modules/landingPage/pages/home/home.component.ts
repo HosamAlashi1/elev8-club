@@ -122,6 +122,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Wrapper Methods for Each Section
   openPopupFromHero = () => this.openRegistrationPopup('hero');
+  openPopupFromStats = () => this.openRegistrationPopup('stats');
   openPopupFromFeatures = () => this.openRegistrationPopup('features');
   openPopupFromBeforeAfter = () => this.openRegistrationPopup('before_after');
   openPopupFromJourney = () => this.openRegistrationPopup('journey');

@@ -3,17 +3,29 @@
    ======================================== */
 
 :root {
-  --lp-accent: #f8f36a;
-  --lp-accent-hot: #fffb00;
-  --lp-accent-soft: #feffad;
-  --lp-accent-muted: #d9d45a;
-  --lp-accent-deep: #a8a400;
+  --lp-font-body: "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --lp-font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-bg: #05070b;
+  --lp-bg-2: #07111f;
+  --lp-panel: #0d1522;
+  --lp-panel-soft: #121d2d;
+  --lp-text: #f8fafc;
+  --lp-muted: #aab3c3;
+  --lp-accent: #fff200;
+  --lp-accent-hot: #ffff4d;
+  --lp-accent-soft: #fff78a;
+  --lp-accent-muted: #f3e600;
+  --lp-accent-deep: #b8ad00;
   --lp-accent-ink: #11130a;
-  --lp-accent-rgb: 248 243 106;
-  --lp-accent-hot-rgb: 255 251 0;
-  --lp-accent-soft-rgb: 254 255 173;
-  --lp-accent-gradient: linear-gradient(290deg, #feffad 0%, #fffb00 30.2858%, #feffad 67.2878%, #fffb00 100%);
-  --lp-accent-button: linear-gradient(290deg, #feffad 0%, #f8f36a 34%, #fffed1 66%, #fffb00 100%);
+  --lp-cyan: #20e5f2;
+  --lp-coral: #ff3b30;
+  --lp-accent-rgb: 255 242 0;
+  --lp-accent-hot-rgb: 255 255 77;
+  --lp-accent-soft-rgb: 255 247 138;
+  --lp-cyan-rgb: 32 229 242;
+  --lp-coral-rgb: 255 59 48;
+  --lp-accent-gradient: linear-gradient(135deg, #fffde1 0%, #fff200 48%, #ffdd00 100%);
+  --lp-accent-button: linear-gradient(135deg, #ffffe8 0%, #fff45c 42%, #fff200 72%, #ffffff 145%);
 }
 
 
@@ -21,20 +33,25 @@ html,
 body {
   direction: rtl;
   text-align: right;
-  font-family: "Tajawal", sans-serif;
+  font-family: var(--lp-font-body);
   background: #000000;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  color: var(--lp-text);
 }
 
 /* Main Container */
 .home-content {
   position: relative;
-  background: linear-gradient(180deg, #000000 0%, #0A0F1E 50%, #000814 100%);
+  background:
+    radial-gradient(circle at 8% 0%, rgb(var(--lp-cyan-rgb) / 0.12), transparent 28rem),
+    radial-gradient(circle at 92% 8%, rgb(var(--lp-accent-rgb) / 0.13), transparent 30rem),
+    linear-gradient(180deg, #020305 0%, #07111f 38%, #05070b 100%);
   overflow: hidden;
   --scroll-opacity: 0.15;
   --scroll-translate: 0px;
+  padding: 0 0 clamp(22px, 3vw, 36px);
 }
 
 /* Ensure content is above background */
@@ -45,11 +62,16 @@ body {
 .home-content>app-journey-section,
 .home-content>app-video-testimonials-section,
 .home-content>app-suitable-check-section,
+.home-content>app-who-am-i-section,
+.home-content>app-how-it-works-section,
+.home-content>app-why-free-section,
+.home-content>app-challenge-review-section,
 .home-content>app-written-testimonials-section,
 .home-content>app-big-cta-section,
 .home-content>app-faq-section,
 .home-content>app-contact-section {
   position: relative;
+  display: block;
   z-index: 1;
   /* iOS fix: Lower z-index to prevent animation blocking */
   -webkit-transform: translateZ(0);
@@ -185,6 +207,21 @@ body {
   filter: brightness(1.07);
 }
 
+.home-content h1,
+.home-content h2,
+.home-content h3,
+.heading-3d {
+  font-family: var(--lp-font-display);
+  letter-spacing: 0;
+}
+
+.home-content p,
+.home-content li,
+.home-content span,
+.home-content button {
+  letter-spacing: 0;
+}
+
 .btn-cta .btn-cta-text,
 .btn-cta .btn-cta-icon,
 .btn-cta .hero-cta-icon-left,
@@ -280,4 +317,296 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--lp-accent) #0A0A0A;
+}
+
+.home-content > :not(app-register-popup):not(app-hero-section) {
+  position: relative;
+  display: block;
+  margin: clamp(16px, 2.4vw, 30px) auto;
+  isolation: isolate;
+  --section-bg:
+    radial-gradient(circle at 85% 4%, rgb(var(--lp-cyan-rgb) / 0.08), transparent 24rem),
+    radial-gradient(circle at 14% 8%, rgb(var(--lp-accent-rgb) / 0.055), transparent 20rem),
+    linear-gradient(180deg, rgb(8 18 31 / 0.96) 0%, rgb(3 8 14 / 0.98) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.18);
+  --section-separator-b: rgb(var(--lp-accent-rgb) / 0.34);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.18);
+  --section-rule-a: rgb(var(--lp-cyan-rgb) / 0.36);
+  --section-rule-b: rgb(var(--lp-accent-rgb) / 0.68);
+  --section-rule-c: rgb(var(--lp-cyan-rgb) / 0.36);
+  --section-border: rgb(255 255 255 / 0.09);
+  --section-inner-line: rgb(var(--lp-cyan-rgb) / 0.035);
+}
+
+.home-content > :not(app-register-popup):not(app-hero-section)::before,
+.home-content > :not(app-register-popup):not(app-hero-section)::after {
+  content: "";
+  position: absolute;
+  top: calc(clamp(16px, 2.4vw, 30px) * -0.72);
+  right: 50%;
+  z-index: 0;
+  transform: translateX(50%);
+  pointer-events: none;
+}
+
+.home-content > :not(app-register-popup):not(app-hero-section)::before {
+  width: min(76%, 760px);
+  height: clamp(18px, 2.25vw, 30px);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--section-separator-a) 20%,
+    var(--section-separator-b) 50%,
+    var(--section-separator-c) 80%,
+    transparent 100%
+  );
+  opacity: 0.72;
+  filter: blur(10px);
+}
+
+.home-content > :not(app-register-popup):not(app-hero-section)::after {
+  width: min(88%, 980px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--section-rule-a) 22%,
+    var(--section-rule-b) 50%,
+    var(--section-rule-c) 78%,
+    transparent 100%
+  );
+  box-shadow: 0 0 20px rgb(var(--lp-accent-rgb) / 0.22);
+  opacity: 0.82;
+}
+
+.home-content > app-suitable-check-section {
+  --section-bg:
+    radial-gradient(circle at 84% 6%, rgb(var(--lp-cyan-rgb) / 0.105), transparent 24rem),
+    radial-gradient(circle at 10% 0%, rgb(var(--lp-accent-rgb) / 0.045), transparent 20rem),
+    linear-gradient(145deg, rgb(4 17 28 / 0.98) 0%, rgb(2 9 16 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.28);
+  --section-separator-b: rgb(var(--lp-accent-rgb) / 0.24);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.18);
+  --section-rule-a: rgb(var(--lp-cyan-rgb) / 0.54);
+  --section-rule-b: rgb(var(--lp-accent-rgb) / 0.44);
+  --section-rule-c: rgb(var(--lp-cyan-rgb) / 0.30);
+}
+
+.home-content > app-who-am-i-section {
+  --section-bg:
+    radial-gradient(circle at 14% 12%, rgb(var(--lp-accent-rgb) / 0.075), transparent 22rem),
+    radial-gradient(circle at 90% 20%, rgb(var(--lp-cyan-rgb) / 0.075), transparent 24rem),
+    linear-gradient(160deg, rgb(7 15 25 / 0.98) 0%, rgb(4 9 15 / 0.99) 54%, rgb(9 15 22 / 0.98) 100%);
+  --section-separator-a: rgb(var(--lp-accent-rgb) / 0.30);
+  --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.30);
+  --section-separator-c: rgb(var(--lp-accent-rgb) / 0.20);
+  --section-rule-a: rgb(var(--lp-accent-rgb) / 0.50);
+  --section-rule-b: rgb(var(--lp-cyan-rgb) / 0.48);
+  --section-rule-c: rgb(var(--lp-accent-rgb) / 0.34);
+}
+
+.home-content > app-stats-section {
+  --section-bg:
+    radial-gradient(circle at 50% 0%, rgb(var(--lp-accent-rgb) / 0.12), transparent 24rem),
+    radial-gradient(circle at 12% 80%, rgb(var(--lp-cyan-rgb) / 0.055), transparent 20rem),
+    linear-gradient(180deg, rgb(9 17 18 / 0.98) 0%, rgb(3 10 18 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-accent-rgb) / 0.34);
+  --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.24);
+  --section-separator-c: rgb(var(--lp-accent-rgb) / 0.28);
+  --section-rule-a: rgb(var(--lp-accent-rgb) / 0.60);
+  --section-rule-b: rgb(var(--lp-cyan-rgb) / 0.42);
+  --section-rule-c: rgb(var(--lp-accent-rgb) / 0.46);
+}
+
+.home-content > app-video-testimonials-section {
+  --section-bg:
+    radial-gradient(circle at 18% 12%, rgb(var(--lp-coral-rgb) / 0.055), transparent 18rem),
+    radial-gradient(circle at 88% 6%, rgb(var(--lp-cyan-rgb) / 0.095), transparent 25rem),
+    linear-gradient(145deg, rgb(4 12 20 / 0.99) 0%, rgb(9 13 18 / 0.98) 55%, rgb(3 8 14 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.30);
+  --section-separator-b: rgb(var(--lp-coral-rgb) / 0.20);
+  --section-separator-c: rgb(var(--lp-accent-rgb) / 0.26);
+  --section-rule-a: rgb(var(--lp-cyan-rgb) / 0.50);
+  --section-rule-b: rgb(var(--lp-coral-rgb) / 0.28);
+  --section-rule-c: rgb(var(--lp-accent-rgb) / 0.44);
+}
+
+.home-content > app-written-testimonials-section {
+  --section-bg:
+    radial-gradient(circle at 12% 16%, rgb(var(--lp-cyan-rgb) / 0.08), transparent 22rem),
+    radial-gradient(circle at 84% 78%, rgb(var(--lp-accent-rgb) / 0.065), transparent 22rem),
+    linear-gradient(180deg, rgb(5 18 26 / 0.98) 0%, rgb(2 8 14 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.28);
+  --section-separator-b: rgb(var(--lp-accent-rgb) / 0.30);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.20);
+}
+
+.home-content > app-how-it-works-section {
+  --section-bg:
+    radial-gradient(circle at 52% 0%, rgb(var(--lp-cyan-rgb) / 0.105), transparent 24rem),
+    radial-gradient(circle at 4% 70%, rgb(var(--lp-accent-rgb) / 0.055), transparent 18rem),
+    linear-gradient(135deg, rgb(3 13 24 / 0.99) 0%, rgb(8 18 31 / 0.97) 48%, rgb(2 7 13 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.34);
+  --section-separator-b: rgb(var(--lp-accent-rgb) / 0.22);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.24);
+}
+
+.home-content > app-features-section {
+  --section-bg:
+    radial-gradient(circle at 84% 8%, rgb(var(--lp-accent-rgb) / 0.10), transparent 23rem),
+    radial-gradient(circle at 16% 20%, rgb(var(--lp-cyan-rgb) / 0.065), transparent 21rem),
+    linear-gradient(150deg, rgb(8 17 23 / 0.98) 0%, rgb(3 8 14 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-accent-rgb) / 0.34);
+  --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.25);
+  --section-separator-c: rgb(var(--lp-accent-rgb) / 0.22);
+}
+
+.home-content > app-why-free-section {
+  --section-bg:
+    radial-gradient(circle at 18% 0%, rgb(var(--lp-coral-rgb) / 0.05), transparent 18rem),
+    radial-gradient(circle at 76% 12%, rgb(var(--lp-accent-rgb) / 0.085), transparent 24rem),
+    linear-gradient(180deg, rgb(9 14 18 / 0.99) 0%, rgb(3 9 15 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-accent-rgb) / 0.30);
+  --section-separator-b: rgb(var(--lp-coral-rgb) / 0.18);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.24);
+}
+
+.home-content > app-before-after-section {
+  --section-bg:
+    radial-gradient(circle at 16% 12%, rgb(var(--lp-cyan-rgb) / 0.11), transparent 28rem),
+    radial-gradient(circle at 88% 30%, rgb(var(--lp-accent-rgb) / 0.09), transparent 26rem),
+    linear-gradient(180deg, rgb(3 8 14 / 0.99) 0%, rgb(6 18 30 / 0.98) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.28);
+  --section-separator-b: rgb(var(--lp-accent-rgb) / 0.34);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.20);
+}
+
+.home-content > app-challenge-review-section {
+  --section-bg:
+    radial-gradient(circle at 88% 8%, rgb(var(--lp-cyan-rgb) / 0.075), transparent 24rem),
+    radial-gradient(circle at 18% 88%, rgb(var(--lp-accent-rgb) / 0.075), transparent 22rem),
+    linear-gradient(135deg, rgb(4 14 24 / 0.99) 0%, rgb(7 15 22 / 0.98) 50%, rgb(2 7 12 / 0.99) 100%);
+  --section-separator-a: rgb(var(--lp-accent-rgb) / 0.26);
+  --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.34);
+  --section-separator-c: rgb(var(--lp-accent-rgb) / 0.24);
+}
+
+.home-content > app-faq-section {
+  --section-bg:
+    radial-gradient(circle at 50% 0%, rgb(var(--lp-accent-rgb) / 0.105), transparent 26rem),
+    radial-gradient(circle at 85% 68%, rgb(var(--lp-cyan-rgb) / 0.055), transparent 22rem),
+    linear-gradient(180deg, rgb(6 14 23 / 0.99) 0%, rgb(1 5 9 / 1) 100%);
+  --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.24);
+  --section-separator-b: rgb(var(--lp-accent-rgb) / 0.38);
+  --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.18);
+}
+
+.home-content > :not(app-register-popup):not(app-hero-section) section {
+  position: relative;
+  z-index: 1;
+  width: min(calc(100% - clamp(20px, 4.4vw, 56px)), 1220px);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--section-border);
+  border-radius: clamp(18px, 2vw, 28px);
+  background: var(--section-bg) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.055),
+    0 18px 52px rgb(0 0 0 / 0.34);
+}
+
+.home-content > :not(app-register-popup):not(app-hero-section) section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--section-inner-line),
+    inset 0 -1px 0 rgb(0 0 0 / 0.5);
+}
+
+.home-content > :not(app-register-popup) section {
+  padding-top: clamp(58px, 5.8vw, 76px) !important;
+  padding-bottom: clamp(58px, 5.8vw, 76px) !important;
+}
+
+.home-content > app-hero-section section.hero-section {
+  padding-top: clamp(48px, 6vw, 76px) !important;
+  padding-bottom: clamp(36px, 4.2vw, 52px) !important;
+}
+
+.home-content > app-hero-section + app-suitable-check-section section {
+  padding-top: clamp(42px, 4.4vw, 58px) !important;
+}
+
+.home-content > app-faq-section section {
+  padding-bottom: clamp(70px, 7vw, 92px) !important;
+}
+
+@media (max-width: 768px) {
+  .home-content > :not(app-register-popup) section {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+
+  .home-content > app-hero-section section.hero-section {
+    padding-top: 38px !important;
+    padding-bottom: 34px !important;
+  }
+
+  .home-content > app-hero-section + app-suitable-check-section section {
+    padding-top: 34px !important;
+  }
+
+  .home-content > app-faq-section section {
+    padding-bottom: 56px !important;
+  }
+
+  .home-content > :not(app-register-popup) .section-head,
+  .home-content > :not(app-register-popup) .section-header,
+  .home-content > :not(app-register-popup) .title-wrapper,
+  .home-content > :not(app-register-popup) .heading-wrapper,
+  .home-content > :not(app-register-popup) [class*="header"] {
+    margin-bottom: 28px !important;
+  }
+
+  .home-content .btn-cta {
+    display: flex !important;
+    width: fit-content;
+    max-width: min(100%, 340px);
+    margin-right: auto !important;
+    margin-left: auto !important;
+    align-self: center !important;
+    text-align: center;
+  }
+
+  .home-content .hero-cta-wrapper,
+  .home-content [class*="cta-wrapper"],
+  .home-content [class*="cta-row"],
+  .home-content [class*="cta-area"],
+  .home-content [class*="cta-container"] {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-content > :not(app-register-popup) section {
+    padding-top: 34px !important;
+    padding-bottom: 34px !important;
+  }
+
+  .home-content > app-hero-section section.hero-section {
+    padding-top: 32px !important;
+    padding-bottom: 30px !important;
+  }
+
+  .home-content > app-hero-section + app-suitable-check-section section {
+    padding-top: 28px !important;
+  }
 }

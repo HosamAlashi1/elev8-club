@@ -1,17 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
-interface VideoState {
-  url: string;
+interface ProofStory {
+  badge: string;
   name: string;
-  location: string;
-  duration: string;
-  poster?: string;
-  currentTime?: number;
-  totalDuration?: number;
-  isPlaying?: boolean;
-  volume?: number;
-  isMuted?: boolean;
-  isLoaded?: boolean;
+  amount: string;
+  description: string;
+  image: string;
 }
 
 @Component({
@@ -19,183 +13,23 @@ interface VideoState {
   templateUrl: './video-testimonials-section.component.html',
   styleUrls: ['./video-testimonials-section.component.css']
 })
-export class VideoTestimonialsSectionComponent implements OnInit {
-
+export class VideoTestimonialsSectionComponent {
   @Input() onOpenRegistration!: () => void;
 
-  videos: VideoState[] = [
+  stories: ProofStory[] = [
     {
-      url: "",
-      name: "زادة",
-      location: "",
-      duration: "0:00"
+      badge: 'فيديوهات',
+      name: 'زادة',
+      amount: '$120,000+',
+      description: 'قدرت تحقق أكثر من 120,000$ بينما كانت بنفس الوقت تعتني بطفلين.',
+      image: 'assets/images/canva/video-proof-massy.png'
     },
     {
-      url: "",
-      name: "ارماندو",
-      location: "",
-      duration: "0:00"
+      badge: 'نتيجة موثقة',
+      name: 'أرماندو',
+      amount: '$111,000+',
+      description: 'شاب عمره 19 سنة من عائلة مهاجرة بسيطة، وحقق أكثر من 111,000$ واشترى لنفسه سيارة McLaren.',
+      image: 'assets/images/canva/video-proof-salah.png'
     }
   ];
-
-  currentIndex = 0;
-  visibleVideos: VideoState[] = [];
-  currentPlayingVideo: VideoState | null = null;
-  showProgressThumb: VideoState | null = null;
-  showVolumeSlider: VideoState | null = null;
-
-  ngOnInit() {
-    this.videos.forEach(v => {
-      v.currentTime = 0;
-      v.totalDuration = 0;
-      v.isPlaying = false;
-      v.volume = 100;
-      v.isMuted = false;
-      v.isLoaded = false;
-    });
-    this.updateVisible();
-  }
-
-  updateVisible() {
-    this.visibleVideos = this.videos.slice(this.currentIndex, this.currentIndex + 2);
-  }
-
-  next() {
-    this.currentIndex = (this.currentIndex + 1) % this.videos.length;
-    this.updateVisible();
-  }
-
-  prev() {
-    this.currentIndex = (this.currentIndex - 1 + this.videos.length) % this.videos.length;
-    this.updateVisible();
-  }
-
-  goTo(i: number) {
-    this.currentIndex = i;
-    this.updateVisible();
-  }
-
-  togglePlayPause(videoState: VideoState, videoElement: HTMLVideoElement) {
-    if (!videoState.url) return;
-    if (!videoState.isPlaying) {
-      this.pauseAllVideos();
-    }
-    if (videoElement.paused) {
-      videoElement.play();
-      videoState.isPlaying = true;
-      this.currentPlayingVideo = videoState;
-    } else {
-      videoElement.pause();
-      videoState.isPlaying = false;
-      this.currentPlayingVideo = null;
-    }
-  }
-
-  pauseAllVideos() {
-    this.videos.forEach(v => { v.isPlaying = false; });
-    this.currentPlayingVideo = null;
-    const allVideos = document.querySelectorAll('video');
-    allVideos.forEach(v => v.pause());
-  }
-
-  isPlaying(videoState: VideoState): boolean {
-    return videoState.isPlaying || false;
-  }
-
-  onVideoEnded(videoState: VideoState, videoElement: HTMLVideoElement) {
-    videoState.isPlaying = false;
-    videoState.currentTime = 0;
-    videoElement.currentTime = 0;
-    this.currentPlayingVideo = null;
-  }
-
-  onTimeUpdate(videoState: VideoState, videoElement: HTMLVideoElement) {
-    videoState.currentTime = videoElement.currentTime;
-  }
-
-  onLoadedMetadata(videoState: VideoState, videoElement: HTMLVideoElement) {
-    videoState.totalDuration = videoElement.duration;
-  }
-
-  onVideoLoaded(videoState: VideoState, videoElement: HTMLVideoElement) {
-    videoState.isLoaded = true;
-  }
-
-  onVideoCanPlay(videoState: VideoState, videoElement: HTMLVideoElement) {
-    videoState.isLoaded = true;
-  }
-
-  getProgress(videoState: VideoState): number {
-    if (!videoState.totalDuration) return 0;
-    return ((videoState.currentTime || 0) / videoState.totalDuration) * 100;
-  }
-
-  seekTo(videoState: VideoState, videoElement: HTMLVideoElement, event: MouseEvent) {
-    if (!videoState.url) return;
-    const progressBar = event.currentTarget as HTMLElement;
-    const rect = progressBar.getBoundingClientRect();
-    const clickX = rect.right - event.clientX;
-    const percentage = clickX / rect.width;
-    const newTime = percentage * (videoState.totalDuration || 0);
-    videoElement.currentTime = newTime;
-    videoState.currentTime = newTime;
-  }
-
-  skip(videoState: VideoState, videoElement: HTMLVideoElement, seconds: number) {
-    if (!videoState.url) return;
-    const newTime = (videoState.currentTime || 0) + seconds;
-    const clampedTime = Math.max(0, Math.min(newTime, videoState.totalDuration || 0));
-    videoElement.currentTime = clampedTime;
-    videoState.currentTime = clampedTime;
-  }
-
-  formatTime(seconds: number): string {
-    if (isNaN(seconds)) return '0:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  getCurrentTime(videoState: VideoState): number {
-    return videoState.currentTime || 0;
-  }
-
-  getDuration(videoState: VideoState): string {
-    if (videoState.totalDuration) {
-      return this.formatTime(videoState.totalDuration);
-    }
-    return videoState.duration;
-  }
-
-  getVolume(videoState: VideoState): number {
-    return videoState.volume || 100;
-  }
-
-  setVolume(videoState: VideoState, videoElement: HTMLVideoElement, event: any) {
-    const volume = parseInt(event.target.value);
-    videoState.volume = volume;
-    videoElement.volume = volume / 100;
-    videoState.isMuted = volume === 0;
-  }
-
-  toggleMute(videoState: VideoState, videoElement: HTMLVideoElement) {
-    videoState.isMuted = !videoState.isMuted;
-    videoElement.muted = videoState.isMuted || false;
-  }
-
-  isMuted(videoState: VideoState): boolean {
-    return videoState.isMuted || false;
-  }
-
-  toggleFullscreen(videoElement: HTMLVideoElement) {
-    const videoBox = videoElement.closest('.video-box') as any;
-    if (!document.fullscreenElement) {
-      if (videoBox.requestFullscreen) videoBox.requestFullscreen();
-      else if (videoBox.webkitRequestFullscreen) videoBox.webkitRequestFullscreen();
-    } else {
-      if (document.exitFullscreen) document.exitFullscreen();
-      else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen();
-    }
-  }
-
 }

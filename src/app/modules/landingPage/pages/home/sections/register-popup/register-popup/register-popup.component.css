@@ -6,14 +6,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 18px;
 }
 
 /* Backdrop */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.74);
   animation: fadeIn 0.3s ease;
   z-index: 1;
 }
@@ -27,7 +27,7 @@
 .modal-container {
   position: relative;
   width: 100%;
-  max-width: 600px;
+  max-width: 520px;
   animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
 }
@@ -45,14 +45,16 @@
 
 /* Modal Content */
 .modal-content {
-  background: linear-gradient(135deg, #0C2744 0%, #000000 100%);
-  border: 2px solid var(--lp-accent);
-  border-radius: 24px;
-  padding: 40px 32px;
+  background:
+    radial-gradient(circle at 85% 0%, rgb(var(--lp-cyan-rgb) / 0.10), transparent 18rem),
+    linear-gradient(135deg, rgb(7 20 34 / 0.98) 0%, rgb(2 6 11 / 0.98) 100%);
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
+  border-radius: 18px;
+  padding: 28px 24px 24px;
   position: relative;
   box-shadow: 
-    0 25px 50px rgb(var(--lp-accent-rgb) / 0.5),
-    0 0 100px rgba(0, 0, 0, 0.8),
+    0 22px 54px rgba(0, 0, 0, 0.55),
+    0 0 34px rgb(var(--lp-cyan-rgb) / 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   direction: rtl;
   overflow: visible;
@@ -61,10 +63,10 @@
 /* Close Button */
 .close-button {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  width: 40px;
-  height: 40px;
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 50%;
@@ -84,14 +86,14 @@
 /* Header */
 .modal-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .modal-title {
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
   color: white;
   font-weight: 700;
   margin: 0;
@@ -100,7 +102,7 @@
 }
 
 .modal-subtitle {
-  font-size: 1rem;
+  font-size: 0.92rem;
   color: #E5E7EB;
   margin: 0;
   font-weight: 400;
@@ -111,7 +113,7 @@
 .registration-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   overflow: visible;
 }
 
@@ -119,7 +121,7 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* Form Group with Dropdown - Higher z-index */
@@ -130,7 +132,7 @@
 }
 
 .form-label {
-  font-size: 1rem;
+  font-size: 0.92rem;
   color: #F3F4F6;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
@@ -161,15 +163,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 12px;
+  padding: 12px 10px;
   background: #0F1F38;
-  border: 2px solid rgb(var(--lp-accent-rgb) / 0.5);
-  border-radius: 12px;
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
+  border-radius: 10px;
   color: white;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  height: 52px;
+  height: 46px;
 }
 
 .dropdown-selected:hover {
@@ -180,7 +182,7 @@
 .custom-dropdown.open .dropdown-selected {
   border-color: var(--lp-accent);
   background: #1A2F4A;
-  box-shadow: 0 0 0 4px rgb(var(--lp-accent-rgb) / 0.2);
+  box-shadow: 0 0 0 3px rgb(var(--lp-accent-rgb) / 0.12);
 }
 
 .flag-img {
@@ -212,7 +214,7 @@
   left: 0;
   min-width: 280px;
   background: #0F1F38;
-  border: 2px solid rgb(var(--lp-accent-rgb) / 0.5);
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
   border-radius: 12px;
   max-height: 300px;
   overflow: hidden;
@@ -351,10 +353,11 @@
 }
 
 .country-code-select {
-  padding: 14px 12px 14px 44px;
+  height: 46px;
+  padding: 12px 10px 12px 42px;
   background: #0F1F38;
-  border: 2px solid rgb(var(--lp-accent-rgb) / 0.5);
-  border-radius: 12px;
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
+  border-radius: 10px;
   color: white;
   font-size: 0.95rem;
   cursor: pointer;
@@ -371,7 +374,7 @@
   outline: none;
   border-color: var(--lp-accent);
   background-color: #1A2F4A;
-  box-shadow: 0 0 0 4px rgb(var(--lp-accent-rgb) / 0.2);
+  box-shadow: 0 0 0 3px rgb(var(--lp-accent-rgb) / 0.12);
 }
 
 .country-code-select option {
@@ -388,11 +391,11 @@
 /* Form Input */
 .form-input {
   width: 100%;
-  height: 52px;
-  padding: 14px 18px;
+  height: 46px;
+  padding: 12px 14px;
   background: #0F1F38;
-  border: 2px solid rgb(var(--lp-accent-rgb) / 0.5);
-  border-radius: 12px;
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
+  border-radius: 10px;
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -407,22 +410,22 @@
   outline: none;
   border-color: var(--lp-accent);
   background: #1A2F4A;
-  box-shadow: 0 0 0 4px rgb(var(--lp-accent-rgb) / 0.2);
+  box-shadow: 0 0 0 3px rgb(var(--lp-accent-rgb) / 0.12);
 }
 
 /* Info Box */
 .info-box {
-  background: rgb(var(--lp-accent-rgb) / 0.15);
-  border: 1px solid rgb(var(--lp-accent-rgb) / 0.4);
-  border-radius: 12px;
-  padding: 18px;
+  background: rgb(var(--lp-cyan-rgb) / 0.055);
+  border: 1px solid rgb(var(--lp-cyan-rgb) / 0.16);
+  border-radius: 10px;
+  padding: 12px 14px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 0;
 }
 
 .info-text {
-  font-size: 0.9375rem;
+  font-size: 0.86rem;
   color: #F3F4F6;
   text-align: center;
   margin: 0;
@@ -433,13 +436,13 @@
 /* Submit Button */
 .submit-button {
   width: 100%;
-  padding: 18px;
+  padding: 14px;
   background: var(--lp-accent-button);
   background-size: 200% 100%;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--lp-accent-ink);
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -469,7 +472,7 @@
 /* Privacy Note */
 .privacy-note {
   text-align: center;
-  font-size: 0.8125rem;
+  font-size: 0.76rem;
   color: #9CA3AF;
   margin: 16px 0 0;
   line-height: 1.5;
@@ -480,8 +483,8 @@
 /* Responsive */
 @media (max-width: 768px) {
   .modal-wrapper {
-    padding: 0;
-    align-items: flex-end;
+    padding: 12px;
+    align-items: center;
   }
 
   .modal-container {
@@ -499,12 +502,14 @@
   }
 
   .modal-content {
-    border-radius: 24px 24px 0 0;
-    padding: 32px 24px;
+    max-height: calc(100svh - 24px);
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 24px 18px 20px;
   }
 
   .modal-title {
-    font-size: 1.75rem;
+    font-size: 1.35rem;
   }
 
   .modal-subtitle {

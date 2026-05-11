@@ -1,170 +1,114 @@
 .faq-section {
-  padding: 80px 0;
-  background: linear-gradient(180deg, #000000 0%, #0A1E3F 100%);
-  position: relative;
-  overflow: hidden;
+  padding: 92px 18px 110px;
   direction: rtl;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(var(--lp-accent-rgb) / 0.10), transparent 28rem),
+    linear-gradient(180deg, #05070b 0%, #020305 100%);
 }
 
-/* Background Pattern */
 .bg-pattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.05;
-  background-image: 
-    linear-gradient(var(--lp-accent) 1px, transparent 1px),
-    linear-gradient(90deg, var(--lp-accent) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
+  display: none;
 }
 
-/* Title */
+.container {
+  width: min(100%, 980px);
+  margin: 0 auto;
+}
+
 .title-wrapper {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 42px;
 }
 
 .main-title {
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
-  color: white;
-  font-weight: 700;
-  margin-bottom: 16px;
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(2rem, 4.4vw, 3.7rem);
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .subtitle {
-  font-size: 1.25rem;
-  color: #9CA3AF;
+  margin: 12px 0 0;
+  color: var(--lp-muted);
+  font-size: 1.05rem;
 }
 
-/* FAQ Accordion */
 .faq-accordion {
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  gap: 12px;
 }
 
-/* FAQ Item */
 .faq-item {
-  background: linear-gradient(135deg, rgba(10, 30, 63, 0.6), rgba(0, 0, 0, 0.4));
-  border: 1px solid rgb(var(--lp-accent-rgb) / 0.3);
-  border-radius: 16px;
+  border: 1px solid rgb(255 255 255 / 0.09);
+  border-radius: 18px;
+  background: rgb(10 16 26 / 0.82);
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
-.faq-item:hover {
-  border-color: rgb(var(--lp-accent-rgb) / 0.6);
-  transform: translateY(-2px);
-}
-
-.faq-item.active {
-  border-color: var(--lp-accent);
-  box-shadow: 0 4px 20px rgb(var(--lp-accent-rgb) / 0.2);
-}
-
-/* Question Button */
 .faq-question {
   width: 100%;
+  min-height: 66px;
+  padding: 18px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 28px;
+  gap: 18px;
+  border: 0;
   background: transparent;
-  border: none;
-  cursor: pointer;
+  color: #ffffff;
   text-align: right;
-  color: white;
-  font-size: 1.125rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.faq-question:hover {
-  color: var(--lp-accent);
+  cursor: pointer;
 }
 
 .question-text {
-  flex: 1;
+  font-size: clamp(1rem, 1.45vw, 1.12rem);
+  font-weight: 800;
+  line-height: 1.65;
 }
 
-/* Chevron Icon */
 .chevron-icon {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   color: var(--lp-accent);
-  transition: transform 0.3s ease;
+  transition: transform 180ms ease;
 }
 
 .chevron-icon.rotate {
   transform: rotate(180deg);
 }
 
-/* Answer */
 .faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease;
 }
 
 .faq-answer.show {
-  max-height: 500px;
+  grid-template-rows: 1fr;
 }
 
 .answer-content {
-  padding: 0 28px 24px;
-  color: #D1D5DB;
-  font-size: 1rem;
-  line-height: 1.7;
+  overflow: hidden;
 }
 
 .answer-content p {
   margin: 0;
-}
-
-/* Bottom Note */
-.bottom-note {
-  text-align: center;
-  margin-top: 48px;
-}
-
-.note-text {
+  padding: 0 22px 20px;
+  color: #b8c1cf;
   font-size: 1rem;
-  color: #9CA3AF;
-  margin: 0;
+  line-height: 1.95;
 }
 
-.contact-link {
-  color: var(--lp-accent);
-  cursor: pointer;
-  transition: text-decoration 0.2s ease;
-}
-
-.contact-link:hover {
-  text-decoration: underline;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 560px) {
   .faq-section {
-    padding: 60px 0;
-  }
-
-  .title-wrapper {
-    margin-bottom: 40px;
+    padding: 70px 14px 90px;
   }
 
   .faq-question {
-    padding: 20px;
-    font-size: 1rem;
+    padding: 16px;
   }
 
-  .answer-content {
-    padding: 0 20px 20px;
-    font-size: 0.95rem;
-  }
-
-  .bottom-note {
-    margin-top: 32px;
+  .answer-content p {
+    padding: 0 16px 18px;
   }
 }
