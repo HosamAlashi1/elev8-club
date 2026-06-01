@@ -8,4 +8,9 @@ import { Component, Input } from '@angular/core';
 export class StatsSectionComponent {
   @Input() onOpenRegistration!: () => void;
 
+  openRegistration(): void {
+    if (this.onOpenRegistration) {
+      this.onOpenRegistration();
+    }
+  }
 }

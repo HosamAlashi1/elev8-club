@@ -1,6 +1,16 @@
 
 /* You can add global styles to this file, and also import other style files */
 
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background-color: var(--lp-bg, #05070b);
+  color: var(--lp-text, #f8fafc);
+  font-family: var(--lp-font-body);
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --lp-font-body: "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --lp-font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
@@ -10,21 +20,21 @@
   --lp-panel-soft: #121d2d;
   --lp-text: #f8fafc;
   --lp-muted: #aab3c3;
-  --lp-accent: #fff200;
-  --lp-accent-hot: #ffff4d;
-  --lp-accent-soft: #fff78a;
-  --lp-accent-muted: #f3e600;
-  --lp-accent-deep: #b8ad00;
-  --lp-accent-ink: #11130a;
+  --lp-accent: #D4A017;
+  --lp-accent-hot: #E8B52A;
+  --lp-accent-soft: #ECC244;
+  --lp-accent-muted: #C2920F;
+  --lp-accent-deep: #966B0B;
+  --lp-accent-ink: #0A0700;
   --lp-cyan: #20e5f2;
   --lp-coral: #ff3b30;
-  --lp-accent-rgb: 255 242 0;
-  --lp-accent-hot-rgb: 255 255 77;
-  --lp-accent-soft-rgb: 255 247 138;
+  --lp-accent-rgb: 212 160 23;
+  --lp-accent-hot-rgb: 232 181 42;
+  --lp-accent-soft-rgb: 236 194 68;
   --lp-cyan-rgb: 32 229 242;
   --lp-coral-rgb: 255 59 48;
-  --lp-accent-gradient: linear-gradient(135deg, #fffde1 0%, #fff200 48%, #ffdd00 100%);
-  --lp-accent-button: linear-gradient(135deg, #ffffe8 0%, #fff45c 42%, #fff200 72%, #ffffff 145%);
+  --lp-accent-gradient: linear-gradient(135deg, #F5D888 0%, #D4A017 48%, #B8890A 100%);
+  --lp-accent-button: linear-gradient(135deg, #F0CA60 0%, #D4A017 52%, #ECC244 100%);
 }
 
 .modal-image .modal-content {

@@ -1,8 +1,19 @@
 import { ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
+import * as AOS from 'aos';
 import { LandingService, LandingPageData } from '../../../services/landing.service';
 import { GtmService } from '../../../services/gtm.service';
+
+interface CtaHotspot {
+  view: 'desktop' | 'mobile';
+  source: string;
+  label: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
 
 @Component({
   selector: 'app-home',
@@ -42,6 +53,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   settings: { [key: string]: string } = {};
 
   showContent = false;
+
+  readonly ctaHotspots: CtaHotspot[] = [
+    { view: 'desktop', source: 'hero', label: 'احجز مقعدك مجاناً', x: 75, y: 5.37, w: 13.89, h: 0.54 },
+    { view: 'desktop', source: 'stats', label: 'احجز مقعدك مجاناً', x: 27.85, y: 26.62, w: 13.75, h: 0.54 },
+    { view: 'desktop', source: 'how_it_works', label: 'احجز مقعدك مجاناً', x: 13.61, y: 54.82, w: 11.11, h: 0.54 },
+    { view: 'desktop', source: 'why_free', label: 'احجز مقعدك مجاناً', x: 46.88, y: 62.68, w: 15.42, h: 0.54 },
+    { view: 'desktop', source: 'footer', label: 'احجز مقعدك مجاناً', x: 9.17, y: 98.82, w: 11.11, h: 0.54 },
+    { view: 'mobile', source: 'hero', label: 'احجز مقعدك مجاناً', x: 10.18, y: 4.12, w: 79.64, h: 0.36 },
+    { view: 'mobile', source: 'stats', label: 'احجز مقعدك مجاناً', x: 9.92, y: 24.63, w: 79.64, h: 0.36 },
+    { view: 'mobile', source: 'features', label: 'احجز مقعدك مجاناً', x: 10.18, y: 48.71, w: 79.64, h: 0.36 },
+    { view: 'mobile', source: 'how_it_works', label: 'احجز مقعدك مجاناً', x: 14.76, y: 58.81, w: 68.45, h: 0.36 },
+    { view: 'mobile', source: 'why_free', label: 'احجز مقعدك مجاناً', x: 10.18, y: 67.67, w: 79.64, h: 0.36 },
+    { view: 'mobile', source: 'footer', label: 'احجز مقعدك مجاناً', x: 25.7, y: 98.82, w: 48.6, h: 0.36 }
+  ];
 
   // Trading Animation Data
   candlesticks: Array<{position: number, delay: number, bullish: boolean}> = [];
@@ -84,6 +109,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Initialize trading animations
     this.initTradingAnimations();
     this.startAnimationUpdates();
+
+    AOS.init({
+      duration: 750,
+      easing: 'ease-out-cubic',
+      offset: 90,
+      delay: 0,
+      once: true,
+      mirror: false,
+      anchorPlacement: 'top-bottom'
+    });
   }
   
   private initScrollAnimation(): void {
@@ -133,6 +168,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   openPopupFromHowItWorks = () => this.openRegistrationPopup('how_it_works');
   openPopupFromWhyFree = () => this.openRegistrationPopup('why_free');
   openPopupFromChallengeReview = () => this.openRegistrationPopup('challenge_review');
+  openPopupFromFigma = (source: string) => this.openRegistrationPopup(source);
 
   // إغلاق نافذة التسجيل
   closeRegistrationPopup = () => {
@@ -221,6 +257,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.cd.detectChanges();
+    setTimeout(() => AOS.refreshHard(), 0);
   }
 
   private hideInitialLoader(): void {

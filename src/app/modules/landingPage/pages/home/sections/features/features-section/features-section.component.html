@@ -1,24 +1,29 @@
 <section class="features-section" data-aos="fade-up">
   <div class="features-inner">
-    <div class="title-wrapper" data-aos="fade-up" data-aos-delay="100">
-      <span class="feature-eyebrow">محتوى الجلسة</span>
-      <h2 class="main-title">جزء من يلي راح تتعلمه</h2>
+
+    <div class="features-head" data-aos="fade-up" data-aos-delay="60">
+      <span class="features-eyebrow">محتوى الويبنار</span>
+      <h2 class="features-title">جزء من يلي راح تتعلمه :</h2>
+      <p class="features-sub">كل هذا راح أشرحه إلك بالكامل مجانًا 100%</p>
     </div>
 
     <div class="features-grid">
-      <article class="feature-card" *ngFor="let f of features | slice:0:4; let i = index" data-aos="fade-up" [attr.data-aos-delay]="150 + i * 110">
-        <div class="feature-card-meta">
-          <span class="icon-box" aria-hidden="true">
+      <article
+        class="feature-card"
+        *ngFor="let f of features | slice:0:4; let i = index"
+        data-aos="fade-up"
+        [attr.data-aos-delay]="100 + i * 90"
+      >
+        <div class="feature-card-top">
+          <div class="feature-icon-wrap" aria-hidden="true">
             <lucide-angular
               [name]="f.icon"
-              [size]="f.iconSize || 14"
-              class="icon"
-              [style.transform]="'translate(' + (f.iconOffsetX || 0) + 'px, ' + (f.iconOffsetY || 0) + 'px)'"
+              [size]="f.iconSize || 18"
+              class="feature-icon"
             ></lucide-angular>
-          </span>
-          <span class="part-badge">{{ f.part }}</span>
+          </div>
+          <span class="feature-part-badge">{{ f.part }}</span>
         </div>
-
         <div class="feature-card-body">
           <h3 class="feature-title">{{ f.title }}</h3>
           <p class="feature-desc">{{ f.description }}</p>
@@ -26,18 +31,19 @@
       </article>
     </div>
 
-    <div class="final-part" data-aos="fade-up" data-aos-delay="620">
-      <div class="final-part-copy">
-        <span class="part-badge part-badge--bonus">{{ features[4].part }}</span>
+    <!-- Bonus card -->
+    <div class="feature-bonus" data-aos="fade-up" data-aos-delay="500" *ngIf="features.length > 4">
+      <div class="feature-bonus-left">
+        <span class="feature-part-badge feature-part-badge--bonus">{{ features[4].part }}</span>
         <h3>{{ features[4].title }}</h3>
         <p>{{ features[4].description }}</p>
-        <p class="final-note">وحتى أوضحلك الصورة أكثر... كل هذا راح أشرحه إلك بالكامل مجاناً 100%.</p>
+        <p class="feature-bonus-note">وحتى أوضحلك الصورة أكثر… كل هذا راح أشرحه إلك بالكامل مجانًا 100%</p>
       </div>
-
       <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+        <span class="btn-cta-text">احجز مقعدك مجانًا</span>
         <div class="ripple-gold"></div>
       </button>
     </div>
+
   </div>
 </section>

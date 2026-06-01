@@ -1,91 +1,44 @@
-<section class="hero-section">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-floor-grid"></div>
-  <div class="hero-market-lines" aria-hidden="true">
-    <svg viewBox="0 0 1200 320" preserveAspectRatio="none">
-      <polyline class="market-line market-line--gold" points="0,220 130,188 250,214 380,128 520,154 660,92 800,132 940,74 1080,104 1200,58" />
-      <polyline class="market-line market-line--cyan" points="0,260 160,238 300,246 430,188 570,204 730,142 850,168 1000,126 1200,148" />
-    </svg>
+﻿<section class="hero" aria-label="مقدمة تحدي Elev8 Club">
+  <div class="floating-elements" aria-hidden="true">
+    <span class="ambient-dot dot-1"></span>
+    <span class="ambient-dot dot-2"></span>
+    <span class="ambient-dot dot-3"></span>
+    <span class="ambient-dot dot-4"></span>
+    <span class="ambient-dot dot-5"></span>
+    <span class="ambient-dot dot-6"></span>
   </div>
-  <div class="hero-orbit hero-orbit--one"></div>
-  <div class="hero-orbit hero-orbit--two"></div>
 
-  <div class="hero-inner content-container" data-aos="fade-up" data-aos-delay="50">
-    <div class="hero-alert" data-aos="fade-down" data-aos-delay="60">
-      <span class="alert-dot"></span>
-      <strong>جلسة مباشرة مجانية باستخدام الذكاء الاصطناعي</strong>
+  <div class="brand-mark" data-aos="fade-down" data-aos-delay="60" data-aos-duration="700">ELEV8 CLUB</div>
+
+  <div class="hero__visual" data-aos="fade-left" data-aos-delay="120" data-aos-duration="900">
+    <picture>
+      <source media="(max-width: 980px)" srcset="assets/images/anima-home/group-111.png" />
+      <img src="assets/images/anima-home/group-3.png" alt="Khalil holding the Elev8 Club magic pill" />
+    </picture>
+  </div>
+
+  <div class="hero__copy" data-aos="fade-right" data-aos-delay="190" data-aos-duration="850">
+    <span class="eyebrow">تحدي elev8 club 0.3</span>
+    <h1>
+      <span class="muted-title">أتحداك تبني دخل</span>
+      <span class="hero__line"><span>يومي</span><b data-text="$272">$272</b><span>أونلاين</span></span>
+    </h1>
+    <p class="hero__sub">خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي</p>
+    <div class="inline-list" aria-label="مزايا التحدي">
+      <span>بدون خبرة سابقة</span>
+      <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" />
+      <span>برأس مال بسيط</span>
+      <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" />
+      <span>من أي مكان بالعالم</span>
     </div>
-
-    <div class="hero-visual" data-aos="zoom-in" data-aos-delay="120">
-      <img src="assets/images/canva/khalil-pill.jpg" alt="خليل القصاصية يقدم جلسة الويبينار المجانية" loading="eager" />
-      <div class="hero-visual-badge">
-        <span class="live-dot"></span>
-        <strong>تحدي مباشر</strong>
-      </div>
-    </div>
-
-    <div class="hero-copy" data-aos="fade-up" data-aos-delay="180">
-      <h1 class="hero-title" aria-label="أتحداك تبني دخل يومي 272 دولار أونلاين خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي">
-        <span class="hero-title-frame">
-          <span class="hero-title-line hero-title-main typewriter-reveal typewriter-reveal--one">أتحداك تبني دخل يومي</span>
-          <span class="hero-title-line hero-earning-line typewriter-reveal typewriter-reveal--two">
-            <span class="title-slash">/</span>
-            <span class="amount-highlight">$272</span>
-            أونلاين
-          </span>
-        </span>
-        <span class="hero-title-line hero-title-subline typewriter-reveal typewriter-reveal--three">
-          <span class="subline-dash">—</span>
-          خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي
-        </span>
-      </h1>
-      <p class="hero-kicker">
-        عرضت هذا النظام على مبتدئين بالكامل مرتين... وقدروا يحققوا آلاف الدولارات
-        خلال أقل من 30 يوم فقط... والآن جاء دورك تعملها خلال ساعة وحدة.
-      </p>
-    </div>
-
-    <div class="hero-countdown" *ngIf="showCountdown" aria-label="العد التنازلي" data-aos="fade-up" data-aos-delay="340">
-      <div class="countdown-status-label" [class.not-started]="challengeStatus === 'not-started'"
-        [class.active]="challengeStatus === 'active'">
-        {{ countdownLabel }}
-      </div>
-
-      <div class="countdown-cards-wrapper">
-        <div class="countdown-card">
-          <div class="countdown-value" [@flipAnimation]="countdown.days">{{ countdown.days | number:'2.0-0' }}</div>
-          <div class="countdown-label">أيام</div>
-        </div>
-        <div class="countdown-card">
-          <div class="countdown-value" [@flipAnimation]="countdown.hours">{{ countdown.hours | number:'2.0-0' }}</div>
-          <div class="countdown-label">ساعات</div>
-        </div>
-        <div class="countdown-card">
-          <div class="countdown-value" [@flipAnimation]="countdown.minutes">{{ countdown.minutes | number:'2.0-0' }}</div>
-          <div class="countdown-label">دقائق</div>
-        </div>
-        <div class="countdown-card">
-          <div class="countdown-value" [@flipAnimation]="countdown.seconds">{{ countdown.seconds | number:'2.0-0' }}</div>
-          <div class="countdown-label">ثواني</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-cta-wrapper" data-aos="zoom-in-up" data-aos-delay="420">
-      <button class="btn-cta btn-cta-primary btn-cta-lg hero-cta-btn" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
-        <svg class="btn-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="ripple-gold"></div>
+    <div class="cta-strip">
+      <button class="gold-btn" type="button" (click)="onOpenRegistration()">
+        <span class="gold-btn__label">احجز مقعدك مجاناً</span>
+        <span class="orbit"></span>
+        <span class="orbit"></span>
       </button>
-
-      <div class="hero-trust-row">
-        <span><lucide-angular name="Check" [size]="14"></lucide-angular> مجاني 100%</span>
-        <span><lucide-angular name="Check" [size]="14"></lucide-angular> بدون أي خبرة سابقة</span>
-        <span><lucide-angular name="Check" [size]="14"></lucide-angular> Swap-Free حلال</span>
-      </div>
+      <p>عرضت هذا النظام على مبتدئين بالكامل مرتين… وقدروا يحققوا ألاف الدولارات خلال أقل من 30 يوم فقط … والآن جاء دورك تعملها خلال ساعة واحدة</p>
     </div>
   </div>
 </section>
+

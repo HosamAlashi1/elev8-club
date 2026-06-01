@@ -1,7 +1,9 @@
-<section class="cr-section">
+<section class="cr-section" data-aos="fade-up">
   <div class="cr-inner">
-    <div class="cr-title-block" data-aos="fade-up" data-aos-delay="80">
-      <h2 class="cr-main-title">مراجعة سريعة لتفاصيل التحدي</h2>
+
+    <div class="cr-head" data-aos="fade-up" data-aos-delay="60">
+      <span class="cr-eyebrow">تفاصيل التحدي</span>
+      <h2 class="cr-title">مراجعة سريعة لتفاصيل التحدي</h2>
     </div>
 
     <div class="cr-grid">
@@ -10,12 +12,10 @@
         *ngFor="let item of reviewItems; let i = index"
         [ngClass]="'cr-card--' + item.variant"
         data-aos="fade-up"
-        [attr.data-aos-delay]="170 + i * 90"
+        [attr.data-aos-delay]="120 + i * 80"
       >
-        <div class="cr-card-head">
-          <div class="cr-card-icon">
-            <lucide-angular [name]="item.icon" [size]="12" class="cr-lucide-icon"></lucide-angular>
-          </div>
+        <div class="cr-card-icon-wrap" aria-hidden="true">
+          <lucide-angular [name]="item.icon" [size]="20"></lucide-angular>
         </div>
         <h3 class="cr-card-title">{{ item.question }}</h3>
         <ul class="cr-points-list" [class.cr-points-list--schedule]="item.variant === 'schedule'">
@@ -24,11 +24,12 @@
       </article>
     </div>
 
-    <div class="cr-cta-wrapper" data-aos="zoom-in" data-aos-delay="620">
+    <div class="cr-cta" data-aos="zoom-in" data-aos-delay="500">
       <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+        <span class="btn-cta-text">احجز مقعدك مجانًا</span>
         <div class="ripple-gold"></div>
       </button>
     </div>
+
   </div>
 </section>

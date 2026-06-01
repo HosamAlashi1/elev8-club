@@ -20,6 +20,10 @@ export class FooterComponent {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   isValidLink(link: string): boolean {
     return !!(link && link.trim() !== '' && link !== '#');
   }

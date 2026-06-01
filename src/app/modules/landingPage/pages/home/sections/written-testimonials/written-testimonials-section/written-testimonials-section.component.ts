@@ -13,7 +13,7 @@ type SlideItem = {
         <div class="screens-content" data-aos="fade-left" data-aos-delay="80">
           <div class="screens-head">
             <span class="screens-eyebrow">سكرينات</span>
-            <h2>عندي حرفياً مئات الـ screenshots ومئات النتائج</h2>
+            <h2>عندي حرفيا مئات الـ screenshots ومئات النتائج</h2>
             <p>لأشخاص قدروا يحققوا نتائج حقيقية باستخدام هذا النظام.</p>
           </div>
 
@@ -44,7 +44,7 @@ type SlideItem = {
             </div>
 
             <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-              <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+              <span class="btn-cta-text">احجز مقعدك مجانًا</span>
               <div class="ripple-gold"></div>
             </button>
           </div>
@@ -78,9 +78,10 @@ export class WrittenTestimonialsSectionComponent implements AfterViewInit, OnDes
   ];
 
   readonly proofPoints = [
-    'راح أفرجيك بشكل مباشر، قدام الكاميرا، خطوة بخطوة.',
-    'مش حكي نظري. في آخر ربع ساعة راح نطبق التداول live.',
-    'بنهاية الجلسة رح يكون عندك وضوح كامل عن كيف تبدأ بدون عشوائية.'
+    'يوم ،20/5 راح أفرجيك بشكل مباشر، قدام الكاميرا، خطوة بخطوة…',
+    'مش حكي نظري. خلال جلسة مدتها ساعة تقريبا، وفي آخر ربع ساعة… راح نطبق التداول بشكل مباشر live حتى تشوف الخطوات بعينك وتفهم كيف تبدأ بنفسك.',
+    'وقدرت من خلال المجال هذا أحقق آلاف الدولارات، وأساعد ناس كثير يبدؤوا أول خطوة إلهم بشكل صحيح.',
+    'وبنهاية الجلسة، رح يكون عندك وضوح كامل عن كيف تبدأ التداول بدون عشوائية.'
   ];
 
   ngAfterViewInit(): void {

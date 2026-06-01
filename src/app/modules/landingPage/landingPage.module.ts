@@ -63,12 +63,19 @@ import {
   Sparkles,
   Clock3,
   Quote,
-  RadioTower
+  RadioTower,
+  Monitor,
+  Home,
+  Smile,
+  User
 } from 'lucide-angular';
 import { WhoAmISectionComponent } from './pages/home/sections/who-am-i/who-am-i-section/who-am-i-section.component';
 import { HowItWorksSectionComponent } from './pages/home/sections/how-it-works/how-it-works-section/how-it-works-section.component';
 import { WhyFreeSectionComponent } from './pages/home/sections/why-free/why-free-section/why-free-section.component';
 import { ChallengeReviewSectionComponent } from './pages/home/sections/challenge-review/challenge-review-section/challenge-review-section.component';
+import { WhyTrustSectionComponent } from './pages/home/sections/why-trust/why-trust-section/why-trust-section.component';
+import { AudienceSectionComponent } from './pages/home/sections/audience/audience-section/audience-section.component';
+import { ResourcesGuidesSectionComponent } from './pages/home/sections/resources-guides/resources-guides-section/resources-guides-section.component';
 
 
 
@@ -105,6 +112,9 @@ export function playerFactory() {
     HowItWorksSectionComponent,
     WhyFreeSectionComponent,
     ChallengeReviewSectionComponent,
+    WhyTrustSectionComponent,
+    AudienceSectionComponent,
+    ResourcesGuidesSectionComponent,
     // NavbarComponent,
   ],
   imports: [
@@ -146,7 +156,11 @@ export function playerFactory() {
       Sparkles,
       Clock3,
       Quote,
-      RadioTower
+      RadioTower,
+      Monitor,
+      Home,
+      Smile,
+      User
     })
   ],
   providers: [

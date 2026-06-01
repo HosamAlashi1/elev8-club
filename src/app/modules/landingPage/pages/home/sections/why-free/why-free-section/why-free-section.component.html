@@ -1,42 +1,59 @@
-<section class="wf-section">
+<section class="wf-section" data-aos="fade-up">
   <div class="wf-inner">
+
     <div class="wf-media" data-aos="fade-left" data-aos-delay="100">
-      <img src="assets/images/canva/khalil-main.jpg" alt="خليل القصاصية" loading="lazy">
+      <div class="wf-image-frame">
+        <img src="assets/images/canva/khalil-pill.jpg" alt="خليل القصاصية" loading="lazy" class="wf-portrait" />
+        <div class="wf-image-glow"></div>
+      </div>
     </div>
 
     <div class="wf-copy" data-aos="fade-right" data-aos-delay="140">
+
       <span class="wf-eyebrow">السؤال المهم</span>
+
       <h2 class="wf-title">
-        <span class="wf-title-line">إذا التداول بيشتغل بهذه الطريقة...</span>
-        <span class="wf-title-line wf-title-line--accent">
-          <span class="wf-title-focus">ليش أشرح كل هذا <span class="wf-title-word wf-title-word--gold">مجاناً</span>؟</span>
-        </span>
+        إذا التداول يشتغل بهذه الطريقة...
+        <span class="wf-title-accent">ليش أشرح كل هذا <span class="wf-title-gold">مجانًا</span>؟</span>
       </h2>
+
       <p class="wf-lead">
-        السبب بسيط: النموذج مبني على <span class="wf-inline-accent">شراكة واضحة</span>، أنت تدخل السوق <span class="wf-inline-accent">بدون رسوم إضافية</span>،
-        وأنا أستفيد فقط عندما تبدأ فعلياً.
+        ببساطة... لأن بيني وبين شركة الوساطة (البروكر) شراكة. لما تفتح حساب تداول
+        وتبدأ تستخدم المنصة، شركة الوساطة تأخذ عمولة صغيرة جدًا على كل عملية بيع
+        أو شراء تتم داخل السوق. تمامًا مثل محل الذهب… لما تشتري أو تبيع ذهب، المحل
+        يضيف هامش بسيط جدًا على السعر. ونفس الفكرة موجودة هنا.
       </p>
 
-      <div class="wf-points">
-        <div class="wf-point" *ngFor="let r of reasons; let i = index" data-aos="fade-up" [attr.data-aos-delay]="220 + i * 90">
-          <div class="wf-point-icon" aria-hidden="true">
-            <lucide-angular [name]="r.icon" class="wf-lucide-icon"></lucide-angular>
-          </div>
-          <div class="wf-point-copy">
-            <h3 [innerHTML]="r.titleHtml"></h3>
-            <p [innerHTML]="r.descHtml"></p>
-          </div>
+      <div class="wf-cards">
+        <div class="wf-card" data-aos="fade-up" data-aos-delay="220">
+          <h3 class="wf-card-title">كن المهم جداً تفهيم:</h3>
+          <p>
+            أنت تحتفظ 100% من أرباحك داخل حسابك ولا يتم أخذ أي نسبة من أرباحك الشخصية.
+            العمولة تكون من شركة الوساطة نفسها مش منك، وهي غالبًا مجرد أجزاء بسيطة
+            من الدولار على كل صفقة.
+          </p>
+        </div>
+
+        <div class="wf-card" data-aos="fade-up" data-aos-delay="310">
+          <h3 class="wf-card-title">يعني ببساطة:</h3>
+          <p>
+            أنا أستفيد في كل مرة تبدأ فيها بالتداول وتستخدم النظام بشكل مستمر.
+            لهيك زي ما شايف، أهدافنا مشتركة، أهدافنا مشتركة نجاحي مرتبط بشكل
+            مباشر بنجاحك أنت.
+          </p>
         </div>
       </div>
 
-      <div class="wf-summary">
-        لهذا السبب، الفكرة هنا ليست بيع كلام نظري، بل <span class="wf-inline-accent">مصالحنا مشتركة</span> من أول خطوة.
-      </div>
+      <p class="wf-summary">
+        ولهيك عندي كل الأسباب إني أخلي هذا التحدي مجانيًا، حتى أكبر عدد ممكن
+        من الناس يقدروا يبدأوا وينجحوا بالطريقة الصح
+      </p>
 
       <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجاناً</span>
+        <span class="btn-cta-text">احجز مقعدك مجانًا</span>
         <div class="ripple-gold"></div>
       </button>
+
     </div>
   </div>
 </section>

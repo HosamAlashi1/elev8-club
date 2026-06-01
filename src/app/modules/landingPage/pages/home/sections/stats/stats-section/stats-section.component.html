@@ -1,31 +1,63 @@
-<section class="stats-section">
-  <div class="stats-inner">
-    <div class="stats-headline" data-aos="fade-up" data-aos-delay="80">
-      <h2>هاي الطريقة البسيطة حققت آلاف الدولارات للمشاركين السابقين</h2>
-      <p>أول مرة أطلقنا فيها هذا التحدي كان 30 يوم، والمرة الثانية 7 أيام، والمرة هاي مختلفة تماماً.</p>
-    </div>
+<section class="stats-section" dir="rtl" lang="ar" aria-labelledby="stats-heading">
+  <div class="stats-section__bg" aria-hidden="true"></div>
 
-    <div class="stats-row" data-aos="fade-up" data-aos-delay="160">
-      <div class="stat-pill">
-        <span>عداد آلاف الدولارات</span>
-      </div>
-      <div class="stat-pill stat-pill--featured">
+  <div class="stats-section__shell">
+    <p class="stats-section__intro" data-aos="fade-up" data-aos-delay="80" data-aos-duration="700">
+      هاي الطريقة البسيطة حققت آلاف الدولارات للمشاركين السابقين، أول مرة أطلقنا فيه هذا التحدي كان 30 يوم
+      <br />
+      والمرة الثانية 7 أيام، والمرة هاي مختلفة تماماً
+    </p>
+
+    <div class="stats-section__constellation" aria-labelledby="stats-heading" data-aos="zoom-in" data-aos-delay="160" data-aos-duration="850">
+      <h2 id="stats-heading" class="sr-only">نتائج المشاركين السابقين</h2>
+
+      <div class="stats-section__metric stats-section__metric--students">
         <strong>50K</strong>
-        <span>طلاب</span>
+        <span>طالب ناجح</span>
       </div>
-      <div class="stat-pill">
+
+      <div class="stats-section__metric stats-section__metric--profits">
+        <strong>$600k</strong>
+        <span>أرباح</span>
+      </div>
+
+      <div class="stats-section__metric stats-section__metric--countries">
         <span>مختلف دول العالم</span>
       </div>
+
+      <div class="stats-section__pill-wrap" aria-hidden="true">
+        <img class="stats-section__pill stats-section__pill--main" src="assets/images/anima-home/magicpill-1.png" alt="" />
+        <img class="stats-section__pill stats-section__pill--small" src="assets/images/anima-home/magicpill-2.png" alt="" />
+        <span class="stats-section__halo"></span>
+      </div>
+
+      <span class="stats-section__connector stats-section__connector--top" aria-hidden="true"></span>
+      <span class="stats-section__connector stats-section__connector--upper" aria-hidden="true"></span>
+      <span class="stats-section__connector stats-section__connector--lower" aria-hidden="true"></span>
+
+      <span class="stats-section__icon stats-section__icon--students" aria-hidden="true">
+        <img src="assets/images/anima-home/crown-star.svg" alt="" />
+      </span>
+      <span class="stats-section__icon stats-section__icon--profits" aria-hidden="true">
+        <img src="assets/images/anima-home/money-bag.svg" alt="" />
+      </span>
+      <span class="stats-section__icon stats-section__icon--countries" aria-hidden="true">
+        <img src="assets/images/anima-home/global.svg" alt="" />
+      </span>
     </div>
 
-    <div class="stats-copy" data-aos="fade-up" data-aos-delay="260">
-      <p>أغلبهم ما كان عنده أي خبرة سابقة. كثير منهم كانوا لسه موظفين بوظائف 9-5، وبعضهم أصلاً ما كان يعرف شو يعني بزنس أونلاين أو تداول قبل ما يبدأ.</p>
-      <p class="stats-copy-highlight">ومع ذلك... هذا النظام البسيط ساعدهم يتجاوزوا كل التوقعات ويحققوا مجتمعين آلاف الدولارات أونلاين.</p>
+    <div class="stats-section__note-wrap" data-aos="fade-up" data-aos-delay="220" data-aos-duration="750">
+      <span aria-hidden="true"></span>
+      <p class="stats-section__note">
+        أغلبهم ما كان عنده أي خبرة سابقة، كثير منهم كانوا لسه موظفين بوظائف 9-5، وبعضهم أصلًا ما كان يعرف شو يعني “بزنس اونلاين أو تداول” قبل ما يبدأ
+      </p>
     </div>
 
-    <button class="btn-cta btn-cta-primary btn-cta-lg" type="button" (click)="onOpenRegistration()">
-      <span class="btn-cta-text">احجز مقعدك مجاناً</span>
-      <div class="ripple-gold"></div>
-    </button>
+    <div class="stats-section__cta-card" data-aos="fade-up" data-aos-delay="280" data-aos-duration="750">
+      <p>هذا النظام البسيط ساعدهم يتجاوزوا كل التوقعات، ويحققوا مجتمعين آلاف الدولارات أونلاين</p>
+      <button class="stats-section__button" type="button" (click)="openRegistration()" aria-label="احجز مقعدك مجاناً">
+        احجز مقعدك مجاناً
+      </button>
+    </div>
   </div>
 </section>

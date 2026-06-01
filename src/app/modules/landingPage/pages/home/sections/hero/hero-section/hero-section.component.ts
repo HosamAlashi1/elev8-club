@@ -75,78 +75,70 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** قراءة start_counter_date مباشرة من /settings */
+  /** مؤقتا: موعد تجريبي بعد 20 يوم. بلوك Firebase جاهز تحت للتفعيل لاحقا. */
   private loadCountdownSettings(): void {
+    const temporaryStartDate = Date.now() + 20 * 24 * 60 * 60 * 1000;
+    this.initializeCountdown(temporaryStartDate);
+
+    /*
+    قراءة الموعد الحقيقي من Firebase:
+    نفس المكان السابق: /settings
+    نفس الفيلد السابق: start_counter_date
+
     this.firebaseService
       .getObject('settings')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (settings: any) => {
-          console.log('Countdown - settings object:', settings);
-
-          if (settings && settings.start_counter_date) {
-            const newStartDate = this.parseDate(settings.start_counter_date);
-
-            if (!newStartDate || isNaN(newStartDate)) {
-              console.warn('Countdown - invalid start_counter_date value:', settings.start_counter_date);
-              return;
-            }
-
-            // Only initialize if start date changed or not set yet
-            if (this.startCounterDate !== newStartDate) {
-              this.startCounterDate = newStartDate;
-
-              console.log(
-                'Countdown - Start date loaded:',
-                this.startCounterDate,
-                new Date(this.startCounterDate)
-              );
-
-              // Clear any existing interval
-              if (this.countdownInterval) {
-                clearInterval(this.countdownInterval);
-              }
-
-              if (this.startCounterDate > 0) {
-                // Calculate end date (7 days after start)
-                this.endDate = this.startCounterDate + 7 * 24 * 60 * 60 * 1000;
-
-                console.log(
-                  'Countdown - End date calculated:',
-                  this.endDate,
-                  new Date(this.endDate)
-                );
-
-                // Start countdown outside Angular zone for better performance
-                this.ngZone.runOutsideAngular(() => {
-                  // Start countdown with immediate update
-                  this.lastUpdateTime = Date.now();
-                  this.updateCountdown();
-
-                  // Set interval to update every second precisely
-                  this.countdownInterval = setInterval(() => {
-                    const now = Date.now();
-                    // Only update if at least 950ms have passed (accounting for drift)
-                    if (now - this.lastUpdateTime >= 950) {
-                      this.lastUpdateTime = now;
-                      this.updateCountdown();
-                      // Trigger change detection manually
-                      this.ngZone.run(() => {
-                        this.cdr.detectChanges();
-                      });
-                    }
-                  }, 100); // Check every 100ms but only update every second
-                });
-              }
-            }
-          } else {
-            console.warn('Countdown - settings or start_counter_date not found');
+          if (!settings?.start_counter_date) {
+            console.warn('Countdown - settings.start_counter_date not found');
+            return;
           }
+
+          const firebaseStartDate = this.parseDate(settings.start_counter_date);
+
+          if (!firebaseStartDate || isNaN(firebaseStartDate)) {
+            console.warn('Countdown - invalid start_counter_date value:', settings.start_counter_date);
+            return;
+          }
+
+          this.initializeCountdown(firebaseStartDate);
         },
         error: (err) => {
           console.error('Error loading countdown settings:', err);
         }
       });
+    */
+  }
+
+  private initializeCountdown(startDate: number): void {
+    if (!startDate || isNaN(startDate) || this.startCounterDate === startDate) {
+      return;
+    }
+
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+
+    this.startCounterDate = startDate;
+    this.endDate = this.startCounterDate + 7 * 24 * 60 * 60 * 1000;
+    this.lastUpdateTime = Date.now();
+    this.updateCountdown();
+
+    this.ngZone.runOutsideAngular(() => {
+      this.countdownInterval = setInterval(() => {
+        const now = Date.now();
+
+        if (now - this.lastUpdateTime >= 950) {
+          this.lastUpdateTime = now;
+          this.updateCountdown();
+
+          this.ngZone.run(() => {
+            this.cdr.detectChanges();
+          });
+        }
+      }, 100);
+    });
   }
 
   /** نفس parseDate اللي عملناه في صفحة الإعدادات */
@@ -229,11 +221,11 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
 
   get countdownLabel(): string {
     if (this.challengeStatus === 'not-started') {
-      return 'يبدأ الويبينار خلال';
+      return 'يبدأ التحدي خلال';
     } else if (this.challengeStatus === 'active') {
-      return 'الويبينار يجري الآن';
+      return 'التحدي يجري الآن';
     } else {
-      return 'انتهى الويبينار';
+      return 'انتهى التحدي';
     }
   }
 

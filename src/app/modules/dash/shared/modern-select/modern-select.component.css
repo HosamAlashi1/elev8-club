@@ -40,7 +40,7 @@
   background: #fff;
 }
 
-/* 📏 Size Variants - مبسطة وموحدة */
+/* 📏 Size Variants - مبسطة ومواحدة */
 .modern-select-sm {
   min-height: 38px;
   font-size: 14px;
@@ -135,7 +135,7 @@
   background: #ffffff;
   border: 1px solid #e1e5e9;
   border-radius: 10px;
-  box-shadow: 
+  box-shadow:
     0 4px 25px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(0, 0, 0, 0.02);
   overflow: hidden;

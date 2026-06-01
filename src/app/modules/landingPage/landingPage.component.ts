@@ -42,7 +42,7 @@ export class LandingPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.enforceDashboardDirection();
+    this.enforceLandingDirection();
 
     // Check initial route
     this.checkRoute(this.router.url);
@@ -86,12 +86,12 @@ export class LandingPageComponent implements OnInit {
     return outlet?.activatedRouteData?.['animation'];
   }
 
-  private enforceDashboardDirection(): void {
+  private enforceLandingDirection(): void {
     const htmlElement = document.documentElement;
     const bodyElement = document.body;
 
-    htmlElement.dir = 'ltr';
-    htmlElement.lang = 'en';
-    bodyElement.classList.remove('rtl-mode', 'arabic-font');
+    htmlElement.dir = 'rtl';
+    htmlElement.lang = 'ar';
+    bodyElement.classList.add('rtl-mode', 'arabic-font');
   }
 }

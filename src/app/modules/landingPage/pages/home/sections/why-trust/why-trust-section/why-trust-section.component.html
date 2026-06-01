@@ -1,0 +1,30 @@
+<section class="wt-section" data-aos="fade-up">
+  <div class="wt-inner">
+
+    <div class="wt-head" data-aos="fade-up" data-aos-delay="60">
+      <h2 class="wt-title">ليش لازم أسمع الك؟</h2>
+    </div>
+
+    <div class="wt-timeline">
+      <div
+        class="wt-story"
+        *ngFor="let s of stories; let i = index"
+        [class.wt-story--reversed]="s.imageRight"
+        data-aos="fade-up"
+        [attr.data-aos-delay]="100 + i * 100"
+      >
+        <div class="wt-story-image">
+          <div class="wt-story-glow"></div>
+          <img [src]="s.image" [alt]="s.imageAlt" loading="lazy" class="wt-story-img" />
+        </div>
+
+        <div class="wt-story-content">
+          <span class="wt-story-num">{{ i + 1 < 10 ? '0' + (i + 1) : i + 1 }}</span>
+          <h3 class="wt-story-title">{{ s.title }}</h3>
+          <p class="wt-story-body">{{ s.body }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -18,17 +18,17 @@ export class VideoTestimonialsSectionComponent {
 
   stories: ProofStory[] = [
     {
-      badge: 'فيديوهات',
-      name: 'زادة',
-      amount: '$120,000+',
-      description: 'قدرت تحقق أكثر من 120,000$ بينما كانت بنفس الوقت تعتني بطفلين.',
+      badge: 'فديوهات',
+      name: 'أنصار من فلسطين',
+      amount: '+$1,000',
+      description: 'كانت تشتغل بالمجال التسويقي… وخلال 6 أيام فقط قدرت تحقق +1,000$ للدرجة إنها قررت تترك شغلها بالكامل وتكمل بالتداول.',
       image: 'assets/images/canva/video-proof-massy.png'
     },
     {
-      badge: 'نتيجة موثقة',
-      name: 'أرماندو',
-      amount: '$111,000+',
-      description: 'شاب عمره 19 سنة من عائلة مهاجرة بسيطة، وحقق أكثر من 111,000$ واشترى لنفسه سيارة McLaren.',
+      badge: 'فديوهات',
+      name: 'مشترك من مصر',
+      amount: '+$800',
+      description: 'بدأ بدون خبرة وبرأس مال بسيط، وخلال أسبوع واحد قدر يحقق أولى نتائجه الحقيقية بالتداول.',
       image: 'assets/images/canva/video-proof-salah.png'
     }
   ];
