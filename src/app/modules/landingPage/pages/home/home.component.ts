@@ -166,6 +166,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   openPopupFromWrittenTestimonials = () => this.openRegistrationPopup('written_testimonials');
   openPopupFromBigCta = () => this.openRegistrationPopup('big_cta');
   openPopupFromHowItWorks = () => this.openRegistrationPopup('how_it_works');
+  openPopupFromLearn = () => this.openRegistrationPopup('learn');
   openPopupFromWhyFree = () => this.openRegistrationPopup('why_free');
   openPopupFromChallengeReview = () => this.openRegistrationPopup('challenge_review');
   openPopupFromFigma = (source: string) => this.openRegistrationPopup(source);

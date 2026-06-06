@@ -1,0 +1,522 @@
+/* ============ Screenshots Section ============ */
+/* مرجع التصميم: AnimaPackage-Html-pEOUZ (نسخة الديسكتوب) + HeroSection (الموبايل) */
+
+.shots-section {
+  direction: rtl;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(48px, 6vw, 88px) clamp(16px, 3vw, 36px) clamp(40px, 5vw, 72px);
+  isolation: isolate;
+}
+
+/* أنصاف الدوائر الديكورية على الأطراف (يمين/يسار) — حد متدرّج أبيض ← أزرق ← شفاف */
+.shots-arc {
+  position: absolute;
+  top: 0;
+  width: 229px;
+  height: 759px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.62;
+  /* الشكل + الـ fade من صور الأنيما (mask)، واللون أزرق موحّد ناعم */
+  background: linear-gradient(
+    180deg,
+    rgba(24, 88, 225, 0.6) 0%,
+    rgba(14, 84, 228, 0.55) 50%,
+    rgba(8, 86, 245, 0) 100%
+  );
+}
+
+.shots-arc--left {
+  left: 0;
+  -webkit-mask: url('/assets/images/anima-home/shots-circle-left.png') no-repeat left top / 229px 759px;
+          mask: url('/assets/images/anima-home/shots-circle-left.png') no-repeat left top / 229px 759px;
+}
+
+.shots-arc--right {
+  right: 0;
+  -webkit-mask: url('/assets/images/anima-home/shots-circle-right.png') no-repeat right top / 229px 759px;
+          mask: url('/assets/images/anima-home/shots-circle-right.png') no-repeat right top / 229px 759px;
+}
+
+/* توهّج الخلفية الأزرق */
+.shots-bg-glow {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1600px, 150%);
+  max-width: none;
+  height: auto;
+  pointer-events: none;
+  opacity: 1;
+  z-index: -1;
+}
+
+/* توهّج أزرق مركزي خلف ستاك التلفونات — أنصع وأقوى */
+.shots-visual::before {
+  content: '';
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(900px, 80%);
+  height: 86%;
+  background: radial-gradient(closest-side, rgba(26, 110, 255, 0.7), rgba(12, 86, 240, 0.28) 55%, rgba(0, 78, 238, 0) 74%);
+  filter: blur(46px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.shots-inner {
+  width: min(100%, 1296px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- العنوان ---------- */
+.shots-head {
+  text-align: center;
+  margin-bottom: clamp(-20px, -1vw, 4px);
+}
+
+.shots-title {
+  margin: 0 0 14px;
+  font-size: clamp(1.6rem, 3.4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.shots-sub {
+  margin: 0;
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  color: rgb(255 255 255 / 0.78);
+}
+
+/* ---------- منصّة التلفونات (coverflow carousel) ---------- */
+.shots-visual {
+  position: relative;
+  width: 100%;
+  height: clamp(380px, 44vw, 600px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* شعاع أزرق يطلع من تحت بالنص بين التلفونات — خلف الكل يبيّن بالفراغات */
+.shots-visual::after {
+  content: '';
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 46%;
+  height: 86%;
+  background:
+    /* القلب: شعاع مركّز ساطع يرتفع للنص */
+    radial-gradient(ellipse 36% 78% at 50% 100%, rgba(96, 162, 255, 0.85) 0%, rgba(40, 112, 250, 0.4) 42%, transparent 70%),
+    /* القاعدة: توهّج عريض تحت */
+    radial-gradient(ellipse 120% 38% at 50% 100%, rgba(8, 90, 245, 0.55) 0%, transparent 68%);
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.shots-deck {
+  position: absolute;
+  inset: 0;
+}
+
+/* كل تلفون يتموضع حسب data-offset (المسافة عن المركز) */
+.shots-phone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  width: clamp(185px, 21%, 300px);
+  aspect-ratio: 320 / 544;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transition:
+    transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 520ms ease,
+    filter 520ms ease;
+}
+
+/* ============================================================
+   قياسات مأخوذة مباشرة من Anima:
+   - frame-37.svg: matrix skewX ≈ 10° على التلفونات الجانبية
+   - rectangle-2: bg #ffffff0d | border 2px #ffffff80 | radius 24px | blur 38px
+   - rectangle الصورة: 8px padding | radius 16px | stroke داخلي #ffffff1a
+   - blob أزرق: #004EEE blur عالي أسفل التلفون الأوسط
+   ============================================================ */
+
+/* المركز */
+.shots-phone[data-offset="0"] {
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 50;
+  opacity: 1;
+}
+
+/* جانب +1 (يمين): skewX سالب متل الأنيما، بُعد 52% */
+.shots-phone[data-offset="1"] {
+  transform: translate(-50%, -50%) translateX(52%) scale(0.82) skewX(-10deg);
+  z-index: 40;
+  opacity: 1;
+}
+/* جانب -1 (يسار): skewX موجب */
+.shots-phone[data-offset="-1"] {
+  transform: translate(-50%, -50%) translateX(-52%) scale(0.82) skewX(10deg);
+  z-index: 40;
+  opacity: 1;
+}
+
+/* جانب +2 (أبعد يمين) */
+.shots-phone[data-offset="2"] {
+  transform: translate(-50%, -50%) translateX(90%) scale(0.66) skewX(-10deg);
+  z-index: 30;
+  opacity: 0.9;
+}
+/* جانب -2 (أبعد يسار) */
+.shots-phone[data-offset="-2"] {
+  transform: translate(-50%, -50%) translateX(-90%) scale(0.66) skewX(10deg);
+  z-index: 30;
+  opacity: 0.9;
+}
+
+/* buffer ±3 — مخفية خلف الكادر */
+.shots-phone[data-offset="3"],
+.shots-phone[data-offset="-3"] {
+  transform: translate(-50%, -50%) translateX(120%) scale(0.58) skewX(-10deg);
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+}
+.shots-phone[data-offset="-3"] {
+  transform: translate(-50%, -50%) translateX(-120%) scale(0.58) skewX(10deg);
+}
+
+/* ---- كارد التلفون ----
+   جانبي: border أزرق + outer glow أزرق
+   وسط:  border أبيض + glow أقوى
+*/
+.shots-phone__card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.051);
+  backdrop-filter: blur(38px) brightness(100%);
+  -webkit-backdrop-filter: blur(38px) brightness(100%);
+  overflow: hidden;
+  /* glow أزرق خارجي */
+  box-shadow: 0 0 26px rgba(13, 95, 255, 0.30);
+  transition: box-shadow 520ms ease;
+}
+
+/* بوردر متدرّج أزرق متوهّج (مش أبيض) — ساطع أزرق من فوق ← أزرق غامق لتحت */
+.shots-phone__card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.6px;
+  background: linear-gradient(
+    180deg,
+    rgba(96, 160, 255, 0.95) 0%,
+    rgba(56, 122, 245, 0.65) 40%,
+    rgba(32, 92, 222, 0.45) 100%
+  );
+  /* mask يخلّي بس إطار رفيع بسماكة الـ padding */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 7;
+}
+
+/* توهّج أزرق داخلي متدرّج بين البوردر والصورة — نفس الفيجما */
+.shots-phone__inner-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 6;
+  box-shadow: inset 0 0 26px rgba(50, 124, 255, 0.50);
+}
+
+/* المركز: بوردر أنصع (أزرق ساطع) + glow أقوى + inner glow أقوى */
+.shots-phone.is-center .shots-phone__card {
+  box-shadow:
+    0 0 64px rgba(13, 95, 255, 0.55),
+    0 38px 90px rgba(0, 0, 0, 0.55);
+}
+.shots-phone.is-center .shots-phone__card::before {
+  padding: 2px;
+  background: linear-gradient(
+    180deg,
+    rgba(120, 180, 255, 1) 0%,
+    rgba(72, 140, 250, 0.8) 40%,
+    rgba(40, 104, 235, 0.5) 100%
+  );
+}
+.shots-phone.is-center .shots-phone__inner-glow {
+  box-shadow: inset 0 0 38px rgba(64, 140, 255, 0.62);
+}
+
+/* ---- Gradient overlay داخل الكارد للجانبية ----
+   شفاف فوق ← أزرق-أسود من تحت — نفس التصميم */
+.shots-phone__card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* tint أزرق خفيف يبيّن المحتوى (مش أسود غامق) — نفس الفيجما */
+  background: linear-gradient(
+    180deg,
+    rgba(12, 32, 92, 0.28) 0%,
+    rgba(8, 22, 68, 0.44) 65%,
+    rgba(5, 15, 50, 0.56) 100%
+  );
+  pointer-events: none;
+  z-index: 5;
+  opacity: 1;
+  transition: opacity 520ms ease;
+}
+
+/* لا overlay على الوسط */
+.shots-phone.is-center .shots-phone__card::after {
+  opacity: 0;
+}
+
+/* ±2: overlay أغمق شوي بس المحتوى لسا بيبيّن */
+.shots-phone[data-offset="2"] .shots-phone__card::after,
+.shots-phone[data-offset="-2"] .shots-phone__card::after {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 28, 80, 0.44) 0%,
+    rgba(6, 18, 56, 0.60) 60%,
+    rgba(4, 12, 42, 0.72) 100%
+  );
+}
+
+/* ---- الصورة داخل الكارد: 8px inset + radius 16px (نفس الأنيما) ---- */
+.shots-phone__shot {
+  position: absolute;
+  inset: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+
+/* ---- الـ blob الأزرق تحت التلفون الأوسط (#004EEE) ---- */
+.shots-phone__accent {
+  position: absolute;
+  left: 50%;
+  bottom: -14%;
+  transform: translateX(-50%);
+  width: 68%;
+  height: 40%;
+  background: #004EEE;
+  filter: blur(42px);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 520ms ease;
+}
+
+.shots-phone.is-center .shots-phone__accent {
+  opacity: 0.72;
+}
+
+/* ---------- الأسهم ---------- */
+.shots-nav {
+  position: absolute;
+  z-index: 60;
+  top: 56%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* DOM يسار←يمين: btn الأول (prev ←) يسار، التاني (next →) يمين */
+  direction: ltr;
+  width: min(386px, 64%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shots-nav__btn {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 12px;
+  border: 2px solid rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, transform 160ms ease;
+}
+
+.shots-nav__btn:hover {
+  background: rgb(255 255 255 / 0.12);
+  border-color: rgb(255 255 255 / 0.7);
+}
+
+.shots-nav__btn:active {
+  transform: scale(0.94);
+}
+
+.shots-nav__btn img {
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.shots-nav__btn--next img {
+  transform: rotate(180deg);
+}
+
+/* ---------- لوحة الكروت ---------- */
+/* صف الكروت: حاوية نسبية، الصندوق فوق والخط خلفه */
+.shots-cards-row {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  margin-top: clamp(-170px, -11vw, -80px);
+  display: flex;
+  justify-content: center;
+}
+
+/* خط أبيض داش أفقي خلف الصندوق — يبيّن بس من الجانبين (line-3.svg: أبيض 0.1، داش 8/8) */
+.shots-cards-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 2px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.10) 50%, transparent 50%);
+  background-size: 16px 2px;   /* 8px داش + 8px فراغ */
+  background-repeat: repeat-x;
+  z-index: 0;                  /* خلف الصندوق */
+  pointer-events: none;
+}
+
+.shots-cards {
+  /* DOM يسار ← يمين تماماً مثل الأنيما */
+  direction: ltr;
+  position: relative;
+  z-index: 1;                  /* فوق الخط — يغطّيه بالنص ويبيّن بس من الجانب */
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px 24px;
+  border-radius: 20px;
+  border: 2px solid rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(38px);
+  -webkit-backdrop-filter: blur(38px);
+}
+
+.shots-card {
+  flex: 1;
+  margin: 0;
+  direction: rtl;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.7;
+  text-align: justify;
+  color: #ffffff;
+}
+
+/* الفاصل: داش أزرق #004EEE (2px داش / 2px فراغ) — نفس line-4.svg بالأنيما */
+.shots-card-divider {
+  flex: 0 0 auto;
+  width: 1px;
+  align-self: center;
+  height: 64px;
+  background-image: linear-gradient(to bottom, #004EEE 50%, transparent 50%);
+  background-size: 1px 4px;
+  background-repeat: repeat-y;
+}
+
+/* ============ تابلت ============ */
+@media (max-width: 900px) {
+  .shots-visual {
+    height: clamp(320px, 52vw, 460px);
+  }
+  .shots-phone {
+    width: clamp(200px, 34%, 300px);
+  }
+  .shots-phones--back { width: clamp(440px, 86%, 720px); }
+  .shots-phones--mid  { width: clamp(320px, 58%, 520px); }
+
+  .shots-cards {
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+  .shots-card {
+    flex: 1 1 40%;
+  }
+  .shots-card-divider {
+    display: none;
+  }
+}
+
+/* ============ موبايل ============ */
+@media (max-width: 600px) {
+  .shots-visual {
+    height: clamp(300px, 78vw, 380px);
+  }
+  .shots-phone {
+    width: clamp(150px, 46%, 220px);
+  }
+  .shots-phones--back { width: clamp(300px, 104%, 393px); opacity: 0.7; }
+  .shots-phones--mid  { width: clamp(240px, 74%, 320px); }
+
+  .shots-nav {
+    width: min(240px, 70%);
+  }
+  .shots-nav__btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .shots-cards-row {
+    margin-top: clamp(-50px, -12vw, -28px);
+  }
+  .shots-cards {
+    direction: rtl;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 22px 18px;
+  }
+  .shots-card {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 16px 0;
+  }
+  .shots-card-divider {
+    display: block;
+    width: 100%;
+    height: 1px;
+    align-self: stretch;
+    /* داش أفقي أزرق */
+    background-image: linear-gradient(to right, #004EEE 50%, transparent 50%);
+    background-size: 4px 1px;
+    background-repeat: repeat-x;
+  }
+}

@@ -1,30 +1,57 @@
-<section class="wt-section" data-aos="fade-up">
-  <div class="wt-inner">
+<section class="wt-section" data-aos="fade-up" dir="rtl">
+  <div class="wt-glow wt-glow--wide" aria-hidden="true"></div>
+  <div class="wt-glow wt-glow--core" aria-hidden="true"></div>
+  <div class="wt-glow wt-glow--slim" aria-hidden="true"></div>
 
-    <div class="wt-head" data-aos="fade-up" data-aos-delay="60">
+  <div class="wt-shell">
+    <header class="wt-head" data-aos="fade-up" data-aos-delay="60">
       <h2 class="wt-title">ليش لازم أسمع الك؟</h2>
-    </div>
+    </header>
 
     <div class="wt-timeline">
-      <div
-        class="wt-story"
-        *ngFor="let s of stories; let i = index"
-        [class.wt-story--reversed]="s.imageRight"
-        data-aos="fade-up"
-        [attr.data-aos-delay]="100 + i * 100"
-      >
-        <div class="wt-story-image">
-          <div class="wt-story-glow"></div>
-          <img [src]="s.image" [alt]="s.imageAlt" loading="lazy" class="wt-story-img" />
-        </div>
+      <ng-container *ngFor="let story of stories; let i = index">
+        <article
+          class="wt-story"
+          [class.wt-story--media-right]="story.mediaPosition === 'right'"
+          [class.wt-story--plain-media]="story.mediaKind === 'plain'"
+          data-aos="fade-up"
+          [attr.data-aos-delay]="100 + i * 80"
+        >
+          <div class="wt-media" [class.wt-media--plain]="story.mediaKind === 'plain'">
+            <span class="wt-media-inner">
+              <img [src]="story.image" [alt]="story.imageAlt" loading="lazy" />
+            </span>
+          </div>
 
-        <div class="wt-story-content">
-          <span class="wt-story-num">{{ i + 1 < 10 ? '0' + (i + 1) : i + 1 }}</span>
-          <h3 class="wt-story-title">{{ s.title }}</h3>
-          <p class="wt-story-body">{{ s.body }}</p>
+          <div class="wt-copy">
+            <h3>{{ story.title }}</h3>
+            <p>
+              <ng-container *ngFor="let line of story.bodyLines; let last = last">
+                {{ line }}<br *ngIf="!last" />
+              </ng-container>
+            </p>
+          </div>
+        </article>
+
+        <div
+          *ngIf="i < stories.length - 1"
+          class="wt-connector"
+          [class.wt-connector--reverse]="i % 2 === 1"
+          aria-hidden="true"
+        >
+          <picture>
+            <source
+              media="(min-width: 821px)"
+              [srcset]="i % 2 === 0 ? 'assets/images/anima-home/trust-connector-desktop-1.png' : 'assets/images/anima-home/trust-connector-desktop-2.png'"
+            />
+            <img
+              [src]="i % 2 === 0 ? 'assets/images/anima-home/trust-connector-left.svg' : 'assets/images/anima-home/trust-connector-right.svg'"
+              alt=""
+              loading="lazy"
+            />
+          </picture>
         </div>
-      </div>
+      </ng-container>
     </div>
-
   </div>
 </section>

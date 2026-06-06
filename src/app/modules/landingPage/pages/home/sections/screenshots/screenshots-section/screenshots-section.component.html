@@ -1,0 +1,54 @@
+<section class="shots-section" dir="rtl" data-aos="fade-up" aria-labelledby="shots-title">
+  <span class="shots-arc shots-arc--right" aria-hidden="true"></span>
+  <span class="shots-arc shots-arc--left" aria-hidden="true"></span>
+  <img class="shots-bg-glow" src="assets/images/anima-home/shots-glow.svg" alt="" aria-hidden="true" />
+
+  <div class="shots-inner">
+
+    <header class="shots-head" data-aos="fade-up" data-aos-delay="60">
+      <h2 id="shots-title" class="shots-title">عندي حرفياً مئات الـ screenshots ومئات النتائج</h2>
+      <p class="shots-sub">لأشخاص قدروا يحققوا نتائج حقيقية باستخدام هذا النظام.</p>
+    </header>
+
+    <div class="shots-visual" data-aos="fade-up" data-aos-delay="120">
+      <!-- مروحة التلفونات (coverflow carousel) -->
+      <div class="shots-deck" [class.is-animating]="isAnimating">
+        <figure
+          *ngFor="let img of slides; let i = index; trackBy: trackByIndex"
+          class="shots-phone"
+          [attr.data-offset]="offsetFor(i)"
+          [class.is-center]="offsetFor(i) === 0"
+          [attr.aria-hidden]="offsetFor(i) === 0 ? null : true"
+        >
+          <div class="shots-phone__card">
+            <span class="shots-phone__accent" aria-hidden="true"></span>
+            <img class="shots-phone__shot" [src]="img" alt="صورة توضيحية لنتيجة حقيقية باستخدام النظام" />
+            <span class="shots-phone__inner-glow" aria-hidden="true"></span>
+          </div>
+        </figure>
+      </div>
+
+      <!-- أسهم التنقل -->
+      <nav class="shots-nav" aria-label="التنقل بين النتائج">
+        <button type="button" class="shots-nav__btn" (click)="prevSlide()" aria-label="النتيجة السابقة">
+          <img src="assets/images/anima-home/shots-arrow-prev.svg" alt="" aria-hidden="true" />
+        </button>
+        <button type="button" class="shots-nav__btn shots-nav__btn--next" (click)="nextSlide()" aria-label="النتيجة التالية">
+          <img src="assets/images/anima-home/shots-arrow-prev.svg" alt="" aria-hidden="true" />
+        </button>
+      </nav>
+    </div>
+
+    <!-- لوحة الكروت الأربعة -->
+    <div class="shots-cards-row" data-aos="fade-up" data-aos-delay="180">
+      <span class="shots-cards-line" aria-hidden="true"></span>
+      <div class="shots-cards">
+        <ng-container *ngFor="let card of cards; let i = index; let last = last">
+          <p class="shots-card">{{ card }}</p>
+          <span class="shots-card-divider" *ngIf="!last" aria-hidden="true"></span>
+        </ng-container>
+      </div>
+    </div>
+
+  </div>
+</section>

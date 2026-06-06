@@ -1,53 +1,54 @@
-<section class="hiw-section" data-aos="fade-up">
-
-  <div class="hiw-inner">
-
-    <div class="hiw-head" data-aos="fade-up" data-aos-delay="60">
-      <span class="hiw-eyebrow">الآلية</span>
-      <h2 class="hiw-title">كيف هاي الطريق بتشتغل ؟</h2>
+<section id="how-it-works" class="hiw-section" dir="rtl" data-aos="fade-up" aria-labelledby="hiw-title">
+  <header class="hiw-head" data-aos="fade-up" data-aos-delay="60">
+    <span class="hiw-head-line hiw-head-line--right" aria-hidden="true"></span>
+    <div class="hiw-head-copy">
+      <h2 id="hiw-title" class="hiw-title">كيف هاي الطريق بتشتغل</h2>
       <p class="hiw-sub">
         التداول هو نفس التجارة الموجودة على أرض الواقع… لكن بشكل أونلاين داخل الأسواق المالية.
       </p>
     </div>
+    <span class="hiw-head-line hiw-head-line--left" aria-hidden="true"></span>
+  </header>
 
-    <div class="hiw-steps">
-      <div
-        class="hiw-step"
-        *ngFor="let step of steps; let i = index"
-        data-aos="fade-up"
-        [attr.data-aos-delay]="100 + i * 110"
-      >
-        <div class="hiw-step-num-wrap">
-          <span class="hiw-step-num">{{ step.num }}</span>
+  <div class="hiw-steps" aria-label="خطوات طريقة التداول">
+    <article
+      class="hiw-step"
+      *ngFor="let step of steps; let i = index"
+      data-aos="fade-up"
+      [attr.data-aos-delay]="110 + i * 90"
+    >
+      <div class="hiw-step-content">
+        <span class="hiw-step-num">{{ step.num }}</span>
+        <h3 class="hiw-step-title">{{ step.title }}</h3>
+
+        <div class="hiw-step-text">
+          <p *ngFor="let paragraph of step.paragraphs">{{ paragraph }}</p>
+
+          <ul *ngIf="step.bullets?.length">
+            <li *ngFor="let bullet of step.bullets">{{ bullet }}</li>
+          </ul>
+
+          <p *ngIf="step.footer">{{ step.footer }}</p>
         </div>
-        <div class="hiw-step-icon-wrap" aria-hidden="true">
-          <lucide-angular [name]="step.icon" [size]="20" class="hiw-step-icon"></lucide-angular>
-        </div>
-        <div class="hiw-step-body">
-          <h3 class="hiw-step-title" [innerHTML]="step.titleHtml"></h3>
-          <p class="hiw-step-desc" [innerHTML]="step.descHtml"></p>
-        </div>
-        <div class="hiw-step-connector" *ngIf="i < steps.length - 1" aria-hidden="true"></div>
       </div>
-    </div>
 
-    <div class="hiw-ai-card" data-aos="fade-up" data-aos-delay="500">
-      <div class="hiw-ai-icon">✦</div>
-      <div class="hiw-ai-text">
-        <strong>الذكاء الاصطناعي غيّر كل شيء</strong>
-        <p>زمان كان التداول يحتاج شهور من التعلم. اليوم؟ الذكاء الاصطناعي اختصر الطريق بالكامل وصار المبتدئ يبدأ ويحقق أول نتيجة خلال دقائق.</p>
-      </div>
-    </div>
+      <span class="hiw-step-arrow" *ngIf="i < steps.length - 1" aria-hidden="true">
+        <img class="hiw-step-arrow-icon" src="assets/images/anima-home/shots-arrow-prev.svg" alt="" />
+      </span>
+    </article>
+  </div>
 
-    <div class="hiw-cta" data-aos="zoom-in" data-aos-delay="620">
-      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجانًا</span>
-        <svg class="btn-cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="ripple-gold"></div>
+  <div class="hiw-ai" data-aos="fade-up" data-aos-delay="520">
+    <h3>لكن الذكاء الاصطناعي غيّر كل شيء</h3>
+
+    <div class="hiw-ai-panel">
+      <p>
+        زمان كان التداول يحتاج شهور من التعلم حتى تبدأ تفهم السوق. اليوم؟ الذكاء الاصطناعي اختصر الطريق بالكامل. وصار الشخص المبتدئ يقدر يبدأ ويحقق أول نتيجة إله خلال دقائق باستخدام نظامنا البسيط
+      </p>
+
+      <button class="hiw-cta" type="button" (click)="onOpenRegistration()" aria-label="احجز مقعدك مجاناً">
+        احجز مقعدك مجاناً
       </button>
     </div>
-
   </div>
 </section>

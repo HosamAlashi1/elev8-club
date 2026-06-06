@@ -1,30 +1,107 @@
-<section class="results-section" data-aos="fade-up">
-  <div class="results-inner">
+<section class="proof-section" data-aos="fade-up" aria-labelledby="proof-title">
+  <div class="proof-shell">
+    <div
+      class="proof-visual"
+      [class.is-animating]="isAnimating"
+      [class.is-video-preparing]="isVideoPreparing"
+      [class.is-next]="transitionDirection === 'next'"
+      [class.is-prev]="transitionDirection === 'prev'"
+    >
+      <div class="phone-stack" aria-hidden="true">
+        <div
+          *ngFor="let preview of previewSlides; let i = index; trackBy: trackBySlideIndex"
+          class="phone-ghost"
+          [class]="'phone-ghost phone-ghost--' + (i + 1)"
+        >
+          <img
+            class="phone-ghost__image"
+            [src]="preview.frame"
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
 
-    <div class="results-head" data-aos="fade-up" data-aos-delay="60">
-      <span class="results-eyebrow">نتائج من النسخ السابقة</span>
-      <h2 class="results-title">
-        هاد النظام بنجح
-        <span class="results-title-accent">مهماكان وضعك الحالي</span>
-      </h2>
-      <p class="results-sub">أول مرتين أطلقنا فيه هذا التحدي المباشر… شفنا أشخاص من ظروف وحياة مختلفة تماماً يحققوا نتائج حقيقية</p>
-    </div>
+      <div
+        class="phone-frame"
+        (click)="toggleVideo()"
+        (keydown.enter)="toggleVideo()"
+        (keydown.space)="$event.preventDefault(); toggleVideo()"
+        role="button"
+        tabindex="0"
+        aria-label="تشغيل أو إيقاف الفيديو"
+      >
+        <img
+          class="phone-frame-image"
+          [src]="activeSlide.frame"
+          [alt]="activeSlide.name"
+          loading="eager"
+          decoding="async"
+        />
+        <video
+          #proofVideo
+          class="phone-video"
+          [class.is-playing]="isVideoPlaying"
+          [attr.poster]="activeSlide.frame"
+          preload="auto"
+          playsinline
+          webkit-playsinline
+        ></video>
 
-    <div class="proof-grid" data-aos="fade-up" data-aos-delay="120">
-      <article class="proof-card" *ngFor="let story of stories; let i = index" [attr.data-aos-delay]="140 + i * 100" data-aos="fade-up">
-        <div class="proof-card-head">
-          <span class="proof-badge">{{ story.badge }}</span>
-          <strong class="proof-amount">{{ story.amount }}</strong>
+        <button
+          *ngIf="!isVideoPlaying"
+          class="play-button"
+          [class.is-loading]="isVideoPreparing"
+          type="button"
+          (click)="$event.stopPropagation(); toggleVideo()"
+          aria-label="تشغيل الفيديو"
+        >
+          <span *ngIf="!isVideoPreparing" aria-hidden="true"></span>
+          <i *ngIf="isVideoPreparing" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <strong class="amount-badge" [attr.data-text]="activeSlide.amount">{{ activeSlide.amount }}</strong>
+
+      <article class="student-card">
+        <div class="student-card__head">
+          <img [src]="activeSlide.avatar" [alt]="activeSlide.name" />
+          <span aria-hidden="true"></span>
+          <div>
+            <h3>{{ activeSlide.name }}</h3>
+            <p>{{ activeSlide.role }}</p>
+          </div>
         </div>
-        <div class="proof-card-body">
-          <h3 class="proof-name">{{ story.name }}</h3>
-          <p class="proof-desc">{{ story.description }}</p>
-        </div>
-        <div class="proof-card-image">
-          <img [src]="story.image" [alt]="story.name" loading="lazy" />
-        </div>
+        <p class="student-card__summary">{{ activeSlide.summary }}</p>
       </article>
+
+      <div class="slider-controls" aria-label="نتائج الطلاب">
+        <button type="button" (click)="prevSlide()" [disabled]="isAnimating" aria-label="النتيجة السابقة">
+          <img src="assets/images/anima-home/proof-arrow-right.png" alt="" aria-hidden="true" />
+        </button>
+        <button type="button" (click)="nextSlide()" [disabled]="isAnimating" aria-label="النتيجة التالية">
+          <img src="assets/images/anima-home/proof-arrow-left.png" alt="" aria-hidden="true" />
+        </button>
+      </div>
     </div>
 
+    <div class="proof-copy">
+      <span class="proof-eyebrow">نتائج من النسخ السابقة</span>
+      <h2 id="proof-title">
+        <span class="proof-title__muted">هاد النظام بنجح</span>
+        <span class="proof-title__main">مهما كان وضعك الحالي</span>
+      </h2>
+      <p>
+        أول مرتين أطلقنا فيهم هذا التحدي المباشر.. شفنا أشخاص من ظروف
+        وحياة مختلفة تماماً يحققوا نتائج حقيقية.
+      </p>
+
+      <div class="proof-avatars" aria-label="أكثر من 150 نتيجة">
+        <img *ngFor="let avatar of avatarStrip" [src]="avatar" alt="" aria-hidden="true" loading="lazy" />
+        <b>+150</b>
+      </div>
+    </div>
   </div>
 </section>

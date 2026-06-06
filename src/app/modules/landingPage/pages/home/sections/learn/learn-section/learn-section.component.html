@@ -1,0 +1,38 @@
+<section id="learn" class="learn-section" dir="rtl" data-aos="fade-up" aria-labelledby="learn-title">
+  <header class="learn-head" data-aos="fade-up" data-aos-delay="60">
+    <div class="learn-head-media" aria-hidden="true">
+      <img class="learn-head-img" src="assets/images/anima-home/learn-education.png" alt="" />
+    </div>
+    <h2 id="learn-title" class="learn-title">جزء من يلي راح تتعلمه :</h2>
+  </header>
+
+  <div class="learn-grid" aria-label="أجزاء المحتوى">
+    <article
+      class="learn-card"
+      *ngFor="let item of parts; let i = index"
+      data-aos="fade-up"
+      [attr.data-aos-delay]="110 + i * 80"
+    >
+      <div class="learn-card-head">
+        <span class="learn-card-part">{{ item.part }}</span>
+        <h3 class="learn-card-title">{{ item.title }}</h3>
+      </div>
+      <span class="learn-card-line" aria-hidden="true"></span>
+      <p class="learn-card-desc">{{ item.description }}</p>
+    </article>
+
+    <article class="learn-card learn-card--cta" data-aos="fade-up" data-aos-delay="540">
+      <p class="learn-cta-text">
+        وحتى أوضحلك الصورة أكثر… كل هذا راح أشرحه إلك بالكامل مجانًا 100%
+      </p>
+      <button
+        class="learn-cta-btn"
+        type="button"
+        (click)="onOpenRegistration()"
+        aria-label="احجز مقعدك مجاناً"
+      >
+        احجز مقعدك مجاناً
+      </button>
+    </article>
+  </div>
+</section>

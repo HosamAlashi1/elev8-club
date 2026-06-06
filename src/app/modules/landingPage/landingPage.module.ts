@@ -76,6 +76,8 @@ import { ChallengeReviewSectionComponent } from './pages/home/sections/challenge
 import { WhyTrustSectionComponent } from './pages/home/sections/why-trust/why-trust-section/why-trust-section.component';
 import { AudienceSectionComponent } from './pages/home/sections/audience/audience-section/audience-section.component';
 import { ResourcesGuidesSectionComponent } from './pages/home/sections/resources-guides/resources-guides-section/resources-guides-section.component';
+import { ScreenshotsSectionComponent } from './pages/home/sections/screenshots/screenshots-section/screenshots-section.component';
+import { LearnSectionComponent } from './pages/home/sections/learn/learn-section/learn-section.component';
 
 
 
@@ -115,6 +117,8 @@ export function playerFactory() {
     WhyTrustSectionComponent,
     AudienceSectionComponent,
     ResourcesGuidesSectionComponent,
+    ScreenshotsSectionComponent,
+    LearnSectionComponent,
     // NavbarComponent,
   ],
   imports: [

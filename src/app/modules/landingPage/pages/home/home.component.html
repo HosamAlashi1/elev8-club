@@ -6,120 +6,52 @@
 
   <app-stats-section [onOpenRegistration]="openPopupFromStats"></app-stats-section>
 
-  <section class="proof section-shell" data-aos="fade-up">
-    <div class="section-title-block">
-      <span class="eyebrow">ظ†طھط§ط¦ط¬ ظ…ظ† ط§ظ„ظ†ط³ط® ط§ظ„ط³ط§ط¨ظ‚ط©</span>
-      <h2>ظ‡ط§ط¯ ط§ظ„ظ†ط¸ط§ظ… ظٹظ†ط¬ط­<br />ظ…ظ‡ظ…ط§ ظƒط§ظ† ظˆط¶ط¹ظƒ ط§ظ„ط­ط§ظ„ظٹ</h2>
-      <p>ط£ظˆظ„ ظ…ط±طھظٹظ† ط£ط·ظ„ظ‚ظ†ط§ ظپظٹظ‡ظ… ظ‡ط°ط§ ط§ظ„طھط­ط¯ظٹ ط§ظ„ظ…ط¨ط§ط´ط±... ط´ظپظ†ط§ ط£ط´ط®ط§طµ ظ…ظ† ط¸ط±ظˆظپ ظˆط­ظٹط§ط© ظ…ط®طھظ„ظپط© طھظ…ط§ظ…ط§ظ‹ ظٹط­ظ‚ظ‚ظˆط§ ظ†طھط§ط¦ط¬ ط­ظ‚ظٹظ‚ظٹط©.</p>
-      <div class="avatars"><span></span><span></span><span></span><b>+غ±غ¶غ°</b></div>
-    </div>
-    <div class="proof-videos">
-      <article><img src="assets/images/canva/video-proof-salah.png" alt="Student result proof" /><button type="button" aria-label="play">â–¶</button></article>
-      <article class="is-active"><img src="assets/images/canva/video-proof-massy.png" alt="Student result proof" /><button type="button" aria-label="play">â–¶</button></article>
-      <article><img src="assets/images/canva/video-proof-salah.png" alt="Student result proof" /><button type="button" aria-label="play">â–¶</button></article>
-    </div>
-  </section>
+  <app-video-testimonials-section [onOpenRegistration]="openPopupFromVideoTestimonials"></app-video-testimonials-section>
 
-  <section class="ai section-shell split-section" data-aos="fade-up">
-    <div class="ai__media" data-aos="fade-left">
-      <img src="assets/images/canva/trading-screenshot.png" alt="Trading platform screenshot" />
-      <span class="profit-card">+41,066$</span>
-    </div>
-    <div class="ai__copy" data-aos="fade-right">
-      <span class="eyebrow">ط§ظ„ظٹظˆظ… طµط§ط± ظپظٹ ط·ط±ظٹظ‚ ظ…ط®طھظ„ظپ</span>
-      <h2>ط§ظ„ط°ظƒط§ط، ط§ظ„ط§طµط·ظ†ط§ط¹ظٹ ط؛ظٹظ‘ط± ظƒظ„ ط´ظٹط،</h2>
-      <p>ط²ظ…ط§ظ† ظƒط§ظ† ط§ظ„طھط¯ط§ظˆظ„ ظٹط­طھط§ط¬ ط´ظ‡ظˆط± ظ…ظ† ط§ظ„طھط¹ظ„ظ… ط­طھظ‰ طھط¨ط¯ط£ طھظپظ‡ظ… ط§ظ„ط³ظˆظ‚. ط§ظ„ظٹظˆظ…طں ط§ظ„ط°ظƒط§ط، ط§ظ„ط§طµط·ظ†ط§ط¹ظٹ ط§ط®طھطµط± ط§ظ„ط·ط±ظٹظ‚ ط¨ط§ظ„ظƒط§ظ…ظ„. ظˆطµط§ط± ط§ظ„ط´ط®طµ ط§ظ„ظ…ط¨طھط¯ط¦ ظٹظ‚ط¯ط± ظٹط¨ط¯ط£ ظˆظٹط­ظ‚ظ‚ ط£ظˆظ„ ظ†طھظٹط¬ط© ط¥ظ„ظ‡ ط®ظ„ط§ظ„ ط¯ظ‚ط§ط¦ظ‚ ط¨ط§ط³طھط®ط¯ط§ظ… ظ†ط¸ط§ظ…ظ†ط§ ط§ظ„ط¨ط³ظٹط·.</p>
-      <button class="gold-btn" type="button" (click)="openPopupFromFeatures()">ط§ط­ط¬ط² ظ…ظ‚ط¹ط¯ظƒ ظ…ط¬ط§ظ†ط§ظ‹</button>
-    </div>
-  </section>
+  <app-screenshots-section></app-screenshots-section>
 
-  <section class="learn section-shell" data-aos="fade-up">
-    <div class="section-title-block">
-      <img src="assets/images/canva/khalil-pill.jpg" alt="" />
-      <h2>ط¬ط²ط، ظ…ظ† ظٹظ„ظٹ ط±ط§ط­ طھطھط¹ظ„ظ…ظ‡ :</h2>
-    </div>
-    <div class="learn-grid">
-      <article class="glass-card"><small>ط§ظ„ط¬ط²ط، ط§ظ„ط§ظˆظ„</small><h3>ظ„ظٹط´ ط¹ط§ظ„ظ‚ ط¨ط¯ظˆط§ظ…ط© ط§ظ„ط±ط§طھط¨طں</h3><p>ظ„ظٹط´ ط±ط؛ظ… ط´ط؛ظ„ظƒ ظˆظ…ط­ط§ظˆظ„ط§طھظƒ ظ„ط³ظ‡ ط§ظ„ط¯ط®ظ„ ظ…ط­ط¯ظˆط¯ ظˆظ…ط§ ظپظٹ طھط·ظˆط± ط­ظ‚ظٹظ‚ظٹ. طھظپظ‡ظ… ط§ظ„ط³ط¨ط¨ ط§ظ„ط­ظ‚ظٹظ‚ظٹ ظˆطھط´ظˆظپ ط§ظ„طµظˆط±ط© ط¨ط´ظƒظ„ ظ…ط®طھظ„ظپ</p></article>
-      <article class="glass-card"><small>ط§ظ„ط¬ط²ط، ط§ظ„ط«ط§ظ†ظٹ</small><h3>ط´ظˆ ظ‡ظˆ ط§ظ„طھط¯ط§ظˆظ„ ظˆظƒظٹظپ ظ…ظ…ظƒظ† طھط³طھظپظٹط¯ ظ…ظ†ظ‡</h3><p>ط´ط±ط­ ط¨ط³ظٹط· ظˆظˆط§ط¶ط­ ظ„ط¹ط§ظ„ظ… ط§ظ„ظپظˆط±ظƒط³ ظˆظƒظٹظپ ظ…ظ…ظƒظ† ظٹظƒظˆظ† ظ…طµط¯ط± ط¯ط®ظ„ ط¥ط¶ط§ظپظٹ ط¥ظ„ظƒ. ظˆط§ظ„ط·ط±ظٹظ‚ ط§ظ„ظ…ظ†ط§ط³ط¨ ط­ط³ط¨ ظˆظ‚طھظƒ ظˆظ…ظٹط²ط§ظ†ظٹطھظƒ</p></article>
-      <article class="glass-card"><small>ط§ظ„ط¬ط²ط، ط§ظ„ط«ط§ظ„ط«</small><h3>ط§ظ„ط³ط± ط§ظ„ظ„ظٹ ط؛ظٹظ‘ط± ط­ظٹط§ط© ظ†ط§ط³ ط¹ط§ط¯ظٹظٹظ†</h3><p>ط§ظ„ظپظƒط±ط© ط§ظ„ظ„ظٹ ط®ظ„طھ ط£ط´ط®ط§طµ ط¹ط§ط¯ظٹظٹظ† ظٹظˆطµظ„ظˆط§ ظ„ط¯ط®ظ„ ط£ط¹ظ„ظ‰. ظˆطھط¬ط±ط¨طھظٹ ط§ظ„ط´ط®طµظٹط© ظˆظƒظٹظپ ط·ط¨ظ‘ظ‚طھظ‡ط§ ط¹ظ„ظ‰ ط£ط±ط¶ ط§ظ„ظˆط§ظ‚ط¹</p></article>
-      <article class="glass-card"><small>ط§ظ„ط¬ط²ط، ط§ظ„ط±ط§ط¨ط¹</small><h3>طھط·ط¨ظٹظ‚ ظپط¹ظ„ظٹ ظ„ط£ظˆظ„ طµظپظ‚ط©</h3><p>ط§ظ„ط¯ط®ظˆظ„ ظ„ظ„ط³ظˆظ‚ ط®ط·ظˆط© ط¨ط®ط·ظˆط© ظˆطھظ†ظپظٹط° طµظپظ‚ط© ط¨ط´ظƒظ„ ط¹ظ…ظ„ظٹ ط¨ظ‡ط¯ظپ ط§ظ„ظˆطµظˆظ„ ظ„ط£ظˆظ„ ظ†طھظٹط¬ط©</p></article>
-      <article class="glass-card"><small>ط§ظ„ط¬ط²ط، ط§ظ„ط®ط§ظ…ط³</small><h3>ظپط±طµط© ط®ط§طµط© ظ„ظ„ظ†ظ‡ط§ظٹط©</h3><p>ط§ظ„ط£ط´ط®ط§طµ ط§ظ„ظ„ظٹ ط±ط§ط­ ظٹظƒظ…ظ„ظˆط§ ظ„ظ„ظ†ظ‡ط§ظٹط© ط±ط­ ظٹظƒظˆظ† ظپظٹ ط¥ظ„ظ‡ظ… ظپط±طµط© ظ…ط®طھظ„ظپط©. ط®ط·ظˆط© ط¥ط¶ط§ظپظٹط© طھط³ط±ظ‘ط¹ ط·ط±ظٹظ‚ظ‡ظ… ط¨ط´ظƒظ„ ظƒط¨ظٹط±</p></article>
-      <article class="glass-card glass-card--cta"><h3>ظˆط­طھظ‰ ط£ظˆط¶ط­ظ„ظƒ ط§ظ„طµظˆط±ط© ط£ظƒط«ط±â€¦ ظƒظ„ ظ‡ط°ط§ ط±ط§ط­ ط£ط´ط±ط­ظ‡ ط¥ظ„ظƒ ط¨ط§ظ„ظƒط§ظ…ظ„ ظ…ط¬ط§ظ†ظ‹ط§ 100%</h3><button class="gold-btn" type="button" (click)="openPopupFromHowItWorks()">ط§ط­ط¬ط² ظ…ظ‚ط¹ط¯ظƒ ظ…ط¬ط§ظ†ط§ظ‹</button></article>
-    </div>
-  </section>
+  <app-how-it-works-section [onOpenRegistration]="openPopupFromHowItWorks"></app-how-it-works-section>
 
-  <section class="why-free section-shell split-section" data-aos="fade-up">
-    <div class="why-free__media"><img src="assets/images/canva/khalil-office.png" alt="Khalil" /></div>
-    <div class="why-free__copy">
-      <span class="eyebrow">ط§ظ„ط³ط¤ط§ظ„ ط§ظ„ظ…ظ‡ظ…</span>
-      <h2>ط¥ط°ط§ ط§ظ„طھط¯ط§ظˆظ„ ظٹط´طھط؛ظ„ ط¨ظ‡ط°ظ‡ ط§ظ„ط·ط±ظٹظ‚ط©â€¦<br />ظ„ظٹط´ ط£ط´ط±ط­ ظƒظ„ ظ‡ط°ط§ ظ…ط¬ط§ظ†ظ‹ط§طں</h2>
-      <p>ط¨ط¨ط³ط§ط·ط©â€¦ ظ„ط£ظ† ط¨ظٹظ†ظٹ ظˆط¨ظٹظ† ط´ط±ظƒط© ط§ظ„ظˆط³ط§ط·ط© (ط§ظ„ط¨ط±ظˆظƒط±) ط´ط±ط§ظƒط©. ظ„ظ…ط§ طھظپطھط­ ط­ط³ط§ط¨ طھط¯ط§ظˆظ„ ظˆطھط¨ط¯ط£ طھط³طھط®ط¯ظ… ط§ظ„ظ…ظ†طµط©طŒ ط´ط±ظƒط© ط§ظ„ظˆط³ط§ط·ط© طھط£ط®ط° ط¹ظ…ظˆظ„ط© طµط؛ظٹط±ط© ط¬ط¯ظ‹ط§ ط¹ظ„ظ‰ ظƒظ„ ط¹ظ…ظ„ظٹط© ط¨ظٹط¹ ط£ظˆ ط´ط±ط§ط، طھطھظ… ط¯ط§ط®ظ„ ط§ظ„ط³ظˆظ‚.</p>
-      <div class="info-box"><strong>ظƒظ† ط§ظ„ظ…ظ‡ظ… ط¬ط¯ظ‹ط§ طھظپظ‡ظ…:</strong><p>ط£ظ†طھ طھط­طھظپط¸ 100% ظ…ظ† ط£ط±ط¨ط§ط­ظƒ ط¯ط§ط®ظ„ ط­ط³ط§ط¨ظƒ ظˆظ„ط§ ظٹطھظ… ط£ط®ط° ط£ظٹ ظ†ط³ط¨ط© ظ…ظ† ط£ط±ط¨ط§ط­ظƒ ط§ظ„ط´ط®طµظٹط©.</p></div>
-      <div class="info-box"><strong>ظٹط¹ظ†ظٹ ط¨ط¨ط³ط§ط·ط©:</strong><p>ط£ظ†ط§ ط£ط³طھظپظٹط¯ ظپظٹ ظƒظ„ ظ…ط±ط© طھط¨ط¯ط£ ظپظٹظ‡ط§ ط¨ط§ظ„طھط¯ط§ظˆظ„ ظˆطھط³طھط®ط¯ظ… ط§ظ„ظ†ط¸ط§ظ… ط¨ط´ظƒظ„ ظ…ط³طھظ…ط±. ط£ظ‡ط¯ط§ظپظ†ط§ ظ…ط´طھط±ظƒط© ظˆظ†ط¬ط§ط­ظٹ ظ…ط±طھط¨ط· ط¨ط´ظƒظ„ ظ…ط¨ط§ط´ط± ط¨ظ†ط¬ط§ط­ظƒ ط£ظ†طھ.</p></div>
-      <div class="cta-strip">
-        <p>ظˆظ„ظ‡ظٹظƒ ط¹ظ†ط¯ظٹ ظƒظ„ ط§ظ„ط£ط³ط¨ط§ط¨ ط¥ظ†ظٹ ط£ط®ظ„ظٹ ظ‡ط°ط§ ط§ظ„طھط­ط¯ظٹ ظ…ط¬ط§ظ†ط§ظ‹طŒ ط­طھظ‰ ط£ظƒط¨ط± ط¹ط¯ط¯ ظ…ظ…ظƒظ† ظ…ظ† ط§ظ„ظ†ط§ط³ ظٹظ‚ط¯ط±ظˆط§ ظٹط¨ط¯ط£ظˆط§ ظˆظٹظ†ط¬ط­ظˆط§ ط¨ط§ظ„ط·ط±ظٹظ‚ط© ط§ظ„طµط­</p>
-        <button class="gold-btn" type="button" (click)="openPopupFromWhyFree()">ط§ط­ط¬ط² ظ…ظ‚ط¹ط¯ظƒ ظ…ط¬ط§ظ†ط§ظ‹</button>
-      </div>
-    </div>
-  </section>
+  <app-learn-section [onOpenRegistration]="openPopupFromLearn"></app-learn-section>
 
-  <section class="trust section-shell" data-aos="fade-up">
-    <div class="section-title-block">
-      <h2>ظ„ظٹط´ ظ„ط§ط²ظ… ط£ط³ظ…ط¹ ط§ظ„ظƒطں</h2>
-    </div>
-    <div class="story-list">
-      <article class="story-row">
-        <div class="story-image"><img src="assets/images/canva/khalil-gaza.jpg" alt="Gaza story" /></div>
-        <div><h3>ط§ظ„ظ‚طµط© ط¨ظ„ط´طھ ظ…ظ† ظ…ظƒط§ظ† ظ…ط؛ظ„ظˆط¨ ظپظٹظ‡ 10-0</h3><p>ط؛ط²ط©. ظ…ط§ ظپظٹ ط§ط³طھظ‚ط±ط§ط±طŒ ظ…ط§ ظپظٹ ط±ط£ط³ ظ…ط§ظ„طŒ ظˆظ„ط§ ط£ظٹ ظ…ظ‚ظˆظ…ط§طھ ظˆط§ط¶ط­ط© ظ„ظ„ط­ظٹط§ط©طŒ ط¨ط³ ظƒط§ظ† ظپظٹ ط´ظٹ ظˆط§ط­ط¯ ط¹ظ†ط§ط¯ ط¥ظ†ظٹ ط£ط؛ظٹظ‘ط± ظˆط§ظ‚ط¹ظٹâ€¦ ظ…ظ‡ظ…ط§ ظƒط§ظ† ط§ظ„ظˆط¶ط¹</p></div>
-      </article>
-      <article class="story-row story-row--reverse">
-        <div class="story-image"><img src="assets/images/canva/elev8-instagram.jpg" alt="Elev8 Club community" /></div>
-        <div><h3>ظ…ظ† ط§ظ„طµظپط± ظ„ط£ظˆظ„ $10,000,000 ط®ظ„ط§ظ„ ط£ظˆظ„ ط³ظ†طھظٹظ† ط¨ط²ظ†ط³</h3><p>ط¨ط¯ط£طھ ط§ظ„ط£ظˆظ†ظ„ط§ظٹظ† ط¨ط²ظ†ط³ ظپظٹ 2020 ط¨ط¯ظˆظ† ط®ط¨ط±ط©طŒ ظˆط¨ظ†ظٹطھ ظپط±ظٹظ‚ ط¹ط§ظ„ظ…ظٹ ظپظٹظ‡ ط£ظƒط«ط± ظ…ظ† 10,000 ط·ط§ظ„ط¨ ظˆط­ظ‚ظ‚طھ ط£ظƒط«ط± ظ…ظ† $10,000,000 ظ…ط¨ظٹط¹ط§طھ ط®ظ„ط§ظ„ ط³ظ†طھظٹظ†.</p></div>
-      </article>
-      <article class="story-row">
-        <div class="story-image"><img src="assets/images/canva/khalil-pill.jpg" alt="Trading system" /></div>
-        <div><h3>ط§ظ„طھط¯ط§ظˆظ„ ظƒط§ظ† ط§ظ„ط­ط¨ط© ط§ظ„ط³ط­ط±ظٹط©</h3><p>ظ‚ط±ط±طھ ط£ط¨ط¯ط£ ط§ظ„طھط¯ط§ظˆظ„ ظ„ط£ظ†ظ‡ ظƒط§ظ† ط¨ظٹط¹ط·ظٹظ†ظٹ ط§ظ„ط´ظٹ ط§ظ„ظ„ظٹ ظƒظ†طھ ط£ط­ظ„ظ… ظپظٹظ‡: ط­ط±ظٹط© ط§ظ„ظˆظ‚طھطŒ ط­ط±ظٹط© ط§ظ„ظ…ظƒط§ظ†طŒ ظˆط¯ط®ظ„ ط­ظ‚ظٹظ‚ظٹ.</p></div>
-      </article>
-      <article class="story-row story-row--reverse">
-        <div class="challenge-stack"><span>طھط­ط¯ظٹ Elev8 Club 0.1</span><span>طھط­ط¯ظٹ Elev8 Club 0.2</span><b>طھط­ط¯ظٹ Elev8 Club 0.3</b></div>
-        <div><h3>طھط­ط¯ظٹ elev8 club</h3><p>ظ‚ط¨ظ„ ط¹ط¯ط© ط£ط´ظ‡ط±طŒ ظ‚ط¯ظ‘ظ…طھ ط§ظ„ظ†ط³ط®ط© ط§ظ„ط£ظˆظ„ظ‰ ظ…ظ† ط§ظ„طھط­ط¯ظٹ. ظˆط§ظ„ظ†ط§ط³ ط§ظ„ظ„ظٹ ط·ط¨ظ‚ظˆط§ ط§ظ„ط®ط·ظˆط§طھ ظ‚ط¯ط±ظˆط§ ظٹط­ظ‚ظ‚ظˆط§ ط¢ظ„ط§ظپ ط§ظ„ط¯ظˆظ„ط§ط±ط§طھ ط®ظ„ط§ظ„ ط£ظ‚ظ„ ظ…ظ† 30 ظٹظˆظ…طŒ ظپظƒط±ط±ظ†ط§ ط§ظ„طھط¬ط±ط¨ط© ظˆطھط£ظƒط¯ظ†ط§ ط¥ظ† ط§ظ„ظ†ط¸ط§ظ… ظٹط´طھط؛ظ„ ظˆظٹطھط·ظˆط±.</p></div>
-      </article>
-    </div>
-  </section>
+  <app-why-free-section [onOpenRegistration]="openPopupFromWhyFree"></app-why-free-section>
 
-  <section class="review section-shell" data-aos="fade-up">
-    <div class="section-heading">
-      <span class="side-line"></span>
-      <div><h2>ظ…ط±ط§ط¬ط¹ط© ط³ط±ظٹط¹ط© ظ„طھظپط§طµظٹظ„ ط§ظ„طھط­ط¯ظٹ</h2><p>ط¥ط°ط§ ظƒظ†طھ ط¶ظ…ظ† ظˆط§ط­ط¯ ظ…ظ† ظ‡ط°ظ‡ ط§ظ„ط­ط§ظ„ط§طھطŒ ظپظ‡ط°ط§ ط§ظ„طھط­ط¯ظٹ ظ…ط¹ظ…ظˆظ„ ظ„ظƒ.</p></div>
-      <span class="side-line"></span>
-    </div>
-    <div class="review-grid">
-      <article><lucide-angular name="Trophy" [size]="24"></lucide-angular><h3>ظ„ظ…ط§ط°ط§ ظ‡ط°ط§ ط§ظ„طھط­ط¯ظٹ طں</h3><p>ظ„ط£ظ† ط§ظ„ط°ظƒط§ط، ط§ظ„ط§طµط·ظ†ط§ط¹ظٹ ط®ظ„ظ‚ ظپط±طµط© ط¬ط¯ظٹط¯ط© ط¨ط§ظ„ظƒط§ظ…ظ„â€¦ ط£طµط¨ط­ ط§ظ„ظ…ط¨طھط¯ط£ظٹظ† ظ‚ط§ط¯ط±ظٹظ† ظٹط¨ط¯ط¤ظˆط§ ظٹط¨ظ†ظˆط§ ط¯ط®ظ„ ظ…ظ…ظƒظ† ظٹط؛ظٹظ‘ط± ط­ظٹط§طھظ‡ظ… ط£ظˆظ†ظ„ط§ظٹظ†</p></article>
-      <article><lucide-angular name="CalendarDays" [size]="24"></lucide-angular><h3>ظ…طھظٹ ط§ظ„طھط­ط¯ظٹ طں</h3><p>ظٹظˆظ… ط§ظ„ط³ط¨طھ 20 / 5 ط§ظ„ط³ط§ط¹ط© 9:00 ظ…ط³ط§ط،ظ‹ (ط¨طھظˆظ‚ظٹطھ ظ…طµط± ًں‡ھًں‡¬) ظ…ط¯ط© ط§ظ„ط¬ظ„ط³ط©: ط­ظˆط§ظ„ظٹ ط³ط§ط¹ط©</p></article>
-      <article><lucide-angular name="Users" [size]="24"></lucide-angular><h3>ظ„ظ…ظٹظ† ظ‡ط°ط§ ط§ظ„طھط­ط¯ظٹطں</h3><p>ظ„ط£ظٹ ط´ط®طµ ظٹط±ظٹط¯ ظٹط¨ط¯ط£ ظٹط­ظ‚ظ‚ ط¯ط®ظ„ ط£ظˆظ†ظ„ط§ظٹظ† ط¨ط¯ظˆظ† ظ…ط§ ظٹط¶ط·ط± ظٹط¸ظ‡ط± ظˆط¬ظ‡ظ‡ ط£ظˆ ظٹظ‚ط¶ظٹ ط³ظ†ظˆط§طھ ط­طھظ‰ ظٹطµط¨ط­ â€œط®ط¨ظٹط±â€‌</p></article>
-      <article><lucide-angular name="Sparkles" [size]="24"></lucide-angular><h3>ظ…ط§ط°ط§ ط³طھط­طµظ„ ط¯ط§ط®ظ„ ط§ظ„طھط­ط¯ظٹطں</h3><p>طھط­ط¯ظٹ ظ…ط¬ط§ظ†ظٹ ظ…ط¨ط§ط´ط±طŒ ط±ط§ط­ ط£ط´ط±ط­ ظپظٹظ‡ ط®ط·ظˆط© ط¨ط®ط·ظˆط© ظƒظٹظپ طھط¨ط¯ط£ طھط¹ظ…ظ„ ظپظ„ظˆط³ ط§ظˆظ†ظ„ط§ظٹظ† ط¨ط§ظ„طھط¯ط§ظˆظ„ ط¨ط§ط³طھط®ط¯ط§ظ… ط§ظ„ط°ظƒط§ط، ط§ظ„ط§طµط·ظ†ط§ط¹ظٹ ط¨ط·ط±ظٹظ‚ط© ط¨ط³ظٹط·ط© ظˆط¹ظ…ظ„ظٹط©</p></article>
-    </div>
-  </section>
+  <app-why-trust-section></app-why-trust-section>
 
-  <section class="faq section-shell" data-aos="fade-up">
-    <div class="section-title-block"><h2>ط§ظ„ط§ط³ط¦ظ„ط© ط§ظ„ط´ط§ط¦ط¹ط©</h2></div>
-    <div class="faq-list">
-      <details><summary>ظƒظ… ظˆظ‚طھ ظٹط­طھط§ط¬ ظ‡ط°ط§ ط§ظ„ظ…ط¬ط§ظ„طں</summary><p>ط§ظ„ط¬ظ„ط³ط© ظ†ظپط³ظ‡ط§ ظ…ط¯طھظ‡ط§ ط­ظˆط§ظ„ظٹ ط³ط§ط¹ط© ظپظ‚ط·طŒ ظˆط³ظ†ط´ط±ط­ ظƒظٹظپ ظٹظ…ظƒظ† ط§ظ„ط¨ط¯ط، ط­طھظ‰ ظ…ط¹ ظˆظ‚طھ ظ…ط­ط¯ظˆط¯.</p></details>
-      <details><summary>ظ‡ظ„ ط³ظ†ط·ط¨ظ‚ ط§ظ„طھط¯ط§ظˆظ„ ط¨ط´ظƒظ„ ظ…ط¨ط§ط´ط±طں</summary><p>ط±ط§ط­ ظ†ط´ط±ط­ ط§ظ„ط®ط·ظˆط§طھ ط§ظ„ط¹ظ…ظ„ظٹط© ظˆط§ظ„ظ…ظ†ظ‡ط¬ظٹط© ط¨ط´ظƒظ„ ظˆط§ط¶ط­ ط¯ط§ط®ظ„ ط§ظ„طھط­ط¯ظٹ.</p></details>
-      <details open><summary>ظƒظ… ظˆظ‚طھ ظٹط­طھط§ط¬ ظ‡ط°ط§ ط§ظ„ظ…ط¬ط§ظ„طں</summary><p>ط§ظ„ط¬ظ„ط³ط© ظ†ظپط³ظ‡ط§ ظ…ط¯طھظ‡ط§ ط­ظˆط§ظ„ظٹ ط³ط§ط¹ط© ظپظ‚ط·طŒ ظˆط³ظ†ط´ط±ط­ ظƒظٹظپ ظٹظ…ظƒظ† ط§ظ„ط¨ط¯ط، ط­طھظ‰ ظ…ط¹ ظˆظ‚طھ ظ…ط­ط¯ظˆط¯.</p></details>
-      <details><summary>ظ‡ظ„ ط£ط­طھط§ط¬ ط±ط£ط³ ظ…ط§ظ„ ظƒط¨ظٹط± ط­طھظ‰ ط£ط¨ط¯ط£طں</summary><p>ظ„ط§طŒ ط§ظ„ظپظƒط±ط© ظ…ط¨ظ†ظٹط© ط¹ظ„ظ‰ ط§ظ„ط¨ط¯ط، ط¨ط·ط±ظٹظ‚ط© ط¨ط³ظٹط·ط© ظˆظ…ظپظ‡ظˆظ…ط© ظ„ظ„ظ…ط¨طھط¯ط¦ظٹظ†.</p></details>
-      <details><summary>ظ‡ظ„ ط³ظ†ط·ط¨ظ‚ ط§ظ„طھط¯ط§ظˆظ„ ط¨ط´ظƒظ„ ظ…ط¨ط§ط´ط±طں</summary><p>ط±ط§ط­ طھظپظ‡ظ… ط§ظ„ط·ط±ظٹظ‚ ظˆط§ظ„ط®ط·ظˆط§طھ ط§ظ„ط£ط³ط§ط³ظٹط© ط¨ط¯ظˆظ† طھط¹ظ‚ظٹط¯.</p></details>
-    </div>
-  </section>
-
-  <footer class="final-cta section-shell" data-aos="fade-up">
+  <footer id="site-footer" class="final-cta section-shell" data-aos="fade-up">
     <div class="final-cta__panel">
-      <div>
-        <h2>ظ„ط§ طھط¶ظٹظ€ظ€ظ€ظ€ظ€ط¹ ظپط±طµطھظ€ظ€ظ€ظ€ظƒ!</h2>
-        <span>ELEV8 CLUB</span>
+      <div class="final-cta__content">
+        <div class="final-cta__brand">
+          <h2>لا تضيع فرصتك!</h2>
+          <span>ELEV8 CLUB</span>
+        </div>
+
+        <div class="final-cta__actions">
+          <button class="final-cta__button" type="button" (click)="openPopupFromBigCta()">احجز مقعدك مجاناً</button>
+
+          <nav class="final-cta__socials" aria-label="Elev8 Club social links">
+            <a href="https://t.me/khalilalqasasia" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.4 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6 13.7 1.2 12.2c-1-.3-1-1 .2-1.5L20.1 3.5c.9-.3 1.7.2 1.7-.1Z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/_elev8club?igsh=MWkwZnVwam83dWl5Yg==&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.4"/><circle cx="17.2" cy="6.8" r="1.1"/></svg>
+            </a>
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V7.1c0-.7.5-1.1 1.2-1.1h1.5V3.4c-.7-.1-1.6-.2-2.5-.2-2.5 0-4.1 1.5-4.1 4.2v1.1H7.5v3h2.6v8.9H14v-8.9h2.6l.4-3H14Z"/></svg>
+            </a>
+            <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.1 4.9A9.8 9.8 0 0 0 3.7 16.7L2.6 21.4l4.8-1.1A9.8 9.8 0 0 0 21.8 12a9.7 9.7 0 0 0-2.7-7.1ZM12 19.1a7 7 0 0 1-3.6-1l-.3-.2-2.8.7.7-2.7-.2-.3A7.1 7.1 0 1 1 12 19.1Zm3.9-5.3c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1-.2-.1-1-.4-1.8-1.1-.7-.6-1.1-1.3-1.3-1.5-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.5-1.2-.7-1.7-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.1 1.6.1.5-.1 1.3-.5 1.5-1.1.2-.5.2-1 .2-1.1-.1-.1-.2-.2-.4-.3Z"/></svg>
+            </a>
+          </nav>
+        </div>
+
+        <p>© 2026 Elev8 Club. All rights reserved.</p>
       </div>
-      <button class="white-btn" type="button" (click)="openPopupFromBigCta()">ط§ط­ط¬ط² ظ…ظ‚ط¹ط¯ظƒ ظ…ط¬ط§ظ†ط§ظ‹</button>
-      <p>آ© 2026 Elev8 Club. All rights reserved.</p>
+
+      <div class="final-cta__visual" aria-hidden="true">
+        <img class="final-cta__pill final-cta__pill--small" src="assets/images/anima-home/magicpill-2.png" alt="" loading="lazy" />
+        <img class="final-cta__pill final-cta__pill--main" src="assets/images/anima-home/magicpill-1.png" alt="" loading="lazy" />
+      </div>
     </div>
   </footer>
 
@@ -128,4 +60,3 @@
     (closePopup)="closeRegistrationPopup()">
   </app-register-popup>
 </main>
-
