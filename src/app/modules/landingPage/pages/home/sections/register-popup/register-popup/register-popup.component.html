@@ -8,42 +8,59 @@
   <div class="modal-container" [@slideUp]>
     <div class="modal-content">
 
-      <!-- Close Button -->
-      <button class="close-button" (click)="onClose()" type="button">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" />
-        </svg>
-      </button>
-
       <!-- Header -->
-      <div class="modal-header" data-aos="fade-down" data-aos-delay="100">
-        <h2 class="modal-title heading-3d">احجز مقعدك مجانًا</h2>
-        <p class="modal-subtitle">يبدأ التحدي يوم 20/5 الساعة 9 مساء بتوقيت مصر</p>
+      <div class="modal-header">
+        <h2 class="modal-title heading-3d" dir="rtl">
+          <span class="modal-title-muted">سجل في ويبينار</span>
+          <span class="modal-title-main">
+            <span class="modal-title-free">المجاني</span>
+            <span class="modal-title-brand" dir="ltr">ELEV8 CLUB 0.3</span>
+          </span>
+        </h2>
+        <p class="modal-subtitle">الثلاثاء 20/5 - الساعة 9 مساء - انضم الآن مجاناً</p>
       </div>
 
+      <div class="modal-card">
       <!-- Form -->
       <form class="registration-form" (ngSubmit)="onSubmit($event)" >
 
         <!-- Full Name -->
-        <div class="form-group" data-aos="fade-up" data-aos-delay="200">
-          <label for="fullName" class="form-label">الاسم الكامل <span class="required-star">*</span></label>
+        <div class="form-group">
+          <label for="fullName" class="form-label">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+              <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke="currentColor" stroke-width="1.7" />
+            </svg>
+            الاسم الكامل <span class="required-star">*</span>
+          </label>
           <input id="fullName" type="text" required [(ngModel)]="formData.fullName" name="fullName" class="form-input"
-            placeholder="أدخل اسمك الكامل" dir="rtl"
+            placeholder="الاسم الكامل" dir="rtl"
             (keydown.enter)="$event.preventDefault(); focusNextField('email')" />
         </div>
 
         <!-- Email -->
-        <div class="form-group" data-aos="fade-up" data-aos-delay="200">
-          <label for="email" class="form-label">البريد الإلكتروني <span class="required-star">*</span></label>
+        <div class="form-group">
+          <label for="email" class="form-label">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+              <path d="m4.5 7 7.5 6 7.5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            البريد الإلكتروني <span class="required-star">*</span>
+          </label>
           <input id="email" type="email" required [(ngModel)]="formData.email" name="email" class="form-input"
-            placeholder="example@email.com" dir="ltr"
+            placeholder="البريد الإلكتروني" dir="ltr"
             (keydown.enter)="$event.preventDefault(); focusNextField('whatsapp')" />
         </div>
 
         <!-- WhatsApp --> 
         <div class="form-group form-group-dropdown">
-          <label for="whatsapp" class="form-label">رقم الواتساب <span class="required-star">*</span></label>
+          <label for="whatsapp" class="form-label">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20 11.5a8 8 0 0 1-11.9 7l-3.1.9.9-3.1A8 8 0 1 1 20 11.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+              <path d="M9.4 8.7c.3-.2.8-.1 1 .2l.6 1c.2.3.2.7 0 .9l-.4.5c.5 1 1.3 1.8 2.3 2.3l.5-.4c.3-.2.7-.2 1 0l.9.6c.3.2.4.7.2 1-.3.5-.8.8-1.4.8-2.7-.1-5.7-3.1-5.8-5.8 0-.5.3-1 .8-1.3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+            </svg>
+            رقم الواتساب <span class="required-star">*</span>
+          </label>
           <div class="phone-input-container">
 
             <!-- Custom Dropdown -->
@@ -76,7 +93,7 @@
               </div>
             </div>
             <input id="whatsapp" type="tel" required [(ngModel)]="formData.whatsapp" name="whatsapp"
-              class="form-input phone-input" placeholder="رقم الجوال (أرقام فقط)" dir="ltr" pattern="[0-9]*"
+              class="form-input phone-input" placeholder="رقم الواتساب" dir="ltr" pattern="[0-9]*"
               inputmode="numeric" (keydown.enter)="$event.preventDefault(); onSubmit($event)" />
           </div>
 
@@ -85,7 +102,7 @@
         <!-- Info Box -->
         <div class="info-box">
           <p class="info-text">
-            سنتواصل معك عبر واتساب خلال 24 ساعة لتأكيد التسجيل وإرسال تفاصيل البدء
+            سنتواصل معك عبر واتساب خلال 72 ساعة لتأكيد التسجيل وإرسال تفاصيل البدء
           </p>
         </div>
 
@@ -95,9 +112,10 @@
         </button>
 
       </form>
+      </div>
 
       <!-- Privacy Note -->
-      <p class="privacy-note" data-aos="fade-up" data-aos-delay="300">
+      <p class="privacy-note">
         بياناتك محمية ولن يتم مشاركتها مع أي طرف ثالث
       </p>
 

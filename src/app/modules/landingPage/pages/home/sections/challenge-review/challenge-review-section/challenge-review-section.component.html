@@ -1,35 +1,23 @@
-<section class="cr-section" data-aos="fade-up">
-  <div class="cr-inner">
-
-    <div class="cr-head" data-aos="fade-up" data-aos-delay="60">
-      <span class="cr-eyebrow">تفاصيل التحدي</span>
-      <h2 class="cr-title">مراجعة سريعة لتفاصيل التحدي</h2>
+<section class="review review--challenge section-shell" aria-labelledby="challenge-review-heading">
+  <div class="section-heading" data-aos="fade-up" data-aos-delay="60">
+    <span class="side-line" aria-hidden="true"></span>
+    <div>
+      <h2 id="challenge-review-heading">مراجعة سريعة لتفاصيل التحدي</h2>
+      <p>إذا كنت ضمن واحد من هذه الحالات، فهذا التحدي معمول لك.</p>
     </div>
+    <span class="side-line" aria-hidden="true"></span>
+  </div>
 
-    <div class="cr-grid">
-      <article
-        class="cr-card"
-        *ngFor="let item of reviewItems; let i = index"
-        [ngClass]="'cr-card--' + item.variant"
-        data-aos="fade-up"
-        [attr.data-aos-delay]="120 + i * 80"
-      >
-        <div class="cr-card-icon-wrap" aria-hidden="true">
-          <lucide-angular [name]="item.icon" [size]="20"></lucide-angular>
-        </div>
-        <h3 class="cr-card-title">{{ item.question }}</h3>
-        <ul class="cr-points-list" [class.cr-points-list--schedule]="item.variant === 'schedule'">
-          <li *ngFor="let p of item.points" [innerHTML]="p"></li>
-        </ul>
-      </article>
-    </div>
-
-    <div class="cr-cta" data-aos="zoom-in" data-aos-delay="500">
-      <button class="btn-cta btn-cta-primary btn-cta-lg" (click)="onOpenRegistration()">
-        <span class="btn-cta-text">احجز مقعدك مجانًا</span>
-        <div class="ripple-gold"></div>
-      </button>
-    </div>
-
+  <div class="review-grid">
+    <article
+      *ngFor="let item of reviewItems; let i = index"
+      data-aos="fade-up"
+      [attr.data-aos-delay]="120 + i * 70"
+      data-aos-duration="700"
+    >
+      <lucide-angular [name]="item.icon" [size]="24" aria-hidden="true"></lucide-angular>
+      <h3>{{ item.title }}</h3>
+      <p>{{ item.text }}</p>
+    </article>
   </div>
 </section>

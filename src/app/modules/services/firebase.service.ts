@@ -181,7 +181,7 @@ export class FirebaseService {
   // ==========================================
 
   /** جلب أفلييت بناءً على الكود */
-  public getAffiliateByCode(code: string): Observable<Affiliate | null> {
+  public getAffiliateByCode(code: string, versionKey?: string): Observable<Affiliate | null> {
     return this.db.list<Affiliate>('affiliates', ref => ref.orderByChild('code').equalTo(code))
       .snapshotChanges()
       .pipe(
@@ -193,7 +193,10 @@ export class FirebaseService {
               key: c.payload.key || val.key || ''
             };
           });
-          return items.length > 0 ? items[0] : null;
+          const filteredItems = versionKey
+            ? items.filter(item => item.versionKey === versionKey)
+            : items;
+          return filteredItems.length > 0 ? filteredItems[0] : null;
         }),
         take(1)
       );
@@ -202,6 +205,29 @@ export class FirebaseService {
   /** جلب جميع الأفلييت */
   public getAllAffiliates(): Observable<Affiliate[]> {
     return this.list('affiliates').pipe(take(1));
+  }
+
+  /** جلب جميع الأفلييتس لنسخة معينة */
+  public getAffiliatesByVersion(versionKey: string): Observable<Affiliate[]> {
+    return this.getAllAffiliates().pipe(
+      map(affiliates => affiliates.filter(affiliate => affiliate.versionKey === versionKey)),
+      take(1)
+    );
+  }
+
+  // ==========================================
+  // Sales helpers
+  // ==========================================
+
+  public getAllSales(): Observable<any[]> {
+    return this.list('sales').pipe(take(1));
+  }
+
+  public getSalesByVersion(versionKey: string): Observable<any[]> {
+    return this.getAllSales().pipe(
+      map(sales => sales.filter(item => item.versionKey === versionKey)),
+      take(1)
+    );
   }
 
   /** إضافة أفلييت جديد */

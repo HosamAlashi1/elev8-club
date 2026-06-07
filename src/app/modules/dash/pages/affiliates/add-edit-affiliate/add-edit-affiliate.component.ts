@@ -12,6 +12,7 @@ import { ToastrsService } from '../../../../services/toater.service';
 })
 export class AddEditAffiliateComponent implements OnInit {
   @Input() affiliate?: Affiliate;
+  @Input() versionKey?: string;
 
   form!: FormGroup;
   submitted = false;
@@ -68,7 +69,14 @@ export class AddEditAffiliateComponent implements OnInit {
 
     this.isSubmitting = true;
 
+    if (!this.isEdit && !this.versionKey) {
+      this.toastr.showError('No active version found');
+      this.isSubmitting = false;
+      return;
+    }
+
     const data: Omit<Affiliate, 'key' | 'createdAt'> = {
+      versionKey: this.affiliate?.versionKey || this.versionKey,
       name: this.form.value.name.trim(),
       email: this.form.value.email.trim(),
       code: this.form.value.code.trim().toUpperCase(),

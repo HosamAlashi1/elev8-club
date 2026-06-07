@@ -129,7 +129,7 @@
   margin-inline: auto;
   overflow: hidden;
   box-sizing: border-box;
-  border: 3pxh solid transparent;
+  border: 2px solid transparent;
   border-radius: var(--wt-frame-radius);
   padding: var(--wt-frame-padding);
   background:

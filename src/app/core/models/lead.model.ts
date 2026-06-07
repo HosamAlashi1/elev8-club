@@ -5,6 +5,13 @@ export interface LeadAnswers {
   location?: string;
   triedElev8Before?: 'yes' | 'no';
   mainGoal?: 'ready_trades' | 'trading_bot' | 'learn_trading' | 'steady_income';
+  age?: string;
+  workStatus?: string;
+  monthlyIncome?: string;
+  tradingExperience?: string;
+  financialProblem?: string;
+  investBudget?: string;
+  systemGoal?: string;
 }
 
 export interface Lead {
@@ -27,5 +34,6 @@ export interface Lead {
     whatsapp_number: string;
     assigned_at: number;
     assigned_via: string;
+    versionKey?: string;
   };
 }

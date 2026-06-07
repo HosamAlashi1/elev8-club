@@ -5,11 +5,13 @@ import { ToastrsService } from '../../../../services/toater.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddEditSalesItemComponent } from './add-edit-sales-item/add-edit-sales-item.component';
 import { DeleteComponent } from '../../../shared/delete/delete.component';
+import { Version } from '../../../../../core/models';
 
 interface SalesItem {
   id?: string;
   whatsapp_number: string;
   counter: number;
+  versionKey?: string;
 }
 
 @Component({
@@ -22,6 +24,7 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
   
   salesItems: SalesItem[] = [];
   isLoading = true;
+  currentVersion: Version | null = null;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -30,7 +33,7 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadSalesItems();
+    this.loadCurrentVersion();
   }
 
   ngOnDestroy(): void {
@@ -38,16 +41,42 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadSalesItems(): void {
+  loadCurrentVersion(): void {
     this.isLoading = true;
-    this.firebaseService.list('sales')
+    this.firebaseService.getCurrentVersion()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: version => {
+          this.currentVersion = version;
+          if (!version) {
+            this.toastr.showError('No active version found');
+            this.isLoading = false;
+            return;
+          }
+
+          this.loadSalesItems();
+        },
+        error: err => {
+          console.error('Error loading current version:', err);
+          this.toastr.showError('Failed to load current version');
+          this.isLoading = false;
+        }
+      });
+  }
+
+  loadSalesItems(): void {
+    if (!this.currentVersion) return;
+
+    this.isLoading = true;
+    this.firebaseService.getSalesByVersion(this.currentVersion.key)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (items: any[]) => {
           this.salesItems = items.map(item => ({
             id: item.key,
             whatsapp_number: item.whatsapp_number || '',
-            counter: item.counter || 0
+            counter: item.counter || 0,
+            versionKey: item.versionKey
           }));
           this.isLoading = false;
         },
@@ -60,21 +89,34 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
   }
 
   add(): void {
+    if (!this.currentVersion) {
+      this.toastr.showError('No active version found');
+      return;
+    }
+
     const modalRef = this.modalService.open(AddEditSalesItemComponent, {
       centered: true,
       size: 'lg'
     });
 
+    modalRef.componentInstance.versionKey = this.currentVersion.key;
+
     modalRef.result.then(() => this.loadSalesItems(), () => {});
   }
 
   edit(item: SalesItem): void {
+    if (!this.currentVersion) {
+      this.toastr.showError('No active version found');
+      return;
+    }
+
     const modalRef = this.modalService.open(AddEditSalesItemComponent, {
       centered: true,
       size: 'lg'
     });
 
     modalRef.componentInstance.salesItem = item;
+    modalRef.componentInstance.versionKey = this.currentVersion.key;
 
     modalRef.result.then(() => this.loadSalesItems(), () => {});
   }

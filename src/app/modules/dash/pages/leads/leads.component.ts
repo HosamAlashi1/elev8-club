@@ -16,6 +16,7 @@ interface LeadWithAffiliate extends Lead {
     whatsapp_number: string;
     assigned_at: number;
     assigned_via: string;
+    versionKey?: string;
   };
   salesName?: string;
 }
@@ -87,14 +88,18 @@ export class LeadsComponent implements OnInit {
   }
 
   loadAffiliates(): void {
-    this.firebaseService.getAllAffiliates().subscribe(affiliates => {
+    if (!this.currentVersion) return;
+
+    this.firebaseService.getAffiliatesByVersion(this.currentVersion.key).subscribe(affiliates => {
       this.affiliates = affiliates;
       this.loadSales();
     });
   }
 
   loadSales(): void {
-    this.firebaseService.list('sales').subscribe((sales: any[]) => {
+    if (!this.currentVersion) return;
+
+    this.firebaseService.getSalesByVersion(this.currentVersion.key).subscribe((sales: any[]) => {
       this.salesList = sales || [];
       this.salesOptions = [
         { value: '', label: 'All Sales' },

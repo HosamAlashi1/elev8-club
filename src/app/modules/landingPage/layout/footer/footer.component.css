@@ -165,7 +165,8 @@
   height: auto;
   user-select: none;
   transform-origin: 50% 62%;
-  will-change: transform, filter, opacity;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .footer-pill--main {
@@ -188,34 +189,31 @@
 @keyframes footer-pill-drift {
   0% {
     transform: translate3d(0, 0, 0) rotate(-1deg) scale(1);
-    filter: drop-shadow(0 25px 34px rgba(0, 38, 135, 0.28));
   }
 
-  45% {
+  50% {
     transform: translate3d(-7px, -11px, 0) rotate(2deg) scale(1.018);
-    filter: drop-shadow(0 33px 42px rgba(0, 55, 170, 0.34));
   }
 
   100% {
-    transform: translate3d(5px, -4px, 0) rotate(-2deg) scale(1.006);
-    filter: drop-shadow(0 27px 36px rgba(0, 38, 135, 0.30));
+    transform: translate3d(0, 0, 0) rotate(-1deg) scale(1);
   }
 }
 
 @keyframes footer-pill-small-drift {
   0% {
-    opacity: 0.48;
+    opacity: 0.58;
     transform: translate3d(0, 0, 0) rotate(3deg) scale(0.98);
   }
 
   50% {
-    opacity: 0.72;
-    transform: translate3d(8px, -14px, 0) rotate(-4deg) scale(1.05);
+    opacity: 0.66;
+    transform: translate3d(7px, -12px, 0) rotate(-4deg) scale(1.035);
   }
 
   100% {
-    opacity: 0.56;
-    transform: translate3d(-4px, -5px, 0) rotate(2deg) scale(1);
+    opacity: 0.58;
+    transform: translate3d(0, 0, 0) rotate(3deg) scale(0.98);
   }
 }
 

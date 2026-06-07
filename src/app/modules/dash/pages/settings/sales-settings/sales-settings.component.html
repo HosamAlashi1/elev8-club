@@ -1,7 +1,12 @@
 <div class="sales-settings">
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="mb-0">Sales Items</h3>
+    <div>
+      <h3 class="mb-1">Sales Items</h3>
+      <small class="text-muted">
+        Current version: {{ currentVersion?.name || 'Loading...' }}
+      </small>
+    </div>
     <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
       <i class="fe fe-plus"></i>
       Add Sales Item
@@ -28,6 +33,7 @@
               <i class="fe fe-phone me-2 text-success"></i>
               {{ item.whatsapp_number }}
             </div>
+            <span class="badge bg-light text-muted border mt-2">Version scoped</span>
           </div>
           <div class="btn-group dropstart">
             <span data-bs-toggle="dropdown" aria-expanded="false" role="button" class="action-icon">

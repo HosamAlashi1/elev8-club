@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { trigger, transition, style, animate, state } from '@angular/animations';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { FirebaseService } from '../../../../../services/firebase.service';
@@ -7,10 +7,16 @@ import { GtmService } from '../../../../../services/gtm.service';
 import { Lead, LeadAnswers, Affiliate } from '../../../../../../core/models';
 
 interface Question {
-  id: string;
+  id: keyof LeadAnswers;
+  number: number;
   text: string;
+  hint?: string;
+  placeholder?: string;
   type: 'radio' | 'text';
   options?: string[];
+  inputMode?: 'numeric' | 'decimal' | 'text';
+  validation?: 'age' | 'monthlyIncome';
+  validationHint?: string;
 }
 
 @Component({
@@ -20,83 +26,102 @@ interface Question {
   animations: [
     trigger('fadeInUp', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('150ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        style({ opacity: 0, transform: 'translateY(12px)' }),
+        animate('220ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ]),
     trigger('slideInOut', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateX(60px) scale(0.95)' }),
-        animate('200ms cubic-bezier(0.25, 0.8, 0.25, 1)',
-          style({ opacity: 1, transform: 'translateX(0) scale(1)' }))
+        style({ opacity: 0, transform: 'translateX(40px) scale(0.97)' }),
+        animate('240ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ opacity: 1, transform: 'translateX(0) scale(1)' }))
       ]),
       transition(':leave', [
-        animate('150ms cubic-bezier(0.55, 0, 0.55, 0.2)',
-          style({ opacity: 0, transform: 'translateX(-60px) scale(0.95)' }))
+        animate('160ms ease-in', style({ opacity: 0, transform: 'translateX(-36px) scale(0.97)' }))
       ])
     ]),
     trigger('scaleIn', [
       transition(':enter', [
-        style({ transform: 'scale(0.9)', opacity: 0 }),
-        animate('200ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'scale(1)', opacity: 1 }))
+        style({ transform: 'scale(0.92)', opacity: 0 }),
+        animate('240ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'scale(1)', opacity: 1 }))
       ])
     ])
   ]
 })
-export class QuestionFormSectionComponent implements OnInit {
+export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   questions: Question[] = [
     {
-      id: 'experienceLevel',
-      text: 'قدّيش خبرتك في التداول؟',
-      type: 'radio',
-      options: ['مبتدئ', 'متوسط', 'محترف'],
-    },
-    {
-      id: 'readyAmount',
-      text: 'كم المبلغ الجاهز تبدأ فيه؟',
-      type: 'radio',
-      options: ['أقل من $200', '$200 - $1000', 'أكثر من $1000'],
-    },
-    {
-      id: 'readyIn24h',
-      text: 'هل جاهز تبدأ خلال 24 ساعة؟',
-      type: 'radio',
-      options: ['نعم', 'مش متأكد بعد'],
-    },
-    {
-      id: 'location',
-      text: 'دولتك و مدينتك؟',
+      id: 'age',
+      number: 1,
+      text: 'قديش عمرك؟ دخل عمرك بالسنوات.',
       type: 'text',
+      placeholder: 'مثال : 24',
+      inputMode: 'numeric',
+      validation: 'age',
+      validationHint: 'اكتب العمر بالأرقام فقط، بين 18 و 75 سنة.'
     },
     {
-      id: 'triedElev8Before',
-      text: 'هل جربت خدمات Elev8 Club سابقًا؟',
+      id: 'workStatus',
+      number: 2,
+      text: 'شو وضعك الحالي شغل؟',
       type: 'radio',
-      options: ['نعم', 'لا'],
+      options: ['عندي شغل براتب ثابت', 'شغلي فريلانس / مستقل', 'عندي مشروع خاص', 'ما عندي دخل حالي']
     },
     {
-      id: 'mainGoal',
-      text: 'شو هدفك من التحدي؟',
-      type: 'radio',
-      options: [
-        'أخذ صفقات جاهزة',
-        'استخدام روبوت التداول',
-        'تعلم التداول',
-        'بناء مصدر دخل ثابت',
-      ],
+      id: 'monthlyIncome',
+      number: 3,
+      text: 'قديش دخلك الشهري بالدولار؟',
+      hint: 'معلوماتك سرية وما بنستخدمها إلا عشان نفهم وين ممكن نساعدك.',
+      type: 'text',
+      placeholder: 'مثال : 800',
+      inputMode: 'decimal',
+      validation: 'monthlyIncome',
+      validationHint: 'اكتب رقم تقريبي بالدولار، بدون رموز أو فواصل.'
     },
+    {
+      id: 'tradingExperience',
+      number: 4,
+      text: 'هل جربت التداول قبل؟',
+      type: 'radio',
+      options: ['لا ما جربت قبل', 'جربت وخسرت', 'جربت بس ما طلعت معي نتيجة', 'عندي شوية خبرة بس بسيطة']
+    },
+    {
+      id: 'financialProblem',
+      number: 5,
+      text: 'شو أكبر مشكلة مالية عندك حالياً؟',
+      type: 'radio',
+      options: ['ما عندي مصدر دخل ثاني', 'دخلي قليل وكافي', 'عندي مدخرات بس مش عارف شو أعمل فيها', 'مش عارف وين أبدأ أستثمر']
+    },
+    {
+      id: 'investBudget',
+      number: 6,
+      text: 'قديش تقدر تخصص من دخلك؟',
+      type: 'radio',
+      options: ['أقل من $100', '$100 و $500', '$500 و $2,000', 'أكثر من $2000']
+    },
+    {
+      id: 'systemGoal',
+      number: 7,
+      text: 'شو هدفك الأساسي من دخولك السيستم اليوم؟',
+      type: 'radio',
+      options: ['أفهم كيف يشتغل التداول', 'أبني دخل إضافي', 'أخرج من الراتب الثابت', 'أبني مشروعي بطريقة صح']
+    }
   ];
 
   currentQuestion = 0;
   answers: { [key: string]: string } = {};
   showCTA = false;
+  isSubmitting = false;
+  isSlidingQuestion = false;
+  questionSlidePhase: 'idle' | 'leaving' | 'entering' = 'idle';
+  touchedAnswers: { [key: string]: boolean } = {};
 
   private leadKey: string | null = null;
   private currentLead: Lead | null = null;
   private affiliateCode: string | null = null;
   private currentAffiliate: Affiliate | null = null;
-  isSubmitting = false;
   private hasTrackedFormStart = false;
+  private slideSwapTimer: ReturnType<typeof setTimeout> | null = null;
+  private slideDoneTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -106,40 +131,47 @@ export class QuestionFormSectionComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // قراءة leadKey و ref من الـ URL
     this.route.queryParams.subscribe(params => {
       this.leadKey = params['lead'] || null;
       this.affiliateCode = params['ref'] || null;
 
-      // إذا لم يكن هناك leadKey، نرجع للصفحة الرئيسية
       if (!this.leadKey) {
         alert('الرجاء التسجيل أولاً');
         this.router.navigate(['/home']);
         return;
       }
 
-      // جلب بيانات الـ Lead
       this.firebaseService.getLeadByKey(this.leadKey).subscribe(lead => {
         if (!lead) {
           alert('لم يتم العثور على بيانات التسجيل');
           this.router.navigate(['/home']);
           return;
         }
+
         this.currentLead = lead;
 
-        // إذا كان Lead خلص الخطوة الثانية (أجاب على الأسئلة)، نعرض CTA مباشرة
+        if (lead.answers) {
+          this.answers = Object.entries(lead.answers).reduce((acc, [key, value]) => {
+            if (typeof value === 'string') acc[key] = value;
+            return acc;
+          }, {} as { [key: string]: string });
+        }
+
         if (lead.step === 2) {
           this.showCTA = true;
         }
-      });
 
-      // جلب بيانات الأفلييت إذا كان موجود
-      if (this.affiliateCode) {
-        this.firebaseService.getAffiliateByCode(this.affiliateCode).subscribe(affiliate => {
-          this.currentAffiliate = affiliate;
-        });
-      }
+        if (this.affiliateCode && lead.versionKey) {
+          this.firebaseService.getAffiliateByCode(this.affiliateCode, lead.versionKey).subscribe(affiliate => {
+            this.currentAffiliate = affiliate;
+          });
+        }
+      });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.clearSlideTimers();
   }
 
   get progress(): number {
@@ -151,61 +183,136 @@ export class QuestionFormSectionComponent implements OnInit {
   }
 
   get canProceed(): boolean {
-    const answer = this.answers[this.currentQ.id];
-    if (!answer || answer.trim() === '') {
-      return false;
-    }
-    return true;
+    return this.isAnswerValid(this.currentQ, this.answers[this.currentQ.id]);
   }
 
   get answeredCount(): number {
-    return Object.keys(this.answers).length;
+    return this.questions.filter(question => this.isAnswerValid(question, this.answers[question.id])).length;
+  }
+
+  get isLastQuestion(): boolean {
+    return this.currentQuestion === this.questions.length - 1;
   }
 
   handleAnswer(value: string): void {
     this.answers[this.currentQ.id] = value;
-
-    // Stage 5: Track Question Form Start (first interaction)
-    if (!this.hasTrackedFormStart && this.leadKey) {
-      this.gtm.trackQuestionFormStarted(this.leadKey);
-      this.hasTrackedFormStart = true;
-    }
-
-    // Stage 5: Track Question Form Progress
-    if (this.leadKey) {
-      const answeredCount = Object.keys(this.answers).length;
-      this.gtm.trackQuestionFormProgress(
-        this.leadKey,
-        answeredCount,
-        this.questions.length
-      );
-    }
-
-    // Auto-advance for radio questions - فوري تقريباً
-    if (this.currentQ.type === 'radio') {
-      setTimeout(() => {
-        if (this.currentQuestion < this.questions.length - 1) {
-          this.currentQuestion++;
-        } else {
-          this.submitAnswers();
-        }
-      }, 150);
-    }
+    this.touchedAnswers[this.currentQ.id] = true;
+    this.trackQuestionProgress();
   }
 
   handleNext(): void {
-    if (!this.canProceed) return;
+    this.markQuestionTouched(this.currentQ.id);
+    if (!this.canProceed || this.isSubmitting || this.isSlidingQuestion) return;
 
     if (this.currentQuestion < this.questions.length - 1) {
-      this.currentQuestion++;
-    } else {
-      this.submitAnswers();
+      this.slideToQuestion(this.currentQuestion + 1);
+      return;
     }
+
+    this.submitAnswers();
   }
 
   onEnterKey(event: Event): void {
     event.preventDefault();
+    this.markQuestionTouched(this.currentQ.id);
     this.handleNext();
+  }
+
+  handleTextInput(): void {
+    const answer = this.answers[this.currentQ.id] || '';
+    if (answer.trim().length > 0) {
+      this.touchedAnswers[this.currentQ.id] = true;
+    }
+    this.trackQuestionProgress();
+  }
+
+  markQuestionTouched(questionId: keyof LeadAnswers): void {
+    this.touchedAnswers[questionId] = true;
+  }
+
+  shouldShowValidation(): boolean {
+    return this.currentQ.type === 'text'
+      && !!this.touchedAnswers[this.currentQ.id]
+      && !this.isAnswerValid(this.currentQ, this.answers[this.currentQ.id]);
+  }
+
+  get validationMessage(): string {
+    return this.getValidationMessage(this.currentQ, this.answers[this.currentQ.id]);
+  }
+
+  trackQuestionProgress(): void {
+    if (!this.leadKey) return;
+
+    if (!this.hasTrackedFormStart) {
+      this.gtm.trackQuestionFormStarted(this.leadKey);
+      this.hasTrackedFormStart = true;
+    }
+
+    this.gtm.trackQuestionFormProgress(this.leadKey, this.answeredCount, this.questions.length);
+  }
+
+  private isAnswerValid(question: Question, answer?: string): boolean {
+    const value = (answer || '').trim();
+    if (!value) return false;
+
+    if (question.type === 'radio') {
+      return !!question.options?.includes(value);
+    }
+
+    if (question.validation === 'age') {
+      const age = this.parsePositiveNumber(value);
+      return Number.isInteger(age) && age >= 18 && age <= 75;
+    }
+
+    if (question.validation === 'monthlyIncome') {
+      const income = this.parsePositiveNumber(value);
+      return income >= 0 && income <= 200000;
+    }
+
+    return true;
+  }
+
+  private getValidationMessage(question: Question, answer?: string): string {
+    const value = (answer || '').trim();
+
+    if (!value) {
+      return 'هذا السؤال مطلوب عشان نكمل.';
+    }
+
+    if (question.validation === 'age') {
+      return 'اكتب عمر منطقي بين 18 و 75 سنة.';
+    }
+
+    if (question.validation === 'monthlyIncome') {
+      return 'اكتب الدخل الشهري كرقم منطقي بالدولار.';
+    }
+
+    return 'تأكد من الإجابة قبل المتابعة.';
+  }
+
+  private parsePositiveNumber(value: string): number {
+    const normalized = this.normalizeArabicDigits(value)
+      .replace(/,/g, '')
+      .replace(/\$/g, '')
+      .trim();
+
+    if (!/^\d+(\.\d+)?$/.test(normalized)) return NaN;
+
+    return Number(normalized);
+  }
+
+  private normalizeArabicDigits(value: string): string {
+    const arabicZero = '٠'.charCodeAt(0);
+    const persianZero = '۰'.charCodeAt(0);
+
+    return value.replace(/[٠-٩۰-۹]/g, digit => {
+      const code = digit.charCodeAt(0);
+      if (code >= arabicZero && code <= arabicZero + 9) {
+        return String(code - arabicZero);
+      }
+
+      return String(code - persianZero);
+    });
   }
 
   private submitAnswers(): void {
@@ -213,35 +320,27 @@ export class QuestionFormSectionComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    // استخراج الدولة والمدينة من إجابة السؤال location
-    const location = this.answers['location'] || '';
-    const locationParts = location.split(',').map(p => p.trim());
-    const country = locationParts[0] || '';
-    const city = locationParts[1] || locationParts[0] || '';
-
-    // تحويل الإجابات للصيغة المطلوبة
     const answersData: LeadAnswers = {
-      experienceLevel: this.mapExperienceLevel(this.answers['experienceLevel']),
-      readyAmount: this.mapReadyAmount(this.answers['readyAmount']),
-      readyIn24h: this.mapYesNo(this.answers['readyIn24h']),
-      location: this.answers['location'],
-      triedElev8Before: this.mapYesNo(this.answers['triedElev8Before']),
-      mainGoal: this.mapMainGoal(this.answers['mainGoal'])
+      age: this.answers['age'],
+      workStatus: this.answers['workStatus'],
+      monthlyIncome: this.answers['monthlyIncome'],
+      tradingExperience: this.answers['tradingExperience'],
+      financialProblem: this.answers['financialProblem'],
+      investBudget: this.answers['investBudget'],
+      systemGoal: this.answers['systemGoal']
     };
 
-    // تحديث الـ Lead في Firebase
-    this.firebaseService.completeLead(this.leadKey, answersData, country, city)
+    this.firebaseService.completeLead(this.leadKey, answersData)
       .then(() => {
-        console.log('Lead completed successfully');
+        this.currentLead = this.currentLead
+          ? { ...this.currentLead, answers: answersData, step: 2, completedAt: new Date().toISOString() }
+          : this.currentLead;
 
-        // Stage 6: Track Complete Registration
-        if (this.leadKey) {
-          this.gtm.trackCompleteRegistration(this.leadKey, {
-            questions_count: this.questions.length, 
-            country: country,
-            city: city
-          });
-        }
+        this.gtm.trackCompleteRegistration(this.leadKey!, {
+          questions_count: this.questions.length,
+          age: answersData.age || '',
+          system_goal: answersData.systemGoal || ''
+        });
 
         this.showCTA = true;
         this.isSubmitting = false;
@@ -253,160 +352,122 @@ export class QuestionFormSectionComponent implements OnInit {
       });
   }
 
+  private slideToQuestion(nextIndex: number): void {
+    this.clearSlideTimers();
+    this.isSlidingQuestion = true;
+    this.questionSlidePhase = 'leaving';
+
+    this.slideSwapTimer = setTimeout(() => {
+      this.currentQuestion = nextIndex;
+      this.questionSlidePhase = 'entering';
+    }, 180);
+
+    this.slideDoneTimer = setTimeout(() => {
+      this.isSlidingQuestion = false;
+      this.questionSlidePhase = 'idle';
+      this.clearSlideTimers();
+    }, 540);
+  }
+
+  private clearSlideTimers(): void {
+    if (this.slideSwapTimer) {
+      clearTimeout(this.slideSwapTimer);
+      this.slideSwapTimer = null;
+    }
+
+    if (this.slideDoneTimer) {
+      clearTimeout(this.slideDoneTimer);
+      this.slideDoneTimer = null;
+    }
+  }
+
   async completeRegistration(): Promise<void> {
     try {
-      // جلب أرقام المبيعات من Firebase
-      const salesItems = await this.firebaseService.list('sales').pipe(take(1)).toPromise();
-      
-      if (!salesItems || salesItems.length === 0) {
-        console.error('No sales items found');
+      const versionKey = this.currentLead?.versionKey;
+
+      if (!versionKey) {
+        console.error('No lead version found for sales assignment');
         return;
       }
 
-      // ترتيب Sales حسب counter (للتوزيع العادل)
-      const sortedSales = salesItems.sort((a, b) => {
-        return (a.counter || 0) - (b.counter || 0);
-      });
+      const salesItems = await this.firebaseService.getSalesByVersion(versionKey).pipe(take(1)).toPromise();
 
-      // اختيار sales بناءً على hash من leadKey (توزيع عادل ومضمون)
+      if (!salesItems || salesItems.length === 0) {
+        console.error('No sales items found for current version');
+        return;
+      }
+
+      const sortedSales = salesItems.sort((a, b) => (a.counter || 0) - (b.counter || 0));
+
       let selectedIndex = 0;
       if (this.leadKey) {
-        // تحويل leadKey لـ number بسيط
         const hash = this.leadKey.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        selectedIndex = hash % salesItems.length;
+        selectedIndex = hash % sortedSales.length;
       }
 
       const selectedSales = sortedSales[selectedIndex];
-      const whatsappNumber = (selectedSales.whatsapp_number).replace(/[^0-9]/g, '');
+      const whatsappNumber = (selectedSales.whatsapp_number || '').replace(/[^0-9]/g, '');
       const salesKey = selectedSales.key;
       const assignedAt = Date.now();
 
-      console.log(`Selected sales index ${selectedIndex}/${salesItems.length}: ${salesKey}`);
-
-      // تحديث last_assigned_at والـ counter للـ sales المختار
       if (salesKey) {
         await this.firebaseService.update('sales', salesKey, {
           last_assigned_at: assignedAt,
           counter: (selectedSales.counter || 0) + 1
         });
-        console.log(`Updated sales ${salesKey}: counter=${(selectedSales.counter || 0) + 1}, at ${assignedAt}`);
       }
 
-      // تحديث الـ Lead بإضافة معلومات الـ Sales المُخصّص
       if (this.leadKey && salesKey) {
-        const assignedSalesData = {
+        await this.firebaseService.update('leads', this.leadKey, {
           assigned_sales: {
             sales_id: salesKey,
             whatsapp_number: whatsappNumber,
             assigned_at: assignedAt,
-            assigned_via: 'whatsapp'
+            assigned_via: 'whatsapp',
+            versionKey
           }
-        };
-
-        await this.firebaseService.update('leads', this.leadKey, assignedSalesData);
-        console.log(`Lead ${this.leadKey} assigned to sales ${salesKey}`);
+        });
       }
 
-      // فتح واتساب بعد ما نتأكد إنه الـ updates خلصت
       this.openWhatsApp(whatsappNumber);
-      
     } catch (err) {
       console.error('Error in completeRegistration:', err);
-      // في حالة الخطأ، حاول فتح واتساب على أي حال
-      this.firebaseService.list('sales').pipe(take(1)).subscribe(sales => {
-        if (sales && sales.length > 0) {
-          const whatsappNumber = sales[0].whatsapp_number.replace(/[^0-9]/g, '');
-          this.openWhatsApp(whatsappNumber);
-        }
-      });
     }
   }
 
   private openWhatsApp(whatsappNumber: string): void {
     const userName = this.currentLead?.fullName || 'عميل جديد';
     const userEmail = this.currentLead?.email || '';
-    const country = this.currentLead?.country || '';
-    const city = this.currentLead?.city || '';
 
-    // Extract answers (use empty strings as fallback)
-    const experience = this.answers['experienceLevel'] || '';
-    const readyAmount = this.answers['readyAmount'] || '';
-    const readyIn24h = this.answers['readyIn24h'] || '';
-    const triedBefore = this.answers['triedElev8Before'] || '';
-    const mainGoal = this.answers['mainGoal'] || '';
-    const location = this.answers['location'] || '';
+    const message =
+      `مرحباً فريق Elev8 Club،\n\n` +
+      `أنا ${userName}، خلصت مشاهدة الفيديو وجاوبت على أسئلة التسجيل.\n\n` +
+      `بياناتي المختصرة:\n` +
+      `العمر: ${this.answers['age'] || ''}\n` +
+      `وضعي الحالي: ${this.answers['workStatus'] || ''}\n` +
+      `الدخل الشهري: ${this.answers['monthlyIncome'] || ''}\n` +
+      `تجربتي في التداول: ${this.answers['tradingExperience'] || ''}\n` +
+      `أكبر مشكلة مالية عندي: ${this.answers['financialProblem'] || ''}\n` +
+      `المبلغ اللي أقدر أخصصه: ${this.answers['investBudget'] || ''}\n` +
+      `هدفي من السيستم: ${this.answers['systemGoal'] || ''}\n` +
+      `الإيميل: ${userEmail}\n\n` +
+      `جاهز أعرف الخطوة التالية وأدخل مجموعة الواتساب.`;
 
-    // Build the message exactly as requested
-    const message = `مرحباً فريق Elev8 Club،\n\n` +
-      `أنا ${userName} — متحمّس جداً أبدأ معكم وبشكركم على الوقت والجهد الكبير اللي بتبذلوه يومياً لخدمة الناس.\n\n` +
-      `هذه نبذة بسيطة عن وضعي عشان تقدروا تساعدوني أبدأ بالطريقة الصحيحة:\n\n` +
-      `أنا خبرتي في التداول: ${experience}\n` +
-      `وحالياً متواجد في: ${location}\n` +
-      `وإيميلي: ${userEmail}\n` +
-      `وعندي مبلغ جاهز للبدء حوالي: ${readyAmount}\n` +
-      `وأنا جاهز أبدأ خلال 24 ساعة: ${readyIn24h}\n` +
-      `بالنسبة لخدمات Elev8 Club: ${triedBefore}\n` +
-      `ودخولي التحدي بالنسبة إلي هدفه الأساسي هو: ${mainGoal}\n\n` +
-      `بعرف إنه عندكم ضغط رسائل كبير وبقدّر وقتكم جداً،\n` +
-      `بس كل اللي بحتاجه الآن — إيش الخطوة الجاية مباشرة عشان أبدأ؟\n` +
-      `جاهز أمشي معكم خطوة بخطوة وأطبق كل التعليمات بإذن الله.\n\n` +
-      `بانتظار توجيهكم.`;
-
-    // Debug log the message
-    console.log('WhatsApp message to send:', message);
-
-    // Stage 7: Track WhatsApp Contact
     if (this.leadKey) {
       this.gtm.trackWhatsAppContact(this.leadKey, whatsappNumber, {
         user_name: userName,
-        location: location,
-        affiliate_code: this.affiliateCode || 'none'
+        affiliate_code: this.affiliateCode || 'none',
+        affiliate_key: this.currentAffiliate?.key || 'none'
       });
     }
 
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-
-    // محاولة 1: فتح في نافذة جديدة
     const newWindow = window.open(url, '_blank');
-    
-    // محاولة 2: إذا فشلت المحاولة الأولى (popup blocked أو عدم دعم)
+
     setTimeout(() => {
       if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-        // Fallback: استخدام window.location في نفس النافذة
-        console.log('Popup blocked, redirecting in same window...');
         window.location.href = url;
       }
     }, 100);
-
   }
-
-  // دوال مساعدة لتحويل الإجابات
-  private mapExperienceLevel(answer: string): 'beginner' | 'intermediate' | 'advanced' | undefined {
-    if (answer === 'مبتدئ') return 'beginner';
-    if (answer === 'متوسط') return 'intermediate';
-    if (answer === 'محترف') return 'advanced';
-    return undefined;
-  }
-
-  private mapReadyAmount(answer: string): '<200' | '200-1000' | '>1000' | undefined {
-    if (answer === 'أقل من $200') return '<200';
-    if (answer === '$200 - $1000') return '200-1000';
-    if (answer === 'أكثر من $1000') return '>1000';
-    return undefined;
-  }
-
-  private mapYesNo(answer: string): 'yes' | 'no' | undefined {
-    if (answer === 'نعم') return 'yes';
-    if (answer === 'لا' || answer === 'مش متأكد بعد') return 'no';
-    return undefined;
-  }
-
-  private mapMainGoal(answer: string): 'ready_trades' | 'trading_bot' | 'learn_trading' | 'steady_income' | undefined {
-    if (answer === 'أخذ صفقات جاهزة') return 'ready_trades';
-    if (answer === 'استخدام روبوت التداول') return 'trading_bot';
-    if (answer === 'تعلم التداول') return 'learn_trading';
-    if (answer === 'بناء مصدر دخل ثابت') return 'steady_income';
-    return undefined;
-  }
-
 }

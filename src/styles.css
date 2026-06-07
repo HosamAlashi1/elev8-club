@@ -3,17 +3,24 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body {
-  background-color: var(--lp-bg, #05070b);
-  color: var(--lp-text, #f8fafc);
-  font-family: var(--lp-font-body);
-  margin: 0;
-  padding: 0;
+@font-face {
+  font-family: "Abar High";
+  src:
+    local("Abar High"),
+    local("Abar High-ExtraBold"),
+    local("Abar High ExtraBold"),
+    local("AbarHigh-ExtraBold"),
+    local("Abar High-Black"),
+    local("Abar High Black"),
+    local("AbarHigh-Black");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 :root {
-  --lp-font-body: "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --lp-font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-font-body: "Abar High", "Abar High-ExtraBold", "Abar High-Black", "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --lp-font-display: "Abar High", "Abar High-Black", "Abar High-ExtraBold", "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   --lp-bg: #05070b;
   --lp-bg-2: #07111f;
   --lp-panel: #0d1522;

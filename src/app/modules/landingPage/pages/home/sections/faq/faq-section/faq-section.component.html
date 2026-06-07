@@ -1,35 +1,29 @@
-<section class="faq-section" data-aos="fade-up">
-  <div class="faq-inner">
+<section class="faq faq--anima section-shell" aria-labelledby="faq-heading">
+  <img
+    class="faq-visual"
+    src="assets/images/anima-home/faq-question-mark.svg"
+    alt=""
+    aria-hidden="true"
+    loading="lazy"
+    data-aos="zoom-in"
+    data-aos-delay="80"
+    data-aos-duration="700"
+  />
 
-    <div class="faq-head" data-aos="fade-up" data-aos-delay="60">
-      <span class="faq-eyebrow">الأسئلة الشائعة</span>
-      <h2 class="faq-title">الاسئلة الشائعة -:</h2>
-    </div>
+  <div class="faq-heading" data-aos="fade-up" data-aos-delay="60">
+    <h2 id="faq-heading">الأسئلة الشائعة</h2>
+  </div>
 
-    <div class="faq-accordion">
-      <div
-        class="faq-item"
-        *ngFor="let faq of faqs; let i = index"
-        [class.faq-item--open]="faq.isOpen"
-        data-aos="fade-up"
-        [attr.data-aos-delay]="100 + i * 50"
-      >
-        <button class="faq-question" (click)="toggleFAQ(i)">
-          <span class="faq-question-text">{{ faq.question }}</span>
-          <span class="faq-chevron" [class.faq-chevron--open]="faq.isOpen" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </button>
-
-        <div class="faq-answer" [class.faq-answer--open]="faq.isOpen">
-          <div class="faq-answer-inner">
-            <p [innerHTML]="faq.answer"></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  <div class="faq-list">
+    <details
+      *ngFor="let faq of faqs; let i = index"
+      [attr.open]="faq.open ? '' : null"
+      data-aos="fade-up"
+      [attr.data-aos-delay]="110 + i * 55"
+      data-aos-duration="700"
+    >
+      <summary>{{ faq.question }}</summary>
+      <p>{{ faq.answer }}</p>
+    </details>
   </div>
 </section>

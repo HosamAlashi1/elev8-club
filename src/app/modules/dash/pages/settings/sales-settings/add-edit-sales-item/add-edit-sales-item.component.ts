@@ -8,6 +8,7 @@ interface SalesItem {
   id?: string;
   whatsapp_number: string;
   counter: number;
+  versionKey?: string;
 }
 
 @Component({
@@ -17,6 +18,7 @@ interface SalesItem {
 })
 export class AddEditSalesItemComponent implements OnInit {
   @Input() salesItem?: SalesItem;
+  @Input() versionKey?: string;
 
   form!: FormGroup;
   submitted = false;
@@ -68,10 +70,18 @@ export class AddEditSalesItemComponent implements OnInit {
     }
 
     this.isSubmitting = true;
+    const itemVersionKey = this.versionKey || this.salesItem?.versionKey;
+
+    if (!itemVersionKey) {
+      this.toastr.showError('No active version found');
+      this.isSubmitting = false;
+      return;
+    }
 
     const data = {
       whatsapp_number: this.form.value.whatsapp_number.trim(),
-    //   counter: Number(this.form.value.counter) || 0
+      versionKey: itemVersionKey,
+      counter: this.salesItem?.counter || 0
     };
 
     if (this.isEdit && this.salesItem?.id) {

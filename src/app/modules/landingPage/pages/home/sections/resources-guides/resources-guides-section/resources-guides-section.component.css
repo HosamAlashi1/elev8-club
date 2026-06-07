@@ -77,7 +77,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 24px;
+  gap: 18px;
 }
 
 .resources-guides__badge {
@@ -90,7 +90,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--glass);
-  color: #fff;
+  color: rgba(255, 255, 255, 0.86);
   font-family: var(--font-low-regular);
   font-size: 16px;
   line-height: normal;
@@ -101,7 +101,7 @@
 }
 
 .resources-guides__badge span:first-child {
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .resources-guides h2 {
@@ -109,9 +109,9 @@
   margin: 0;
   color: #fff;
   font-family: var(--font-high-extra);
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 50px;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.12;
   text-align: right;
 }
 
@@ -120,7 +120,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: 15px;
 }
 
 .resources-guides p {
@@ -130,8 +130,12 @@
   font-family: var(--font-low-regular);
   font-size: 16px;
   font-weight: 400;
-  line-height: normal;
+  line-height: 1.65;
   text-align: right;
+}
+
+.resources-guides__body > p:first-child {
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .resources-guides p strong {
@@ -141,11 +145,11 @@
 }
 
 .resources-guides__without {
-  width: 539px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 8px;
 }
 
 .resources-guides__without-title {
@@ -158,12 +162,13 @@
 }
 
 .resources-guides__without-list {
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  gap: 24px;
+  gap: 22px;
 }
 
 .resources-guides__without-list strong {

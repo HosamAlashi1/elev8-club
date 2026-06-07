@@ -8,6 +8,35 @@
     <span class="ambient-dot dot-6"></span>
   </div>
 
+  <div class="hero-topbar" *ngIf="showCountdown" aria-label="موعد بداية التحدي">
+    <button class="topbar-btn" type="button" (click)="onOpenRegistration()">
+      <span class="topbar-btn__arrow" aria-hidden="true">‹</span>
+      <span class="topbar-btn__label">احجز مقعدك مجاناً</span>
+    </button>
+
+    <div class="hero-countdown" aria-label="عداد بداية التحدي">
+      <img class="countdown-clock" src="assets/images/anima-home/alarm.png" alt="" aria-hidden="true" />
+      <div class="hero-countdown__units">
+        <div class="hero-countdown__unit hero-countdown__unit--days">
+          <span>Days</span>
+          <strong>{{ formatUnit(countdown.days) }}</strong>
+        </div>
+        <span class="countdown-separator" aria-hidden="true">:</span>
+        <div class="hero-countdown__unit">
+          <strong>{{ formatUnit(countdown.hours) }}</strong>
+        </div>
+        <span class="countdown-separator" aria-hidden="true">:</span>
+        <div class="hero-countdown__unit">
+          <strong>{{ formatUnit(countdown.minutes) }}</strong>
+        </div>
+        <span class="countdown-separator" aria-hidden="true">:</span>
+        <div class="hero-countdown__unit">
+          <strong>{{ formatUnit(countdown.seconds) }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="brand-mark" data-aos="fade-down" data-aos-delay="60" data-aos-duration="700">ELEV8 CLUB</div>
 
   <div class="hero__visual" data-aos="fade-left" data-aos-delay="120" data-aos-duration="900">
@@ -18,12 +47,19 @@
   </div>
 
   <div class="hero__copy" data-aos="fade-right" data-aos-delay="190" data-aos-duration="850">
-    <span class="eyebrow">تحدي elev8 club 0.3</span>
+    <span class="eyebrow">
+      <span class="eyebrow__dot" aria-hidden="true"></span>
+      <span class="eyebrow__english">Live Virtual Webinar at</span>
+      <b>{{ webinarDateLabel }}</b>
+    </span>
     <h1>
-      <span class="muted-title">أتحداك تبني دخل</span>
-      <span class="hero__line"><span>يومي</span><b data-text="$272">$272</b><span>أونلاين</span></span>
+      <span class="hero-title-line">
+        أتحداك تبني دخل يومي
+        <b data-text="$272">$272</b>
+        أونلاين
+      </span>
+      <span class="hero-title-line">خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي</span>
     </h1>
-    <p class="hero__sub">خلال ساعة واحدة فقط باستخدام الذكاء الاصطناعي</p>
     <div class="inline-list" aria-label="مزايا التحدي">
       <span>بدون خبرة سابقة</span>
       <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" />

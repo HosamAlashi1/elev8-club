@@ -1,120 +1,93 @@
-<div class="question-form-section" style="direction: rtl;">
-  <div class="container">
+<section class="question-form-section" [class.is-success]="showCTA" dir="rtl" aria-label="أسئلة التسجيل">
+  <div class="question-shell">
 
-    <!-- Success CTA View -->
-    <div *ngIf="showCTA" @fadeInUp class="cta-wrapper" data-aos="fade-up" data-aos-duration="800">
+    <div *ngIf="showCTA" @fadeInUp class="success-panel">
+      <div class="success-backdrop" aria-hidden="true"></div>
+
       <div class="success-content">
-        
-        <!-- Success Icon -->
-        <div @scaleIn class="success-icon-wrapper">
-          <lucide-icon name="check-circle-2" class="success-icon" [size]="80"></lucide-icon>
+        <div @scaleIn class="whatsapp-orb">
+          <img src="assets/images/video-questions/whatsapp-coin.svg" alt="WhatsApp">
         </div>
 
-        <!-- Success Message -->
-        <h3 class="success-title">
-          ممتاز! أجوبتك وصلتنا بنجاح
-        </h3>
+        <h2>ممتاز، تسجيلك صار جاهز للخطوة الأخيرة</h2>
+        <p class="success-copy">
+          اضغط الزر بالأسفل عشان تنتقل للواتساب وتدخل مع الفريق مباشرة.
+        </p>
 
-        <!-- CTA Button -->
-        <button 
-          class="cta-button"
-          (click)="completeRegistration()">
-          <span class="cta-text">
-             اضغط هنا لإكمال تسجيلك والانضمام الآن
-            <lucide-icon name="arrow-right" class="arrow-icon" [size]="20"></lucide-icon>
-          </span>
+        <button class="whatsapp-button" (click)="completeRegistration()">
+          <span aria-hidden="true">←</span>
+          أكمل على الواتساب
         </button>
-
-        <!-- Warning Text -->
-        <p class="warning-text">
-          الأماكن محدودة — لا تؤجل قرارك.
-        </p>
-
-        <!-- Info Box -->
-        <div class="info-box">
-          بمجرد إكمال التسجيل، راح تتحول على واتس أحد مستشارينا الماليين وسوف يصلك
-          إيميل تأكيد مع رابط الانضمام مجموعة التحدي الخاصة.
-        </div>
       </div>
     </div>
 
-    <!-- Question Form View -->
-    <div *ngIf="!showCTA">
-      
-      <!-- Intro Text (First Question Only) -->
-      <div *ngIf="currentQuestion === 0" @fadeInUp class="intro-wrapper" data-aos="fade-down" data-aos-duration="600">
-        <p class="intro-title">
-          لنساعدك بأفضل شكل خلال التحدي جاوب على الأسئلة التالية بدقة
-        </p>
-        <p class="intro-subtitle">في أقل من 60 ثانية</p>
+    <div *ngIf="!showCTA" class="question-layout">
+      <div class="question-copy" data-aos="fade-left" data-aos-duration="700">
+        <p class="step-pill">الخطوة الثانية</p>
+        <h2>جاوب على الأسئلة بالأسفل</h2>
+        <p>لتقدر تفتح حساب التداول داخل مجموعة الواتس</p>
       </div>
 
-      <!-- Progress Bar -->
-      <div @fadeInUp class="progress-section" data-aos="fade-up" data-aos-duration="600">
-        <div class="progress-header">
-          <span class="progress-label">
-            السؤال {{ currentQuestion + 1 }} من {{ questions.length }}
-          </span>
-          <span class="answered-count">
-            <lucide-icon name="check-circle-2" class="check-icon" [size]="20"></lucide-icon>
-            {{ answeredCount }}/{{ questions.length }}
-          </span>
-        </div>
-        <div class="progress-bar-wrapper">
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="progress"></div>
+      <div
+        class="card-stack"
+        [class.is-transitioning]="isSlidingQuestion"
+        [class.is-leaving]="questionSlidePhase === 'leaving'"
+        [class.is-entering]="questionSlidePhase === 'entering'"
+        data-aos="fade-right"
+        data-aos-duration="750">
+        <article
+          @slideInOut
+          class="question-card"
+          [attr.aria-label]="'السؤال ' + (currentQuestion + 1)">
+          <div class="question-header question-animate-item">
+            <h3>{{ currentQ.number }}. {{ currentQ.text }}</h3>
+            <p *ngIf="currentQ.hint">{{ currentQ.hint }}</p>
           </div>
-        </div>
-      </div>
 
-      <!-- Question Card -->
-      <div @slideInOut class="question-card" data-aos="zoom-in" data-aos-duration="700">
-        <h3 class="question-title">{{ currentQ.text }}</h3>
-
-        <!-- Radio Options -->
-        <div *ngIf="currentQ.type === 'radio' && currentQ.options" class="options-wrapper">
-          <div 
-            *ngFor="let option of currentQ.options; let i = index"
-            class="option-item"
-            [class.selected]="answers[currentQ.id] === option"
-            (click)="handleAnswer(option)"
-            [@fadeInUp]="{ value: '', params: { delay: i * 100 } }">
-            <div class="radio-wrapper">
-              <input 
-                type="radio" 
-                [id]="'option-' + i"
-                [name]="'question-' + currentQ.id"
-                [value]="option"
-                [checked]="answers[currentQ.id] === option"
-                class="radio-input">
-              <div class="radio-custom"></div>
+          <div *ngIf="currentQ.type === 'text'" class="text-input-wrapper question-animate-item">
+            <input
+              type="text"
+              [(ngModel)]="answers[currentQ.id]"
+              [placeholder]="currentQ.placeholder || 'اكتب إجابتك هنا'"
+              [attr.inputmode]="currentQ.inputMode || 'text'"
+              [class.is-invalid]="shouldShowValidation()"
+              class="answer-input"
+              (input)="handleTextInput()"
+              (blur)="markQuestionTouched(currentQ.id)"
+              (keydown.enter)="onEnterKey($event)">
+            <div
+              class="field-feedback"
+              [class.is-error]="shouldShowValidation()">
+              {{ shouldShowValidation() ? validationMessage : currentQ.validationHint }}
             </div>
-            <label [for]="'option-' + i" class="option-label">
-              {{ option }}
-            </label>
           </div>
-        </div>
 
-        <!-- Text Input -->
-        <div *ngIf="currentQ.type === 'text'" class="text-input-wrapper">
-          <input 
-            type="text"
-            [(ngModel)]="answers[currentQ.id]"
-            placeholder="أدخل إجابتك هنا..."
-            class="text-input"
-            required
-            (keydown.enter)="onEnterKey($event)">
-          <button 
-            (click)="handleNext()"
-            [disabled]="!canProceed"
-            class="next-button">
-            التالي
-            <lucide-icon name="arrow-right" class="arrow-icon" [size]="20"></lucide-icon>
-          </button>
-        </div>
+          <div *ngIf="currentQ.type === 'radio' && currentQ.options" class="options-wrapper question-animate-item">
+            <button
+              type="button"
+              *ngFor="let option of currentQ.options"
+              class="option-item"
+              [class.selected]="answers[currentQ.id] === option"
+              (click)="handleAnswer(option)">
+              <span class="radio-dot"></span>
+              <span>{{ option }}</span>
+            </button>
+          </div>
+
+          <div class="question-footer question-animate-item">
+            <button
+              type="button"
+              class="gold-button next-button"
+              [disabled]="!canProceed || isSubmitting || isSlidingQuestion"
+              (click)="handleNext()">
+              {{ isLastQuestion ? 'إرسال الإجابات' : 'السؤال التالي' }}
+              <span aria-hidden="true">←</span>
+            </button>
+
+            <span class="question-count">السؤال {{ currentQuestion + 1 }} / {{ questions.length }}</span>
+          </div>
+        </article>
       </div>
-
     </div>
-
   </div>
-</div>
+</section>

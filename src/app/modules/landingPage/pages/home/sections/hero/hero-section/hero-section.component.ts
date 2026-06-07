@@ -53,9 +53,8 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     seconds: 0
   };
 
-  challengeStatus: 'not-started' | 'active' | 'ended' = 'not-started';
+  challengeStatus: 'not-started' | 'ended' = 'not-started';
   startCounterDate: number = 0;
-  endDate: number = 0;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -75,16 +74,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** مؤقتا: موعد تجريبي بعد 20 يوم. بلوك Firebase جاهز تحت للتفعيل لاحقا. */
   private loadCountdownSettings(): void {
-    const temporaryStartDate = Date.now() + 20 * 24 * 60 * 60 * 1000;
-    this.initializeCountdown(temporaryStartDate);
-
-    /*
-    قراءة الموعد الحقيقي من Firebase:
-    نفس المكان السابق: /settings
-    نفس الفيلد السابق: start_counter_date
-
     this.firebaseService
       .getObject('settings')
       .pipe(takeUntil(this.destroy$))
@@ -108,7 +98,6 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
           console.error('Error loading countdown settings:', err);
         }
       });
-    */
   }
 
   private initializeCountdown(startDate: number): void {
@@ -121,7 +110,6 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     }
 
     this.startCounterDate = startDate;
-    this.endDate = this.startCounterDate + 7 * 24 * 60 * 60 * 1000;
     this.lastUpdateTime = Date.now();
     this.updateCountdown();
 
@@ -145,12 +133,19 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   private parseDate(dateValue: any): number {
     if (!dateValue) return 0;
 
-    // If it's already a number (timestamp)
-    if (typeof dateValue === 'number') return dateValue;
+    if (typeof dateValue === 'number') {
+      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
+    }
 
-    // If it's a string date format (ISO, …)
     if (typeof dateValue === 'string') {
-      const timestamp = new Date(dateValue).getTime();
+      const trimmedValue = dateValue.trim();
+      const numericValue = Number(trimmedValue);
+
+      if (!Number.isNaN(numericValue)) {
+        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
+      }
+
+      const timestamp = new Date(trimmedValue).getTime();
       return isNaN(timestamp) ? 0 : timestamp;
     }
 
@@ -160,20 +155,13 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   private updateCountdown(): void {
     const now = Date.now();
 
-    // Check challenge status
     if (now < this.startCounterDate) {
       this.challengeStatus = 'not-started';
-      // Calculate time until challenge starts (countdown)
       const timeUntilStart = this.startCounterDate - now;
       this.calculateTimeRemaining(timeUntilStart);
-    } else if (now >= this.startCounterDate && now < this.endDate) {
-      this.challengeStatus = 'active';
-      // Calculate time elapsed since start (count UP)
-      const timeElapsed = now - this.startCounterDate;
-      this.calculateTimeElapsed(timeElapsed);
     } else {
       this.challengeStatus = 'ended';
-      this.countdown = { days: 7, hours: 0, minutes: 0, seconds: 0 };
+      this.countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
       }
@@ -199,37 +187,36 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
     };
   }
 
-  private calculateTimeElapsed(milliseconds: number): void {
-    if (milliseconds <= 0) {
-      this.countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
-      return;
-    }
-
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const totalMinutes = Math.floor(totalSeconds / 60);
-    const totalHours = Math.floor(totalMinutes / 60);
-    const days = Math.floor(totalHours / 24);
-
-    // Count UP: show how much time has passed
-    this.countdown = {
-      days: days,
-      hours: totalHours % 24,
-      minutes: totalMinutes % 60,
-      seconds: totalSeconds % 60
-    };
-  }
-
   get countdownLabel(): string {
     if (this.challengeStatus === 'not-started') {
-      return 'يبدأ التحدي خلال';
-    } else if (this.challengeStatus === 'active') {
-      return 'التحدي يجري الآن';
-    } else {
-      return 'انتهى التحدي';
+      return 'باقي على بداية التحدي';
     }
+
+    return 'انطلق التحدي';
   }
 
   get showCountdown(): boolean {
-    return this.challengeStatus !== 'ended' && this.startCounterDate > 0;
+    return this.startCounterDate > 0 && this.challengeStatus === 'not-started';
+  }
+
+  get webinarDateLabel(): string {
+    if (!this.startCounterDate) return 'قريباً';
+
+    const date = new Date(this.startCounterDate);
+    const weekdays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const weekday = weekdays[date.getDay()];
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const hours24 = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours24 >= 12 ? 'مساء' : 'صباحاً';
+    const hour12 = hours24 % 12 || 12;
+    const minuteLabel = minutes ? `:${minutes.toString().padStart(2, '0')}` : '';
+
+    return `${weekday} ${day}-${month} / الساعة ${hour12}${minuteLabel} ${period}`;
+  }
+
+  formatUnit(value: number): string {
+    return value.toString().padStart(2, '0');
   }
 }

@@ -610,3 +610,11 @@ body {
     padding-top: 28px !important;
   }
 }
+
+html, body {
+  background-color: var(--lp-bg, #05070b);
+  color: var(--lp-text, #f8fafc);
+  font-family: var(--lp-font-body);
+  margin: 0;
+  padding: 0;
+}

@@ -3,4 +3,5 @@ export interface Version {
   name: string;
   isCurrent: boolean;
   createdAt: string;
+  launchDate?: string;
 }

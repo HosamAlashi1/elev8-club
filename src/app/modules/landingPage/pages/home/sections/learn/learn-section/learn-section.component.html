@@ -1,9 +1,9 @@
-<section id="learn" class="learn-section" dir="rtl" data-aos="fade-up" aria-labelledby="learn-title">
-  <header class="learn-head" data-aos="fade-up" data-aos-delay="60">
-    <div class="learn-head-media" aria-hidden="true">
+<section id="learn" class="learn-section" dir="rtl" aria-labelledby="learn-title">
+  <header class="learn-head">
+    <div class="learn-head-media" aria-hidden="true" data-aos="zoom-in-up" data-aos-delay="80" data-aos-duration="650">
       <img class="learn-head-img" src="assets/images/anima-home/learn-education.png" alt="" />
     </div>
-    <h2 id="learn-title" class="learn-title">جزء من يلي راح تتعلمه :</h2>
+    <h2 id="learn-title" class="learn-title" data-aos="fade-up" data-aos-delay="40" data-aos-duration="650">جزء من يلي راح تتعلمه :</h2>
   </header>
 
   <div class="learn-grid" aria-label="أجزاء المحتوى">
@@ -11,7 +11,8 @@
       class="learn-card"
       *ngFor="let item of parts; let i = index"
       data-aos="fade-up"
-      [attr.data-aos-delay]="110 + i * 80"
+      [attr.data-aos-delay]="90 + i * 45"
+      data-aos-duration="650"
     >
       <div class="learn-card-head">
         <span class="learn-card-part">{{ item.part }}</span>
@@ -21,7 +22,7 @@
       <p class="learn-card-desc">{{ item.description }}</p>
     </article>
 
-    <article class="learn-card learn-card--cta" data-aos="fade-up" data-aos-delay="540">
+    <article class="learn-card learn-card--cta" data-aos="zoom-in" data-aos-delay="320" data-aos-duration="680">
       <p class="learn-cta-text">
         وحتى أوضحلك الصورة أكثر… كل هذا راح أشرحه إلك بالكامل مجانًا 100%
       </p>

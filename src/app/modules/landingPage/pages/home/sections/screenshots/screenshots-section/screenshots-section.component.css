@@ -392,7 +392,7 @@
   position: relative;
   z-index: 5;
   width: 100%;
-  margin-top: clamp(-170px, -11vw, -80px);
+  margin-top: clamp(-154px, -10vw, -76px);
   display: flex;
   justify-content: center;
 }
@@ -413,32 +413,60 @@
 }
 
 .shots-cards {
-  /* DOM يسار ← يمين تماماً مثل الأنيما */
-  direction: ltr;
+  direction: rtl;
   position: relative;
   z-index: 1;                  /* فوق الخط — يغطّيه بالنص ويبيّن بس من الجانب */
-  width: 100%;
-  display: flex;
-  align-items: stretch;
+  isolation: isolate;
+  width: min(100%, 660px);
+  min-height: 176px;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
   justify-content: center;
   gap: 24px;
-  padding: 32px 24px;
-  border-radius: 20px;
-  border: 2px solid rgb(255 255 255 / 0.5);
-  background: rgb(255 255 255 / 0.05);
-  backdrop-filter: blur(38px);
-  -webkit-backdrop-filter: blur(38px);
+  padding: 28px 40px 30px;
+  border-radius: 18px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  background:
+    radial-gradient(ellipse 90% 64% at 50% 0%, rgb(255 255 255 / 0.18), transparent 62%),
+    linear-gradient(180deg, rgb(25 30 42 / 0.92) 0%, rgb(9 10 15 / 0.96) 78%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -1px 0 rgb(255 255 255 / 0.04),
+    0 22px 54px rgb(0 0 0 / 0.48);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.shots-cards::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(110deg, transparent 0 12%, rgb(255 255 255 / 0.12) 34%, transparent 58%),
+    radial-gradient(circle at 50% 0%, rgb(0 78 238 / 0.1), transparent 56%);
+  opacity: 0.75;
 }
 
 .shots-card {
-  flex: 1;
-  margin: 0;
+  /* max-width: 58ch; */
+  margin: 0 auto;
   direction: rtl;
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: clamp(0.77rem, 1.08vw, 1.04rem);
+  font-weight: 600;
   line-height: 1.7;
-  text-align: justify;
+  text-align: center;
+  /* text-wrap: balance; */
   color: #ffffff;
+  text-shadow: 0 2px 18px rgb(0 0 0 / 0.34);
+}
+
+.shots-card strong {
+  color: #f0c54c;
+  font-weight: 900;
+  text-shadow: 0 0 18px rgb(240 197 76 / 0.34);
 }
 
 /* الفاصل: داش أزرق #004EEE (2px داش / 2px فراغ) — نفس line-4.svg بالأنيما */
@@ -464,11 +492,12 @@
   .shots-phones--mid  { width: clamp(320px, 58%, 520px); }
 
   .shots-cards {
-    flex-wrap: wrap;
-    gap: 16px 24px;
+    width: min(100%, 660px);
+    gap: 22px;
+    padding-inline: 32px;
   }
   .shots-card {
-    flex: 1 1 40%;
+    max-width: 58ch;
   }
   .shots-card-divider {
     display: none;
@@ -499,15 +528,16 @@
   }
   .shots-cards {
     direction: rtl;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 22px 18px;
+    min-height: 0;
+    gap: 18px;
+    padding: 20px 16px 22px;
+    border-radius: 16px;
   }
   .shots-card {
-    flex: 1 1 auto;
     text-align: center;
-    padding: 16px 0;
+    padding: 0;
+    font-size: 0.88rem;
+    line-height: 1.72;
   }
   .shots-card-divider {
     display: block;

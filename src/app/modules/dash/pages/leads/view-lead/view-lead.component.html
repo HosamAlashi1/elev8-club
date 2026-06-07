@@ -173,61 +173,35 @@
         <div class="info-section">
           <h5 class="section-title">Questionnaire Answers</h5>
 
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="field-label">Experience Level</label>
-              <div class="field-value">
-                {{ getExperienceLabel(lead.answers.experienceLevel) }}
+          <ng-container *ngIf="hasNewQuestionnaireAnswers(); else legacyQuestionnaire">
+            <div class="questionnaire-grid">
+              <div
+                class="answer-card"
+                *ngFor="let answer of newQuestionnaireAnswers; let index = index"
+              >
+                <span class="answer-number">{{ index + 1 }}</span>
+                <div>
+                  <label class="field-label">{{ answer.label }}</label>
+                  <div class="field-value answer-value">{{ answer.value }}</div>
+                </div>
               </div>
             </div>
+          </ng-container>
 
-            <div class="col-md-6">
-              <label class="field-label">Ready Amount</label>
-              <div class="field-value">
-                {{ lead.answers.readyAmount || 'N/A' }}
+          <ng-template #legacyQuestionnaire>
+            <div class="questionnaire-grid">
+              <div
+                class="answer-card"
+                *ngFor="let answer of legacyQuestionnaireAnswers; let index = index"
+              >
+                <span class="answer-number">{{ index + 1 }}</span>
+                <div>
+                  <label class="field-label">{{ answer.label }}</label>
+                  <div class="field-value answer-value">{{ answer.value }}</div>
+                </div>
               </div>
             </div>
-
-            <div class="col-md-6">
-              <label class="field-label">Ready in 24h</label>
-              <div class="field-value">
-                <span
-                  class="answer-pill"
-                  [class.yes]="lead.answers.readyIn24h === 'yes'"
-                  [class.no]="lead.answers.readyIn24h !== 'yes'"
-                >
-                  {{ lead.answers.readyIn24h === 'yes' ? 'Yes' : 'No' }}
-                </span>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="field-label">Tried Elev8 Before</label>
-              <div class="field-value">
-                <span
-                  class="answer-pill"
-                  [class.info]="lead.answers.triedElev8Before === 'yes'"
-                  [class.no]="lead.answers.triedElev8Before !== 'yes'"
-                >
-                  {{ lead.answers.triedElev8Before === 'yes' ? 'Yes' : 'No' }}
-                </span>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="field-label">Main Goal</label>
-              <div class="field-value">
-                {{ getGoalLabel(lead.answers.mainGoal) }}
-              </div>
-            </div>
-
-            <div class="col-md-6" *ngIf="lead.answers.location">
-              <label class="field-label">Preferred Location</label>
-              <div class="field-value">
-                {{ lead.answers.location }}
-              </div>
-            </div>
-          </div>
+          </ng-template>
         </div>
       </div>
 

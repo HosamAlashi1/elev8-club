@@ -2,5 +2,29 @@
 .bg-auth {
   background-color: #ffffff;
   border-radius: 16px;
+  color: #111827;
 }
 
+.bg-auth h1 {
+  color: #111827;
+  font-weight: 700;
+}
+
+.bg-auth .text-muted {
+  color: #6b7280 !important;
+}
+
+.bg-auth .form-label {
+  color: #374151;
+  font-weight: 500;
+}
+
+.bg-auth .form-control {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.bg-auth .form-control::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}

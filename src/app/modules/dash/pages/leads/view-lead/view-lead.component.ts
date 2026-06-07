@@ -11,8 +11,14 @@ interface LeadWithAffiliate extends Lead {
     whatsapp_number: string;
     assigned_at: number;
     assigned_via: string;
+    versionKey?: string;
   };
   salesName?: string;
+}
+
+interface AnswerDisplay {
+  label: string;
+  value: string;
 }
 
 @Component({
@@ -23,9 +29,15 @@ interface LeadWithAffiliate extends Lead {
 export class ViewLeadComponent implements OnInit {
   @Input() lead!: LeadWithAffiliate;
 
+  newQuestionnaireAnswers: AnswerDisplay[] = [];
+  legacyQuestionnaireAnswers: AnswerDisplay[] = [];
+
   constructor(public activeModal: NgbActiveModal) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.newQuestionnaireAnswers = this.buildNewQuestionnaireAnswers();
+    this.legacyQuestionnaireAnswers = this.buildLegacyQuestionnaireAnswers();
+  }
 
   getCreatedDate(): string {
     return new Date(this.lead.createdAt).toLocaleDateString('en-US', {
@@ -61,6 +73,39 @@ export class ViewLeadComponent implements OnInit {
   getExperienceLabel(level?: string): string {
     if (!level) return 'N/A';
     return level.charAt(0).toUpperCase() + level.slice(1);
+  }
+
+  private buildNewQuestionnaireAnswers(): AnswerDisplay[] {
+    const answers = this.lead?.answers;
+    if (!answers) return [];
+
+    return [
+      { label: 'كم عمرك؟', value: answers.age || '' },
+      { label: 'شو وضعك الحالي شغل؟', value: answers.workStatus || '' },
+      { label: 'قديش دخلك الشهري بالدولار؟', value: answers.monthlyIncome || '' },
+      { label: 'هل جربت التداول قبل؟', value: answers.tradingExperience || '' },
+      { label: 'شو أكبر مشكلة مالية عندك حاليا؟', value: answers.financialProblem || '' },
+      { label: 'قديش تقدر تخصص من دخلك؟', value: answers.investBudget || '' },
+      { label: 'شو هدفك الأساسي من دخولك السيستم اليوم؟', value: answers.systemGoal || '' }
+    ].filter(answer => !!answer.value?.trim());
+  }
+
+  private buildLegacyQuestionnaireAnswers(): AnswerDisplay[] {
+    const answers = this.lead?.answers;
+    if (!answers) return [];
+
+    return [
+      { label: 'Experience Level', value: this.getExperienceLabel(answers.experienceLevel) },
+      { label: 'Ready Amount', value: answers.readyAmount || '' },
+      { label: 'Ready in 24h', value: answers.readyIn24h ? (answers.readyIn24h === 'yes' ? 'Yes' : 'No') : '' },
+      { label: 'Tried Elev8 Before', value: answers.triedElev8Before ? (answers.triedElev8Before === 'yes' ? 'Yes' : 'No') : '' },
+      { label: 'Main Goal', value: this.getGoalLabel(answers.mainGoal) },
+      { label: 'Preferred Location', value: answers.location || '' }
+    ].filter(answer => !!answer.value?.trim() && answer.value !== 'N/A');
+  }
+
+  hasNewQuestionnaireAnswers(): boolean {
+    return this.newQuestionnaireAnswers.length > 0;
   }
 
   getInitial(): string {

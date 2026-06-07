@@ -71,7 +71,7 @@ export class AffiliatesComponent implements OnInit {
 
     this.isLoading$.next(true);
 
-    this.firebaseService.getAllAffiliates().subscribe(affiliates => {
+    this.firebaseService.getAffiliatesByVersion(this.currentVersion.key).subscribe(affiliates => {
       const affiliatesWithStats: AffiliateWithStats[] = [];
 
       if (affiliates.length === 0) {
@@ -163,6 +163,8 @@ export class AffiliatesComponent implements OnInit {
       size: 'lg'
     });
 
+    modalRef.componentInstance.versionKey = this.currentVersion?.key;
+
     modalRef.result.then(() => this.loadAffiliates(), () => {});
   }
 
@@ -182,6 +184,7 @@ export class AffiliatesComponent implements OnInit {
     });
 
     modalRef.componentInstance.affiliate = affiliate;
+    modalRef.componentInstance.versionKey = this.currentVersion?.key;
 
     modalRef.result.then(() => this.loadAffiliates(), () => {});
   }

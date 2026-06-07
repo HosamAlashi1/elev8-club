@@ -35,11 +35,12 @@ type SlideItem = {
 
           <div class="screens-details" data-aos="fade-up" data-aos-delay="220">
             <div class="promise-copy">
-              <p class="promise-inline">
-                <ng-container *ngFor="let point of proofPoints; let last = last">
-                  <span>{{ point }}</span>
-                  <span class="promise-separator" *ngIf="!last">•</span>
-                </ng-container>
+              <p>
+                يوم <strong>20/5</strong> راح أفرجيك بشكل مباشر قدام الكاميرا خطوة خطوة كيف ناس كثير قدروا يبدؤوا بالتداول بالطريقة الصح وكيف أنت كمان تقدر تعمل نفس الشي
+              </p>
+
+              <p>
+                خلال جلسة مدتها ساعة تقريباً وفي آخر ربع ساعة راح نطبق التداول بشكل مباشر حتى تشوف الخطوات بعينك وتفهم كيف تبدأ بنفسك
               </p>
             </div>
 

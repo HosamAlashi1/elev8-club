@@ -27,11 +27,11 @@ interface FormData {
     ]),
     trigger('slideUp', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(100px) scale(0.9)' }),
-        animate('400ms cubic-bezier(0.4, 0, 0.2, 1)', style({ opacity: 1, transform: 'translateY(0) scale(1)' }))
+        style({ opacity: 0, transform: 'translateY(26px) scale(0.96)' }),
+        animate('520ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0) scale(1)' }))
       ]),
       transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(100px) scale(0.9)' }))
+        animate('220ms ease-in', style({ opacity: 0, transform: 'translateY(18px) scale(0.98)' }))
       ])
     ])
   ]
@@ -183,18 +183,20 @@ export class RegisterPopupComponent implements OnInit {
     // قراءة ref code من الـ URL أو localStorage
     this.route.queryParams.subscribe(params => {
       this.affiliateCode = params['ref'] || localStorage.getItem('affiliateCode') || null;
+      this.currentVersion = null;
+      this.currentAffiliate = null;
 
       // جلب النسخة الحالية
       this.firebaseService.getCurrentVersion().subscribe(version => {
         this.currentVersion = version;
+
+        if (this.affiliateCode && version?.key) {
+          this.firebaseService.getAffiliateByCode(this.affiliateCode, version.key).subscribe(affiliate => {
+            this.currentAffiliate = affiliate;
+          });
+        }
       });
 
-      // جلب بيانات الأفلييت إذا كان موجود
-      if (this.affiliateCode) {
-        this.firebaseService.getAffiliateByCode(this.affiliateCode).subscribe(affiliate => {
-          this.currentAffiliate = affiliate;
-        });
-      }
     });
   }
 

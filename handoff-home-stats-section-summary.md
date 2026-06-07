@@ -171,7 +171,7 @@ C:\Users\Hosam\Downloads\AnimaPackage-React-VXe00 (2)\src\screens\HomeResponsive
   - بطاقة الطالب فوق الفيديو.
   - رقم ذهبي مثل `+$1,000`.
   - أزرار أسهم مطابقة من صور PNG.
-  - مجموعة avatars مع `+150`.
+  - مجموعة avatars مع `+1,600`.
   - موبايل مضبوط في الوسط بعد إزالة `translateX(-38px)`.
 
 قرارات مهمة جدًا:
