@@ -79,7 +79,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   sellSignals: Array<{x: number, y: number, delay: number}> = [];
   
   private animationInterval: any;
-  
+  private homeContentEl: HTMLElement | null = null;
+  private scrollRafId: number | null = null;
+  private boundScrollListener: (() => void) | null = null;
+
   // لحفظ ref code
   affiliateCode: string | null = null;
 
@@ -123,20 +126,22 @@ export class HomeComponent implements OnInit, OnDestroy {
   
   private initScrollAnimation(): void {
     if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', () => {
-        const scrolled = window.scrollY;
-        const homeContent = document.querySelector('.home-content') as HTMLElement;
-        
-        if (homeContent) {
-          // تغيير opacity بناءً على السكرول
-          const opacity = Math.min(0.15 + (scrolled / 5000), 0.25);
-          homeContent.style.setProperty('--scroll-opacity', opacity.toString());
-          
-          // تحريك الخلفية بناءً على السكرول
-          const translateY = scrolled * 0.3;
-          homeContent.style.setProperty('--scroll-translate', `${translateY}px`);
-        }
-      });
+      this.homeContentEl = document.querySelector('.home-content');
+
+      this.boundScrollListener = () => {
+        if (this.scrollRafId !== null) return;
+        this.scrollRafId = requestAnimationFrame(() => {
+          this.scrollRafId = null;
+          const scrolled = window.scrollY;
+          const el = this.homeContentEl;
+          if (el) {
+            el.style.setProperty('--scroll-opacity', String(Math.min(0.15 + scrolled / 5000, 0.25)));
+            el.style.setProperty('--scroll-translate', `${scrolled * 0.3}px`);
+          }
+        });
+      };
+
+      window.addEventListener('scroll', this.boundScrollListener, { passive: true });
     }
   }
 
@@ -180,6 +185,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.animationInterval) {
       clearInterval(this.animationInterval);
+    }
+    if (this.boundScrollListener) {
+      window.removeEventListener('scroll', this.boundScrollListener);
+    }
+    if (this.scrollRafId !== null) {
+      cancelAnimationFrame(this.scrollRafId);
     }
   }
   

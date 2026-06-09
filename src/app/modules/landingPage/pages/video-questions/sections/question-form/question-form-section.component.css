@@ -5,11 +5,6 @@
   direction: rtl;
 }
 
-.question-form-section.is-success {
-  min-height: 0;
-  padding: 0;
-}
-
 .question-shell {
   width: min(100%, 1120px);
   margin: 0 auto;
@@ -20,6 +15,14 @@
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
   align-items: center;
   gap: clamp(34px, 6vw, 112px);
+  transition: opacity 220ms ease, transform 220ms ease, filter 220ms ease;
+}
+
+.question-layout.is-modal-open {
+  opacity: 0.42;
+  filter: blur(1.5px);
+  transform: scale(0.985);
+  pointer-events: none;
 }
 
 .question-copy {
@@ -523,8 +526,8 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 96px 20px 72px;
-  overflow: hidden;
+  padding: 24px 18px;
+  overflow: auto;
   isolation: isolate;
   text-align: center;
 }
@@ -532,54 +535,43 @@
 .success-backdrop {
   position: absolute;
   inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(circle at 50% 47%, rgba(0, 255, 137, 0.13), transparent 28%),
-    radial-gradient(circle at 50% 65%, rgba(3, 50, 142, 0.22), transparent 42%),
-    rgba(2, 4, 10, 0.82);
+  z-index: 0;
+  background: rgba(2, 4, 10, 0.62);
   backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
 }
 
 .success-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.48)),
-    radial-gradient(ellipse at center, transparent 0 32%, rgba(0, 0, 0, 0.45) 74%);
-  pointer-events: none;
+  content: none;
 }
 
 .success-content {
   position: relative;
-  width: min(100%, 920px);
+  z-index: 1;
+  width: min(100%, 600px);
   display: grid;
   justify-items: center;
+  padding: clamp(18px, 4vw, 28px) clamp(14px, 4vw, 24px);
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   animation: successLift 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .success-content::before {
-  content: "";
-  position: absolute;
-  top: 116px;
-  width: min(620px, 78vw);
-  height: 110px;
-  border-radius: 999px;
-  background: radial-gradient(ellipse at center, rgba(0, 255, 140, 0.26), rgba(0, 129, 82, 0.12) 46%, transparent 72%);
-  filter: blur(18px);
-  opacity: 0.95;
-  animation: whatsappGlow 4.2s ease-in-out infinite;
+  content: none;
 }
 
 .whatsapp-orb {
   position: relative;
   z-index: 1;
-  width: clamp(108px, 10vw, 152px);
-  height: clamp(108px, 10vw, 152px);
+  width: clamp(92px, 10vw, 124px);
+  height: clamp(92px, 10vw, 124px);
   display: grid;
   place-items: center;
-  margin-bottom: clamp(24px, 3vw, 36px);
+  margin-bottom: clamp(18px, 3vw, 28px);
   filter: drop-shadow(0 24px 40px rgba(0, 255, 140, 0.22));
   animation: whatsappFloat 5.6s ease-in-out infinite;
 }
@@ -593,23 +585,23 @@
 .success-panel h2 {
   position: relative;
   z-index: 1;
-  max-width: 980px;
+  max-width: 520px;
   margin: 0;
   color: #ffffff;
   font-family: var(--lp-font-display);
-  font-size: clamp(38px, 4.5vw, 72px);
+  font-size: clamp(28px, 4vw, 42px);
   font-weight: 900;
-  line-height: 1.22;
-  text-shadow: 0 16px 42px rgba(0, 0, 0, 0.46);
+  line-height: 1.32;
+  text-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
 }
 
 .success-copy {
   position: relative;
   z-index: 1;
-  max-width: 640px;
-  margin: 18px 0 0;
+  max-width: 460px;
+  margin: 14px 0 0;
   color: rgba(255, 255, 255, 0.82);
-  font-size: clamp(16px, 1.45vw, 21px);
+  font-size: clamp(15px, 1.45vw, 18px);
   line-height: 1.8;
 }
 
@@ -621,8 +613,8 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-top: 30px;
-  padding: 0 28px;
+  margin-top: 26px;
+  padding: 0 26px;
   overflow: hidden;
   border: 0;
   border-radius: 12px;

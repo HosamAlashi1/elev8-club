@@ -1623,3 +1623,50 @@ button {
     animation: none;
   }
 }
+
+/* ── Performance: remove backdrop-filter (expensive on all GPUs) ───────── */
+.eyebrow {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.cta-strip {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(8, 12, 28, 0.90);
+}
+
+.profit-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(14, 20, 44, 0.94);
+}
+
+.challenge-stack span,
+.challenge-stack b {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(14, 20, 44, 0.92);
+}
+
+.faq details,
+.review-grid article {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.faq--anima details {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background:
+    linear-gradient(101deg, rgba(10, 25, 55, 0.94) 0%, rgba(15, 20, 35, 0.96) 57%, rgba(255, 255, 255, 0.05) 100%),
+    rgba(255, 255, 255, 0.025);
+}
+
+/* Remove filter animation from FAQ decoration — motion stays, no per-frame repaint */
+@keyframes faqQuestionFloat {
+  0%   { transform: translate3d(0, 0, 0) rotate(-1deg) scale(1); }
+  45%  { transform: translate3d(-3px, -10px, 0) rotate(2deg) scale(1.025); }
+  100% { transform: translate3d(4px, -4px, 0) rotate(-2deg) scale(1.01); }
+}

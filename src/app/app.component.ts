@@ -29,10 +29,13 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   previousUrl: string | null = null;
+  private lastTouchEnd = 0;
 
   constructor(private publicService: PublicService, private router: Router) { }
 
   async ngOnInit(): Promise<void> {
+    this.disablePageZoom();
+
     AOS.init({
       duration: 1000,
       once: true,
@@ -123,5 +126,48 @@ export class AppComponent implements OnInit {
     if (link) {
       link.remove();
     }
+  }
+
+  private disablePageZoom(): void {
+    const viewport = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+    viewport?.setAttribute(
+      'content',
+      'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+    );
+
+    const preventZoom = (event: Event) => {
+      event.preventDefault();
+    };
+
+    document.addEventListener('gesturestart', preventZoom, { passive: false });
+    document.addEventListener('gesturechange', preventZoom, { passive: false });
+    document.addEventListener('gestureend', preventZoom, { passive: false });
+
+    document.addEventListener('touchmove', (event: TouchEvent) => {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', (event: TouchEvent) => {
+      const now = Date.now();
+      if (now - this.lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      this.lastTouchEnd = now;
+    }, { passive: false });
+
+    window.addEventListener('wheel', (event: WheelEvent) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    window.addEventListener('keydown', (event: KeyboardEvent) => {
+      const zoomKeys = ['+', '=', '-', '0'];
+      if ((event.ctrlKey || event.metaKey) && zoomKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    });
   }
 }

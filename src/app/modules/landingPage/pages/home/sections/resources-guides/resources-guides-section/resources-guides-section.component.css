@@ -51,11 +51,17 @@
   pointer-events: none;
 }
 
-.resources-guides__portrait {
+.resources-guides__picture {
   position: absolute;
   inset: 0;
   width: 551px;
   height: 846px;
+  display: block;
+}
+
+.resources-guides__portrait {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center top;
   mix-blend-mode: lighten;
@@ -134,7 +140,7 @@
   text-align: right;
 }
 
-.resources-guides__body > p:first-child {
+.resources-guides__body>p:first-child {
   color: rgba(255, 255, 255, 0.86);
 }
 
@@ -249,6 +255,7 @@
 }
 
 @keyframes mouse-cue-pulse {
+
   0%,
   100% {
     box-shadow:
@@ -266,6 +273,7 @@
 }
 
 @keyframes mouse-cue-scroll {
+
   0%,
   100% {
     opacity: 0.92;
@@ -408,10 +416,15 @@
     object-position: center 18%;
   }
 
+  .resources-guides__picture {
+    width: 100%;
+    height: 100%;
+  }
+
   .resources-guides__ring {
-    top: 6%;
-    right: 14%;
-    width: 72%;
+    top: 5%;
+    right: 25%;
+    width: 50%;
     height: auto;
     aspect-ratio: 1;
     z-index: 1;

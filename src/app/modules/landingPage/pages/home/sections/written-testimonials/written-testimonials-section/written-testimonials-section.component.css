@@ -262,3 +262,12 @@
     min-width: min(100%, 260px);
   }
 }
+
+@media (max-width: 980px) {
+  .promise-copy,
+  .promise-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: linear-gradient(180deg, rgb(25 30 42 / 0.98) 0%, rgb(9 10 15 / 0.99) 78%);
+  }
+}

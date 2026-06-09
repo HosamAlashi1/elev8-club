@@ -55,6 +55,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
 
   challengeStatus: 'not-started' | 'ended' = 'not-started';
   startCounterDate: number = 0;
+  isCountdownLoaded = false;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -82,6 +83,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
         next: (settings: any) => {
           if (!settings?.start_counter_date) {
             console.warn('Countdown - settings.start_counter_date not found');
+            this.isCountdownLoaded = false;
             return;
           }
 
@@ -89,9 +91,11 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
 
           if (!firebaseStartDate || isNaN(firebaseStartDate)) {
             console.warn('Countdown - invalid start_counter_date value:', settings.start_counter_date);
+            this.isCountdownLoaded = false;
             return;
           }
 
+          this.isCountdownLoaded = true;
           this.initializeCountdown(firebaseStartDate);
         },
         error: (err) => {
@@ -196,7 +200,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   }
 
   get showCountdown(): boolean {
-    return this.startCounterDate > 0 && this.challengeStatus === 'not-started';
+    return this.isCountdownLoaded && this.startCounterDate > 0 && this.challengeStatus === 'not-started';
   }
 
   get webinarDateLabel(): string {
@@ -217,6 +221,8 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   }
 
   formatUnit(value: number): string {
+    if (!this.isCountdownLoaded) return '--';
+
     return value.toString().padStart(2, '0');
   }
 }

@@ -780,6 +780,43 @@
   }
 }
 
+@media (max-width: 980px) {
+  .stats-section__bg {
+    filter: none;
+  }
+
+  .stats-section__constellation::before {
+    animation: none;
+    filter: none;
+  }
+
+  .stats-section__halo {
+    animation: none;
+  }
+
+  .stats-section__pill--main {
+    animation: stats-art-float-mobile 7s ease-in-out infinite;
+    filter: drop-shadow(0 0 32px rgba(0, 78, 238, 0.7));
+  }
+
+  @keyframes stats-art-float-mobile {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -8px, 0); }
+  }
+
+  .stats-section__icon {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    animation: none;
+  }
+
+  .stats-section__cta-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(10, 14, 28, 0.92);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   .stats-section__constellation::before,
@@ -788,5 +825,46 @@
   .stats-section__icon,
   .stats-section__button::after {
     animation: none;
+  }
+}
+
+/* ── Performance: desktop + mobile shared fixes ────────────────────────── */
+.stats-section__bg {
+  filter: none;
+}
+
+.stats-section__constellation::before {
+  filter: none;
+  animation: stats-glow-breathe 7.5s ease-in-out infinite;
+}
+
+.stats-section__icon {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.stats-section__cta-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(10, 14, 28, 0.92);
+}
+
+@keyframes stats-art-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: drop-shadow(0 0 42px rgba(0, 78, 238, 0.72));
+  }
+  50% {
+    transform: translate3d(0, -8px, 0) scale(1.018);
+    filter: drop-shadow(0 0 42px rgba(0, 78, 238, 0.72));
+  }
+}
+
+@keyframes stats-halo-breathe {
+  0%, 100% {
+    opacity: 0.46;
+  }
+  50% {
+    opacity: 0.68;
   }
 }

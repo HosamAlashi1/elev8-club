@@ -93,7 +93,6 @@
 .shots-sub {
   margin: 0;
   font-size: clamp(0.85rem, 1.2vw, 1rem);
-  color: rgb(255 255 255 / 0.78);
 }
 
 /* ---------- منصّة التلفونات (coverflow carousel) ---------- */
@@ -549,4 +548,35 @@
     background-size: 4px 1px;
     background-repeat: repeat-x;
   }
+}
+
+/* ── Performance: desktop + mobile shared fixes ────────────────────────── */
+.shots-phone {
+  transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 520ms ease;
+}
+
+.shots-phone__card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background-color: rgba(10, 18, 42, 0.88);
+}
+
+.shots-nav__btn {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.shots-visual::before {
+  filter: none;
+}
+
+.shots-phone__accent {
+  filter: blur(18px);
+}
+
+.shots-cards {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: linear-gradient(180deg, rgb(25 30 42 / 0.98) 0%, rgb(9 10 15 / 0.99) 78%);
 }

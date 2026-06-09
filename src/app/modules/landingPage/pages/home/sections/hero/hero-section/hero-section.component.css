@@ -133,11 +133,11 @@
 }
 
 .hero-topbar {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   left: 0;
-  z-index: 8;
+  z-index: 1000;
   isolation: isolate;
   height: 76px;
   display: flex;
@@ -426,6 +426,10 @@
   box-shadow: none;
   backdrop-filter: none;
   transform: translateY(-50%);
+}
+
+.hero-countdown.is-loading {
+  opacity: 0.72;
 }
 
 .hero-countdown::before {
@@ -1030,7 +1034,7 @@
   }
 
   .hero-topbar {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     left: 0;
@@ -1154,15 +1158,15 @@
   .hero-topbar {
     height: 72px;
     min-height: 72px;
-    gap: 8px;
-    padding: 0 10px;
+    gap: 6px;
+    padding: 0 8px;
   }
 
   .hero-countdown {
     right: 8px;
-    max-width: calc(100% - 128px);
-    gap: 5px;
-    transform: translateY(-50%) scale(0.84);
+    max-width: calc(100% - 122px);
+    gap: 0;
+    transform: translateY(-50%);
     transform-origin: right center;
   }
 
@@ -1177,38 +1181,116 @@
   }
 
   .hero-countdown__units {
-    gap: 5px;
+    gap: 3px;
   }
 
   .hero-countdown__unit {
-    height: 34px;
-    min-width: 43px;
-    padding: 0 8px;
-    border-radius: 10px;
+    height: 31px;
+    min-width: 34px;
+    padding: 0 5px;
+    border-width: 1px;
+    border-radius: 8px;
   }
 
   .hero-countdown__unit--days {
-    min-width: 76px;
+    min-width: 52px;
   }
 
   .hero-countdown__unit strong {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .hero-countdown__unit span {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .countdown-separator {
-    font-size: 16px;
+    font-size: 12px;
   }
 
   .topbar-btn {
-    left: 10px;
-    min-width: 112px;
-    height: 34px;
-    padding: 0 10px;
-    font-size: 11px;
+    left: 8px;
+    min-width: 104px;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 10.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-countdown {
+    right: 6px;
+    max-width: calc(100% - 112px);
+  }
+
+  .hero-countdown__units {
+    gap: 2px;
+  }
+
+  .hero-countdown__unit {
+    min-width: 31px;
+    padding-inline: 4px;
+  }
+
+  .hero-countdown__unit--days {
+    min-width: 47px;
+  }
+
+  .topbar-btn {
+    left: 6px;
+    min-width: 98px;
+    padding-inline: 7px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 980px) {
+  .hero-topbar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .eyebrow {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.10);
+  }
+
+  .eyebrow::before {
+    animation: none;
+  }
+
+  .cta-strip {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(8, 12, 28, 0.90);
+  }
+
+  .hero-countdown::before {
+    filter: none;
+  }
+
+  .hero h1 b {
+    animation: shimmerRun 8s cubic-bezier(0.19, 1, 0.22, 1) infinite;
+    filter: drop-shadow(0 0 14px rgba(253, 242, 142, 0.22));
+  }
+
+  .gold-btn {
+    animation: gradientFlow 7s ease infinite;
+    box-shadow: 0 0 26px rgba(215, 167, 71, 0.38);
+  }
+
+  .gold-btn::before {
+    animation: none;
+    opacity: 0;
+  }
+
+  .gold-btn .orbit {
+    display: none;
+  }
+
+  .ambient-dot::after {
+    display: none;
   }
 }
 

@@ -1,7 +1,13 @@
-<section class="question-form-section" [class.is-success]="showCTA" dir="rtl" aria-label="أسئلة التسجيل">
+<section class="question-form-section" [class.has-success-popup]="showCTA" dir="rtl" aria-label="أسئلة التسجيل">
   <div class="question-shell">
 
-    <div *ngIf="showCTA" @fadeInUp class="success-panel">
+    <div
+      *ngIf="showCTA"
+      @fadeInUp
+      class="success-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="whatsapp-popup-title">
       <div class="success-backdrop" aria-hidden="true"></div>
 
       <div class="success-content">
@@ -9,7 +15,7 @@
           <img src="assets/images/video-questions/whatsapp-coin.svg" alt="WhatsApp">
         </div>
 
-        <h2>ممتاز، تسجيلك صار جاهز للخطوة الأخيرة</h2>
+        <h2 id="whatsapp-popup-title">ممتاز، تسجيلك صار جاهز للخطوة الأخيرة</h2>
         <p class="success-copy">
           اضغط الزر بالأسفل عشان تنتقل للواتساب وتدخل مع الفريق مباشرة.
         </p>
@@ -21,7 +27,11 @@
       </div>
     </div>
 
-    <div *ngIf="!showCTA" class="question-layout">
+    <div
+      class="question-layout"
+      [class.is-modal-open]="showCTA"
+      [attr.aria-hidden]="showCTA ? 'true' : null"
+      [attr.inert]="showCTA ? '' : null">
       <div class="question-copy" data-aos="fade-left" data-aos-duration="700">
         <p class="step-pill">الخطوة الثانية</p>
         <h2>جاوب على الأسئلة بالأسفل</h2>

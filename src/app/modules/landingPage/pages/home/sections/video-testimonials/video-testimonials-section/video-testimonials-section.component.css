@@ -103,11 +103,13 @@
   margin: 0;
   position: relative;
   isolation: isolate;
+  overflow: visible;
+  padding-top: 0.14em;
   color: transparent;
   font-family: var(--font-high-extra);
   font-size: 46px;
   font-weight: 800;
-  line-height: 0.98;
+  line-height: 1.14;
   letter-spacing: 0;
   text-shadow:
     0 18px 50px rgba(255, 255, 255, 0.10),
@@ -120,6 +122,7 @@
   width: max-content;
   max-width: 100%;
   margin-inline: 0 auto;
+  line-height: 1.14;
   color: transparent;
   background-size: 270% 100%, 100% 100%;
   background-position: 150% 0, 0 0;
@@ -132,13 +135,14 @@
 
 .proof-title__muted {
   background:
-    linear-gradient(106deg, transparent 0%, transparent 38%, rgba(255, 255, 255, 0.68) 46%, rgba(253, 242, 142, 0.12) 52%, transparent 63%, transparent 100%),
-    linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.76) 36%, rgba(255, 255, 255, 0.22) 68%, rgba(255, 255, 255, 0.06) 100%);
+    linear-gradient(106deg, transparent 0%, transparent 38%, rgba(255, 255, 255, 0.72) 46%, rgba(253, 242, 142, 0.16) 52%, transparent 63%, transparent 100%),
+    linear-gradient(180deg, #ffffff 0%, #ffffff 58%, rgba(255, 255, 255, 0.86) 100%);
   background-size: 270% 100%, 100% 100%;
   background-position: 150% 0, 0 0;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
 }
 
 .proof-title__main {
@@ -821,6 +825,38 @@
   }
 }
 
+/* ── Performance: remove backdrop-filter + fix animated filter ─────────── */
+.proof-eyebrow {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(40, 48, 72, 0.92);
+}
+
+.proof-avatars {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: linear-gradient(180deg, rgba(31, 39, 63, 0.96), rgba(14, 21, 44, 0.98));
+}
+
+.student-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background:
+    radial-gradient(circle at 72% 12%, rgba(255, 255, 255, 0.06), transparent 32%),
+    linear-gradient(180deg, rgba(29, 34, 47, 0.98), rgba(13, 15, 23, 0.99));
+}
+
+@keyframes proofBadgeSwap {
+  0% {
+    opacity: 0;
+    transform: translateX(var(--slide-enter-x)) translateY(var(--meta-enter-y)) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 1120px) {
   .proof-shell {
     grid-template-columns: 1fr;
@@ -872,7 +908,8 @@
   .proof-copy h2 {
     width: min(335px, calc(100% - 34px));
     font-size: clamp(23px, 6.5vw, 25.5px);
-    line-height: 1.05;
+    line-height: 1.18;
+    padding-top: 0.16em;
     text-align: center;
   }
 

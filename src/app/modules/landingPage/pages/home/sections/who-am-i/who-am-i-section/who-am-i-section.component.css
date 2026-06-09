@@ -178,4 +178,5 @@
   }
   .whoami-bullets { padding-right: 0; list-style: none; }
   .whoami-bullets li::before { content: '• '; }
+  .whoami-image-glow { display: none; }
 }

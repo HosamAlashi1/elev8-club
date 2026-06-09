@@ -8,14 +8,14 @@
     <span class="ambient-dot dot-6"></span>
   </div>
 
-  <div class="hero-topbar" *ngIf="showCountdown" aria-label="موعد بداية التحدي">
+  <div class="hero-topbar" aria-label="موعد بداية التحدي">
     <button class="topbar-btn" type="button" (click)="onOpenRegistration()">
       <span class="topbar-btn__arrow" aria-hidden="true">‹</span>
       <span class="topbar-btn__label">احجز مقعدك مجاناً</span>
     </button>
 
-    <div class="hero-countdown" aria-label="عداد بداية التحدي">
-      <img class="countdown-clock" src="assets/images/anima-home/alarm.png" alt="" aria-hidden="true" />
+    <div class="hero-countdown" [class.is-loading]="!isCountdownLoaded" aria-label="عداد بداية التحدي">
+      <!-- <img class="countdown-clock" src="assets/images/anima-home/alarm.png" alt="" aria-hidden="true" /> -->
       <div class="hero-countdown__units">
         <div class="hero-countdown__unit hero-countdown__unit--days">
           <span>Days</span>
@@ -77,4 +77,3 @@
     </div>
   </div>
 </section>
-
