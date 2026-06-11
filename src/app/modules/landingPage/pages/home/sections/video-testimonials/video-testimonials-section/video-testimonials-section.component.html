@@ -14,8 +14,9 @@
           [class]="'phone-ghost phone-ghost--' + (i + 1)"
         >
           <img
+            *ngIf="preview.poster"
             class="phone-ghost__image"
-            [src]="preview.frame"
+            [src]="preview.poster"
             alt=""
             aria-hidden="true"
             loading="eager"
@@ -34,8 +35,9 @@
         aria-label="تشغيل أو إيقاف الفيديو"
       >
         <img
+          *ngIf="activeSlide.poster && !isVideoPlaying"
           class="phone-frame-image"
-          [src]="activeSlide.frame"
+          [src]="activeSlide.poster"
           [alt]="activeSlide.name"
           loading="eager"
           decoding="async"
@@ -44,8 +46,9 @@
           #proofVideo
           class="phone-video"
           [class.is-playing]="isVideoPlaying"
-          [attr.poster]="activeSlide.frame"
-          preload="auto"
+          [class.is-frame-visible]="!isVideoPlaying && !activeSlide.poster"
+          [attr.poster]="activeSlide.poster || null"
+          preload="metadata"
           playsinline
           webkit-playsinline
         ></video>
@@ -88,7 +91,7 @@
     </div>
 
     <div class="proof-copy">
-      <span class="proof-eyebrow">نتائج من النسخ السابقة</span>
+      <!-- <span class="proof-eyebrow">نتائج من النسخ السابقة</span> -->
       <h2 id="proof-title">
         <span class="proof-title__muted">هاد النظام بنجح</span>
         <span class="proof-title__main">مهما كان وضعك الحالي</span>

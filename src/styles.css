@@ -3,23 +3,111 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/*
+  الخطوط الأصلية (Abar / Akira Expanded) غير متوفرة بترخيص مجاني،
+  فالأسماء القديمة هنا مجرد aliases لبدائل مجانية (OFL) مستضافة محليًا:
+  - "Abar High*"        → Alexandria (عناوين)
+  - "Abar Low*"         → Almarai (نصوص)
+  - "Akira Expanded*"   → Unbounded (نص البراند اللاتيني)
+*/
 @font-face {
   font-family: "Abar High";
-  src:
-    local("Abar High"),
-    local("Abar High-ExtraBold"),
-    local("Abar High ExtraBold"),
-    local("AbarHigh-ExtraBold"),
-    local("Abar High-Black"),
-    local("Abar High Black"),
-    local("AbarHigh-Black");
-  font-weight: 400 900;
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar High";
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar High";
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar High";
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-800.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar High";
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-900.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar High-ExtraBold";
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-800.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar High-Black";
+  src: url("/assets/fonts/alexandria/alexandria-v6-arabic_latin-900.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar Low-Regular";
+  src: url("/assets/fonts/almarai/almarai-v19-arabic_latin-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar Low-Regular";
+  src: url("/assets/fonts/almarai/almarai-v19-arabic_latin-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar Low-Bold";
+  src: url("/assets/fonts/almarai/almarai-v19-arabic_latin-700.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Akira Expanded";
+  src: url("/assets/fonts/unbounded/unbounded-v12-latin-800.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Akira Expanded-SuperBold";
+  src: url("/assets/fonts/unbounded/unbounded-v12-latin-900.woff2") format("woff2");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  --lp-font-body: "Abar High", "Abar High-ExtraBold", "Abar High-Black", "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --lp-font-body:  "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --lp-font-display: "Abar High", "Abar High-Black", "Abar High-ExtraBold", "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   --lp-bg: #05070b;
   --lp-bg-2: #07111f;

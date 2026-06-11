@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+import { FirebaseService } from 'src/app/modules/services/firebase.service';
 
 type TrustStory = {
   title: string;
@@ -14,8 +16,37 @@ type TrustStory = {
   templateUrl: './why-trust-section.component.html',
   styleUrls: ['./why-trust-section.component.css']
 })
-export class WhyTrustSectionComponent {
-  stories: TrustStory[] = [
+export class WhyTrustSectionComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+  private challengeDateLabel = 'قريباً';
+
+  stories: TrustStory[] = this.buildStories();
+
+  constructor(private readonly firebaseService: FirebaseService) {}
+
+  ngOnInit(): void {
+    this.firebaseService
+      .getObject('settings')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((settings: any) => {
+        const startDate = this.parseDate(settings?.start_counter_date);
+
+        if (!startDate) {
+          return;
+        }
+
+        this.challengeDateLabel = this.formatShortDate(startDate);
+        this.stories = this.buildStories();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private buildStories(): TrustStory[] {
+    return [
     {
       title: 'القصة بلشت من مكان مغلوب فيه 0-10',
       bodyLines: [
@@ -29,10 +60,11 @@ export class WhyTrustSectionComponent {
     {
       title: 'من الصفر لأول 10,000,000$ خلال أول سنتين بزنس',
       bodyLines: [
-        'بدأت الأونلاين بزنس في 2020 بدون خبرة',
-        'خلال أول سنة وصلت لأول مليون مبيعات',
-        'وبعدها اشتغلت مع أسماء قوية في المجال، مثل: Eri worre — Damien feier',
-        'calvin becerra',
+        'بدأت الأونلاين بزنس في 2020 بدون خبرة خلال أول سنة وصلت لأول مليون مبيعات ',
+        'وبعدها اشتغلت مع أسماء قوية في المجال مثل:',
+        'Eri Worre',
+        'Damien Feier',
+        'Calvin Becerra',
         'وبنيت فريق عالمي فيه أكثر من 10,000 طالب وحققت أكثر من 10,000,000$',
         'مبيعات في التجارة الإلكترونية خلال سنتين، وتعلمت اهم مهارات البزنس، بناء',
         'الأنظمة، المبيعات، التسويق، الإدارة.'
@@ -55,15 +87,12 @@ export class WhyTrustSectionComponent {
       mediaPosition: 'left'
     },
     {
-      title: 'بنينا حاضنة أحلام وأهداف الشباب Elev8 Club',
+      title: 'بنينا حاضنة أحلام وأهداف الشباب — Elev8 Club',
       bodyLines: [
-        'بدأت الأونلاين بزنس في 2020 بدون خبرة',
-        'خلال أول سنة وصلت لأول مليون مبيعات',
-        'وبعدها اشتغلت مع أسماء قوية في المجال، مثل: Eri worre — Damien feier',
-        'calvin becerra',
-        'وبنيت فريق عالمي فيه أكثر من 10,000 طالب وحققت أكثر من 10,000,000$',
-        'مبيعات في التجارة الإلكترونية خلال سنتين، وتعلمت اهم مهارات البزنس، بناء',
-        'الأنظمة، المبيعات، التسويق، الإدارة.'
+        'بعد ما طبّقت النظام وحققت نتائج قوية',
+        'قررت أنقل هذا الشي لناس أكثر من خلال بيئة صحية ومنظمة',
+        'اليوم قدرنا نساعد أكثر من 50,000 شاب وصبية من مختلف دول العالم',
+        'يبدأوا أول دخل إلهم، ويتعلموا التداول بالطريقة الصحيح'
       ],
       image: 'assets/images/anima-home/trust-instagram.png',
       imageAlt: 'صفحة Elev8 Club على إنستغرام',
@@ -73,20 +102,42 @@ export class WhyTrustSectionComponent {
     {
       title: 'تحدي elev8 club',
       bodyLines: [
-        'قبل عدة أشهر، قدمت النسخة الأولى من التحدي.',
-        'والأشخاص اللي طبقوا فعلًا الخطوات اللي شرحتها،',
-        'قدروا يحققوا آلاف الدولارات خلال أقل من 30 يوم.',
-        'بالبداية فكرنا إنها ممكن تكون مجرد صدفة...',
-        'لذلك كررنا التجربة مرة ثانية بالنسخة 2.0.',
-        'والنتيجة؟ ناس أكثر بدأت تحقق نتائج حقيقية خلال أسبوع.',
-        'وهنا فهمنا إن الموضوع مش حظ، النظام فعلًا يشتغل ويتطور',
-        'ويوم 20/5، راح أشرحلك كل شيء خطوة بخطوة',
-        'في النسخة الجديدة من هذا التحدي المباشر'
+        'قبل عدة أشهر قدمت النسخة الأولى، واللي طبقوا الخطوات قدروا يحققوا آلاف الدولارات خلال أقل من 30 يوم.',
+        'كررنا التجربة بالنسخة 2.0، وكانت النتيجة أوضح: ناس أكثر حققت نتائج حقيقية خلال أسبوع.',
+        `ويوم ${this.challengeDateLabel}، راح أشرحلك النظام خطوة بخطوة في التحدي المباشر الجديد.`
       ],
       image: 'assets/images/anima-home/trust-challenge.png',
       imageAlt: 'تحدي Elev8 Club 0.3',
       mediaPosition: 'left',
       mediaKind: 'plain'
     }
-  ];
+    ];
+  }
+
+  private parseDate(dateValue: any): number {
+    if (!dateValue) return 0;
+
+    if (typeof dateValue === 'number') {
+      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
+    }
+
+    if (typeof dateValue === 'string') {
+      const trimmedValue = dateValue.trim();
+      const numericValue = Number(trimmedValue);
+
+      if (!Number.isNaN(numericValue)) {
+        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
+      }
+
+      const timestamp = new Date(trimmedValue).getTime();
+      return isNaN(timestamp) ? 0 : timestamp;
+    }
+
+    return 0;
+  }
+
+  private formatShortDate(timestamp: number): string {
+    const date = new Date(timestamp);
+    return `${date.getDate()}/${date.getMonth() + 1}`;
+  }
 }

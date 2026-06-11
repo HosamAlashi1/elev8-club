@@ -1,54 +1,4 @@
-@font-face {
-  font-family: "Akira Expanded-SuperBold";
-  src: url("/assets/fonts/anima/akira-expanded-demo.otf") format("opentype");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Abar Low-Regular";
-  src:
-    url("/assets/fonts/anima/AbarLow-Regular.woff2") format("woff2"),
-    url("/assets/fonts/anima/AbarLow-Regular.otf") format("opentype"),
-    local("Abar Low-Regular");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Abar Low-Bold";
-  src:
-    url("/assets/fonts/anima/AbarLow-Bold.woff2") format("woff2"),
-    url("/assets/fonts/anima/AbarLow-Bold.otf") format("opentype"),
-    local("Abar Low-Bold");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Abar High-ExtraBold";
-  src:
-    url("/assets/fonts/anima/AbarHigh-ExtraBold.woff2") format("woff2"),
-    url("/assets/fonts/anima/AbarHigh-ExtraBold.otf") format("opentype"),
-    local("Abar High-ExtraBold");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Abar High-Black";
-  src:
-    url("/assets/fonts/anima/AbarHigh-Black.woff2") format("woff2"),
-    url("/assets/fonts/anima/AbarHigh-Black.otf") format("opentype"),
-    local("Abar High-Black");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* خطوط Abar/Akira معرّفة عالميًا في styles.css كـ aliases لبدائل مجانية (Alexandria/Almarai/Unbounded) */
 
 @font-face {
   font-family: "Cocon Local";
@@ -67,8 +17,8 @@
   --line: rgba(255, 255, 255, 0.5);
   --soft-line: rgba(255, 255, 255, 0.1);
   --glass: rgba(255, 255, 255, 0.05);
-  --font-low-regular: "Abar High", "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-low-bold: "Abar High", "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-high-extra: "Abar High", "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
   --font-high-black: "Abar High", "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
   --font-ar: "Abar High", var(--font-high-extra);
@@ -749,7 +699,7 @@ button {
 .final-cta__brand {
   grid-area: brand;
   min-width: 0;
-  padding-right: 260px;
+  /* padding-right: 260px; */
   direction: rtl;
 }
 

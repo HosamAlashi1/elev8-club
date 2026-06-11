@@ -1,5 +1,13 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
-import Hls from 'hls.js';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 
 interface ProofSlide {
   name: string;
@@ -7,10 +15,9 @@ interface ProofSlide {
   role: string;
   amount: string;
   video: string;
-  frame: string;
-  frameTime: number;
   avatar: string;
   summary: string;
+  poster?: string;
 }
 
 type SlideDirection = 'next' | 'prev';
@@ -18,7 +25,8 @@ type SlideDirection = 'next' | 'prev';
 @Component({
   selector: 'app-video-testimonials-section',
   templateUrl: './video-testimonials-section.component.html',
-  styleUrls: ['./video-testimonials-section.component.css']
+  styleUrls: ['./video-testimonials-section.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestroy {
   @Input() onOpenRegistration?: () => void;
@@ -30,86 +38,73 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
   isVideoPreparing = false;
   transitionDirection: SlideDirection = 'next';
 
-  readonly hlsSource = 'assets/videos/hls_here_1/here_1.m3u8';
-  private hls?: Hls;
   private animationTimer?: ReturnType<typeof setTimeout>;
-  private videoSetupTimer?: ReturnType<typeof setTimeout>;
-  private warmupTimer?: ReturnType<typeof setTimeout>;
+  private videoPrimeTimer?: ReturnType<typeof setTimeout>;
   private pendingPlayToken = 0;
-  private warmupToken = 0;
   private loadedVideoSource = '';
-  private activeVideoReadyKey = '';
-  private hlsMediaAttached = false;
-  private readonly preloadedFrames: HTMLImageElement[] = [];
+  private readonly posterRequests = new Set<number>();
+  private readonly posterAttempts = new Map<number, number>();
+  private readonly posterUrls: string[] = [];
+  private isDestroyed = false;
 
   readonly slides: ProofSlide[] = [
     {
-      name: 'أنصار من فلسطين',
-      country: 'PS',
-      role: 'كانت تشتغل بالمجال التسويقي...',
-      amount: '+$1,000',
-      video: this.hlsSource,
-      frame: 'assets/images/anima-home/proof-frame-ansar.jpg',
-      frameTime: 0.8,
-      avatar: 'assets/images/anima-home/proof-person-2.png',
-      summary: 'وخلال 6 أيام فقط قدرت تحقق +$1,000 للدرجة إنها قررت تترك شغلها بالكامل وتكمل بالتداول.'
-    },
-    {
-      name: 'فادي من سوريا',
-      country: 'SY',
-      role: 'طالب IT ولسه بيدرس...',
-      amount: '$1,500',
-      video: this.hlsSource,
-      frame: 'assets/images/anima-home/proof-frame-fadi.jpg',
-      frameTime: 18.5,
-      avatar: 'assets/images/anima-home/proof-person-2.png',
-      summary: 'وخلال 8 أيام عمل $1,500 جنب دراسته.'
-    },
-    {
-      name: 'هيثم من سوريا',
-      country: 'SY',
-      role: 'موظف وعنده شغل أساسي...',
-      amount: '$1,075',
-      video: this.hlsSource,
-      frame: 'assets/images/anima-home/proof-frame-haitham.jpg',
-      frameTime: 28.5,
+      name: 'أمل من المغرب',
+      country: 'MA',
+      role: 'عندها بزنس خاص...',
+      amount: '$1,009',
+      video: 'assets/videos/testimonials/amal-morocco.mov',
       avatar: 'assets/images/anima-home/proof-person-3.png',
-      summary: 'وخلال ساعتين فقط حقق $1,075.'
-    },
-    {
-      name: 'أبو بكر من ليبيا',
-      country: 'LY',
-      role: 'في صيانة جوالات...',
-      amount: '$384',
-      video: this.hlsSource,
-      frame: 'assets/images/anima-home/proof-frame-abubakr.jpg',
-      frameTime: 38.5,
-      avatar: 'assets/images/anima-home/proof-person-1.png',
-      summary: 'في أول يوم معنا حقق $384.'
+      summary: 'وخلال 5 أيام ونصف حققت $1,009.',
     },
     {
       name: 'لويس من لبنان',
       country: 'LB',
       role: 'يشتغل كوافير نسائي...',
       amount: '$1,500',
-      video: this.hlsSource,
-      frame: 'assets/images/anima-home/proof-frame-louis.jpg',
-      frameTime: 52.5,
+      video: 'assets/videos/testimonials/louis-lebanon.mov',
       avatar: 'assets/images/anima-home/proof-person-2.png',
-      summary: 'وخلال 8 أيام ونصف وصل لـ $1,500.'
+      summary: 'وخلال 8 أيام ونصف وصل لـ $1,500.',
     },
     {
-      name: 'أمل من المغرب',
-      country: 'MA',
-      role: 'عندها بزنس خاص...',
-      amount: '$1,009',
-      video: this.hlsSource,
-      frame: 'assets/images/anima-home/proof-frame-amal.jpg',
-      frameTime: 66.5,
+      name: 'أنصار من فلسطين',
+      country: 'PS',
+      role: 'كانت تشتغل بالمجال التسويقي...',
+      amount: '+$1,000',
+      video: 'assets/videos/testimonials/ansar-palestine.mov',
+      avatar: 'assets/images/anima-home/proof-person-2.png',
+      summary: 'وخلال 6 أيام فقط قدرت تحقق +$1,000 لدرجة إنها قررت تترك شغلها بالكامل وتكمل بالتداول.',
+    },
+    {
+      name: 'فادي من سوريا',
+      country: 'SY',
+      role: 'طالب IT ولسه بيدرس...',
+      amount: '$1,500',
+      video: 'assets/videos/testimonials/fadi-syria.mp4',
+      avatar: 'assets/images/anima-home/proof-person-2.png',
+      summary: 'خلال 8 أيام عمل $1,500 جنب دراسته.',
+    },
+    {
+      name: 'أبو بكر من ليبيا',
+      country: 'LY',
+      role: 'في صيانة جوالات...',
+      amount: '$384',
+      video: 'assets/videos/testimonials/abubakr-libya.mov',
+      avatar: 'assets/images/anima-home/proof-person-1.png',
+      summary: 'من أول يوم معنا حقق $384.',
+    },
+    {
+      name: 'هيثم من تركيا',
+      country: 'TR',
+      role: 'موظف وعنده شغل أساسي...',
+      amount: '$1,075',
+      video: 'assets/videos/testimonials/haitham-turkey.mp4',
       avatar: 'assets/images/anima-home/proof-person-3.png',
-      summary: 'وخلال 5 أيام ونصف حققت $1,009.'
-    }
+      summary: 'وخلال ساعتين فقط حقق $1,075.',
+    },
   ];
+
+  constructor(private readonly cdr: ChangeDetectorRef) {}
 
   get activeSlide(): ProofSlide {
     return this.slides[this.activeIndex];
@@ -123,30 +118,27 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     return [
       'assets/images/anima-home/proof-avatar-1.svg',
       'assets/images/anima-home/proof-avatar-2.svg',
-      'assets/images/anima-home/proof-avatar-3.svg'
+      'assets/images/anima-home/proof-avatar-3.svg',
     ];
   }
 
   ngAfterViewInit(): void {
-    this.preloadFrameImages();
-    this.videoSetupTimer = setTimeout(() => {
-      this.setupHls();
-      this.scheduleVideoWarmup(180);
-    });
+    this.setupVideo();
+    this.requestPosterForIndex(this.activeIndex);
+    this.schedulePosterQueue();
+    this.scheduleVideoPrime(220);
   }
 
   ngOnDestroy(): void {
+    this.isDestroyed = true;
     this.pauseVideo(false);
-    this.hls?.destroy();
     if (this.animationTimer) {
       clearTimeout(this.animationTimer);
     }
-    if (this.videoSetupTimer) {
-      clearTimeout(this.videoSetupTimer);
+    if (this.videoPrimeTimer) {
+      clearTimeout(this.videoPrimeTimer);
     }
-    if (this.warmupTimer) {
-      clearTimeout(this.warmupTimer);
-    }
+    this.posterUrls.forEach((url) => URL.revokeObjectURL(url));
   }
 
   nextSlide(): void {
@@ -186,10 +178,12 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
     this.pauseVideo(false);
     this.pendingPlayToken++;
-    this.activeVideoReadyKey = '';
+    this.loadedVideoSource = '';
     this.transitionDirection = direction;
     this.activeIndex = (index + this.slides.length) % this.slides.length;
     this.isAnimating = true;
+    this.cdr.markForCheck();
+    this.requestPosterForIndex(this.activeIndex);
 
     if (this.animationTimer) {
       clearTimeout(this.animationTimer);
@@ -197,21 +191,12 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
     this.animationTimer = setTimeout(() => {
       this.isAnimating = false;
-      this.scheduleVideoWarmup(120);
+      this.scheduleVideoPrime(80);
+      this.cdr.markForCheck();
     }, 520);
   }
 
-  private preloadFrameImages(): void {
-    this.slides.forEach((slide) => {
-      const image = new Image();
-      image.decoding = 'async';
-      image.src = slide.frame;
-      image.decode?.().catch(() => undefined);
-      this.preloadedFrames.push(image);
-    });
-  }
-
-  private setupHls(): void {
+  private setupVideo(): void {
     const video = this.proofVideo?.nativeElement;
     if (!video) {
       return;
@@ -219,28 +204,14 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
     video.muted = false;
     video.volume = 1;
-    video.preload = 'auto';
+    video.preload = 'metadata';
     video.playsInline = true;
     video.onended = () => {
       this.isVideoPlaying = false;
-      this.activeVideoReadyKey = '';
-      this.seekVideoFrame(video, this.activeSlide.frameTime);
-      this.scheduleVideoWarmup(120);
+      this.isVideoPreparing = false;
+      video.currentTime = 0;
+      this.cdr.markForCheck();
     };
-
-    if (Hls.isSupported() && !this.hls) {
-      this.hls = new Hls({
-        autoStartLoad: false,
-        maxBufferLength: 18,
-        maxMaxBufferLength: 30,
-        backBufferLength: 10
-      });
-      this.hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        this.hlsMediaAttached = true;
-        this.scheduleVideoWarmup(80);
-      });
-      this.hls.attachMedia(video);
-    }
   }
 
   private playActiveVideo(): void {
@@ -250,107 +221,10 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     }
 
     const token = ++this.pendingPlayToken;
-
-    if (this.isActiveVideoReady()) {
-      this.startPreparedVideo(video, token);
-      return;
-    }
-
     this.isVideoPreparing = true;
-    this.prepareActiveVideo(() => {
-      if (token !== this.pendingPlayToken) {
-        return;
-      }
+    this.cdr.markForCheck();
+    this.ensureActiveVideoSource(video);
 
-      this.startPreparedVideo(video, token);
-    });
-  }
-
-  private prepareActiveVideo(onReady: () => void): void {
-    const video = this.proofVideo?.nativeElement;
-    const slide = this.activeSlide;
-    if (!video || !slide) {
-      onReady();
-      return;
-    }
-
-    this.setupHls();
-    const videoKey = this.getVideoKey(slide);
-
-    if (this.isActiveVideoReady()) {
-      onReady();
-      return;
-    }
-
-    const markReady = () => {
-      if (this.getVideoKey(this.activeSlide) !== videoKey) {
-        return;
-      }
-
-      this.activeVideoReadyKey = videoKey;
-      onReady();
-    };
-
-    if (Hls.isSupported()) {
-      const hls = this.hls;
-      if (!hls) {
-        onReady();
-        return;
-      }
-
-      const seekAndPlay = () => {
-        hls.startLoad(slide.frameTime);
-        this.seekVideoFrame(video, slide.frameTime, markReady);
-      };
-
-      this.whenHlsMediaAttached(hls, () => {
-        if (this.loadedVideoSource !== slide.video) {
-          this.loadedVideoSource = slide.video;
-          this.activeVideoReadyKey = '';
-          const onManifestParsed = () => {
-            hls.off(Hls.Events.MANIFEST_PARSED, onManifestParsed);
-            seekAndPlay();
-          };
-          hls.on(Hls.Events.MANIFEST_PARSED, onManifestParsed);
-          hls.loadSource(slide.video);
-          return;
-        }
-
-        seekAndPlay();
-      });
-      return;
-    }
-
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      if (this.loadedVideoSource !== slide.video) {
-        this.loadedVideoSource = slide.video;
-        this.activeVideoReadyKey = '';
-        video.src = slide.video;
-        video.load();
-      }
-      this.seekVideoFrame(video, slide.frameTime, markReady);
-      return;
-    }
-
-    markReady();
-  }
-
-  private pauseVideo(seekToActiveFrame = true): void {
-    const video = this.proofVideo?.nativeElement;
-    if (!video) {
-      return;
-    }
-
-    video.pause();
-    this.isVideoPlaying = false;
-    this.isVideoPreparing = false;
-
-    if (seekToActiveFrame) {
-      this.seekVideoFrame(video, this.activeSlide.frameTime);
-    }
-  }
-
-  private startPreparedVideo(video: HTMLVideoElement, token: number): void {
     video.play()
       .then(() => {
         if (token !== this.pendingPlayToken) {
@@ -360,106 +234,299 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
         this.isVideoPlaying = true;
         this.isVideoPreparing = false;
+        this.cdr.markForCheck();
       })
       .catch(() => {
         if (token === this.pendingPlayToken) {
           this.isVideoPlaying = false;
           this.isVideoPreparing = false;
+          this.cdr.markForCheck();
         }
       });
   }
 
-  private scheduleVideoWarmup(delay = 260): void {
-    if (this.warmupTimer) {
-      clearTimeout(this.warmupTimer);
-    }
-
-    const token = ++this.warmupToken;
-    this.warmupTimer = setTimeout(() => {
-      if (token !== this.warmupToken || this.isVideoPlaying || this.isVideoPreparing) {
-        return;
-      }
-
-      this.prepareActiveVideo(() => {
-        const video = this.proofVideo?.nativeElement;
-        if (!video || this.isVideoPlaying) {
-          return;
-        }
-
-        video.pause();
-      });
-    }, delay);
-  }
-
-  private whenHlsMediaAttached(hls: Hls, callback: () => void): void {
-    if (this.hlsMediaAttached) {
-      callback();
+  private ensureActiveVideoSource(video: HTMLVideoElement): void {
+    const slide = this.activeSlide;
+    if (this.loadedVideoSource === slide.video) {
       return;
     }
 
-    const onMediaAttached = () => {
-      hls.off(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
-      callback();
-    };
-
-    hls.on(Hls.Events.MEDIA_ATTACHED, onMediaAttached);
+    this.loadedVideoSource = slide.video;
+    video.src = slide.video;
+    if (slide.poster) {
+      video.poster = slide.poster;
+    } else {
+      video.removeAttribute('poster');
+    }
+    video.load();
   }
 
-  private isActiveVideoReady(): boolean {
+  private pauseVideo(resetToStart = true): void {
     const video = this.proofVideo?.nativeElement;
-    if (!video || this.activeVideoReadyKey !== this.getVideoKey(this.activeSlide)) {
-      return false;
+    if (!video) {
+      return;
     }
 
-    return video.readyState >= 2 && Math.abs(video.currentTime - this.activeSlide.frameTime) < 0.35;
+    video.pause();
+    this.isVideoPlaying = false;
+    this.isVideoPreparing = false;
+
+    if (resetToStart) {
+      try {
+        video.currentTime = 0;
+      } catch {
+        // Some mobile browsers block seeking before metadata is ready.
+      }
+    }
+
+    this.cdr.markForCheck();
   }
 
-  private getVideoKey(slide: ProofSlide): string {
-    return `${slide.video}#${slide.frameTime}`;
-  }
+  private scheduleVideoPrime(delay = 160): void {
+    if (this.videoPrimeTimer) {
+      clearTimeout(this.videoPrimeTimer);
+    }
 
-  private seekVideoFrame(video: HTMLVideoElement, frameTime: number, onSettled?: () => void): void {
-    let didSettle = false;
-    const requestedFrame = String(frameTime);
-    video.dataset['proofRequestedFrame'] = requestedFrame;
-
-    const settle = () => {
-      if (didSettle || video.dataset['proofRequestedFrame'] !== requestedFrame) {
+    this.videoPrimeTimer = setTimeout(() => {
+      if (this.isDestroyed || this.isVideoPlaying || this.isVideoPreparing) {
         return;
       }
 
-      didSettle = true;
-      onSettled?.();
+      const video = this.proofVideo?.nativeElement;
+      if (!video) {
+        return;
+      }
+
+      this.ensureActiveVideoSource(video);
+    }, delay);
+  }
+
+  private schedulePosterQueue(): void {
+    const orderedIndexes = [
+      this.activeIndex,
+      ...this.slides.map((_, index) => index).filter((index) => index !== this.activeIndex),
+    ];
+
+    let cursor = 0;
+    const loadNext = () => {
+      if (this.isDestroyed || cursor >= orderedIndexes.length) {
+        return;
+      }
+
+      const index = orderedIndexes[cursor++];
+      this.requestPosterForIndex(index)
+        .finally(() => setTimeout(loadNext, 90));
     };
 
-    const seek = () => {
-      if (video.dataset['proofRequestedFrame'] !== requestedFrame) {
-        return;
-      }
+    setTimeout(loadNext, 120);
+  }
 
-      const fallbackDuration = frameTime + 0.2;
-      const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : fallbackDuration;
-      const targetTime = Math.min(frameTime, Math.max(0, duration - 0.1));
+  private requestPosterForIndex(index: number): Promise<void> {
+    const slide = this.slides[index];
+    if (!slide || slide.poster || this.posterRequests.has(index)) {
+      return Promise.resolve();
+    }
 
-      try {
-        if (Math.abs(video.currentTime - targetTime) > 0.05) {
-          video.currentTime = targetTime;
+    const attempts = this.posterAttempts.get(index) || 0;
+    if (attempts >= 3) {
+      return Promise.resolve();
+    }
+
+    this.posterAttempts.set(index, attempts + 1);
+    this.posterRequests.add(index);
+    return this.capturePoster(slide)
+      .then((poster) => {
+        if (!poster || this.isDestroyed) {
+          if (!this.isDestroyed && !slide.poster) {
+            setTimeout(() => this.requestPosterForIndex(index), 600);
+          }
           return;
         }
-      } catch {
-        return;
-      }
 
-      settle();
-    };
+        slide.poster = poster;
+        this.cdr.markForCheck();
+      })
+      .catch(() => {
+        if (!this.isDestroyed && !slide.poster) {
+          setTimeout(() => this.requestPosterForIndex(index), 600);
+        }
+      })
+      .finally(() => {
+        this.posterRequests.delete(index);
+      });
+  }
 
-    if (video.readyState >= 1) {
-      seek();
+  private capturePoster(slide: ProofSlide): Promise<string | null> {
+    if (typeof document === 'undefined') {
+      return Promise.resolve(null);
     }
 
-    video.addEventListener('loadedmetadata', seek, { once: true });
-    video.addEventListener('loadeddata', seek, { once: true });
-    video.addEventListener('canplay', settle, { once: true });
-    video.addEventListener('seeked', settle, { once: true });
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      const candidateTimes = [0.35, 0.75, 1.25, 2, 3.5, 5];
+      const timeout = setTimeout(() => finish(lastPoster), 8500);
+      let isDone = false;
+      let candidateIndex = 0;
+      let candidateTimer: ReturnType<typeof setTimeout> | undefined;
+      let lastPoster: string | null = null;
+
+      const finish = (poster: string | null) => {
+        if (isDone) {
+          return;
+        }
+
+        isDone = true;
+        clearTimeout(timeout);
+        if (candidateTimer) {
+          clearTimeout(candidateTimer);
+        }
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+        resolve(poster);
+      };
+
+      const draw = () => {
+        if (isDone) {
+          return;
+        }
+
+        const sourceWidth = video.videoWidth;
+        const sourceHeight = video.videoHeight;
+        if (!sourceWidth || !sourceHeight) {
+          tryNextCandidate();
+          return;
+        }
+
+        canvas.width = 360;
+        canvas.height = 612;
+        const targetRatio = canvas.width / canvas.height;
+        const sourceRatio = sourceWidth / sourceHeight;
+        let sx = 0;
+        let sy = 0;
+        let sw = sourceWidth;
+        let sh = sourceHeight;
+
+        if (sourceRatio > targetRatio) {
+          sw = sourceHeight * targetRatio;
+          sx = (sourceWidth - sw) / 2;
+        } else {
+          sh = sourceWidth / targetRatio;
+          sy = (sourceHeight - sh) / 2;
+        }
+
+        const context = canvas.getContext('2d');
+        if (!context) {
+          tryNextCandidate();
+          return;
+        }
+
+        context.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+        lastPoster = dataUrl;
+
+        if (!this.isUsablePosterFrame(context, canvas.width, canvas.height)) {
+          tryNextCandidate();
+          return;
+        }
+
+        finish(dataUrl);
+      };
+
+      const tryNextCandidate = () => {
+        if (isDone) {
+          return;
+        }
+
+        if (candidateTimer) {
+          clearTimeout(candidateTimer);
+        }
+
+        const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 6;
+        if (candidateIndex >= candidateTimes.length) {
+          finish(lastPoster);
+          return;
+        }
+
+        const requestedTime = Math.min(candidateTimes[candidateIndex++], Math.max(0, duration - 0.15));
+
+        const drawIfReady = () => {
+          if (!isDone && Math.abs(video.currentTime - requestedTime) < 0.32 && video.readyState >= 2) {
+            draw();
+          }
+        };
+
+        const onSeeked = () => {
+          if (candidateTimer) {
+            clearTimeout(candidateTimer);
+          }
+          draw();
+        };
+
+        video.addEventListener('seeked', onSeeked, { once: true });
+
+        try {
+          video.currentTime = requestedTime;
+        } catch {
+          video.removeEventListener('seeked', onSeeked);
+          drawIfReady();
+          return;
+        }
+
+        candidateTimer = setTimeout(() => {
+          video.removeEventListener('seeked', onSeeked);
+          drawIfReady();
+          if (!isDone) {
+            tryNextCandidate();
+          }
+        }, 900);
+      };
+
+      video.muted = true;
+      video.preload = 'metadata';
+      video.playsInline = true;
+      video.src = slide.video;
+      video.addEventListener('loadedmetadata', () => {
+        tryNextCandidate();
+      }, { once: true });
+      video.addEventListener('error', () => finish(null), { once: true });
+      video.load();
+    });
+  }
+
+  private isUsablePosterFrame(context: CanvasRenderingContext2D, width: number, height: number): boolean {
+    const sampleWidth = Math.min(72, width);
+    const sampleHeight = Math.min(122, height);
+    const image = context.getImageData(
+      Math.floor((width - sampleWidth) / 2),
+      Math.floor((height - sampleHeight) / 2),
+      sampleWidth,
+      sampleHeight
+    );
+    const data = image.data;
+    let luminanceSum = 0;
+    let brightPixels = 0;
+    let variedPixels = 0;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      luminanceSum += luminance;
+
+      if (luminance > 36) {
+        brightPixels++;
+      }
+
+      if (Math.max(r, g, b) - Math.min(r, g, b) > 18) {
+        variedPixels++;
+      }
+    }
+
+    const pixels = data.length / 4;
+    const average = luminanceSum / pixels;
+    return average > 16 && (brightPixels / pixels > 0.025 || variedPixels / pixels > 0.06);
   }
 }

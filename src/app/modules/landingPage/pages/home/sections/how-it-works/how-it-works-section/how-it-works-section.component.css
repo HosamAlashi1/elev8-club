@@ -6,7 +6,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  min-height: 842px;
+  min-height: 760px;
   padding: 8px clamp(16px, 4vw, 72px) 0;
   overflow: hidden;
   background: #05050a;
@@ -27,7 +27,7 @@
   content: "";
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: 122px;
   z-index: -2;
   width: min(980px, 50vw);
   height: 218px;
@@ -84,8 +84,12 @@
 
 .hiw-sub {
   margin: 14px 0 0;
-  color: #ffffff;
-  font-family: "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  color: transparent;
+  background: linear-gradient(90deg, #d7a747 0%, #fdf28e 50%, #d7a747 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family:  "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   font-size: clamp(0.92rem, 1.12vw, 1rem);
   font-weight: 400;
   line-height: 1.7;
@@ -93,22 +97,23 @@
 
 .hiw-steps {
   width: min(100%, 1800px);
-  margin: 80px auto 0;
+  margin: 64px auto 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
   direction: rtl;
 }
 
 .hiw-step {
   position: relative;
-  min-height: 318px;
+  min-height: 268px;
   display: flex;
   justify-content: center;
   text-align: right;
 }
 
 .hiw-step-content {
-  width: min(100%, 300px);
+  width: min(100%, 330px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -146,17 +151,17 @@
 .hiw-step-text {
   width: 100%;
   color: #ffffff;
-  font-family: "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
-  font-size: clamp(0.88rem, 1.1vw, 1rem);
+  font-family:  "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-size: clamp(0.84rem, 1vw, 0.94rem);
   font-weight: 400;
-  line-height: 1.72;
+  line-height: 1.58;
   text-align: right;
   text-align-last: right;
 }
 
 .hiw-step:nth-child(3) .hiw-step-text,
 .hiw-step:nth-child(4) .hiw-step-text {
-  text-align: justify;
+  text-align: right;
   text-align-last: right;
 }
 
@@ -165,19 +170,62 @@
 }
 
 .hiw-step-text p + p {
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .hiw-step-text ul {
-  margin: 4px 0;
-  padding: 0 26px 0 0;
-  list-style-position: outside;
+  width: 100%;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
   text-align: right;
   text-align-last: right;
+  list-style: none;
 }
 
 .hiw-step-text li {
-  padding-right: 2px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px 4px;
+  border: 1px solid rgba(0, 78, 238, 0.5);
+  border-radius: 999px;
+  background: rgba(0, 78, 238, 0.1);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 16px rgba(0, 78, 238, 0.14);
+  font-family: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-size: 0.9em;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.hiw-step:nth-child(4) .hiw-step-content {
+  width: min(100%, 390px);
+}
+
+.hiw-step:nth-child(4) .hiw-step-text p:nth-of-type(1),
+.hiw-step:nth-child(4) .hiw-step-text p:nth-of-type(2) {
+  display: inline;
+}
+
+.hiw-step:nth-child(4) .hiw-step-text p:nth-of-type(2)::before {
+  content: " ";
+}
+
+.hiw-step:nth-child(4) .hiw-step-text ul {
+  flex-wrap: nowrap;
+  gap: 5px;
+  margin: 7px 0 6px;
+}
+
+.hiw-step:nth-child(4) .hiw-step-text li {
+  min-height: 26px;
+  padding: 3px 8px 4px;
+  font-size: 0.82em;
 }
 
 .hiw-step-arrow {
@@ -203,14 +251,14 @@
 .hiw-ai {
   position: relative;
   width: min(100%, 1800px);
-  min-height: 218px;
-  margin: 18px auto 0;
+  min-height: 190px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   box-sizing: border-box;
-  padding: 82px 60px 0 0;
+  padding: 0px 60px 0 0;
 }
 
 .hiw-ai h3 {
@@ -315,10 +363,10 @@
 
   .hiw-steps {
     width: min(100%, 980px);
-    margin-top: 64px;
+    margin-top: 54px;
     grid-template-columns: repeat(2, minmax(280px, 360px));
     justify-content: center;
-    gap: 76px 96px;
+    gap: 54px 86px;
   }
 
   .hiw-step {
@@ -340,16 +388,16 @@
 
   .hiw-step-text {
     font-size: clamp(0.84rem, 1.55vw, 0.95rem);
-    line-height: 1.72;
+    line-height: 1.58;
   }
 
   .hiw-ai {
     align-items: flex-start;
     width: min(100%, 980px);
-    min-height: 190px;
+    min-height: 174px;
     justify-content: center;
-    padding: 70px 48px 0 0;
-    margin-top: 36px;
+    padding: 46px 48px 0 0;
+    margin-top: 24px;
   }
 
   .hiw-ai h3 {
@@ -370,7 +418,7 @@
 
   .hiw-section::after {
     right: -120px;
-    bottom: 26px;
+    bottom: 44px;
     width: 520px;
     height: 300px;
   }
@@ -459,7 +507,13 @@
   }
 
   .hiw-step-text ul {
-    margin: 2px 0;
+    margin: 8px 0;
+    gap: 6px;
+  }
+
+  .hiw-step-text li {
+    min-height: 26px;
+    padding-inline: 9px;
   }
 
   .hiw-step-arrow {

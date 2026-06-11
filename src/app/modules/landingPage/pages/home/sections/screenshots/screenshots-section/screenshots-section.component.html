@@ -14,15 +14,27 @@
       <!-- مروحة التلفونات (coverflow carousel) -->
       <div class="shots-deck" [class.is-animating]="isAnimating">
         <figure
-          *ngFor="let img of slides; let i = index; trackBy: trackByIndex"
+          *ngFor="let slide of slideStates; trackBy: trackBySlideSrc"
           class="shots-phone"
-          [attr.data-offset]="offsetFor(i)"
-          [class.is-center]="offsetFor(i) === 0"
-          [attr.aria-hidden]="offsetFor(i) === 0 ? null : true"
+          [attr.data-offset]="slide.offset"
+          [class.is-center]="slide.isCenter"
+          [class.is-clickable]="slide.isCenter"
+          [attr.aria-hidden]="slide.isCenter ? null : true"
+          [attr.tabindex]="slide.isCenter ? 0 : -1"
+          [attr.role]="slide.isCenter ? 'button' : null"
+          (click)="openImagePreview(slide)"
+          (keydown.enter)="openImagePreview(slide)"
+          (keydown.space)="$event.preventDefault(); openImagePreview(slide)"
         >
           <div class="shots-phone__card">
             <span class="shots-phone__accent" aria-hidden="true"></span>
-            <img class="shots-phone__shot" [src]="img" alt="صورة توضيحية لنتيجة حقيقية باستخدام النظام" />
+            <img
+              class="shots-phone__shot"
+              [src]="slide.src"
+              alt="صورة توضيحية لنتيجة حقيقية باستخدام النظام"
+              loading="lazy"
+              decoding="async"
+            />
             <span class="shots-phone__inner-glow" aria-hidden="true"></span>
           </div>
         </figure>
@@ -44,14 +56,40 @@
       <span class="shots-cards-line" aria-hidden="true"></span>
       <div class="shots-cards">
         <p class="shots-card">
-          يوم <strong>20/5</strong> راح أفرجيك بشكل مباشر قدام الكاميرا خطوة خطوة كيف ناس كثير قدروا يبدؤوا بالتداول بالطريقة الصح وكيف أنت كمان تقدر تعمل نفس الشي
+          يوم <span class="shots-card__date">{{ challengeDateLabel }}</span> راح أفرجيك بشكل مباشر قدام الكاميرا خطوة خطوة كيف ناس كثير قدروا يبدؤوا بالطريقة الصح وكيف أنت كمان تقدر تعمل نفس الشي
         </p>
 
         <p class="shots-card">
-          خلال جلسة مدتها ساعة تقريباً وفي آخر ربع ساعة راح نطبق التداول بشكل مباشر حتى تشوف الخطوات بعينك وتفهم كيف تبدأ بنفسك
+          خلال جلسة مدتها ساعة تقريباً<br />
+          وفي آخر ربع ساعة راح نطبق التداول بشكل مباشر حتى تشوف الخطوات بعينك وتفهم كيف تبدأ بنفسك
         </p>
       </div>
     </div>
 
+  </div>
+
+  <div
+    *ngIf="selectedImage"
+    class="shots-preview"
+    role="dialog"
+    aria-modal="true"
+    aria-label="عرض الصورة"
+    (click)="closeImagePreview()"
+  >
+    <button
+      class="shots-preview__close"
+      type="button"
+      aria-label="إغلاق الصورة"
+      (click)="closeImagePreview(); $event.stopPropagation()"
+    >
+      ×
+    </button>
+    <img
+      class="shots-preview__image"
+      [src]="selectedImage"
+      alt="صورة النتيجة بحجم واضح"
+      decoding="async"
+      (click)="$event.stopPropagation()"
+    />
   </div>
 </section>

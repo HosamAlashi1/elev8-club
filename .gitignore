@@ -48,5 +48,8 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+!src/assets/videos/testimonials/
+!src/assets/videos/testimonials/*.mp4
+!src/assets/videos/testimonials/*.mov
 
 .vercel

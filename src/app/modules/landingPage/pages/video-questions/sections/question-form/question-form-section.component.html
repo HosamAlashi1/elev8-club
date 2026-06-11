@@ -7,22 +7,55 @@
       class="success-panel"
       role="dialog"
       aria-modal="true"
+      data-aos="fade-in"
+      data-aos-duration="420"
       aria-labelledby="whatsapp-popup-title">
       <div class="success-backdrop" aria-hidden="true"></div>
 
-      <div class="success-content">
-        <div @scaleIn class="whatsapp-orb">
+      <div
+        class="success-content"
+        data-aos="zoom-in-up"
+        data-aos-delay="80"
+        data-aos-duration="650">
+        <div
+          @scaleIn
+          class="whatsapp-orb"
+          data-aos="zoom-in"
+          data-aos-delay="180"
+          data-aos-duration="600">
           <img src="assets/images/video-questions/whatsapp-coin.svg" alt="WhatsApp">
         </div>
 
-        <h2 id="whatsapp-popup-title">ممتاز، تسجيلك صار جاهز للخطوة الأخيرة</h2>
-        <p class="success-copy">
-          اضغط الزر بالأسفل عشان تنتقل للواتساب وتدخل مع الفريق مباشرة.
+        <h2
+          id="whatsapp-popup-title"
+          class="typewriter-text"
+          [class.is-typing]="successTypingTarget === 'title'"
+          [attr.aria-label]="successTitleText"
+          data-aos="fade-up"
+          data-aos-delay="260"
+          data-aos-duration="600">
+          {{ displayedSuccessTitle }}
+        </h2>
+        <p
+          class="success-copy typewriter-text"
+          [class.is-typing]="successTypingTarget === 'copy'"
+          [attr.aria-label]="successCopyText"
+          aria-live="polite"
+          data-aos="fade-up"
+          data-aos-delay="340"
+          data-aos-duration="600">
+          {{ displayedSuccessCopy }}
         </p>
 
-        <button class="whatsapp-button" (click)="completeRegistration()">
+        <button
+          class="whatsapp-button"
+          [class.is-ready]="isSuccessTypingDone"
+          data-aos="fade-up"
+          data-aos-delay="460"
+          data-aos-duration="620"
+          (click)="completeRegistration()">
           <span aria-hidden="true">←</span>
-          أكمل على الواتساب
+         أنضم الى مجتمع ElEV8 CLUB على الواتساب
         </button>
       </div>
     </div>
@@ -34,7 +67,7 @@
       [attr.inert]="showCTA ? '' : null">
       <div class="question-copy" data-aos="fade-left" data-aos-duration="700">
         <p class="step-pill">الخطوة الثانية</p>
-        <h2>جاوب على الأسئلة بالأسفل</h2>
+        <h2>جاوب على الأسئلة<span class="question-copy__below-word"> بالأسفل</span></h2>
         <p>لتقدر تفتح حساب التداول داخل مجموعة الواتس</p>
       </div>
 

@@ -1,6 +1,6 @@
 :host {
   display: block;
-  --font-low-regular: "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
 }
 
@@ -13,7 +13,6 @@
   padding: 68px 72px 76px;
   overflow: hidden;
   direction: rtl;
-  interpolate-size: allow-keywords;
 }
 
 .faq--anima::before {
@@ -75,7 +74,7 @@
   margin: -7px auto 0;
 }
 
-.faq--anima details {
+.faq--anima .faq-item {
   position: relative;
   padding: 0;
   overflow: hidden;
@@ -87,16 +86,17 @@
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.035),
     0 18px 42px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(38px);
-  -webkit-backdrop-filter: blur(38px);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   transition:
     border-color 260ms ease,
     background 260ms ease,
     box-shadow 260ms ease,
     transform 260ms ease;
+  contain: layout paint;
 }
 
-.faq--anima details[open] {
+.faq--anima .faq-item.is-open {
   border-color: rgba(0, 102, 255, 0.68);
   background:
     linear-gradient(101deg, rgba(9, 22, 50, 0.82) 0%, rgba(9, 20, 46, 0.88) 55%, rgba(0, 72, 210, 0.34) 82%, rgba(0, 105, 255, 0.72) 100%),
@@ -107,28 +107,28 @@
     0 0 26px rgba(0, 78, 238, 0.14);
 }
 
-.faq--anima summary {
+.faq--anima .faq-question {
   position: relative;
   display: flex;
+  width: 100%;
   min-height: 76px;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
   padding: 0 28px 0 31px;
+  border: 0;
+  background: transparent;
   list-style: none;
   color: #ffffff;
   font-family: var(--font-low-regular);
   font-size: 19px;
   font-weight: 400;
   line-height: 1.35;
+  text-align: right;
   cursor: pointer;
 }
 
-.faq--anima summary::-webkit-details-marker {
-  display: none;
-}
-
-.faq--anima summary::before {
+.faq--anima .faq-question::before {
   content: "";
   order: 2;
   flex: 0 0 auto;
@@ -139,17 +139,36 @@
   transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.faq--anima details[open] summary {
+.faq--anima .faq-item.is-open .faq-question {
   background:
     radial-gradient(ellipse 420px 100px at 100% 50%, rgba(0, 112, 255, 0.52) 0%, rgba(0, 78, 238, 0.36) 45%, rgba(0, 78, 238, 0) 78%),
     linear-gradient(101deg, rgba(12, 24, 50, 0.22) 0%, rgba(11, 22, 48, 0.42) 68%, rgba(0, 92, 245, 0.64) 100%);
 }
 
-.faq--anima details[open] summary::before {
+.faq--anima .faq-item.is-open .faq-question::before {
   transform: rotate(180deg);
 }
 
-.faq--anima p {
+.faq--anima .faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+
+.faq--anima .faq-item.is-open .faq-answer {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faq--anima .faq-answer-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.faq--anima .faq-answer p {
   margin: 0;
   padding: 23px 31px 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -158,25 +177,14 @@
   font-size: 17px;
   line-height: 1.8;
   text-align: right;
+  white-space: pre-line;
 }
 
-.faq--anima details::details-content {
-  block-size: 0;
-  overflow: clip;
-  transition:
-    block-size 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    content-visibility 420ms allow-discrete;
-}
-
-.faq--anima details[open]::details-content {
-  block-size: auto;
-}
-
-.faq--anima details[open] p {
+.faq--anima .faq-item.is-open .faq-answer-inner {
   animation: faqAnswerReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.faq--anima details:hover {
+.faq--anima .faq-item:hover {
   transform: translateY(-1px);
   border-color: rgba(0, 108, 255, 0.25);
 }
@@ -240,14 +248,14 @@
     margin-top: 18px;
   }
 
-  .faq--anima summary {
+  .faq--anima .faq-question {
     min-height: 64px;
     gap: 16px;
     padding: 0 18px;
     font-size: 16px;
   }
 
-  .faq--anima p {
+  .faq--anima .faq-answer p {
     padding: 18px 18px 22px;
     font-size: 14.5px;
     line-height: 1.75;
@@ -257,5 +265,13 @@
 @media (prefers-reduced-motion: reduce) {
   .faq--anima .faq-visual {
     animation: none;
+  }
+
+  .faq--anima .faq-answer,
+  .faq--anima .faq-question::before,
+  .faq--anima .faq-item,
+  .faq--anima .faq-answer-inner {
+    animation: none;
+    transition: none;
   }
 }

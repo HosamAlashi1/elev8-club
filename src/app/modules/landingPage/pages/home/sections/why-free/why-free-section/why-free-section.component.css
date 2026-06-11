@@ -124,7 +124,7 @@ app-why-free-section {
   isolation: isolate;
   color: #ffffff;
   font-family: var(--font-high-extra);
-  font-size: 48px;
+  font-size: 35px;
   font-weight: 800;
   line-height: 1.12;
   letter-spacing: 0;
@@ -416,10 +416,6 @@ app-why-free-section {
 
   .why-free__copy {
     width: min(100%, 760px);
-  }
-
-  .why-free h2 {
-    font-size: clamp(2.65rem, 3.35vw, 48px);
   }
 
   .why-free__lead,

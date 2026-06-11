@@ -1,11 +1,3 @@
-@font-face {
-  font-family: "Akira Expanded-SuperBold";
-  src: url("/assets/fonts/anima/akira-expanded-demo.otf") format("opentype");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
 @property --webinar-border-angle {
   syntax: "<angle>";
   inherits: false;
@@ -19,7 +11,7 @@
   --gold-light: #fdf28e;
   --line: rgba(176, 198, 255, 0.14);
   --glass: rgba(255, 255, 255, 0.05);
-  --font-low-regular: "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
   --font-high-black: "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
@@ -27,8 +19,8 @@
   display: block !important;
   position: relative;
   width: 100%;
-  height: 806px;
-  min-height: 806px;
+  height: clamp(549px, calc(28.4vw + 28px), 706px);
+  min-height: clamp(549px, calc(28.4vw + 28px), 706px);
   overflow: hidden;
   direction: rtl;
 }
@@ -36,8 +28,8 @@
 .hero {
   position: relative;
   width: 100%;
-  height: 806px;
-  min-height: 806px;
+  height: clamp(549px, calc(28.4vw + 28px), 706px);
+  min-height: clamp(549px, calc(28.4vw + 28px), 706px);
   display: block;
   padding: 0;
   overflow: hidden;
@@ -222,10 +214,10 @@
 .hero__visual {
   position: absolute;
   left: 86px;
-  top: 105px;
+  top: clamp(72px, 5.4vw, 105px);
   z-index: 1;
-  width: 638px;
-  height: 678px;
+  width: clamp(560px, 33.3vw, 638px);
+  height: clamp(521px, 28.4vw, 678px);
   pointer-events: none;
 }
 
@@ -246,10 +238,10 @@
 
 .hero__copy {
   position: absolute;
-  top: 210px;
+  top: clamp(168px, 10.9vw, 210px);
   right: 145px;
   z-index: 2;
-  width: 650px;
+  width: 700px;
   text-align: right;
 }
 
@@ -284,16 +276,14 @@
   padding: 1px;
   border-radius: inherit;
   background:
-    conic-gradient(
-      from var(--webinar-border-angle, 0deg),
+    conic-gradient(from var(--webinar-border-angle, 0deg),
       rgba(120, 151, 205, 0.16) 0deg,
       rgba(120, 151, 205, 0.16) 92deg,
       rgba(207, 216, 230, 0.38) 118deg,
       rgba(255, 255, 255, 0.95) 138deg,
       rgba(181, 193, 214, 0.52) 158deg,
       rgba(120, 151, 205, 0.16) 188deg,
-      rgba(120, 151, 205, 0.16) 360deg
-    );
+      rgba(120, 151, 205, 0.16) 360deg);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -336,7 +326,7 @@
   font-family: var(--font-high-extra);
   font-weight: 700;
   color: #fff;
-  font-size: 29px;
+  font-size: 27px;
   line-height: 1.35;
   text-align: right;
 }
@@ -467,7 +457,7 @@
   gap: 6px;
   direction: ltr;
   min-width: 0;
-  height: 39px;
+  height: 40px;
   min-width: 52px;
   padding: 0 12px;
   border: 2px solid rgba(96, 151, 255, 0.52);
@@ -529,7 +519,7 @@
   color: #fff;
   font-family: var(--font-low-regular);
   font-size: 14px;
-  line-height: normal;
+  /* line-height: normal; */
   text-align: right;
 }
 
@@ -640,6 +630,7 @@
 }
 
 @keyframes glow {
+
   0%,
   100% {
     box-shadow: 0 0 26px rgba(215, 167, 71, 0.38);
@@ -673,6 +664,7 @@
 }
 
 @keyframes buttonShine {
+
   0%,
   58%,
   100% {
@@ -728,6 +720,7 @@
 }
 
 @keyframes numberGlow {
+
   0%,
   100% {
     filter: drop-shadow(0 0 18px rgba(253, 242, 142, 0.28)) drop-shadow(0 0 48px rgba(255, 255, 255, 0.12));
@@ -739,6 +732,7 @@
 }
 
 @keyframes ambientDotFloat {
+
   0%,
   100% {
     transform: translate3d(0, 0, 0);
@@ -774,6 +768,15 @@
 
   .hero__copy {
     right: calc(50% - 720px + 145px);
+  }
+}
+
+@media (min-width: 981px) and (max-width: 1800px) {
+
+  :host,
+  .hero {
+    height: 521px;
+    min-height: 521px;
   }
 }
 
@@ -1030,7 +1033,7 @@
 @media (max-width: 980px) {
   .hero {
     max-width: min(100%, 760px);
-    padding: 116px clamp(16px, 4vw, 32px) 34px;
+    padding: 116px clamp(16px, 4vw, 32px) clamp(8px, 1.8vw, 16px);
   }
 
   .hero-topbar {
@@ -1125,6 +1128,7 @@
   .hero {
     max-width: min(100%, 820px);
     padding-top: 92px;
+    padding-bottom: 0;
   }
 
   .hero-topbar {
@@ -1295,6 +1299,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .floating-elements *,
   .hero-title-line,
   .hero h1 b,

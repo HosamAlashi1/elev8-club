@@ -7,7 +7,7 @@
   --gold-light: #fdf28e;
   --line: rgba(255, 255, 255, 0.5);
   --glass: rgba(255, 255, 255, 0.06);
-  --font-low-regular: "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
   --font-high-black: "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
@@ -107,7 +107,7 @@
   padding-top: 0.14em;
   color: transparent;
   font-family: var(--font-high-extra);
-  font-size: 46px;
+  font-size: 39px;
   font-weight: 800;
   line-height: 1.14;
   letter-spacing: 0;
@@ -225,7 +225,7 @@
 
 .proof-avatars b {
   grid-column: 2;
-  margin-left: 0;
+  margin-left: -11px;
   color: #dbe8ff;
   font-family: var(--font-low-bold);
   font-size: 11.5px;
@@ -451,6 +451,11 @@
 .phone-video.is-playing {
   opacity: 1;
   filter: brightness(1.08);
+}
+
+.phone-video.is-frame-visible {
+  opacity: 1;
+  filter: brightness(0.9) saturate(0.95);
 }
 
 .play-button {

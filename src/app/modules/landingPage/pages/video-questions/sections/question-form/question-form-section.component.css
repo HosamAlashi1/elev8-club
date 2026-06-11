@@ -60,6 +60,10 @@
   font-size: clamp(40px, 3.5vw, 42px);
 }
 
+.question-copy__below-word {
+  display: inline;
+}
+
 .question-copy p:not(.step-pill),
 .success-copy {
   margin: 0;
@@ -586,6 +590,7 @@
   position: relative;
   z-index: 1;
   max-width: 520px;
+  min-height: calc(clamp(28px, 4vw, 42px) * 2.7);
   margin: 0;
   color: #ffffff;
   font-family: var(--lp-font-display);
@@ -599,10 +604,28 @@
   position: relative;
   z-index: 1;
   max-width: 460px;
+  min-height: calc(clamp(15px, 1.45vw, 18px) * 3.6);
   margin: 14px 0 0;
   color: rgba(255, 255, 255, 0.82);
   font-size: clamp(15px, 1.45vw, 18px);
   line-height: 1.8;
+}
+
+.typewriter-text {
+  display: inline-block;
+}
+
+.typewriter-text.is-typing::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-inline-start: 6px;
+  vertical-align: -0.12em;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.9;
+  animation: typeCaretBlink 780ms steps(1, end) infinite;
 }
 
 .whatsapp-button {
@@ -627,7 +650,7 @@
     0 20px 52px rgba(0, 255, 135, 0.28),
     0 0 0 1px rgba(255, 255, 255, 0.18) inset,
     inset 0 1px 0 rgba(255, 255, 255, 0.46);
-  transition: transform 170ms ease, box-shadow 170ms ease;
+  transition: opacity 220ms ease, transform 220ms ease, box-shadow 170ms ease;
 }
 
 .whatsapp-button::before {
@@ -646,6 +669,30 @@
     0 24px 62px rgba(0, 255, 135, 0.36),
     0 0 0 1px rgba(255, 255, 255, 0.22) inset,
     inset 0 1px 0 rgba(255, 255, 255, 0.54);
+}
+
+.whatsapp-button:not(.is-ready) {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.whatsapp-button.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@keyframes typeCaretBlink {
+  0%,
+  48% {
+    opacity: 0.95;
+  }
+
+  49%,
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes successLift {
@@ -687,6 +734,10 @@
 @media (min-width: 1181px) {
   .question-copy h2 {
     white-space: nowrap;
+  }
+
+  .question-copy__below-word {
+    display: none;
   }
 }
 
@@ -851,5 +902,11 @@
 
   .question-count {
     text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-text.is-typing::after {
+    animation: none;
   }
 }

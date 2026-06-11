@@ -15,15 +15,29 @@
   </div>
 
   <div class="faq-list">
-    <details
+    <article
       *ngFor="let faq of faqs; let i = index"
-      [attr.open]="faq.open ? '' : null"
+      class="faq-item"
+      [class.is-open]="faq.open"
       data-aos="fade-up"
       [attr.data-aos-delay]="110 + i * 55"
       data-aos-duration="700"
     >
-      <summary>{{ faq.question }}</summary>
-      <p>{{ faq.answer }}</p>
-    </details>
+      <button
+        class="faq-question"
+        type="button"
+        [attr.aria-expanded]="faq.open ? 'true' : 'false'"
+        [attr.aria-controls]="'faq-answer-' + i"
+        (click)="toggleFaq(i)"
+      >
+        <span>{{ faq.question }}</span>
+      </button>
+
+      <div class="faq-answer" [id]="'faq-answer-' + i">
+        <div class="faq-answer-inner">
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </article>
   </div>
 </section>

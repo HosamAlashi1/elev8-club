@@ -85,7 +85,7 @@
 .shots-title {
   margin: 0 0 14px;
   font-size: clamp(1.6rem, 3.4vw, 3rem);
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.15;
   color: #ffffff;
 }
@@ -127,6 +127,7 @@
 .shots-deck {
   position: absolute;
   inset: 0;
+  contain: layout paint;
 }
 
 /* كل تلفون يتموضع حسب data-offset (المسافة عن المركز) */
@@ -139,10 +140,20 @@
   aspect-ratio: 320 / 544;
   transform-origin: center center;
   will-change: transform, opacity;
+  contain: layout paint style;
+  backface-visibility: hidden;
   transition:
     transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
     opacity 520ms ease,
     filter 520ms ease;
+}
+
+.shots-phone:not(.is-center) {
+  pointer-events: none;
+}
+
+.shots-phone.is-clickable {
+  cursor: zoom-in;
 }
 
 /* ============================================================
@@ -193,6 +204,8 @@
   z-index: 20;
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
+  content-visibility: hidden;
 }
 .shots-phone[data-offset="-3"] {
   transform: translate(-50%, -50%) translateX(-120%) scale(0.58) skewX(10deg);
@@ -214,6 +227,8 @@
   /* glow أزرق خارجي */
   box-shadow: 0 0 26px rgba(13, 95, 255, 0.30);
   transition: box-shadow 520ms ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* بوردر متدرّج أزرق متوهّج (مش أبيض) — ساطع أزرق من فوق ← أزرق غامق لتحت */
@@ -310,8 +325,11 @@
   width: calc(100% - 16px);
   height: calc(100% - 16px);
   object-fit: cover;
+  background: #05050a;
   border-radius: 16px;
   display: block;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* ---- الـ blob الأزرق تحت التلفون الأوسط (#004EEE) ---- */
@@ -454,7 +472,7 @@
   margin: 0 auto;
   direction: rtl;
   font-size: clamp(0.77rem, 1.08vw, 1.04rem);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.7;
   text-align: center;
   /* text-wrap: balance; */
@@ -462,9 +480,15 @@
   text-shadow: 0 2px 18px rgb(0 0 0 / 0.34);
 }
 
-.shots-card strong {
+.shots-card .strong {
   color: #f0c54c;
-  font-weight: 900;
+  font-weight: 600;
+  text-shadow: 0 0 18px rgb(240 197 76 / 0.34);
+}
+
+.shots-card__date {
+  color: #f0c54c;
+  font-weight: 700;
   text-shadow: 0 0 18px rgb(240 197 76 / 0.34);
 }
 
@@ -579,4 +603,59 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   background: linear-gradient(180deg, rgb(25 30 42 / 0.98) 0%, rgb(9 10 15 / 0.99) 78%);
+}
+
+.shots-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 4vw, 44px);
+  background: rgba(2, 5, 16, 0.88);
+  cursor: zoom-out;
+}
+
+.shots-preview__image {
+  display: block;
+  width: auto;
+  max-width: min(94vw, 920px);
+  max-height: 90vh;
+  border-radius: 18px;
+  object-fit: contain;
+  background: #05050a;
+  box-shadow:
+    0 0 0 1px rgba(96, 160, 255, 0.36),
+    0 22px 80px rgba(0, 0, 0, 0.58);
+  cursor: default;
+}
+
+.shots-preview__close {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 1;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .shots-preview {
+    padding: 14px;
+  }
+
+  .shots-preview__image {
+    max-width: 94vw;
+    max-height: 86vh;
+    border-radius: 14px;
+  }
 }

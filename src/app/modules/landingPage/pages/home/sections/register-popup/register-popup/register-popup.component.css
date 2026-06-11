@@ -1,12 +1,4 @@
 /* Modal Wrapper */
-@font-face {
-  font-family: "Akira Expanded";
-  src: url("/assets/fonts/anima/akira-expanded-demo.otf") format("opentype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 .modal-wrapper {
   position: fixed;
   inset: 0;

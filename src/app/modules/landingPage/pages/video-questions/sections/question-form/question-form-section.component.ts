@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
+import * as AOS from 'aos';
 import { FirebaseService } from '../../../../../services/firebase.service';
 import { GtmService } from '../../../../../services/gtm.service';
 import { Lead, LeadAnswers, Affiliate } from '../../../../../../core/models';
@@ -57,7 +58,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
       placeholder: 'مثال : 24',
       inputMode: 'numeric',
       validation: 'age',
-      validationHint: 'اكتب العمر بالأرقام فقط، بين 18 و 75 سنة.'
+      validationHint: 'اكتب العمر بالأرقام فقط، بين 12 و 75 سنة.'
     },
     {
       id: 'workStatus',
@@ -114,6 +115,13 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   isSlidingQuestion = false;
   questionSlidePhase: 'idle' | 'leaving' | 'entering' = 'idle';
   touchedAnswers: { [key: string]: boolean } = {};
+  readonly successTitleText = 'ممتاز، تسجيلك صار جاهز للخطوة الأخيرة';
+  readonly successCopyText = 'اضغط الزر بالأسفل عشان تنتقل للواتساب وتدخل مع الفريق مباشرة.';
+  displayedSuccessTitle = '';
+  displayedSuccessCopy = '';
+  isSuccessTyping = false;
+  isSuccessTypingDone = false;
+  successTypingTarget: 'title' | 'copy' | 'done' = 'done';
 
   private leadKey: string | null = null;
   private currentLead: Lead | null = null;
@@ -122,6 +130,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   private hasTrackedFormStart = false;
   private slideSwapTimer: ReturnType<typeof setTimeout> | null = null;
   private slideDoneTimer: ReturnType<typeof setTimeout> | null = null;
+  private successTypeTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -158,7 +167,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
         }
 
         if (lead.step === 2) {
-          this.showCTA = true;
+          this.openSuccessPanel();
         }
 
         if (this.affiliateCode && lead.versionKey) {
@@ -172,6 +181,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearSlideTimers();
+    this.clearSuccessTypeTimer();
   }
 
   get progress(): number {
@@ -261,7 +271,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
 
     if (question.validation === 'age') {
       const age = this.parsePositiveNumber(value);
-      return Number.isInteger(age) && age >= 18 && age <= 75;
+      return Number.isInteger(age) && age >= 12 && age <= 75;
     }
 
     if (question.validation === 'monthlyIncome') {
@@ -280,7 +290,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     }
 
     if (question.validation === 'age') {
-      return 'اكتب عمر منطقي بين 18 و 75 سنة.';
+      return 'اكتب عمر منطقي بين 12 و 75 سنة.';
     }
 
     if (question.validation === 'monthlyIncome') {
@@ -342,7 +352,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
           system_goal: answersData.systemGoal || ''
         });
 
-        this.showCTA = true;
+        this.openSuccessPanel();
         this.isSubmitting = false;
       })
       .catch(error => {
@@ -378,6 +388,78 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     if (this.slideDoneTimer) {
       clearTimeout(this.slideDoneTimer);
       this.slideDoneTimer = null;
+    }
+  }
+
+  private openSuccessPanel(): void {
+    const wasAlreadyOpen = this.showCTA;
+    this.showCTA = true;
+
+    if (!wasAlreadyOpen) {
+      this.startSuccessTypewriter();
+    }
+
+    setTimeout(() => {
+      if (typeof AOS.refreshHard === 'function') {
+        AOS.refreshHard();
+      } else {
+        AOS.refresh();
+      }
+    }, 80);
+  }
+
+  private startSuccessTypewriter(): void {
+    this.clearSuccessTypeTimer();
+    this.displayedSuccessTitle = '';
+    this.displayedSuccessCopy = '';
+    this.isSuccessTyping = true;
+    this.isSuccessTypingDone = false;
+    this.successTypingTarget = 'title';
+
+    this.typeText(this.successTitleText, value => {
+      this.displayedSuccessTitle = value;
+    }, () => {
+      this.successTypeTimer = setTimeout(() => {
+        this.successTypingTarget = 'copy';
+        this.typeText(this.successCopyText, value => {
+          this.displayedSuccessCopy = value;
+        }, () => {
+          this.isSuccessTyping = false;
+          this.isSuccessTypingDone = true;
+          this.successTypingTarget = 'done';
+        }, 24);
+      }, 180);
+    }, 32);
+  }
+
+  private typeText(
+    text: string,
+    update: (value: string) => void,
+    done: () => void,
+    speed = 30
+  ): void {
+    const letters = Array.from(text);
+    let index = 0;
+
+    const tick = () => {
+      index += 1;
+      update(letters.slice(0, index).join(''));
+
+      if (index >= letters.length) {
+        done();
+        return;
+      }
+
+      this.successTypeTimer = setTimeout(tick, speed);
+    };
+
+    this.successTypeTimer = setTimeout(tick, 120);
+  }
+
+  private clearSuccessTypeTimer(): void {
+    if (this.successTypeTimer) {
+      clearTimeout(this.successTypeTimer);
+      this.successTypeTimer = null;
     }
   }
 

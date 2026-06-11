@@ -2,7 +2,7 @@
   --blue: #004eee;
   --glass: rgba(255, 255, 255, 0.05);
   --line: rgba(255, 255, 255, 0.5);
-  --font-low-regular: "Abar Low-Regular", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
   --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
   display: block;
@@ -39,7 +39,7 @@
   z-index: 1;
   box-sizing: border-box;
   width: min(100%, 1441px);
-  height: 846px;
+  height: 650px;
   margin: 0 auto;
 }
 
@@ -47,7 +47,7 @@
   position: absolute;
   inset: 0 0 auto auto;
   width: 551px;
-  height: 846px;
+  height: 650px;
   pointer-events: none;
 }
 
@@ -55,14 +55,14 @@
   position: absolute;
   inset: 0;
   width: 551px;
-  height: 846px;
+  height: 650px;
   display: block;
 }
 
 .resources-guides__portrait {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center top;
   mix-blend-mode: lighten;
 }
@@ -72,14 +72,14 @@
   top: 38px;
   right: 56px;
   width: 433px;
-  height: 433px;
+  height: 350px;
 }
 
 .resources-guides__copy {
   position: absolute;
   top: 58px;
   right: 623px;
-  width: 709px;
+  width: 730px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -153,13 +153,13 @@
 .resources-guides__without {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
 }
 
 .resources-guides__without-title {
-  width: 100%;
+  flex: 0 0 auto;
   color: #fff;
   font-family: var(--font-low-regular);
   font-size: 14px;
@@ -295,13 +295,13 @@
   .resources-guides__shell {
     width: min(100%, 1180px);
     height: auto;
-    min-height: 760px;
+    min-height: 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(360px, 42%);
     grid-template-areas: "media copy";
     align-items: start;
     gap: 48px;
-    padding: 0 48px 76px;
+    padding: 0 48px;
   }
 
   .resources-guides__media {
@@ -309,8 +309,8 @@
     inset: auto;
     grid-area: media;
     width: 100%;
-    height: min(760px, 64vw);
-    min-height: 650px;
+    height: clamp(600px, 55vw, 650px);
+    min-height: 0;
   }
 
   .resources-guides__portrait {
@@ -320,8 +320,8 @@
 
   .resources-guides__ring {
     top: 38px;
-    right: 10%;
-    width: 78%;
+    right: 15%;
+    width: 64%;
     height: auto;
     aspect-ratio: 1;
   }
@@ -332,7 +332,7 @@
     right: auto;
     grid-area: copy;
     width: 100%;
-    margin-top: 58px;
+    margin-top: 35px;
     gap: 20px;
   }
 
@@ -464,6 +464,7 @@
 
   .resources-guides__without {
     width: 100%;
+    flex-direction: column;
     gap: 8px;
     align-items: flex-start;
   }

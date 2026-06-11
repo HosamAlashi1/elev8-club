@@ -4,7 +4,7 @@
   --glass:         rgba(255, 255, 255, 0.04);
   --card-border:   rgba(0, 78, 238, 0.55);
   --font-brand:    "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", sans-serif;
-  --font-body:     "Abar Low-Regular",    "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-body:         "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   --font-bold:     "Abar Low-Bold",       "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   display: block;
   position: relative;
