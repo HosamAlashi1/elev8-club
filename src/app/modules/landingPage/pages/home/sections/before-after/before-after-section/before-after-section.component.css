@@ -63,6 +63,26 @@
   line-height: 1.8;
 }
 
+/* Skeleton shimmer while images load — hidden once img covers the background */
+.founder-proof-image,
+.founder-portrait-wrap,
+.founder-turn-image,
+.founder-challenge-media {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: founder-skeleton 1.8s ease-in-out infinite;
+}
+
+@keyframes founder-skeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .founder-proof-image {
   border-radius: 14px;
   overflow: hidden;
@@ -74,6 +94,12 @@
   display: block;
   object-fit: cover;
   max-height: 200px;
+  animation: founder-img-fadein 0.4s ease both;
+}
+
+@keyframes founder-img-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .founder-portrait-wrap {
@@ -89,6 +115,7 @@
   object-fit: cover;
   object-position: center top;
   display: block;
+  animation: founder-img-fadein 0.4s ease both;
 }
 
 .founder-achievement-copy { display: flex; flex-direction: column; gap: 10px; }
@@ -116,6 +143,7 @@
   object-fit: cover;
   aspect-ratio: 3 / 4;
   object-position: center top;
+  animation: founder-img-fadein 0.4s ease both;
 }
 
 .founder-turn-copy { display: flex; flex-direction: column; gap: 12px; }
@@ -214,6 +242,7 @@
   object-fit: cover;
   aspect-ratio: 3/4;
   object-position: center top;
+  animation: founder-img-fadein 0.4s ease both;
 }
 
 .founder-badge {
