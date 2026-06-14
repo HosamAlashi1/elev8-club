@@ -49,7 +49,7 @@
 .footer-headline {
   margin: 0;
   color: #ffffff;
-  font-family: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  font-family: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   font-size: clamp(42px, 4.25vw, 62px);
   font-weight: 800;
   line-height: 0.95;
@@ -84,7 +84,7 @@
   border-radius: 13px;
   background: #ffffff;
   color: #05050a;
-  font-family: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  font-family: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
@@ -141,7 +141,7 @@
   grid-area: copy;
   margin: 0;
   color: #ffffff;
-  font-family:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
+  font-family:  "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   font-size: 17px;
   line-height: 1.4;
   text-align: left;

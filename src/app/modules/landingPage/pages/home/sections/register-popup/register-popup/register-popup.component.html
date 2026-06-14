@@ -66,7 +66,7 @@
             <!-- Custom Dropdown -->
             <div class="custom-dropdown" [class.open]="isDropdownOpen">
               <div class="dropdown-selected" (click)="toggleDropdown()">
-                <img [src]="getSelectedCountryFlag()" alt="flag" class="flag-img">
+                <img [src]="getSelectedCountryFlag()" alt="flag" class="flag-img" decoding="async">
                 <span class="selected-code">{{ selectedCountryCode }}</span>
                 <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12">
                   <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none" />
@@ -82,7 +82,7 @@
                 <div class="dropdown-items-wrapper">
                   <div *ngFor="let country of filteredCountries" class="dropdown-item"
                     [class.selected]="country.code === selectedCountryCode" (click)="selectCountry(country.code)">
-                    <img [src]="country.flag" alt="flag" class="flag-img">
+                    <img [src]="country.flag" alt="flag" class="flag-img" loading="lazy" decoding="async">
                     <span class="country-code">{{ country.code }}</span>
                     <span class="country-name">{{ country.countryAr || country.country }}</span>
                   </div>

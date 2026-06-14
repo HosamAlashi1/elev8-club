@@ -53,7 +53,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
         'غزة. ما في استقرار، ما في رأس مال، ولا مقومات واضحة للحياة، بس كان في',
         'شي واحد عناد إني أغيّر واقعي مهما كان الوضع'
       ],
-      image: 'assets/images/anima-home/trust-gaza.png',
+      image: 'assets/images/anima-home/trust-gaza.webp',
       imageAlt: 'خليل يمشي في غزة',
       mediaPosition: 'left'
     },
@@ -69,7 +69,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
         'مبيعات في التجارة الإلكترونية خلال سنتين، وتعلمت اهم مهارات البزنس، بناء',
         'الأنظمة، المبيعات، التسويق، الإدارة.'
       ],
-      image: 'assets/images/anima-home/trust-profit.png',
+      image: 'assets/images/anima-home/trust-profit.webp',
       imageAlt: 'نتيجة أرباح بقيمة مليون دولار',
       mediaPosition: 'right'
     },
@@ -82,7 +82,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
         'وهون قررت أغيّر المعادلة وبنيت الـ System اللي كنت محتاجه:',
         'خطوة بخطوة... من الصفر... بدون تخمين'
       ],
-      image: 'assets/images/anima-home/trust-studio.png',
+      image: 'assets/images/anima-home/trust-studio.webp',
       imageAlt: 'مكتب التداول والإضاءة الحمراء',
       mediaPosition: 'left'
     },
@@ -94,7 +94,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
         'اليوم قدرنا نساعد أكثر من 50,000 شاب وصبية من مختلف دول العالم',
         'يبدأوا أول دخل إلهم، ويتعلموا التداول بالطريقة الصحيح'
       ],
-      image: 'assets/images/anima-home/trust-instagram.png',
+      image: 'assets/images/anima-home/trust-instagram.webp',
       imageAlt: 'صفحة Elev8 Club على إنستغرام',
       mediaPosition: 'right',
       mediaKind: 'plain'
@@ -106,7 +106,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
         'كررنا التجربة بالنسخة 2.0، وكانت النتيجة أوضح: ناس أكثر حققت نتائج حقيقية خلال أسبوع.',
         `ويوم ${this.challengeDateLabel}، راح أشرحلك النظام خطوة بخطوة في التحدي المباشر الجديد.`
       ],
-      image: 'assets/images/anima-home/trust-challenge.png',
+      image: 'assets/images/anima-home/trust-challenge.webp',
       imageAlt: 'تحدي Elev8 Club 0.3',
       mediaPosition: 'left',
       mediaKind: 'plain'

@@ -27,7 +27,7 @@ type SlideItem = {
             >
               <swiper-slide *ngFor="let slide of slides">
                 <figure class="screen-card">
-                  <img [src]="slide.src" [alt]="slide.alt" loading="lazy">
+                  <img [src]="slide.src" [alt]="slide.alt" loading="lazy" decoding="async">
                 </figure>
               </swiper-slide>
             </swiper-container>
@@ -61,19 +61,19 @@ export class WrittenTestimonialsSectionComponent implements AfterViewInit, OnDes
 
   readonly slides: SlideItem[] = [
     {
-      src: 'assets/images/canva/trading-screenshot.png',
+      src: 'assets/images/canva/trading-screenshot.webp',
       alt: 'نتيجة تداول حقيقية'
     },
     {
-      src: 'assets/images/canva/video-proof-massy.png',
+      src: 'assets/images/canva/video-proof-massy.webp',
       alt: 'لقطة أرباح من المشاركين'
     },
     {
-      src: 'assets/images/canva/video-proof-salah.png',
+      src: 'assets/images/canva/video-proof-salah.webp',
       alt: 'إثبات نتائج إضافي'
     },
     {
-      src: 'assets/images/canva/elev8-instagram.jpg',
+      src: 'assets/images/canva/elev8-instagram.webp',
       alt: 'نتيجة من حساب اجتماعي'
     }
   ];

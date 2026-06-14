@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { animate, style, transition, trigger, query, group } from '@angular/animations';
 import { PublicService } from './modules/services/public.service';
@@ -27,7 +27,7 @@ import { filter } from 'rxjs/operators';
     ])
   ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   previousUrl: string | null = null;
   private lastTouchEnd = 0;
 
@@ -92,6 +92,7 @@ export class AppComponent implements OnInit {
 
 
   ngAfterViewInit(): void {
+    this.hideInitialLoader();
     document.body.classList.add('aos-loading'); // البداية
     setTimeout(() => {
       (AOS as any).init({
@@ -126,6 +127,14 @@ export class AppComponent implements OnInit {
     if (link) {
       link.remove();
     }
+  }
+
+  private hideInitialLoader(): void {
+    const loader = document.getElementById('lottie-loader');
+    if (!loader) return;
+
+    loader.classList.add('is-hidden');
+    setTimeout(() => loader.remove(), 300);
   }
 
   private disablePageZoom(): void {

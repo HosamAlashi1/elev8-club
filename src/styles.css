@@ -4,6 +4,152 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 /*
+  Aref Ruqaa — خط رقعة بترخيص مجاني (OFL) مستضاف محليًا.
+  الوزن 700 مسجّل للمدى 700-900 حتى تغطي طلبات font-weight: 800/900 بدون تعريض صناعي.
+*/
+@font-face {
+  font-family: "Aref Ruqaa";
+  src: url("/assets/fonts/aref-ruqaa/aref-ruqaa-v26-arabic-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC, U+200C-200E, U+2010-2011;
+}
+
+@font-face {
+  font-family: "Aref Ruqaa";
+  src: url("/assets/fonts/aref-ruqaa/aref-ruqaa-v26-latin-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+
+@font-face {
+  font-family: "Aref Ruqaa";
+  src: url("/assets/fonts/aref-ruqaa/aref-ruqaa-v26-arabic-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC, U+200C-200E, U+2010-2011;
+}
+
+@font-face {
+  font-family: "Aref Ruqaa";
+  src: url("/assets/fonts/aref-ruqaa/aref-ruqaa-v26-latin-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+
+/*
+  El Messiri — خط مستوحى من الرقعة بنِسَب حديثة (OFL، متغير 400-700) مستضاف محليًا.
+*/
+@font-face {
+  font-family: "El Messiri";
+  src: url("/assets/fonts/el-messiri/el-messiri-v25-arabic-variable.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC, U+200C-200E, U+2010-2011;
+}
+
+@font-face {
+  font-family: "El Messiri";
+  src: url("/assets/fonts/el-messiri/el-messiri-v25-latin-variable.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+
+/*
+  Doran — خط عربي بأوزان متعددة مستضاف محليًا.
+*/
+@font-face {
+  font-family: "Doran";
+  src: url("/assets/fonts/doran/Doran-Thin.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Doran";
+  src: url("/assets/fonts/doran/Doran-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Doran";
+  src: url("/assets/fonts/doran/Doran-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Doran";
+  src: url("/assets/fonts/doran/Doran-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Doran";
+  src: url("/assets/fonts/doran/Doran-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Doran";
+  src: url("/assets/fonts/doran/Doran-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+  Amiri — خط نسخي كلاسيكي راقي (OFL) مستضاف محليًا.
+*/
+@font-face {
+  font-family: "Amiri";
+  src: url("/assets/fonts/amiri/amiri-v30-arabic-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC, U+200C-200E, U+2010-2011;
+}
+
+@font-face {
+  font-family: "Amiri";
+  src: url("/assets/fonts/amiri/amiri-v30-latin-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+
+@font-face {
+  font-family: "Amiri";
+  src: url("/assets/fonts/amiri/amiri-v30-arabic-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFC, U+200C-200E, U+2010-2011;
+}
+
+@font-face {
+  font-family: "Amiri";
+  src: url("/assets/fonts/amiri/amiri-v30-latin-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122;
+}
+
+/*
   الخطوط الأصلية (Abar / Akira Expanded) غير متوفرة بترخيص مجاني،
   فالأسماء القديمة هنا مجرد aliases لبدائل مجانية (OFL) مستضافة محليًا:
   - "Abar High*"        → Alexandria (عناوين)
@@ -107,8 +253,8 @@
 }
 
 :root {
-  --lp-font-body:  "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --lp-font-display: "Abar High", "Abar High-Black", "Abar High-ExtraBold", "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-font-body:  "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-font-display: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --lp-bg: #05070b;
   --lp-bg-2: #07111f;
   --lp-panel: #0d1522;

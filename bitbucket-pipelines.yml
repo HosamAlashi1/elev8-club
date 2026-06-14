@@ -9,13 +9,15 @@ pipelines:
         script:
           - echo "🛠️ Installing Angular CLI and dependencies..."
           - npm install -g @angular/cli
-          - npm install
+          - npm install --legacy-peer-deps
+          - npm run optimize:media
           - echo "⚙️ Building project..."
           - ng build --configuration=live
           - echo "📦 Installing lftp..."
           - apt-get update && apt-get install -y lftp
           - echo "🚀 Uploading files to FTP server..."
-          - lftp -e "set ssl:verify-certificate no; mirror -R -n dist $FTP_REMOTE_PATH; bye" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST
+          - export REMOTE_PATH="${FTP_REMOTE_PATH:-.}"
+          - lftp -e "set ssl:verify-certificate no; mirror -R -n --exclude-glob index.html dist $REMOTE_PATH; put -O $REMOTE_PATH dist/index.html; bye" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOST
 
 
 # | Variable          | Example Value                     |

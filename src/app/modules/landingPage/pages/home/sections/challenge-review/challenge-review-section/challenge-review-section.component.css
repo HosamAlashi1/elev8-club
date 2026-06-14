@@ -1,8 +1,8 @@
 :host {
   display: block;
   --blue: #004eee;
-  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
 }
 
 .review--challenge {

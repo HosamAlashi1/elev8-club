@@ -11,16 +11,17 @@
   --gold-light: #fdf28e;
   --line: rgba(176, 198, 255, 0.14);
   --glass: rgba(255, 255, 255, 0.05);
-  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  --font-high-black: "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  /* Doran على الهيرو فقط — للتعميم انقل لباقي السيكشنات */
+  --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-low-bold: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
+  --font-high-black: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --font-brand: "Akira Expanded-SuperBold", "Cerebri Sans", "Arial Black", sans-serif;
   display: block !important;
   position: relative;
   width: 100%;
-  height: clamp(549px, calc(28.4vw + 28px), 706px);
-  min-height: clamp(549px, calc(28.4vw + 28px), 706px);
+  height: clamp(769px, calc(28.4vw + 248px), 926px);
+  min-height: clamp(769px, calc(28.4vw + 248px), 926px);
   overflow: hidden;
   direction: rtl;
 }
@@ -28,8 +29,8 @@
 .hero {
   position: relative;
   width: 100%;
-  height: clamp(549px, calc(28.4vw + 28px), 706px);
-  min-height: clamp(549px, calc(28.4vw + 28px), 706px);
+  height: clamp(769px, calc(28.4vw + 248px), 926px);
+  min-height: clamp(769px, calc(28.4vw + 248px), 926px);
   display: block;
   padding: 0;
   overflow: hidden;
@@ -216,8 +217,8 @@
   left: 86px;
   top: clamp(72px, 5.4vw, 105px);
   z-index: 1;
-  width: clamp(560px, 33.3vw, 638px);
-  height: clamp(521px, 28.4vw, 678px);
+  width: clamp(610px, calc(33.3vw + 50px), 688px);
+  height: clamp(741px, calc(28.4vw + 220px), 898px);
   pointer-events: none;
 }
 
@@ -324,10 +325,10 @@
   isolation: isolate;
   margin: 34px 0 0;
   font-family: var(--font-high-extra);
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
-  font-size: 27px;
-  line-height: 1.35;
+  font-size: 38px;
+  line-height: 1.55;
   text-align: right;
 }
 
@@ -775,8 +776,8 @@
 
   :host,
   .hero {
-    height: 521px;
-    min-height: 521px;
+    height: 741px;
+    min-height: 741px;
   }
 }
 
@@ -926,8 +927,8 @@
   .hero h1 {
     margin: 18px auto 0;
     /* width: min(100%, 344px); */
-    font-size: clamp(17px, 6vw, 16px);
-    line-height: 1.55;
+    font-size: clamp(18px, 5.5vw, 21px);
+    line-height: 1.65;
     text-align: center;
   }
 

@@ -19,7 +19,7 @@
             [src]="preview.poster"
             alt=""
             aria-hidden="true"
-            loading="eager"
+            loading="lazy"
             decoding="async"
           />
         </div>
@@ -39,7 +39,7 @@
           class="phone-frame-image"
           [src]="activeSlide.poster"
           [alt]="activeSlide.name"
-          loading="eager"
+          loading="lazy"
           decoding="async"
         />
         <video
@@ -48,7 +48,7 @@
           [class.is-playing]="isVideoPlaying"
           [class.is-frame-visible]="!isVideoPlaying && !activeSlide.poster"
           [attr.poster]="activeSlide.poster || null"
-          preload="metadata"
+          preload="none"
           playsinline
           webkit-playsinline
         ></video>
@@ -70,7 +70,7 @@
 
       <article class="student-card">
         <div class="student-card__head">
-          <img [src]="activeSlide.avatar" [alt]="activeSlide.name" />
+          <img [src]="activeSlide.avatar" [alt]="activeSlide.name" loading="lazy" decoding="async" />
           <span aria-hidden="true"></span>
           <div>
             <h3>{{ activeSlide.name }}</h3>
@@ -82,10 +82,10 @@
 
       <div class="slider-controls" aria-label="نتائج الطلاب">
         <button type="button" (click)="prevSlide()" [disabled]="isAnimating" aria-label="النتيجة السابقة">
-          <img src="assets/images/anima-home/proof-arrow-right.png" alt="" aria-hidden="true" />
+          <img src="assets/images/anima-home/proof-arrow-right.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </button>
         <button type="button" (click)="nextSlide()" [disabled]="isAnimating" aria-label="النتيجة التالية">
-          <img src="assets/images/anima-home/proof-arrow-left.png" alt="" aria-hidden="true" />
+          <img src="assets/images/anima-home/proof-arrow-left.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </button>
       </div>
     </div>
@@ -102,7 +102,7 @@
       </p>
 
       <div class="proof-avatars" aria-label="أكثر من 150 نتيجة">
-        <img *ngFor="let avatar of avatarStrip" [src]="avatar" alt="" aria-hidden="true" loading="lazy" />
+        <img *ngFor="let avatar of avatarStrip" [src]="avatar" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         <b>+1,600</b>
       </div>
     </div>

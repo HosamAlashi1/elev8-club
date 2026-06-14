@@ -6,10 +6,10 @@
   --wt-text: #ffffff;
   --wt-muted: rgba(255, 255, 255, 0.92);
   --wt-frame: rgba(255, 255, 255, 0.12);
-  --wt-font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --wt-font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --wt-font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  --wt-font-high-black: "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --wt-font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --wt-font-low-bold: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --wt-font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
+  --wt-font-high-black: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   display: block;
   background: var(--wt-bg);
 }

@@ -31,6 +31,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
 
   private animationTimer?: ReturnType<typeof setTimeout>;
   private readonly preloadedImages: HTMLImageElement[] = [];
+  private readonly preloadedImageSources = new Set<string>();
   private readonly destroy$ = new Subject<void>();
 
   /**
@@ -39,20 +40,20 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
    * يفضّل 7 صور أو أكثر حتى يصير الـ wrap خلف الكواليس بدون قفزة.
    */
   readonly slides: string[] = [
-    'assets/images/screenshots/elev8-screenshot-01.jpeg',
-    'assets/images/screenshots/elev8-screenshot-02.jpeg',
-    'assets/images/screenshots/elev8-screenshot-03.jpeg',
-    'assets/images/screenshots/elev8-screenshot-04.jpeg',
-    'assets/images/screenshots/elev8-screenshot-05.jpeg',
-    'assets/images/screenshots/elev8-screenshot-06.jpeg',
-    'assets/images/screenshots/elev8-screenshot-07.jpeg',
-    'assets/images/screenshots/elev8-screenshot-08.jpeg',
-    'assets/images/screenshots/elev8-screenshot-09.jpeg',
-    'assets/images/screenshots/elev8-screenshot-10.jpeg',
-    'assets/images/screenshots/elev8-screenshot-11.jpeg',
-    'assets/images/screenshots/elev8-screenshot-12.jpeg',
-    'assets/images/screenshots/elev8-screenshot-13.jpeg',
-    'assets/images/screenshots/elev8-screenshot-14.jpeg',
+    'assets/images/screenshots/elev8-screenshot-01.webp',
+    'assets/images/screenshots/elev8-screenshot-02.webp',
+    'assets/images/screenshots/elev8-screenshot-03.webp',
+    'assets/images/screenshots/elev8-screenshot-04.webp',
+    'assets/images/screenshots/elev8-screenshot-05.webp',
+    'assets/images/screenshots/elev8-screenshot-06.webp',
+    'assets/images/screenshots/elev8-screenshot-07.webp',
+    'assets/images/screenshots/elev8-screenshot-08.webp',
+    'assets/images/screenshots/elev8-screenshot-09.webp',
+    'assets/images/screenshots/elev8-screenshot-10.webp',
+    'assets/images/screenshots/elev8-screenshot-11.webp',
+    'assets/images/screenshots/elev8-screenshot-12.webp',
+    'assets/images/screenshots/elev8-screenshot-13.webp',
+    'assets/images/screenshots/elev8-screenshot-14.webp',
   ];
 
   /** نصوص الكروت الأربعة أسفل السكشن — بترتيب DOM يسار ← يمين (نفس الأنيما). */
@@ -70,7 +71,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     private readonly firebaseService: FirebaseService
   ) {
     this.updateSlideStates();
-    this.preloadSlides();
+    this.preloadNearbySlides(1);
   }
 
   ngOnInit(): void {
@@ -185,6 +186,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     this.activeIndex =
       (this.activeIndex + step + this.slides.length) % this.slides.length;
     this.updateSlideStates();
+    this.preloadNearbySlides(2);
     this.isAnimating = true;
 
     if (this.animationTimer) {
@@ -210,13 +212,25 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private preloadSlides(): void {
+  private preloadNearbySlides(radius = 1): void {
     if (typeof window === 'undefined' || typeof Image === 'undefined') {
       return;
     }
 
+    const total = this.slides.length;
+    const sources = new Set<string>();
+    for (let offset = -radius; offset <= radius; offset++) {
+      const index = (this.activeIndex + offset + total) % total;
+      sources.add(this.slides[index]);
+    }
+
     const load = () => {
-      this.slides.forEach((src) => {
+      sources.forEach((src) => {
+        if (this.preloadedImageSources.has(src)) {
+          return;
+        }
+
+        this.preloadedImageSources.add(src);
         const image = new Image();
         image.decoding = 'async';
         image.src = src;

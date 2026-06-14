@@ -41,8 +41,16 @@
 
   <div class="hero__visual" data-aos="fade-left" data-aos-delay="120" data-aos-duration="900">
     <picture>
+      <source type="image/webp" media="(max-width: 980px)" srcset="assets/images/anima-home/group-111.webp" />
+      <source type="image/webp" srcset="assets/images/anima-home/group-3.webp" />
       <source media="(max-width: 980px)" srcset="assets/images/anima-home/group-111.png" />
-      <img src="assets/images/anima-home/group-3.png" alt="Khalil holding the Elev8 Club magic pill" />
+      <img
+        src="assets/images/anima-home/group-3.png"
+        alt="Khalil holding the Elev8 Club magic pill"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
     </picture>
   </div>
 
@@ -62,9 +70,9 @@
     </h1>
     <div class="inline-list" aria-label="مزايا التحدي">
       <span>بدون خبرة سابقة</span>
-      <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" />
+      <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" decoding="async" />
       <span>برأس مال بسيط</span>
-      <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" />
+      <img src="assets/images/anima-home/line-2-20.svg" alt="" aria-hidden="true" decoding="async" />
       <span>من أي مكان بالعالم</span>
     </div>
     <div class="cta-strip">

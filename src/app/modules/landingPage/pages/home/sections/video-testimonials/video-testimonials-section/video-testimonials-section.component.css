@@ -7,10 +7,10 @@
   --gold-light: #fdf28e;
   --line: rgba(255, 255, 255, 0.5);
   --glass: rgba(255, 255, 255, 0.06);
-  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  --font-high-black: "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-low-bold: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
+  --font-high-black: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --font-brand: "Akira Expanded-SuperBold", "Cerebri Sans", "Arial Black", sans-serif;
   display: block;
   background: var(--bg);
@@ -99,17 +99,19 @@
 }
 
 .proof-copy h2 {
-  width: 480px;
+  width: min(100%, 480px);
   margin: 0;
   position: relative;
   isolation: isolate;
+  display: grid;
+  row-gap: clamp(7px, 0.8vw, 12px);
   overflow: visible;
   padding-top: 0.14em;
   color: transparent;
   font-family: var(--font-high-extra);
-  font-size: 39px;
+  font-size: clamp(31px, 3.25vw, 39px);
   font-weight: 800;
-  line-height: 1.14;
+  line-height: 1.16;
   letter-spacing: 0;
   text-shadow:
     0 18px 50px rgba(255, 255, 255, 0.10),
@@ -119,10 +121,11 @@
 .proof-title__muted,
 .proof-title__main {
   display: block;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
   margin-inline: 0 auto;
-  line-height: 1.14;
+  padding-block: 0.04em 0.08em;
+  line-height: 1.18;
   color: transparent;
   background-size: 270% 100%, 100% 100%;
   background-position: 150% 0, 0 0;
@@ -142,12 +145,11 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .proof-title__main {
-  margin-top: -2px;
-  white-space: nowrap;
+  white-space: normal;
   background:
     linear-gradient(106deg, transparent 0%, transparent 38%, rgba(255, 255, 255, 0.72) 46%, rgba(253, 242, 142, 0.16) 52%, transparent 63%, transparent 100%),
     linear-gradient(180deg, #ffffff 0%, #ffffff 58%, rgba(255, 255, 255, 0.86) 100%);
@@ -913,6 +915,7 @@
   .proof-copy h2 {
     width: min(335px, calc(100% - 34px));
     font-size: clamp(23px, 6.5vw, 25.5px);
+    row-gap: 7px;
     line-height: 1.18;
     padding-top: 0.16em;
     text-align: center;
@@ -931,7 +934,7 @@
   }
 
   .proof-title__main {
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .proof-copy p {

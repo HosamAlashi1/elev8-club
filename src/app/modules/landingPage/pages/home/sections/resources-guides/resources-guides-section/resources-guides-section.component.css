@@ -2,9 +2,9 @@
   --blue: #004eee;
   --glass: rgba(255, 255, 255, 0.05);
   --line: rgba(255, 255, 255, 0.5);
-  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-low-bold: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   display: block;
   position: relative;
   z-index: 2;

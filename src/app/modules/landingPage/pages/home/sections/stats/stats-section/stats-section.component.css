@@ -5,9 +5,9 @@
   --gold-light: #fdf28e;
   --line: rgba(255, 255, 255, 0.5);
   --glass: rgba(255, 255, 255, 0.05);
-  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-high-extra: "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-low-bold: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --font-brand: "Akira Expanded", "Cerebri Sans", "Arial Black", sans-serif;
   display: block;
   background: transparent;
@@ -131,9 +131,9 @@
 
 .stats-section__metric .strong {
   color: var(--gold);
-  font-family: var(--font-brand);
+  font-family: var(--font-high-extra);
   font-size: 46px;
-  font-weight: 600;
+  font-weight: 800;
   line-height: 91px;
   text-shadow: 0 0 100px rgba(255, 255, 255, 0.5);
   -webkit-text-stroke: 1px #fff38a;

@@ -17,11 +17,11 @@
   --line: rgba(255, 255, 255, 0.5);
   --soft-line: rgba(255, 255, 255, 0.1);
   --glass: rgba(255, 255, 255, 0.05);
-  --font-low-regular:  "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-low-bold: "Abar Low-Bold", "IBM Plex Sans Arabic", "Tajawal", "Tahoma", sans-serif;
-  --font-high-extra: "Abar High", "Abar High-ExtraBold", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  --font-high-black: "Abar High", "Abar High-Black", "Changa", "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  --font-ar: "Abar High", var(--font-high-extra);
+  --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-low-bold: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
+  --font-high-black: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
+  --font-ar: "Doran", var(--font-high-extra);
   --font-brand: "Akira Expanded-SuperBold", "Cerebri Sans", "Arial Black", sans-serif;
   display: block;
   background: var(--bg);
@@ -34,6 +34,7 @@
   direction: rtl;
   font-family: var(--font-ar);
   overflow: hidden;
+  word-spacing: 0.08em;
 }
 
 .webinar-home::before {

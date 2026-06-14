@@ -19,7 +19,7 @@
         >
           <div class="wt-media" [class.wt-media--plain]="story.mediaKind === 'plain'">
             <span class="wt-media-inner">
-              <img [src]="story.image" [alt]="story.imageAlt" loading="lazy" />
+              <img [src]="story.image" [alt]="story.imageAlt" loading="lazy" decoding="async" />
             </span>
           </div>
 
@@ -48,6 +48,7 @@
               [src]="i % 2 === 0 ? 'assets/images/anima-home/trust-connector-left.svg' : 'assets/images/anima-home/trust-connector-right.svg'"
               alt=""
               loading="lazy"
+              decoding="async"
             />
           </picture>
         </div>

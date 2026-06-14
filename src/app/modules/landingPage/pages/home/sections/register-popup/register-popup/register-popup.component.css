@@ -14,13 +14,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.74);
-  animation: fadeIn 0.3s ease;
   z-index: 1;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 /* Modal Container */
@@ -28,19 +22,8 @@
   position: relative;
   width: 100%;
   max-width: 520px;
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(100px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  will-change: transform, opacity;
 }
 
 /* Modal Content */

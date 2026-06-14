@@ -18,9 +18,17 @@ const bootstrap = async () => {
 
 bootstrap();
 
-// Enable Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .register('/firebase-messaging-sw.js')
-    .catch(() => { });
+// Register only after the page loads, and only when the worker file exists.
+if ('serviceWorker' in navigator && environment.production) {
+  window.addEventListener('load', () => {
+    fetch('/firebase-messaging-sw.js', { method: 'HEAD', cache: 'no-store' })
+      .then((response) => {
+        if (response.ok) {
+          return navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        }
+
+        return undefined;
+      })
+      .catch(() => undefined);
+  });
 }

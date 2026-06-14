@@ -3,8 +3,8 @@
    ======================================== */
 
 :root {
-  --lp-font-body: "IBM Plex Sans Arabic", "Tajawal", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --lp-font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-font-body: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  --lp-font-display: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --lp-bg: #07091A;
   --lp-bg-2: #0A0D24;
   --lp-panel: #0E122A;
