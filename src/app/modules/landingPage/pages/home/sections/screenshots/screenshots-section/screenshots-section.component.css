@@ -146,6 +146,7 @@
     transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
     opacity 520ms ease,
     filter 520ms ease;
+    border-radius: 24px;
 }
 
 .shots-phone:not(.is-center) {

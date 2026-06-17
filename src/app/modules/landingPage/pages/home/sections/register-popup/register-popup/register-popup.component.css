@@ -50,9 +50,9 @@
   left: 12px;
   width: 32px;
   height: 32px;
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +62,7 @@
 }
 
 .close-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
   transform: rotate(90deg);
 }
 
@@ -593,16 +593,27 @@
 }
 
 .close-button {
-  top: 6px;
-  left: calc(50% - 286px);
+  top: 10px;
+  left: 12px;
   z-index: 5;
   width: 32px;
   height: 32px;
-  color: rgba(255, 255, 255, 0.84);
-  background: rgba(21, 25, 36, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.72);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.close-button:hover {
+  color: #f3c344;
+  background: transparent;
+  transform: rotate(90deg);
+}
+
+.close-button:focus-visible {
+  outline: 2px solid rgba(243, 195, 68, 0.72);
+  outline-offset: 4px;
 }
 
 .modal-header {
@@ -653,7 +664,7 @@
 .modal-title-main {
   position: absolute;
   left: 50%;
-  top: 79px;
+  top: 86px;
   z-index: 2;
   display: flex;
   align-items: baseline;
@@ -941,8 +952,8 @@
   }
 
   .close-button {
-    top: -10px;
-    left: 8px;
+    top: 8px;
+    left: 10px;
   }
 
   .modal-header {
@@ -1057,8 +1068,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  margin-top: -0.42em;
+  gap: 0;
+  margin-top: -0.26em;
   line-height: 1.02;
   overflow: visible;
   transform: none;
@@ -1092,7 +1103,7 @@
 
   .modal-title-main {
     gap: 7px;
-    margin-top: -0.36em;
+    margin-top: -0.22em;
   }
 
   .modal-subtitle {

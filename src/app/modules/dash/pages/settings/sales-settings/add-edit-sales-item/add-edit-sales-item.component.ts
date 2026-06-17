@@ -6,8 +6,11 @@ import { ToastrsService } from '../../../../../services/toater.service';
 
 interface SalesItem {
   id?: string;
-  whatsapp_number: string;
+  group_name: string;
+  group_link: string;
+  group_order: number;
   counter: number;
+  whatsapp_number?: string;
   versionKey?: string;
 }
 
@@ -19,6 +22,7 @@ interface SalesItem {
 export class AddEditSalesItemComponent implements OnInit {
   @Input() salesItem?: SalesItem;
   @Input() versionKey?: string;
+  @Input() nextOrder = 1;
 
   form!: FormGroup;
   submitted = false;
@@ -47,8 +51,8 @@ export class AddEditSalesItemComponent implements OnInit {
 
   initForm(): void {
     this.form = new FormGroup({
-      whatsapp_number: new FormControl('', [Validators.required, Validators.maxLength(20)]),
-    //   counter: new FormControl(0, [Validators.required, Validators.min(0)])
+      group_name: new FormControl(`WhatsApp Group ${this.nextOrder}`, [Validators.required, Validators.maxLength(80)]),
+      group_link: new FormControl('', [Validators.required, Validators.maxLength(500)])
     });
   }
 
@@ -56,8 +60,8 @@ export class AddEditSalesItemComponent implements OnInit {
     if (!this.salesItem) return;
     
     this.form.patchValue({
-      whatsapp_number: this.salesItem.whatsapp_number,
-    //   counter: this.salesItem.counter
+      group_name: this.salesItem.group_name,
+      group_link: this.salesItem.group_link
     });
   }
 
@@ -78,36 +82,47 @@ export class AddEditSalesItemComponent implements OnInit {
       return;
     }
 
+    const groupLink = this.normalizeGroupLink(this.form.value.group_link);
+
     const data = {
-      whatsapp_number: this.form.value.whatsapp_number.trim(),
+      group_name: this.form.value.group_name.trim(),
+      group_link: groupLink,
+      group_order: this.salesItem?.group_order || this.nextOrder,
       versionKey: itemVersionKey,
-      counter: this.salesItem?.counter || 0
+      counter: this.salesItem?.counter || 0,
+      whatsapp_number: this.salesItem?.whatsapp_number || ''
     };
 
     if (this.isEdit && this.salesItem?.id) {
       // Update
       this.firebaseService.update('sales', this.salesItem.id, data)
         .then(() => {
-          this.toastr.showSuccess('Sales item updated successfully');
+          this.toastr.showSuccess('WhatsApp group updated successfully');
           this.activeModal.close('updated');
         })
         .catch(error => {
-          console.error('Error updating sales item:', error);
-          this.toastr.showError('Failed to update sales item');
+          console.error('Error updating WhatsApp group:', error);
+          this.toastr.showError('Failed to update WhatsApp group');
           this.isSubmitting = false;
         });
     } else {
       // Add
       this.firebaseService.add('sales', data)
         .then(() => {
-          this.toastr.showSuccess('Sales item added successfully');
+          this.toastr.showSuccess('WhatsApp group added successfully');
           this.activeModal.close('added');
         })
         .catch(error => {
-          console.error('Error adding sales item:', error);
-          this.toastr.showError('Failed to add sales item');
+          console.error('Error adding WhatsApp group:', error);
+          this.toastr.showError('Failed to add WhatsApp group');
           this.isSubmitting = false;
         });
     }
+  }
+
+  private normalizeGroupLink(value: string): string {
+    const link = (value || '').trim();
+    if (!link) return '';
+    return /^https?:\/\//i.test(link) ? link : `https://${link}`;
   }
 }

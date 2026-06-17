@@ -89,7 +89,7 @@
           </div>
         </div>
 
-        <!-- Assigned Sales -->
+        <!-- Assigned WhatsApp Group -->
         <div
           class="info-section mb-3"
           data-aos="fade-up"
@@ -97,21 +97,21 @@
           data-aos-duration="700"
           *ngIf="hasAssignedSales()"
         >
-          <h5 class="section-title">Assigned Sales</h5>
+          <h5 class="section-title">Assigned WhatsApp Group</h5>
 
           <div class="row g-3">
             <div class="col-md-7">
-              <label class="field-label">Sales Person</label>
-              <div class="field-value">{{ lead.salesName || 'Assigned' }}</div>
+              <label class="field-label">Group</label>
+              <div class="field-value">{{ getAssignedGroupLabel() }}</div>
             </div>
 
             <div class="col-md-5">
-              <label class="field-label">WhatsApp</label>
+              <label class="field-label">Invite Link</label>
               <div class="field-value">
-                <a [href]="'https://wa.me/' + lead.assigned_sales!.whatsapp_number" 
+                <a [href]="getAssignedGroupLink()" 
                    target="_blank" class="whatsapp-link">
-                  <i class="fe fe-phone me-1"></i>
-                  {{ lead.assigned_sales!.whatsapp_number }}
+                  <i class="fe fe-users me-1"></i>
+                  Open group
                 </a>
               </div>
             </div>

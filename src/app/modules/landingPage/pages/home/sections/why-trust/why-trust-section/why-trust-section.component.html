@@ -25,11 +25,20 @@
 
           <div class="wt-copy">
             <h3>{{ story.title }}</h3>
-            <p>
-              <ng-container *ngFor="let line of story.bodyLines; let last = last">
-                {{ line }}<br *ngIf="!last" />
+            <div class="wt-body">
+              <ng-container *ngFor="let line of story.bodyLines; let first = first">
+                <p class="wt-line">{{ line }}</p>
+
+                <div *ngIf="first && story.partners?.length" class="wt-partners" aria-label="أسماء قوية في المجال">
+                  <figure *ngFor="let partner of story.partners" class="wt-partner-card">
+                    <span class="wt-partner-photo">
+                      <img [src]="partner.image" [alt]="partner.imageAlt" loading="lazy" decoding="async" />
+                    </span>
+                    <figcaption>{{ partner.name }}</figcaption>
+                  </figure>
+                </div>
               </ng-container>
-            </p>
+            </div>
           </div>
         </article>
 
@@ -42,7 +51,7 @@
           <picture>
             <source
               media="(min-width: 821px)"
-              [srcset]="i % 2 === 0 ? 'assets/images/anima-home/trust-connector-desktop-1.png' : 'assets/images/anima-home/trust-connector-desktop-2.png'"
+              [srcset]="i % 2 === 0 ? 'assets/images/anima-home/connector-desktop-1.png' : 'assets/images/anima-home/connector-desktop-2.png'"
             />
             <img
               [src]="i % 2 === 0 ? 'assets/images/anima-home/trust-connector-left.svg' : 'assets/images/anima-home/trust-connector-right.svg'"

@@ -47,9 +47,9 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     'assets/images/anima-home/proof-avatar-3.webp',
   ] as const;
   private readonly cardAvatars = [
-    'assets/images/anima-home/proof-person-1.png',
-    'assets/images/anima-home/proof-person-2.png',
-    'assets/images/anima-home/proof-person-1.png',
+    'assets/img/blank.png',
+    'assets/img/blank.png',
+    'assets/img/blank.png',
   ] as const;
 
   readonly slides: ProofSlide[] = [

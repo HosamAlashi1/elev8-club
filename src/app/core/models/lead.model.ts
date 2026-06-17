@@ -32,6 +32,10 @@ export interface Lead {
   assigned_sales?: {
     sales_id: string;
     whatsapp_number: string;
+    group_id?: string;
+    group_name?: string;
+    group_link?: string;
+    group_order?: number;
     assigned_at: number;
     assigned_via: string;
     versionKey?: string;

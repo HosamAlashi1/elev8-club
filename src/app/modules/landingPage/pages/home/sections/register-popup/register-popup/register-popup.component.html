@@ -11,16 +11,21 @@
       <!-- Header -->
       <div class="modal-header">
         <h2 class="modal-title heading-3d" dir="rtl">
-          <span class="modal-title-muted">سجل في ويبينار</span>
+          <span class="modal-title-muted">سجل في التدريب المجاني</span>
           <span class="modal-title-main">
-            <span class="modal-title-free">المجاني</span>
             <span class="modal-title-brand" dir="ltr">ELEV8 CLUB 0.3</span>
           </span>
         </h2>
-        <p class="modal-subtitle">الثلاثاء 20/5 - الساعة 9 مساء - انضم الآن مجاناً</p>
+        <p class="modal-subtitle">{{ trainingDateLabel }} - انضم الآن مجاناً</p>
       </div>
 
       <div class="modal-card">
+      <button type="button" class="close-button" aria-label="إغلاق نافذة التسجيل" (click)="onClose()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <path d="M4.5 4.5 13.5 13.5M13.5 4.5 4.5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </button>
+
       <!-- Form -->
       <form class="registration-form" (ngSubmit)="onSubmit($event)" >
 

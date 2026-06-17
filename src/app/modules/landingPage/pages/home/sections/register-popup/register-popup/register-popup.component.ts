@@ -165,6 +165,7 @@ export class RegisterPopupComponent implements OnInit {
   private currentVersion: Version | null = null;
   private currentAffiliate: Affiliate | null = null;
   private affiliateCode: string | null = null;
+  private startCounterDate = 0;
   isSubmitting = false;
   
   @ViewChild('dropdownTrigger') dropdownTrigger!: ElementRef;
@@ -179,6 +180,7 @@ export class RegisterPopupComponent implements OnInit {
   ngOnInit(): void {
     // تحميل مقدمات الدول محلياً
     this.loadCountryCodes();
+    this.loadTrainingDate();
 
     // قراءة ref code من الـ URL أو localStorage
     this.route.queryParams.subscribe(params => {
@@ -198,6 +200,56 @@ export class RegisterPopupComponent implements OnInit {
       });
 
     });
+  }
+
+  private loadTrainingDate(): void {
+    this.firebaseService.getObject('settings').subscribe({
+      next: (settings: any) => {
+        this.startCounterDate = this.parseDate(settings?.start_counter_date);
+      },
+      error: (err) => {
+        console.error('Error loading registration training date:', err);
+      }
+    });
+  }
+
+  get trainingDateLabel(): string {
+    if (!this.startCounterDate) return 'قريباً';
+
+    const date = new Date(this.startCounterDate);
+    const weekdays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const weekday = weekdays[date.getDay()];
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const hours24 = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours24 >= 12 ? 'مساء' : 'صباحاً';
+    const hour12 = hours24 % 12 || 12;
+    const minuteLabel = minutes ? `:${minutes.toString().padStart(2, '0')}` : '';
+
+    return `${weekday} ${day}-${month} / الساعة ${hour12}${minuteLabel} ${period}`;
+  }
+
+  private parseDate(dateValue: any): number {
+    if (!dateValue) return 0;
+
+    if (typeof dateValue === 'number') {
+      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
+    }
+
+    if (typeof dateValue === 'string') {
+      const trimmedValue = dateValue.trim();
+      const numericValue = Number(trimmedValue);
+
+      if (!Number.isNaN(numericValue)) {
+        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
+      }
+
+      const timestamp = new Date(trimmedValue).getTime();
+      return isNaN(timestamp) ? 0 : timestamp;
+    }
+
+    return 0;
   }
 
   private loadCountryCodes(): void {

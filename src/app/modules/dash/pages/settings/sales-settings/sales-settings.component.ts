@@ -9,8 +9,11 @@ import { Version } from '../../../../../core/models';
 
 interface SalesItem {
   id?: string;
-  whatsapp_number: string;
+  group_name: string;
+  group_link: string;
+  group_order: number;
   counter: number;
+  whatsapp_number?: string;
   versionKey?: string;
 }
 
@@ -25,6 +28,8 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
   salesItems: SalesItem[] = [];
   isLoading = true;
   currentVersion: Version | null = null;
+  readonly maxGroups = 10;
+  readonly groupCapacity = 1000;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -72,17 +77,20 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (items: any[]) => {
-          this.salesItems = items.map(item => ({
+          this.salesItems = items.map((item, index) => ({
             id: item.key,
-            whatsapp_number: item.whatsapp_number || '',
+            group_name: item.group_name || item.name || `WhatsApp Group ${item.group_order || index + 1}`,
+            group_link: item.group_link || item.whatsapp_link || this.getLegacyWhatsAppLink(item.whatsapp_number),
+            group_order: Number(item.group_order) || index + 1,
             counter: item.counter || 0,
+            whatsapp_number: item.whatsapp_number || '',
             versionKey: item.versionKey
-          }));
+          })).sort((a, b) => a.group_order - b.group_order);
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Error loading sales items:', err);
-          this.toastr.showError('Failed to load sales items');
+          console.error('Error loading WhatsApp groups:', err);
+          this.toastr.showError('Failed to load WhatsApp groups');
           this.isLoading = false;
         }
       });
@@ -94,12 +102,18 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.salesItems.length >= this.maxGroups) {
+      this.toastr.showWarning('You already have 10 WhatsApp groups for this version');
+      return;
+    }
+
     const modalRef = this.modalService.open(AddEditSalesItemComponent, {
       centered: true,
       size: 'lg'
     });
 
     modalRef.componentInstance.versionKey = this.currentVersion.key;
+    modalRef.componentInstance.nextOrder = this.getNextGroupOrder();
 
     modalRef.result.then(() => this.loadSalesItems(), () => {});
   }
@@ -127,13 +141,30 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.type = 'sales';
     modalRef.componentInstance.firebaseKey = item.id;
     modalRef.componentInstance.message =
-      `Are you sure you want to delete this sales item (${item.whatsapp_number})? This action cannot be undone.`;
+      `Are you sure you want to delete ${item.group_name}? This action cannot be undone.`;
 
     modalRef.result.then(result => {
       if (result === 'deleted') {
-        this.toastr.showSuccess('Sales item deleted successfully');
+        this.toastr.showSuccess('WhatsApp group deleted successfully');
         this.loadSalesItems();
       }
     });
+  }
+
+  getUsagePercent(item: SalesItem): number {
+    return Math.min(100, Math.round(((item.counter || 0) / this.groupCapacity) * 100));
+  }
+
+  getNextGroupOrder(): number {
+    const usedOrders = new Set(this.salesItems.map(item => item.group_order));
+    for (let order = 1; order <= this.maxGroups; order += 1) {
+      if (!usedOrders.has(order)) return order;
+    }
+    return Math.min(this.salesItems.length + 1, this.maxGroups);
+  }
+
+  private getLegacyWhatsAppLink(value?: string): string {
+    const phone = (value || '').replace(/[^0-9]/g, '');
+    return phone ? `https://wa.me/${phone}` : '';
   }
 }

@@ -242,7 +242,7 @@
   top: clamp(168px, 10.9vw, 210px);
   right: 145px;
   z-index: 2;
-  width: 700px;
+  width: min(700px, calc(100vw - 420px));
   text-align: right;
 }
 
@@ -327,7 +327,7 @@
   font-family: var(--font-high-extra);
   font-weight: 800;
   color: #fff;
-  font-size: 38px;
+  font-size: 36px;
   line-height: 1.55;
   text-align: right;
 }
@@ -913,7 +913,7 @@
     left: auto;
     width: 100%;
     margin-top: -112px;
-    text-align: center;
+    text-align: right;
   }
 
   .eyebrow {
@@ -925,11 +925,11 @@
   }
 
   .hero h1 {
-    margin: 18px auto 0;
+    margin: 18px 0 0;
     /* width: min(100%, 344px); */
-    font-size: clamp(18px, 5.5vw, 21px);
+    font-size: clamp(18px, 4.5vw, 21px);
     line-height: 1.65;
-    text-align: center;
+    text-align: right;
   }
 
   .hero-title-line {
@@ -942,11 +942,11 @@
   }
 
   .inline-list {
-    justify-content: center;
+    justify-content: flex-end;
     gap: 10px;
     width: 100%;
     max-width: 360px;
-    margin: 22px auto 0;
+    margin: 22px 0 0 auto;
     font-size: 15px;
   }
 
@@ -1019,7 +1019,7 @@
     flex: none;
     font-size: 13px;
     line-height: 1.7;
-    text-align: center;
+    text-align: right;
   }
 
   .gold-btn {

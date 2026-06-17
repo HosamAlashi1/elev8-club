@@ -14,6 +14,10 @@ interface LeadWithAffiliate extends Lead {
   assigned_sales?: {
     sales_id: string;
     whatsapp_number: string;
+    group_id?: string;
+    group_name?: string;
+    group_link?: string;
+    group_order?: number;
     assigned_at: number;
     assigned_via: string;
     versionKey?: string;
@@ -102,10 +106,10 @@ export class LeadsComponent implements OnInit {
     this.firebaseService.getSalesByVersion(this.currentVersion.key).subscribe((sales: any[]) => {
       this.salesList = sales || [];
       this.salesOptions = [
-        { value: '', label: 'All Sales' },
+        { value: '', label: 'All Groups' },
         ...this.salesList.map(s => ({
           value: s.key,
-          label: s.name || s.whatsapp_number
+          label: s.group_name || s.name || `Group ${s.group_order || ''}`.trim()
         }))
       ];
       this.loadLeads();
@@ -122,12 +126,12 @@ export class LeadsComponent implements OnInit {
         // Add affiliate and sales information to each lead
         this.allLeads = leads.map(lead => {
           const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
-          const sales = lead.assigned_sales ? this.salesList.find(s => s.key === lead.assigned_sales?.sales_id) : null;
+          const sales = lead.assigned_sales ? this.salesList.find(s => s.key === (lead.assigned_sales?.group_id || lead.assigned_sales?.sales_id)) : null;
           return {
             ...lead,
             affiliateName: affiliate?.name || 'none',
             affiliateCode: affiliate?.code || lead.affiliateCode,
-            salesName: sales?.name || (lead.assigned_sales ? 'Assigned' : 'Not Assigned')
+            salesName: lead.assigned_sales?.group_name || sales?.group_name || sales?.name || (lead.assigned_sales ? 'Assigned Group' : 'Not Assigned')
           };
         }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -156,13 +160,14 @@ export class LeadsComponent implements OnInit {
           l.fullName.toLowerCase().includes(search) ||
           l.email.toLowerCase().includes(search) ||
           l.phone?.toLowerCase().includes(search) ||
-          l.affiliateName?.toLowerCase().includes(search)
+          l.affiliateName?.toLowerCase().includes(search) ||
+          l.salesName?.toLowerCase().includes(search)
         );
       }
 
-      // فلتر Sales
+      // فلتر WhatsApp Group
       if (this.selectedSalesId) {
-        filtered = filtered.filter(l => l.assigned_sales?.sales_id === this.selectedSalesId);
+        filtered = filtered.filter(l => (l.assigned_sales?.group_id || l.assigned_sales?.sales_id) === this.selectedSalesId);
       }
 
       this.leads = filtered;
@@ -236,6 +241,7 @@ export class LeadsComponent implements OnInit {
       'Country',
       'City',
       'Affiliate',
+      'WhatsApp Group',
       'Status',
       'Created At'
     ];
@@ -247,6 +253,7 @@ export class LeadsComponent implements OnInit {
       lead.country || '',
       lead.city || '',
       lead.affiliateName || '',
+      lead.salesName || '',
       lead.step === 2 ? 'Completed' : 'Pending',
       new Date(lead.createdAt).toLocaleDateString('en-US')
     ]);

@@ -230,6 +230,25 @@ export class FirebaseService {
     );
   }
 
+  public incrementSalesCounter(salesKey: string, assignedAt: number, limit: number = 1000): Promise<void> {
+    return this.db.database.ref(`sales/${salesKey}`).transaction((current: any) => {
+      if (!current) return current;
+
+      const counter = Number(current.counter) || 0;
+      if (counter >= limit) return;
+
+      return {
+        ...current,
+        counter: counter + 1,
+        last_assigned_at: assignedAt
+      };
+    }).then(result => {
+      if (!result.committed) {
+        throw new Error('WhatsApp group is full or unavailable');
+      }
+    });
+  }
+
   /** إضافة أفلييت جديد */
   public addAffiliate(data: Omit<Affiliate, 'key' | 'createdAt'>): Promise<any> {
     const affiliateData = {

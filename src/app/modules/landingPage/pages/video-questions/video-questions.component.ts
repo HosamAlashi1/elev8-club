@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import * as AOS from 'aos';
 
 @Component({
@@ -6,8 +6,10 @@ import * as AOS from 'aos';
   templateUrl: './video-questions.component.html',
   styleUrls: ['./video-questions.component.css']
 })
-export class VideoQuestionsComponent implements OnInit {
+export class VideoQuestionsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
+    this.scrollToTop();
+
     AOS.init({
       duration: 1000,
       once: true,
@@ -18,7 +20,14 @@ export class VideoQuestionsComponent implements OnInit {
 
   ngAfterViewInit(): void {
     setTimeout(() => {
+      this.scrollToTop();
       AOS.refresh();
     }, 100);
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }
 }

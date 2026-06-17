@@ -4,11 +4,11 @@
 }
 
 .whoami-inner {
-  width: min(100%, 1100px);
+  width: min(100%, 1200px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: clamp(40px, 5vw, 72px);
+  grid-template-columns: 1fr 460px;
+  gap: clamp(16px, 2vw, 28px);
   align-items: center;
 }
 
@@ -166,7 +166,7 @@
   }
   .whoami-media {
     order: -1;
-    max-width: 320px;
+    max-width: 340px;
     margin: 0 auto;
   }
   .whoami-letter-badge { margin-inline: auto; }

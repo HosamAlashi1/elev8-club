@@ -16,9 +16,9 @@
                         placeholder="Search by name, email or phone..." (ngModelChange)="applyFilters()" />
                 </div>
 
-                <!-- Sales Filter -->
-                <app-modern-select [(ngModel)]="selectedSalesId" [options]="salesOptions" placeholder2="Sales"
-                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'140px'" [icon]="'fe fe-user-check'"
+                <!-- WhatsApp Group Filter -->
+                <app-modern-select [(ngModel)]="selectedSalesId" [options]="salesOptions" placeholder2="Group"
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'140px'" [icon]="'fe fe-users'"
                     [customWidth]="'160px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
                 </app-modern-select>
 
@@ -49,7 +49,7 @@
                             <th class="w-10">Phone</th>
                             <th class="w-10">Location</th>
                             <th class="w-10">Affiliate</th>
-                            <th class="w-10">Sales</th>
+                            <th class="w-10">Group</th>
                             <th class="w-10">Status</th>
                             <th class="w-10">Created At</th>
                             <th class="w-8">Actions</th>
@@ -90,10 +90,10 @@
 
                             <td class="text-muted">
                                 <div *ngIf="lead.assigned_sales" class="text-success fw-semibold">
-                                    <i class="fe fe-check-circle me-1"></i>Assigned
+                                    <i class="fe fe-check-circle me-1"></i>{{ lead.salesName || 'Assigned Group' }}
                                 </div>
                                 <small *ngIf="lead.assigned_sales" class="text-muted">
-                                    {{ lead.assigned_sales.whatsapp_number }}
+                                    Group {{ lead.assigned_sales.group_order || '-' }}
                                 </small>
                                 <span *ngIf="!lead.assigned_sales" class="text-muted">
                                     <i class="fe fe-minus-circle me-1"></i>Not Assigned

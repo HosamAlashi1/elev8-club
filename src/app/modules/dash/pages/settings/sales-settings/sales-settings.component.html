@@ -2,14 +2,14 @@
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h3 class="mb-1">Sales Items</h3>
+      <h3 class="mb-1">WhatsApp Groups</h3>
       <small class="text-muted">
-        Current version: {{ currentVersion?.name || 'Loading...' }}
+        Current version: {{ currentVersion?.name || 'Loading...' }} · {{ salesItems.length }}/{{ maxGroups }} groups
       </small>
     </div>
-    <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()">
+    <button class="btn btn-custom d-flex align-items-center gap-2" (click)="add()" [disabled]="salesItems.length >= maxGroups">
       <i class="fe fe-plus"></i>
-      Add Sales Item
+      Add WhatsApp Group
     </button>
   </div>
 
@@ -22,18 +22,21 @@
     </div>
   </div>
 
-  <!-- Sales Items Grid -->
+  <!-- WhatsApp Groups Grid -->
   <div *ngIf="!isLoading" class="row g-3">
     <div class="col-md-6 col-lg-4" *ngFor="let item of salesItems">
       <div class="sales-card">
         <div class="d-flex justify-content-between align-items-start mb-3">
           <div class="flex-grow-1">
-            <label class="card-label">WhatsApp Number</label>
+            <label class="card-label">Group {{ item.group_order }}</label>
             <div class="whatsapp-number">
-              <i class="fe fe-phone me-2 text-success"></i>
-              {{ item.whatsapp_number }}
+              <i class="fe fe-users me-2 text-success"></i>
+              {{ item.group_name }}
             </div>
-            <span class="badge bg-light text-muted border mt-2">Version scoped</span>
+            <a *ngIf="item.group_link" class="group-link d-inline-flex align-items-center gap-1 mt-2" [href]="item.group_link" target="_blank" rel="noopener noreferrer">
+              <i class="fe fe-link"></i>
+              Open group link
+            </a>
           </div>
           <div class="btn-group dropstart">
             <span data-bs-toggle="dropdown" aria-expanded="false" role="button" class="action-icon">
@@ -58,6 +61,16 @@
             </ul>
           </div>
         </div>
+
+        <div class="capacity-block">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <small class="text-muted">Members assigned</small>
+            <strong>{{ item.counter || 0 }} / {{ groupCapacity }}</strong>
+          </div>
+          <div class="capacity-bar" aria-hidden="true">
+            <span [style.width.%]="getUsagePercent(item)"></span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -65,14 +78,14 @@
   <!-- No Results -->
   <div *ngIf="!isLoading && salesItems.length === 0" class="empty-state">
     <i class="fe fe-inbox empty-icon"></i>
-    <p class="text-muted mb-0">No sales items found</p>
-    <small class="text-muted">Click "Add Sales Item" to create one</small>
+    <p class="text-muted mb-0">No WhatsApp groups found</p>
+    <small class="text-muted">Add up to 10 groups. Each group receives 1000 members before the next one starts.</small>
   </div>
 
   <!-- Footer -->
   <div *ngIf="!isLoading && salesItems.length > 0" class="mt-4">
     <small class="text-muted">
-      Total: {{ salesItems.length }} sales item{{ salesItems.length !== 1 ? 's' : '' }}
+      Registrations fill Group 1 to {{ groupCapacity }} first, then Group 2, then Group 3, in order.
     </small>
   </div>
 </div>

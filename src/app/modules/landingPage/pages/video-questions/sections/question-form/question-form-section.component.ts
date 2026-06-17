@@ -468,53 +468,118 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
       const versionKey = this.currentLead?.versionKey;
 
       if (!versionKey) {
-        console.error('No lead version found for sales assignment');
+        console.error('No lead version found for WhatsApp group assignment');
         return;
       }
 
-      const salesItems = await this.firebaseService.getSalesByVersion(versionKey).pipe(take(1)).toPromise();
+      const groups = await this.firebaseService.getSalesByVersion(versionKey).pipe(take(1)).toPromise();
 
-      if (!salesItems || salesItems.length === 0) {
-        console.error('No sales items found for current version');
+      if (!groups || groups.length === 0) {
+        console.error('No WhatsApp groups found for current version');
         return;
       }
 
-      const sortedSales = salesItems.sort((a, b) => (a.counter || 0) - (b.counter || 0));
+      const assignment = await this.reserveNextWhatsAppGroup(groups, 1000);
 
-      let selectedIndex = 0;
-      if (this.leadKey) {
-        const hash = this.leadKey.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        selectedIndex = hash % sortedSales.length;
+      if (!assignment) {
+        console.error('All WhatsApp groups are full or missing links');
+        return;
       }
 
-      const selectedSales = sortedSales[selectedIndex];
-      const whatsappNumber = (selectedSales.whatsapp_number || '').replace(/[^0-9]/g, '');
-      const salesKey = selectedSales.key;
-      const assignedAt = Date.now();
+      const { group: selectedGroup, groupUrl, groupKey, assignedAt } = assignment;
 
-      if (salesKey) {
-        await this.firebaseService.update('sales', salesKey, {
-          last_assigned_at: assignedAt,
-          counter: (selectedSales.counter || 0) + 1
-        });
-      }
-
-      if (this.leadKey && salesKey) {
+      if (this.leadKey && groupKey) {
         await this.firebaseService.update('leads', this.leadKey, {
           assigned_sales: {
-            sales_id: salesKey,
-            whatsapp_number: whatsappNumber,
+            sales_id: groupKey,
+            group_id: groupKey,
+            group_name: selectedGroup.group_name || selectedGroup.name || `WhatsApp Group ${selectedGroup.group_order || ''}`.trim(),
+            group_link: groupUrl,
+            group_order: Number(selectedGroup.group_order) || null,
+            whatsapp_number: selectedGroup.whatsapp_number || '',
             assigned_at: assignedAt,
-            assigned_via: 'whatsapp',
+            assigned_via: 'whatsapp_group',
             versionKey
           }
         });
       }
 
-      this.openWhatsApp(whatsappNumber);
+      this.openWhatsAppGroup(groupUrl, selectedGroup);
     } catch (err) {
       console.error('Error in completeRegistration:', err);
     }
+  }
+
+  private openWhatsAppGroup(groupUrl: string, group: any): void {
+    if (this.leadKey) {
+      this.gtm.trackWhatsAppContact(this.leadKey, groupUrl, {
+        user_name: this.currentLead?.fullName || 'new lead',
+        group_id: group.key || 'none',
+        group_name: group.group_name || group.name || 'WhatsApp Group',
+        group_order: group.group_order || 'none',
+        affiliate_code: this.affiliateCode || 'none',
+        affiliate_key: this.currentAffiliate?.key || 'none'
+      });
+    }
+
+    const newWindow = window.open(groupUrl, '_blank');
+
+    setTimeout(() => {
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        window.location.href = groupUrl;
+      }
+    }, 100);
+  }
+
+  private async reserveNextWhatsAppGroup(
+    groups: any[],
+    capacity: number
+  ): Promise<{ group: any; groupUrl: string; groupKey: string; assignedAt: number } | null> {
+    const orderedGroups = groups
+      .map((group, index) => ({
+        ...group,
+        group_order: Number(group.group_order) || index + 1
+      }))
+      .filter(group => this.getWhatsAppGroupUrl(group))
+      .sort((a, b) => a.group_order - b.group_order);
+
+    for (const group of orderedGroups) {
+      const groupKey = group.key;
+      const currentCount = Number(group.counter) || 0;
+
+      if (!groupKey || currentCount >= capacity) {
+        continue;
+      }
+
+      const assignedAt = Date.now();
+
+      try {
+        await this.firebaseService.incrementSalesCounter(groupKey, assignedAt, capacity);
+
+        return {
+          group,
+          groupUrl: this.getWhatsAppGroupUrl(group),
+          groupKey,
+          assignedAt
+        };
+      } catch {
+        continue;
+      }
+    }
+
+    return null;
+  }
+
+  private getWhatsAppGroupUrl(group: any): string {
+    const rawLink = (group?.group_link || group?.whatsapp_link || '').trim();
+
+    if (rawLink) {
+      if (/^https?:\/\//i.test(rawLink)) return rawLink;
+      return `https://${rawLink}`;
+    }
+
+    const legacyNumber = (group?.whatsapp_number || '').replace(/[^0-9]/g, '');
+    return legacyNumber ? `https://wa.me/${legacyNumber}` : '';
   }
 
   private openWhatsApp(whatsappNumber: string): void {

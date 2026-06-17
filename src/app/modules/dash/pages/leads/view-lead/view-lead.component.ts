@@ -9,6 +9,10 @@ interface LeadWithAffiliate extends Lead {
   assigned_sales?: {
     sales_id: string;
     whatsapp_number: string;
+    group_id?: string;
+    group_name?: string;
+    group_link?: string;
+    group_order?: number;
     assigned_at: number;
     assigned_via: string;
     versionKey?: string;
@@ -134,5 +138,17 @@ export class ViewLeadComponent implements OnInit {
 
   hasAssignedSales(): boolean {
     return !!this.lead.assigned_sales;
+  }
+
+  getAssignedGroupLabel(): string {
+    return this.lead.assigned_sales?.group_name || this.lead.salesName || 'Assigned Group';
+  }
+
+  getAssignedGroupLink(): string {
+    const groupLink = this.lead.assigned_sales?.group_link;
+    if (groupLink) return groupLink;
+
+    const legacyNumber = (this.lead.assigned_sales?.whatsapp_number || '').replace(/[^0-9]/g, '');
+    return legacyNumber ? `https://wa.me/${legacyNumber}` : '';
   }
 }
