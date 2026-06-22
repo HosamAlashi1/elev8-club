@@ -78,6 +78,7 @@ import { AudienceSectionComponent } from './pages/home/sections/audience/audienc
 import { ResourcesGuidesSectionComponent } from './pages/home/sections/resources-guides/resources-guides-section/resources-guides-section.component';
 import { ScreenshotsSectionComponent } from './pages/home/sections/screenshots/screenshots-section/screenshots-section.component';
 import { LearnSectionComponent } from './pages/home/sections/learn/learn-section/learn-section.component';
+import { ExitIntentOfferComponent } from './pages/home/sections/exit-intent-offer/exit-intent-offer.component';
 
 
 
@@ -119,6 +120,7 @@ export function playerFactory() {
     ResourcesGuidesSectionComponent,
     ScreenshotsSectionComponent,
     LearnSectionComponent,
+    ExitIntentOfferComponent,
     // NavbarComponent,
   ],
   imports: [

@@ -1,12 +1,12 @@
-﻿<section class="audience" aria-labelledby="audience-heading">
+<section class="audience" aria-labelledby="audience-heading">
   <div class="audience__glow" aria-hidden="true"></div>
 
   <div class="shell">
-    <div class="section-heading" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-heading">
       <span class="side-line"></span>
       <div>
-        <h2 id="audience-heading">مين بيحتاج هاد؟</h2>
-        <p>إذا كنت ضمن واحد من هذه الحالات، فهذا التحدي معمول لك</p>
+        <h2 id="audience-heading">هل هذا أنت !</h2>
+        <p data-aos="fade-up" data-aos-duration="700">إذا كنت ضمن واحدة من الحالات هذا التحدي معمول الك</p>
       </div>
       <span class="side-line"></span>
     </div>
@@ -21,9 +21,9 @@
       >
         <lucide-angular [name]="card.icon" [size]="22" aria-hidden="true"></lucide-angular>
         <h3>{{ card.title }}</h3>
-        <p>{{ card.desc }}</p>
+        <p class="card-problem">{{ card.problem }}</p>
+        <p class="card-need">{{ card.need }}</p>
       </article>
     </div>
   </div>
 </section>
-

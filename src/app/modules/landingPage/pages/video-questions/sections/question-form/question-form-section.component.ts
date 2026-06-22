@@ -502,6 +502,16 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
             versionKey
           }
         });
+
+        // Assign next available sales member (round-robin)
+        try {
+          const salesMemberKey = await this.firebaseService.assignNextSalesMember(versionKey);
+          if (salesMemberKey) {
+            await this.firebaseService.assignSalesMemberToLead(this.leadKey, salesMemberKey);
+          }
+        } catch (salesErr) {
+          console.warn('Could not assign sales member:', salesErr);
+        }
       }
 
       this.openWhatsAppGroup(groupUrl, selectedGroup);

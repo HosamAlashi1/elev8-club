@@ -11,7 +11,7 @@
   --wt-font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --wt-font-high-black: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   display: block;
-  background: var(--wt-bg);
+  background: transparent;
 }
 
 .wt-section {
@@ -20,17 +20,46 @@
   overflow: hidden;
   padding: 78px 0 96px;
   color: var(--wt-text);
-  background: var(--wt-bg);
+  background: transparent;
   font-family: var(--wt-font-low-regular);
+}
+
+.wt-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  height: 360px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--free-trust-handoff) 0%,
+    rgba(7, 21, 56, 0.98) 16%,
+    rgba(7, 21, 56, 0.78) 42%,
+    rgba(7, 21, 56, 0.34) 72%,
+    transparent 100%
+  );
 }
 
 .wt-section::after {
   content: "";
   position: absolute;
-  inset: auto 0 0;
-  z-index: -1;
-  height: 1px;
-  background: transparent;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  height: 340px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(5, 11, 29, 0.28) 26%,
+    rgba(5, 11, 29, 0.74) 56%,
+    rgba(5, 11, 29, 0.98) 84%,
+    var(--trust-review-handoff) 100%
+  );
 }
 
 .wt-glow {
@@ -72,6 +101,8 @@
 }
 
 .wt-shell {
+  position: relative;
+  z-index: 1;
   width: min(100%, 1440px);
   margin: 0 auto;
   padding: 0 72px;

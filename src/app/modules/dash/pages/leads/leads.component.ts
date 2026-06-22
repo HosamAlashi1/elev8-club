@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
-import { Version, Lead, Affiliate } from '../../../../core/models';
+import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SalesStatus, SalesMember } from '../../../../core/models';
 import { ToastrsService } from '../../../services/toater.service';
 import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { DeleteComponent } from '../../shared/delete/delete.component';
 import { PublicService } from 'src/app/modules/services/public.service';
+import { ExcelExportService } from '../../../services/excel-export.service';
 
 interface LeadWithAffiliate extends Lead {
   affiliateName?: string;
@@ -23,6 +26,7 @@ interface LeadWithAffiliate extends Lead {
     versionKey?: string;
   };
   salesName?: string;
+  salesMemberName?: string;
 }
 
 @Component({
@@ -30,31 +34,59 @@ interface LeadWithAffiliate extends Lead {
   templateUrl: './leads.component.html',
   styleUrls: ['./leads.component.css']
 })
-export class LeadsComponent implements OnInit {
+export class LeadsComponent implements OnInit, OnDestroy {
   isLoading$ = new BehaviorSubject<boolean>(true);
+  private destroy$ = new Subject<void>();
+  private leadsLoaded = false;
 
   leads: LeadWithAffiliate[] = [];
   allLeads: LeadWithAffiliate[] = [];
   currentVersion: Version | null = null;
   affiliates: Affiliate[] = [];
   salesList: any[] = [];
+  salesMembers: SalesMember[] = [];
+
+  // Role
+  isSales = false;
+  isAdmin = false;
+  salesMemberKey: string | null = null;
 
   // Filters
   searchText = '';
   selectedSalesId = '';
+  selectedStatus = '';
 
   // Pagination
   page = 1;
   size = 10;
   totalCount = 0;
   sizeOptions: { value: number; label: string }[] = [];
-  salesOptions: { value: string; label: string }[] = [];
+  salesOptions: { value: string; label: string }[] = [{ value: '', label: 'All Groups' }];
+
+  // Unified status filter: Lead statuses + Sales statuses
+  statusOptions: { value: string; label: string; disabled?: boolean }[] = [
+    { value: '',            label: 'All Statuses' },
+    { value: '__lead__',    label: 'Lead Status',  disabled: true },
+    { value: 'completed',   label: 'Completed' },
+    { value: 'pending',     label: 'Pending' },
+    { value: '__sales__',   label: 'Sales Status', disabled: true },
+    { value: 'new',         label: 'New' },
+    { value: 'pre_meeting', label: 'Pre-Meeting' },
+    { value: 'post_meeting',label: 'Post-Meeting' },
+    { value: 'follow_up',   label: 'Follow-up' },
+    { value: 'closed',      label: 'Closed' },
+    { value: 'not_interested', label: 'Not Interested' },
+  ];
+
+  isExporting = false;
 
   constructor(
     private firebaseService: FirebaseService,
     private modalService: NgbModal,
+    private router: Router,
     private toastr: ToastrsService,
-    private publicService: PublicService
+    private publicService: PublicService,
+    private excelExport: ExcelExportService
   ) {
     this.size = this.publicService.getNumOfRows(450, 67.87);
     this.sizeOptions = [
@@ -66,10 +98,18 @@ export class LeadsComponent implements OnInit {
       { value: 250, label: '250 rows' },
       { value: 500, label: '500 rows' }
     ];
+    this.isSales = this.publicService.isSales();
+    this.isAdmin = this.publicService.isAdmin();
+    this.salesMemberKey = this.publicService.getSalesMemberKey();
   }
 
   ngOnInit(): void {
     this.loadCurrentVersion();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // Helper صغير عشان نضمن اللودر يبان لطرفة عين
@@ -102,16 +142,30 @@ export class LeadsComponent implements OnInit {
 
   loadSales(): void {
     if (!this.currentVersion) return;
-
     this.firebaseService.getSalesByVersion(this.currentVersion.key).subscribe((sales: any[]) => {
       this.salesList = sales || [];
-      this.salesOptions = [
-        { value: '', label: 'All Groups' },
-        ...this.salesList.map(s => ({
-          value: s.key,
-          label: s.group_name || s.name || `Group ${s.group_order || ''}`.trim()
-        }))
-      ];
+      this.loadSalesMembers();
+    });
+  }
+
+  private buildGroupOptions(): void {
+    const seen = new Set<string>();
+    const groups: { value: string; label: string }[] = [];
+    this.allLeads.forEach(lead => {
+      const name = lead.assigned_sales?.group_name;
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        groups.push({ value: name, label: name });
+      }
+    });
+    groups.sort((a, b) => a.label.localeCompare(b.label));
+    this.salesOptions = [{ value: '', label: 'All Groups' }, ...groups];
+  }
+
+  loadSalesMembers(): void {
+    if (!this.currentVersion) return;
+    this.firebaseService.getSalesMembersByVersion(this.currentVersion.key).subscribe(members => {
+      this.salesMembers = members;
       this.loadLeads();
     });
   }
@@ -121,21 +175,29 @@ export class LeadsComponent implements OnInit {
 
     this.isLoading$.next(true);
 
-    this.firebaseService.getLeadsByVersion(this.currentVersion.key).subscribe(
+    const leads$ = (this.isSales && this.salesMemberKey)
+      ? this.firebaseService.getLeadsBySalesMember(this.salesMemberKey)
+      : this.firebaseService.getLeadsByVersion(this.currentVersion.key);
+
+    leads$.pipe(takeUntil(this.destroy$)).subscribe(
       leads => {
-        // Add affiliate and sales information to each lead
         this.allLeads = leads.map(lead => {
           const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
           const sales = lead.assigned_sales ? this.salesList.find(s => s.key === (lead.assigned_sales?.group_id || lead.assigned_sales?.sales_id)) : null;
+          const salesMember = lead.salesMemberKey ? this.salesMembers.find(m => m.key === lead.salesMemberKey) : null;
           return {
             ...lead,
             affiliateName: affiliate?.name || 'none',
             affiliateCode: affiliate?.code || lead.affiliateCode,
-            salesName: lead.assigned_sales?.group_name || sales?.group_name || sales?.name || (lead.assigned_sales ? 'Assigned Group' : 'Not Assigned')
+            salesName: lead.assigned_sales?.group_name || sales?.group_name || sales?.name || (lead.assigned_sales ? 'Assigned Group' : 'Not Assigned'),
+            salesMemberName: salesMember?.name || undefined
           };
         }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-        this.applyFilters(false, false); // ما نرجّع اللودر ولا نعيد تعيين الصفحة
+        this.buildGroupOptions();
+        const firstLoad = !this.leadsLoaded;
+        this.leadsLoaded = true;
+        this.applyFilters(false, firstLoad);
       },
       error => {
         console.error('Error loading leads:', error);
@@ -165,9 +227,20 @@ export class LeadsComponent implements OnInit {
         );
       }
 
-      // فلتر WhatsApp Group
-      if (this.selectedSalesId) {
-        filtered = filtered.filter(l => (l.assigned_sales?.group_id || l.assigned_sales?.sales_id) === this.selectedSalesId);
+      // فلتر WhatsApp Group (admin only) — يُقارن بـ group_name
+      if (this.selectedSalesId && this.isAdmin) {
+        filtered = filtered.filter(l => (l.assigned_sales?.group_name || '') === this.selectedSalesId);
+      }
+
+      // فلتر الحالة الموحّد
+      if (this.selectedStatus && !this.selectedStatus.startsWith('__')) {
+        if (this.selectedStatus === 'completed') {
+          filtered = filtered.filter(l => l.step === 2);
+        } else if (this.selectedStatus === 'pending') {
+          filtered = filtered.filter(l => l.step !== 2);
+        } else {
+          filtered = filtered.filter(l => (l.sales_status || 'new') === this.selectedStatus);
+        }
       }
 
       this.leads = filtered;
@@ -217,74 +290,75 @@ export class LeadsComponent implements OnInit {
   }
 
   view(lead: LeadWithAffiliate): void {
-    const modalRef = this.modalService.open(ViewLeadComponent, {
-      centered: true,
-      size: 'xl'
-    });
-
+    const modalRef = this.modalService.open(ViewLeadComponent, { centered: true, size: 'xl' });
     modalRef.componentInstance.lead = lead;
   }
 
-  /**
-   * تصدير CSV مع دعم كامل للعربي (UTF-8 + BOM)
-   */
-  exportToCSV(): void {
+  salesPanelLead: LeadWithAffiliate | null = null;
+
+  openSalesPanel(lead: LeadWithAffiliate): void {
+    this.salesPanelLead = lead;
+  }
+
+  closeSalesPanel(): void {
+    this.salesPanelLead = null;
+  }
+
+  async exportToExcel(): Promise<void> {
     if (this.leads.length === 0) {
       this.toastr.showWarning('No leads to export');
       return;
     }
-
-    const headers = [
-      'Name',
-      'Email',
-      'Phone',
-      'Country',
-      'City',
-      'Affiliate',
-      'WhatsApp Group',
-      'Status',
-      'Created At'
-    ];
-
-    const rows = this.leads.map(lead => [
-      lead.fullName || '',
-      lead.email || '',
-      lead.phone || '',
-      lead.country || '',
-      lead.city || '',
-      lead.affiliateName || '',
-      lead.salesName || '',
-      lead.step === 2 ? 'Completed' : 'Pending',
-      new Date(lead.createdAt).toLocaleDateString('en-US')
-    ]);
-
-    let csvContent = headers.join(',') + '\n';
-    rows.forEach(row => {
-      csvContent += row.map(cell => `"${(cell ?? '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
-    });
-
-    // 💡 الحل لمشكلة العربي: BOM + UTF-8
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csvContent], {
-      type: 'text/csv;charset=utf-8;'
-    });
-
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `leads_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-
-    this.toastr.showSuccess('Leads exported successfully');
+    this.isExporting = true;
+    try {
+      await this.excelExport.exportLeads(
+        this.leads.map(l => ({
+          fullName:        l.fullName,
+          email:           l.email,
+          phone:           l.phone,
+          country:         l.country,
+          city:            l.city,
+          affiliateName:   l.affiliateName,
+          affiliateCode:   l.affiliateCode,
+          salesName:       l.salesName,
+          salesMemberName: l.salesMemberName,
+          sales_status:    l.sales_status,
+          step:            l.step,
+          createdAt:       l.createdAt,
+          completedAt:     (l as any).completedAt
+        })),
+        'elev8_leads'
+      );
+      this.toastr.showSuccess(`${this.leads.length} leads exported`);
+    } catch {
+      this.toastr.showError('Export failed');
+    } finally {
+      this.isExporting = false;
+    }
   }
 
-  getStatusPillClass(step: number): string {
+    getStatusPillClass(step: number): string {
     return step === 2 ? 'pill-success' : 'pill-warning';
   }
 
   getStatusText(step: number): string {
     return step === 2 ? 'Completed' : 'Pending';
+  }
+
+  getSalesStatusLabel(status?: string): string {
+    return SALES_STATUS_LABELS[(status as SalesStatus)] || 'New';
+  }
+
+  getSalesStatusClass(status?: string): string {
+    const map: Record<string, string> = {
+      new: 'pill-secondary',
+      pre_meeting: 'pill-info',
+      post_meeting: 'pill-primary',
+      follow_up: 'pill-warning',
+      closed: 'pill-success',
+      not_interested: 'pill-danger'
+    };
+    return map[status || 'new'] || 'pill-secondary';
   }
 
   getCreatedDate(timestamp: string): string {

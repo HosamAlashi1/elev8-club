@@ -22,16 +22,20 @@
   content: "";
   position: absolute;
   top: 0;
-  bottom: -120px;
+  bottom: 0;
   left: 50%;
   z-index: 0;
   width: 100vw;
   transform: translateX(-50%);
   pointer-events: none;
   background:
-    radial-gradient(ellipse 1280px 560px at 50% 0, rgba(0, 78, 238, 0.16), rgba(0, 78, 238, 0.04) 48%, transparent 74%),
-    radial-gradient(ellipse 980px 420px at 52% 52%, rgba(0, 78, 238, 0.08), transparent 70%),
-    linear-gradient(180deg, rgba(5, 5, 10, 0) 0%, rgba(0, 12, 38, 0.2) 46%, rgba(5, 5, 10, 0) 100%);
+    linear-gradient(180deg, var(--story-handoff) 0%, rgba(6, 20, 49, 0.82) 14%, rgba(5, 10, 23, 0.38) 34%, transparent 58%),
+    radial-gradient(ellipse 980px 420px at 52% 50%, rgba(0, 78, 238, 0.045), transparent 72%);
+}
+
+.resources-guides::after {
+  display: none;
+  content: none;
 }
 
 .resources-guides__shell {
@@ -61,11 +65,11 @@
   -webkit-mask-image:
     radial-gradient(ellipse 48% 40% at 100% 0%, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.58) 48%, #000 100%),
     linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 9%, rgba(0, 0, 0, 0.68) 24%, #000 38%, #000 72%, rgba(0, 0, 0, 0.24) 88%, transparent 100%),
-    linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
   mask-image:
     radial-gradient(ellipse 48% 40% at 100% 0%, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.58) 48%, #000 100%),
     linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 9%, rgba(0, 0, 0, 0.68) 24%, #000 38%, #000 72%, rgba(0, 0, 0, 0.24) 88%, transparent 100%),
-    linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
 }
@@ -143,18 +147,32 @@
 }
 
 .resources-guides p {
-  width: 100%;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: var(--font-low-regular);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.65;
-  text-align: right;
+width: 100%;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: var(--font-low-regular);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 2;
+    text-align: right;
+}
+
+.first-line{
+  color: rgba(255, 255, 255, 1) !important;
+  font-weight: 700 !important;
+}
+
+.end-line{
+  color: rgba(255, 255, 255, 1) !important;
 }
 
 .resources-guides__body>p:first-child {
   color: rgba(255, 255, 255, 0.86);
+}
+
+.resources-guides__highlight {
+  color: #d7a747 !important;
+  font-weight: 700;
 }
 
 .resources-guides p strong {
@@ -181,8 +199,8 @@
 }
 
 .resources-guides__without-list {
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
+  /* max-width: 100%; */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -232,8 +250,8 @@
   height: 1px;
   background-image: repeating-linear-gradient(90deg, rgba(0, 78, 238, 0.75) 0 6px, transparent 6px 14px);
   opacity: 0.75;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.16) 5%, #000 14%, #000 calc(50% - 18px), transparent calc(50% - 18px) calc(50% + 18px), #000 calc(50% + 18px), #000 86%, rgba(0, 0, 0, 0.16) 95%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.16) 5%, #000 14%, #000 calc(50% - 18px), transparent calc(50% - 18px) calc(50% + 18px), #000 calc(50% + 18px), #000 86%, rgba(0, 0, 0, 0.16) 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.16) 5%, #000 14%, #000 calc(53% - 18px), transparent calc(50% - 18px) calc(50% + 18px), #000 calc(50% + 18px), #000 86%, rgba(0, 0, 0, 0.16) 95%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.16) 5%, #000 14%, #000 calc(55% - 18px), transparent calc(50% - 18px) calc(50% + 18px), #000 calc(50% + 18px), #000 86%, rgba(0, 0, 0, 0.16) 95%, transparent 100%);
 }
 
 .resources-guides__mouse {
@@ -333,10 +351,10 @@
     height: 100%;
     -webkit-mask-image:
       linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.48) 9%, rgba(0, 0, 0, 0.78) 24%, #000 38%, #000 85%, rgba(0, 0, 0, 0.52) 94%, transparent 100%),
-      linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
     mask-image:
       linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.48) 9%, rgba(0, 0, 0, 0.78) 24%, #000 38%, #000 85%, rgba(0, 0, 0, 0.52) 94%, transparent 100%),
-      linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
   }
 
   .resources-guides__portrait {
@@ -373,10 +391,10 @@
     gap: 18px;
   }
 
-  .resources-guides p,
+ .resources-guides p,
   .resources-guides ul {
-    font-size: 14px;
-    line-height: 1.65;
+    font-size: 18px;
+    line-height: 1.9;
   }
 
   .resources-guides__without {
@@ -404,10 +422,10 @@
 
   .resources-guides::before {
     top: 0;
-    bottom: -80px;
+    bottom: 0;
     background:
-      radial-gradient(ellipse 520px 280px at 50% 0, rgba(0, 78, 238, 0.18), transparent 72%),
-      linear-gradient(180deg, rgba(5, 5, 10, 0) 0%, rgba(0, 12, 38, 0.2) 45%, rgba(5, 5, 10, 0) 100%);
+      linear-gradient(180deg, var(--story-handoff) 0%, rgba(6, 20, 49, 0.76) 16%, rgba(5, 10, 23, 0.34) 34%, transparent 56%),
+      radial-gradient(ellipse 520px 280px at 50% 0, rgba(0, 78, 238, 0.08), transparent 72%);
   }
 
   .resources-guides__shell {
@@ -437,10 +455,10 @@
     height: 100%;
     -webkit-mask-image:
       linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.18) 9%, rgba(0, 0, 0, 0.78) 24%, #000 38%, #000 88%, rgba(0, 0, 0, 0.46) 96%, transparent 100%),
-      linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
     mask-image:
       linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.18) 9%, rgba(0, 0, 0, 0.78) 24%, #000 38%, #000 88%, rgba(0, 0, 0, 0.46) 96%, transparent 100%),
-      linear-gradient(180deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 58%, rgba(0, 0, 0, 0.8) 72%, rgba(0, 0, 0, 0.3) 88%, transparent 100%);
   }
 
   .resources-guides__ring {
@@ -479,7 +497,7 @@
   }
 
   .resources-guides p {
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.72;
     text-align: right;
   }

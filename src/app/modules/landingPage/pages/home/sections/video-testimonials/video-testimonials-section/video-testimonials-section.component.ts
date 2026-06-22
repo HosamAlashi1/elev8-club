@@ -15,7 +15,6 @@ interface ProofSlide {
   role: string;
   amount: string;
   video: string;
-  avatar: string;
   summary: string;
   poster?: string;
 }
@@ -46,72 +45,60 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     'assets/images/anima-home/proof-avatar-2.webp',
     'assets/images/anima-home/proof-avatar-3.webp',
   ] as const;
-  private readonly cardAvatars = [
-    'assets/img/blank.png',
-    'assets/img/blank.png',
-    'assets/img/blank.png',
-  ] as const;
-
   readonly slides: ProofSlide[] = [
     {
-      name: 'أمل من المغرب',
-      country: 'MA',
-      role: 'عندها بزنس خاص...',
-      amount: '$1,009',
-      video: 'assets/videos/testimonials/amal-morocco.mp4',
-      poster: 'assets/images/anima-home/proof-frame-amal.webp',
-      avatar: this.cardAvatars[2],
-      summary: 'وخلال 5 أيام ونصف حققت $1,009.',
-    },
-    {
-      name: 'لويس من لبنان',
-      country: 'LB',
-      role: 'يشتغل كوافير نسائي...',
-      amount: '$1,500',
-      video: 'assets/videos/testimonials/louis-lebanon.mp4',
-      poster: 'assets/images/anima-home/proof-frame-louis.webp',
-      avatar: this.cardAvatars[1],
-      summary: 'وخلال 8 أيام ونصف وصل لـ $1,500.',
-    },
-    {
-      name: 'أنصار من فلسطين',
+      name: 'أنصار من فلسطين 🇵🇸',
       country: 'PS',
-      role: 'كانت تشتغل بالمجال التسويقي...',
-      amount: '+$1,000',
+      role: 'كانت تشتغل بالمجال التسويق',
+      amount: '+1,000$',
       video: 'assets/videos/testimonials/ansar-palestine.mp4',
       poster: 'assets/images/anima-home/proof-frame-ansar.webp',
-      avatar: this.cardAvatars[1],
-      summary: 'وخلال 6 أيام فقط قدرت تحقق +$1,000 لدرجة إنها قررت تترك شغلها بالكامل وتكمل بالتداول.',
+      summary: 'وخلال 6 أيام فقط قدرت تحقق +1,000$ لدرجة إنها قررت تترك شغلها بالكامل وتكمل بالتداول.',
     },
     {
-      name: 'فادي من سوريا',
+      name: 'فادي من سوريا 🇸🇾',
       country: 'SY',
-      role: 'طالب IT ولسه بيدرس...',
-      amount: '$1,500',
+      role: 'طالب IT ولسه بيدرس وحاول يعمل دخل إضافي بس ما قدر ولما بلش معنا',
+      amount: '1,500$',
       video: 'assets/videos/testimonials/fadi-syria.mp4',
       poster: 'assets/images/anima-home/proof-frame-fadi.webp',
-      avatar: this.cardAvatars[1],
-      summary: 'خلال 8 أيام عمل $1,500 جنب دراسته.',
+      summary: 'خلال 8 أيام عمل 1,500$ جنب دراسته.',
     },
     {
-      name: 'أبو بكر من ليبيا',
-      country: 'LY',
-      role: 'في صيانة جوالات...',
-      amount: '$384',
-      video: 'assets/videos/testimonials/abubakr-libya.mp4',
-      poster: 'assets/images/anima-home/proof-frame-abubakr.webp',
-      avatar: this.cardAvatars[0],
-      summary: 'من أول يوم معنا حقق $384.',
-    },
-    {
-      name: 'هيثم من تركيا',
-      country: 'TR',
-      role: 'موظف وعنده شغل أساسي...',
-      amount: '$1,075',
+      name: 'هيثم من سوريا 🇸🇾',
+      country: 'SY',
+      role: 'موظف وعنده شغل أساسي وكان يبحث عن دخل إضافي يساعده',
+      amount: '1,075$',
       video: 'assets/videos/testimonials/haitham-turkey.mp4',
       poster: 'assets/images/anima-home/proof-frame-haitham.webp',
-      avatar: this.cardAvatars[2],
-      summary: 'وخلال ساعتين فقط حقق $1,075.',
+      summary: 'ولما بلش معنا قدر خلال ساعتين فقط يحقق 1,075$.',
+    },
+    {
+      name: 'أبو بكر من ليبيا 🇱🇾',
+      country: 'LY',
+      role: 'فني صيانة جوالات اغلب يومه بالشغل',
+      amount: '384$',
+      video: 'assets/videos/testimonials/abubakr-libya.mp4',
+      poster: 'assets/images/anima-home/proof-frame-abubakr.webp',
+      summary: 'من أول يوم معنا حقق معنا 384$.',
+    },
+    {
+      name: 'لويس من لبنان 🇱🇧',
+      country: 'LB',
+      role: 'يشتغل كوافير نسائي ومحتاج دخل إضافي',
+      amount: '1,500$',
+      video: 'assets/videos/testimonials/louis-lebanon.mp4',
+      poster: 'assets/images/anima-home/proof-frame-louis.webp',
+      summary: 'وخلال 8 أيام ونصف وصل لـ 1,500$.',
+    },
+    {
+      name: 'أمل من المغرب 🇲🇦',
+      country: 'MA',
+      role: 'عندها بزنس خاص وعندها وقت إضافي قررت تستغل',
+      amount: '1,009$',
+      video: 'assets/videos/testimonials/amal-morocco.mp4',
+      poster: 'assets/images/anima-home/proof-frame-amal.webp',
+      summary: 'وخلال 5 أيام ونصف حققت 1,009$.',
     },
   ];
 

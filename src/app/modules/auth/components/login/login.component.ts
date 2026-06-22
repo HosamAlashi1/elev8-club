@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/app/modules/services/firebase.service';
+import { DashboardUser } from 'src/app/core/models';
 
 @Component({
   selector: 'app-login',
@@ -47,17 +48,41 @@ export class LoginComponent implements OnInit {
     this.isLoginLoading = true;
 
     this.authService.SignIn(this.f.email.value, this.f.password.value)
-      .then((res: any) => {
+      .then(async (res: any) => {
         const user = res.user;
 
-        if (!user.emailVerified) {  
+        if (!user.emailVerified) {
           this.authService.SendVerificationMail();
           this.showMsg(false, 'Please verify your email.');
           this.isLoginLoading = false;
           return;
         }
 
-        localStorage.setItem('elev8-club-data', JSON.stringify(user));
+        // Fetch dashboard user profile (role, etc.)
+        let dashUser: DashboardUser | null = null;
+        try {
+          dashUser = (await this.service.getDashboardUser(user.uid).toPromise()) ?? null;
+        } catch (e) {}
+
+        // Block inactive users
+        if (dashUser && !dashUser.isActive) {
+          await this.authService.SignOut();
+          this.showMsg(false, 'Your account is inactive. Please contact an administrator.');
+          this.isLoginLoading = false;
+          return;
+        }
+
+        const sessionData = {
+          uid: user.uid,
+          email: user.email,
+          role: dashUser?.role || 'admin',
+          name: dashUser?.name || user.displayName || '',
+          salesMemberKey: dashUser?.salesMemberKey || null,
+          affiliateKey: dashUser?.affiliateKey || null,
+        };
+
+        localStorage.setItem('elev8-club-data', JSON.stringify(sessionData));
+
         this.ngZone.run(() => {
           this.router.navigate(['/dashboard']);
         });

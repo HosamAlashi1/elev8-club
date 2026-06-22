@@ -225,3 +225,48 @@ export const sendBulkEmail = functions.https.onCall(async (data, context) => {
     );
   }
 });
+
+/**
+ * Firebase Function لإنشاء مستخدم Dashboard جديد (Sales / Account Manager)
+ * تستقبل: email, password, name, role, salesMemberKey?, affiliateKey?
+ */
+export const createDashboardUser = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Must be authenticated");
+  }
+
+  // Verify caller is admin
+  const callerUid = context.auth.uid;
+  const callerSnap = await admin.database().ref(`dashboard_users/${callerUid}`).once("value");
+  const caller = callerSnap.val();
+  if (!caller || caller.role !== "admin") {
+    throw new functions.https.HttpsError("permission-denied", "Only admins can create users");
+  }
+
+  const { email, password, name, role, salesMemberKey, affiliateKey } = data;
+
+  if (!email || !password || !name || !role) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing required fields");
+  }
+
+  try {
+    // Create Firebase Auth user
+    const userRecord = await admin.auth().createUser({ email, password, displayName: name });
+    const uid = userRecord.uid;
+
+    // Write to dashboard_users
+    const userData: any = {
+      uid, email, name, role,
+      isActive: true,
+      createdAt: new Date().toISOString()
+    };
+    if (salesMemberKey) userData.salesMemberKey = salesMemberKey;
+    if (affiliateKey) userData.affiliateKey = affiliateKey;
+
+    await admin.database().ref(`dashboard_users/${uid}`).set(userData);
+
+    return { uid, success: true };
+  } catch (err: any) {
+    throw new functions.https.HttpsError("internal", err.message || "Failed to create user");
+  }
+});

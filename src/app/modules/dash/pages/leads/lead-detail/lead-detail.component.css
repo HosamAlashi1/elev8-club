@@ -1,0 +1,299 @@
+/* ── Page Shell ────────────────────────────────── */
+.ld-loading { padding: 32px; }
+.ld-page { padding: 24px 28px 60px; }
+
+/* ── Header ─────────────────────────────────────── */
+.ld-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.ld-back-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.ld-back-btn:hover { border-color: #9ca3af; color: #374151; background: #f9fafb; }
+
+.ld-header-center { display: flex; align-items: center; gap: 14px; flex: 1; }
+
+.ld-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(207,174,88,0.15);
+  border: 2px solid rgba(207,174,88,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #cfae58; font-size: 1.25rem; flex-shrink: 0;
+}
+
+.ld-name { font-size: 1.25rem; font-weight: 800; color: #1a1a2e; margin: 0 0 3px; }
+
+.ld-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.82rem; color: #9ca3af; }
+.ld-dot { color: #d1d5db; }
+.ld-sales-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(207,174,88,0.1); color: #b8962e; border-radius: 20px; padding: 2px 9px; font-size: 0.75rem; font-weight: 600; }
+
+.ld-header-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.ld-status-pill { display: inline-block; padding: 5px 13px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+.ld-pill-done { background: #dcfce7; color: #16a34a; }
+.ld-pill-pending { background: #fef3c7; color: #d97706; }
+
+/* ── Body Layout ─────────────────────────────────── */
+.ld-body { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
+
+@media (max-width: 1024px) {
+  .ld-body { grid-template-columns: 1fr; }
+}
+
+/* ── Card ────────────────────────────────────────── */
+.ld-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.ld-card:last-child { margin-bottom: 0; }
+
+.ld-card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Sidebar fields ──────────────────────────────── */
+.ld-field { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 0.88rem; color: #374151; }
+.ld-field:last-child { margin-bottom: 0; }
+.ld-fi { color: #9ca3af; font-size: 0.9rem; margin-top: 2px; flex-shrink: 0; }
+.ld-code { background: #f3f4f6; color: #6b7280; padding: 2px 7px; border-radius: 5px; font-size: 0.78rem; }
+
+/* ── Q&A ─────────────────────────────────────────── */
+.ld-qa { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+.ld-qa:last-child { margin-bottom: 0; }
+.ld-qa-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(207,174,88,0.15); color: #cfae58; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.ld-qa-q { font-size: 0.76rem; color: #9ca3af; margin-bottom: 2px; }
+.ld-qa-a { font-size: 0.87rem; color: #374151; font-weight: 500; }
+
+/* ── Stepper ─────────────────────────────────────── */
+.ld-stepper-card { padding: 22px 24px; }
+
+.ld-not-interested-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #dc2626;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.ld-stepper {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  gap: 0;
+}
+
+.ld-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  position: relative;
+}
+
+.ld-step-node {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #9ca3af;
+  transition: all 0.25s;
+  z-index: 1;
+}
+
+.ld-step--done .ld-step-node {
+  background: #cfae58;
+  border-color: #cfae58;
+  color: white;
+}
+
+.ld-step--active .ld-step-node {
+  background: white;
+  border-color: #cfae58;
+  color: #cfae58;
+  box-shadow: 0 0 0 4px rgba(207,174,88,0.15);
+}
+
+.ld-step:hover .ld-step-node {
+  border-color: #cfae58;
+  color: #cfae58;
+  transform: scale(1.08);
+}
+
+.ld-step-connector {
+  position: absolute;
+  top: 22px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.ld-step--done .ld-step-connector,
+.ld-step--done + .ld-step .ld-step-connector {
+  background: #cfae58;
+}
+
+.ld-step-label {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.ld-step--active .ld-step-label { color: #cfae58; }
+.ld-step--done .ld-step-label { color: #374151; }
+
+/* ── Call Log Card ───────────────────────────────── */
+.ld-calls-card { padding: 20px; }
+
+.ld-calls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.ld-calls-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  background: rgba(207,174,88,0.15);
+  color: #cfae58;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.ld-add-call-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #cfae58, #b8962e);
+  color: white; border: none; border-radius: 8px;
+  padding: 8px 16px; font-size: 0.82rem; font-weight: 600;
+  transition: all 0.2s; cursor: pointer;
+}
+.ld-add-call-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(207,174,88,0.35); }
+
+/* ── Call Form ───────────────────────────────────── */
+.ld-call-form {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.ld-label {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  margin-bottom: 5px;
+}
+
+.ld-input, .ld-select {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.875rem;
+  padding: 8px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ld-input:focus, .ld-select:focus {
+  border-color: #cfae58;
+  box-shadow: 0 0 0 3px rgba(207,174,88,0.12);
+  outline: none;
+}
+
+.ld-save-btn {
+  background: #1a1a2e; color: white;
+  border: none; border-radius: 8px;
+  padding: 9px 20px; font-size: 0.875rem; font-weight: 600;
+  display: flex; align-items: center;
+  transition: all 0.2s;
+}
+.ld-save-btn:hover:not(:disabled) { background: #2d2d50; transform: translateY(-1px); }
+.ld-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Empty Calls ─────────────────────────────────── */
+.ld-calls-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* ── Timeline ────────────────────────────────────── */
+.ld-timeline { display: flex; flex-direction: column; gap: 0; }
+
+.ld-timeline-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
+  position: relative;
+}
+.ld-timeline-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.ld-tl-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 6px;
+}
+.ld-tl-dot--answered { background: #22c55e; }
+.ld-tl-dot--no_answer { background: #f59e0b; }
+.ld-tl-dot--busy { background: #ef4444; }
+
+.ld-tl-body { flex: 1; min-width: 0; }
+
+.ld-tl-top {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+}
+
+.ld-tl-type { font-size: 0.875rem; font-weight: 700; color: #1a1a2e; }
+
+.ld-tl-status {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.75rem; font-weight: 600;
+  padding: 2px 9px; border-radius: 20px;
+}
+.ld-tl-status--answered { background: #dcfce7; color: #16a34a; }
+.ld-tl-status--no_answer { background: #fef3c7; color: #d97706; }
+.ld-tl-status--busy { background: #fee2e2; color: #dc2626; }
+
+.ld-tl-date { font-size: 0.76rem; color: #9ca3af; white-space: nowrap; }
+
+.ld-tl-notes { font-size: 0.82rem; color: #6b7280; margin: 0; line-height: 1.5; }

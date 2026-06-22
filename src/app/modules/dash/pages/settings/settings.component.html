@@ -22,6 +22,24 @@
         General Settings
       </button>
 
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'sales-members'"
+        (click)="setTab('sales-members')"
+        data-aos="fade-up" data-aos-delay="400">
+        Sales Members
+      </button>
+
+      <button
+        #tabBtn
+        class="tab-btn"
+        [class.active]="activeTab === 'account-managers'"
+        (click)="setTab('account-managers')"
+        data-aos="fade-up" data-aos-delay="450">
+        Account Managers
+      </button>
+
       <!-- <button
         #tabBtn
         class="tab-btn"
@@ -50,6 +68,14 @@
 
       <ng-container *ngIf="activeTab === 'email-campaign'">
         <app-email-campaign></app-email-campaign>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'sales-members'">
+        <app-sales-members-settings></app-sales-members-settings>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'account-managers'">
+        <app-account-managers-settings></app-account-managers-settings>
       </ng-container>
     </div>
   </div>

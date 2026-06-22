@@ -7,9 +7,9 @@
   z-index: 1;
   width: 100%;
   min-height: 760px;
-  padding: 8px clamp(16px, 4vw, 72px) 0;
+  padding: 50px clamp(16px, 4vw, 72px) 0;
   overflow: hidden;
-  background: #05050a;
+  background: transparent;
   isolation: isolate;
 }
 
@@ -20,14 +20,14 @@
   z-index: -3;
   background:
     radial-gradient(ellipse 560px 260px at 54% 37%, rgba(0, 78, 238, 0.09), transparent 72%),
-    linear-gradient(180deg, #05050a 0%, #05050a 100%);
+    linear-gradient(180deg, transparent 0%, transparent 42%, rgba(5, 5, 10, 0.12) 100%);
 }
 
 .hiw-section::after {
   content: "";
   position: absolute;
   right: 0;
-  bottom: 122px;
+  bottom: 45px;
   z-index: -2;
   width: min(980px, 50vw);
   height: 218px;
@@ -77,9 +77,46 @@
   font-family: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   font-size: clamp(2.75rem, 3.8vw, 3rem);
   font-weight: 800;
-  line-height: 50px;
+  line-height: 1.2;
   letter-spacing: 0;
   white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hiw-title-keyword {
+  display: block;
+  font-size: clamp(3rem, 4.2vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(
+    100deg,
+    #d7a747 0%,
+    #d7a747 30%,
+    #fdf28e 45%,
+    #ffffff 50%,
+    #fdf28e 55%,
+    #d7a747 70%,
+    #d7a747 100%
+  );
+  background-size: 250% 100%;
+  background-position: 150% center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  letter-spacing: 2px;
+  margin-top: 5px;
+  animation: goldShimmer 2.8s ease-in-out infinite;
+}
+
+@keyframes goldShimmer {
+  0%   { background-position: 150% center; }
+  50%  { background-position: -50% center; }
+  100% { background-position: 150% center; }
 }
 
 .hiw-sub {
@@ -119,9 +156,18 @@
   align-items: flex-start;
 }
 
+.hiw-step-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
 .hiw-step-num {
   display: block;
-  align-self: flex-start;
+  flex-shrink: 0;
   color: var(--hiw-blue);
   font-family: "Akira Expanded-SuperBold", "Arial Black", sans-serif;
   font-size: clamp(2.15rem, 3.25vw, 2.5rem);
@@ -136,7 +182,7 @@
 }
 
 .hiw-step-title {
-  margin: 11px 0 14px;
+  margin: 0;
   width: 100%;
   color: #ffffff;
   font-family: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
@@ -251,7 +297,7 @@
 .hiw-ai {
   position: relative;
   width: min(100%, 1800px);
-  min-height: 190px;
+  min-height: 110px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -338,7 +384,7 @@
 @media (max-width: 1439px) {
   .hiw-section {
     min-height: auto;
-    padding: 36px clamp(24px, 5vw, 64px) 90px;
+    padding: 40px clamp(24px, 5vw, 64px) 90px;
   }
 
   .hiw-section::after {
@@ -413,7 +459,7 @@
 
 @media (max-width: 680px) {
   .hiw-section {
-    padding: 0 24px 48px;
+    padding: 60px 24px 48px;
   }
 
   .hiw-section::after {
@@ -454,7 +500,7 @@
   }
 
   .hiw-title {
-    font-size: 28px;
+    font-size: 21px;
     line-height: 50px;
     text-align: center;
     white-space: nowrap;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { map, Observable, take } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { Version, Affiliate, Lead } from '../../core/models';
+import { Version, Affiliate, Lead, SalesMember, CallLog, DashboardUser } from '../../core/models';
 
 @Injectable({
   providedIn: 'root'
@@ -296,9 +296,17 @@ export class FirebaseService {
       );
   }
 
+  public getAffiliateByKey(key: string): Observable<Affiliate | null> {
+    return this.db.object<Affiliate>(`affiliates/${key}`).valueChanges().pipe(map(a => a || null), take(1));
+  }
+
+  public getSalesMemberByKey(key: string): Observable<SalesMember | null> {
+    return this.db.object<SalesMember>(`sales_members/${key}`).valueChanges().pipe(map(m => m || null), take(1));
+  }
+
   /** جلب جميع Leads لنسخة معينة */
   public getLeadsByVersion(versionKey: string): Observable<Lead[]> {
-    return this.list('leads', 'versionKey', versionKey).pipe(take(1));
+    return this.list('leads', 'versionKey', versionKey);
   }
 
   /** جلب Leads لأفلييت معين */
@@ -413,6 +421,169 @@ export class FirebaseService {
   /** حذف Affiliate */
   public deleteAffiliate(affiliateKey: string): Promise<void> {
     return this.db.object(`affiliates/${affiliateKey}`).remove();
+  }
+
+  // ==========================================
+  // Dashboard Users (roles)
+  // ==========================================
+
+  public getDashboardUser(uid: string): Observable<DashboardUser | null> {
+    return this.db.object<DashboardUser>(`dashboard_users/${uid}`)
+      .valueChanges()
+      .pipe(
+        map(user => user || null),
+        take(1)
+      );
+  }
+
+  public createDashboardUser(uid: string, data: Omit<DashboardUser, 'uid'>): Promise<void> {
+    return this.db.object(`dashboard_users/${uid}`).set({ ...data, uid });
+  }
+
+  public updateDashboardUser(uid: string, data: Partial<DashboardUser>): Promise<void> {
+    return this.db.object(`dashboard_users/${uid}`).update(data);
+  }
+
+  public getAllDashboardUsers(): Observable<DashboardUser[]> {
+    return this.db.list<DashboardUser>('dashboard_users')
+      .snapshotChanges()
+      .pipe(
+        map(changes => changes.map(c => ({
+          ...(c.payload.val() as DashboardUser),
+          uid: c.payload.key || ''
+        })))
+      );
+  }
+
+  // ==========================================
+  // Sales Members
+  // ==========================================
+
+  public getAllSalesMembers(): Observable<SalesMember[]> {
+    return this.list('sales_members');
+  }
+
+  public getSalesMembersByVersion(versionKey: string): Observable<SalesMember[]> {
+    return this.list('sales_members').pipe(
+      map(members => members.filter((m: SalesMember) => m.versionKey === versionKey))
+    );
+  }
+
+  public getActiveSalesMembersByVersion(versionKey: string): Observable<SalesMember[]> {
+    return this.getSalesMembersByVersion(versionKey).pipe(
+      map(members => members.filter((m: SalesMember) => m.isActive))
+    );
+  }
+
+  public addSalesMember(data: Omit<SalesMember, 'key' | 'createdAt'>): Promise<string> {
+    const memberData = { ...data, createdAt: new Date().toISOString() };
+    return this.db.list('sales_members').push(memberData).then(ref => {
+      const key = ref.key || '';
+      return this.db.object(`sales_members/${key}`).update({ key }).then(() => key);
+    });
+  }
+
+  public updateSalesMember(key: string, data: Partial<SalesMember>): Promise<void> {
+    return this.db.object(`sales_members/${key}`).update(data);
+  }
+
+  public deleteSalesMember(key: string): Promise<void> {
+    return this.db.object(`sales_members/${key}`).remove();
+  }
+
+  /** Round-robin: assign next active sales member for a version */
+  public assignNextSalesMember(versionKey: string): Promise<string | null> {
+    return this.getActiveSalesMembersByVersion(versionKey).pipe(take(1)).toPromise()
+      .then(members => {
+        if (!members || members.length === 0) return null;
+
+        // Sort: null last_assigned_at first, then ascending by timestamp
+        const sorted = [...members].sort((a, b) => {
+          if (!a.last_assigned_at && !b.last_assigned_at) return 0;
+          if (!a.last_assigned_at) return -1;
+          if (!b.last_assigned_at) return 1;
+          return a.last_assigned_at - b.last_assigned_at;
+        });
+
+        const chosen = sorted[0];
+        const now = Date.now();
+
+        return this.db.object(`sales_members/${chosen.key}`).update({ last_assigned_at: now })
+          .then(() => chosen.key || null);
+      });
+  }
+
+  // ==========================================
+  // Lead Sales Status
+  // ==========================================
+
+  public updateLeadSalesStatus(leadKey: string, status: string): Promise<void> {
+    return this.db.object(`leads/${leadKey}`).update({ sales_status: status });
+  }
+
+  public updateLeadAffiliateStatus(leadKey: string, status: string): Promise<void> {
+    return this.db.object(`leads/${leadKey}`).update({ affiliate_status: status });
+  }
+
+  public assignSalesMemberToLead(leadKey: string, salesMemberKey: string): Promise<void> {
+    return this.db.object(`leads/${leadKey}`).update({
+      salesMemberKey,
+      sales_status: 'new'
+    });
+  }
+
+  public getLeadsBySalesMember(salesMemberKey: string): Observable<Lead[]> {
+    return this.db.list<Lead>('leads', ref =>
+      ref.orderByChild('salesMemberKey').equalTo(salesMemberKey)
+    ).snapshotChanges().pipe(
+      map(changes => changes.map(c => ({
+        ...(c.payload.val() as Lead),
+        key: c.payload.key || ''
+      })))
+    );
+  }
+
+  public getClosedLeadsByAffiliate(affiliateKey: string): Observable<Lead[]> {
+    return this.db.list<Lead>('leads', ref =>
+      ref.orderByChild('affiliateKey').equalTo(affiliateKey)
+    ).snapshotChanges().pipe(
+      map(changes => changes
+        .map(c => ({ ...(c.payload.val() as Lead), key: c.payload.key || '' }))
+        .filter(l => l.sales_status === 'closed')
+      ),
+      take(1)
+    );
+  }
+
+  // ==========================================
+  // Call Logs
+  // ==========================================
+
+  public addCallLog(leadKey: string, data: Omit<CallLog, 'key' | 'createdAt'>): Promise<string> {
+    const logData = { ...data, createdAt: new Date().toISOString() };
+    return this.db.list(`lead_calls/${leadKey}`).push(logData).then(ref => {
+      const key = ref.key || '';
+      return this.db.object(`lead_calls/${leadKey}/${key}`).update({ key }).then(() => key);
+    });
+  }
+
+  public getCallLogs(leadKey: string): Observable<CallLog[]> {
+    return this.db.list<CallLog>(`lead_calls/${leadKey}`)
+      .snapshotChanges()
+      .pipe(
+        map(changes => changes
+          .map(c => ({ ...(c.payload.val() as CallLog), key: c.payload.key || '' }))
+          .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        )
+      );
+  }
+
+  public deleteCallLog(leadKey: string, callKey: string): Promise<void> {
+    return this.db.object(`lead_calls/${leadKey}/${callKey}`).remove();
+  }
+
+  public updateCallLog(leadKey: string, callKey: string, data: Partial<CallLog>): Promise<void> {
+    return this.db.object(`lead_calls/${leadKey}/${callKey}`).update(data);
   }
 
 }

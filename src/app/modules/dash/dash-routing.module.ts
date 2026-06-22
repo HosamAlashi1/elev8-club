@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashComponent } from './dash.component';
+import { RoleGuard } from '../auth/guards/role.guard';
 
 const routes: Routes = [
   {
@@ -16,31 +17,43 @@ const routes: Routes = [
       },
       {
         path: 'admins',
+        canActivate: [RoleGuard],
+        data: { animation: 'adminsPage', roles: ['admin'] },
         loadChildren: () =>
           import('./pages/admins/admins.module').then((m) => m.AdminsModule),
         title: 'Admins | Elev8 Club',
-        data: { animation: 'adminsPage'},
       },
       {
         path: 'settings',
+        canActivate: [RoleGuard],
+        data: { animation: 'settingsPage', roles: ['admin'] },
         loadChildren: () =>
           import('./pages/settings/settings.module').then((m) => m.SettingsModule),
         title: 'Settings | Elev8 Club',
-        data: { animation: 'settingsPage' }, // أو ADMIN حسب اللوجيك
       },
       {
         path: 'affiliates',
+        canActivate: [RoleGuard],
+        data: { animation: 'affiliatesPage', roles: ['admin'] },
         loadChildren: () =>
           import('./pages/affiliates/affiliates.module').then((m) => m.AffiliatesModule),
         title: 'Affiliates | Elev8 Club',
-        data: { animation: 'affiliatesPage' },
       },
       {
         path: 'leads',
+        canActivate: [RoleGuard],
+        data: { animation: 'leadsPage', roles: ['admin', 'sales'] },
         loadChildren: () =>
           import('./pages/leads/leads.module').then((m) => m.LeadsModule),
         title: 'Leads | Elev8 Club',
-        data: { animation: 'leadsPage' },
+      },
+      {
+        path: 'my-leads',
+        canActivate: [RoleGuard],
+        data: { animation: 'myLeadsPage', roles: ['admin', 'account_manager'] },
+        loadChildren: () =>
+          import('./pages/my-leads/my-leads.module').then((m) => m.MyLeadsModule),
+        title: 'My Leads | Elev8 Club',
       },
       { path: '', redirectTo: '', pathMatch: 'full' },
       { path: '**', redirectTo: '' },

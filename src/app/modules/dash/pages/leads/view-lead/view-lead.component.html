@@ -14,40 +14,29 @@
   <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
 </div>
 
-<div class="modal-body pt-3 pb-4">
-  <div
-    class="lead-wrapper"
-    data-aos="zoom-in"
-    data-aos-duration="600"
-  >
+<div class="modal-body pt-3 pb-4" id="viewLeadModalBody">
+  <div class="lead-wrapper" data-aos="zoom-in" data-aos-duration="400" data-aos-anchor="#viewLeadModalBody">
     <div class="row g-4">
 
       <!-- Personal Information -->
-      <div
-        class="col-12 col-lg-6"
-        data-aos="fade-up"
-        data-aos-delay="100"
-        data-aos-duration="700"
-      >
+      <div class="col-12 col-lg-6"
+        data-aos="fade-up" data-aos-delay="80" data-aos-duration="400"
+        data-aos-anchor="#viewLeadModalBody">
         <div class="info-section">
           <h5 class="section-title">Personal Information</h5>
-
           <div class="row g-3">
             <div class="col-md-12">
               <label class="field-label">Full Name</label>
               <div class="field-value">{{ lead.fullName }}</div>
             </div>
-
             <div class="col-md-6">
               <label class="field-label">Email</label>
               <div class="field-value">{{ lead.email }}</div>
             </div>
-
             <div class="col-md-6">
               <label class="field-label">Phone</label>
               <div class="field-value">{{ lead.phone || 'N/A' }}</div>
             </div>
-
             <div class="col-md-12">
               <label class="field-label">Location</label>
               <div class="field-value">
@@ -64,96 +53,70 @@
       <!-- Affiliate Information + status -->
       <div class="col-12 col-lg-6">
         <!-- Affiliate -->
-        <div
-          class="info-section mb-3"
-          data-aos="fade-up"
-          data-aos-delay="150"
-          data-aos-duration="700"
-        >
+        <div class="info-section mb-3"
+          data-aos="fade-up" data-aos-delay="130" data-aos-duration="400"
+          data-aos-anchor="#viewLeadModalBody">
           <h5 class="section-title">Affiliate Information</h5>
-
           <div class="row g-3">
             <div class="col-md-7">
               <label class="field-label">Affiliate Name</label>
               <div class="field-value">{{ lead.affiliateName || 'none' }}</div>
             </div>
-
             <div class="col-md-5">
               <label class="field-label">Affiliate Code</label>
               <div class="field-value">
-                <code class="code-pill">
-                  {{ lead.affiliateCode || 'N/A' }}
-                </code>
+                <code class="code-pill">{{ lead.affiliateCode || 'N/A' }}</code>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Assigned WhatsApp Group -->
-        <div
-          class="info-section mb-3"
-          data-aos="fade-up"
-          data-aos-delay="180"
-          data-aos-duration="700"
-          *ngIf="hasAssignedSales()"
-        >
+        <div class="info-section mb-3"
+          data-aos="fade-up" data-aos-delay="160" data-aos-duration="400"
+          data-aos-anchor="#viewLeadModalBody"
+          *ngIf="hasAssignedSales()">
           <h5 class="section-title">Assigned WhatsApp Group</h5>
-
           <div class="row g-3">
             <div class="col-md-7">
               <label class="field-label">Group</label>
               <div class="field-value">{{ getAssignedGroupLabel() }}</div>
             </div>
-
             <div class="col-md-5">
               <label class="field-label">Invite Link</label>
               <div class="field-value">
-                <a [href]="getAssignedGroupLink()" 
-                   target="_blank" class="whatsapp-link">
-                  <i class="fe fe-users me-1"></i>
-                  Open group
+                <a [href]="getAssignedGroupLink()" target="_blank" class="whatsapp-link">
+                  <i class="fe fe-users me-1"></i>Open group
                 </a>
               </div>
             </div>
-
             <div class="col-md-6">
               <label class="field-label">Assigned At</label>
               <div class="field-value">{{ getAssignedDate() }}</div>
             </div>
-
             <div class="col-md-6">
               <label class="field-label">Assigned Via</label>
-              <div class="field-value text-capitalize">
-                {{ lead.assigned_sales!.assigned_via }}
-              </div>
+              <div class="field-value text-capitalize">{{ lead.assigned_sales!.assigned_via }}</div>
             </div>
           </div>
         </div>
 
         <!-- Status & Timeline -->
-        <div
-          class="info-section"
-          data-aos="fade-up"
-          data-aos-delay="220"
-          data-aos-duration="700"
-        >
+        <div class="info-section"
+          data-aos="fade-up" data-aos-delay="190" data-aos-duration="400"
+          data-aos-anchor="#viewLeadModalBody">
           <h5 class="section-title">Status & Timeline</h5>
-
           <div class="row g-3">
             <div class="col-md-4">
               <label class="field-label">Status</label>
               <div class="field-value">
-                <span [class]="getStatusClass()">
-                  {{ getStatusLabel() }}
-                </span>
+                <span [class]="getStatusClass()">{{ getStatusLabel() }}</span>
               </div>
             </div>
-
             <div class="col-md-4">
               <label class="field-label">Created At</label>
               <div class="field-value">{{ getCreatedDate() }}</div>
             </div>
-
             <div class="col-md-4" *ngIf="lead.step === 2">
               <label class="field-label">Completed At</label>
               <div class="field-value">{{ getCompletedDate() }}</div>
@@ -163,22 +126,14 @@
       </div>
 
       <!-- Questionnaire Answers -->
-      <div
-        class="col-12"
-        *ngIf="lead.step === 2 && lead.answers"
-        data-aos="fade-up"
-        data-aos-delay="280"
-        data-aos-duration="700"
-      >
+      <div class="col-12" *ngIf="lead.step === 2 && lead.answers"
+        data-aos="fade-up" data-aos-delay="220" data-aos-duration="400"
+        data-aos-anchor="#viewLeadModalBody">
         <div class="info-section">
           <h5 class="section-title">Questionnaire Answers</h5>
-
           <ng-container *ngIf="hasNewQuestionnaireAnswers(); else legacyQuestionnaire">
             <div class="questionnaire-grid">
-              <div
-                class="answer-card"
-                *ngFor="let answer of newQuestionnaireAnswers; let index = index"
-              >
+              <div class="answer-card" *ngFor="let answer of newQuestionnaireAnswers; let index = index">
                 <span class="answer-number">{{ index + 1 }}</span>
                 <div>
                   <label class="field-label">{{ answer.label }}</label>
@@ -187,13 +142,9 @@
               </div>
             </div>
           </ng-container>
-
           <ng-template #legacyQuestionnaire>
             <div class="questionnaire-grid">
-              <div
-                class="answer-card"
-                *ngFor="let answer of legacyQuestionnaireAnswers; let index = index"
-              >
+              <div class="answer-card" *ngFor="let answer of legacyQuestionnaireAnswers; let index = index">
                 <span class="answer-number">{{ index + 1 }}</span>
                 <div>
                   <label class="field-label">{{ answer.label }}</label>
@@ -205,13 +156,116 @@
         </div>
       </div>
 
+      <!-- Sales Status Stepper -->
+      <div class="col-12" *ngIf="isSales || isAdmin"
+        data-aos="fade-up" data-aos-delay="250" data-aos-duration="400"
+        data-aos-anchor="#viewLeadModalBody">
+        <div class="info-section">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="section-title mb-0">Sales Progress</h5>
+            <button *ngIf="lead.sales_status !== 'not_interested' && (isSales || isAdmin)"
+              class="btn btn-sm btn-outline-danger" (click)="markNotInterested()">
+              <i class="fe fe-x-circle me-1"></i>Not Interested
+            </button>
+          </div>
+
+          <div class="sales-stepper">
+            <div *ngFor="let step of salesSteps" class="stepper-step"
+              [ngClass]="getStepClass(step.key)"
+              (click)="changeStatus(step.key)"
+              [class.clickable]="canChangeTo(step.key)">
+              <div class="step-circle">
+                <i class="fe fe-check" *ngIf="getStepClass(step.key) === 'step-done'"></i>
+                <span *ngIf="getStepClass(step.key) !== 'step-done'">{{ salesSteps.indexOf(step) + 1 }}</span>
+              </div>
+              <span class="step-label">{{ step.label }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="lead.sales_status === 'not_interested'" class="not-interested-badge mt-3">
+            <i class="fe fe-x-circle me-2"></i>Marked as Not Interested
+          </div>
+        </div>
+      </div>
+
+      <!-- Call Log -->
+      <div class="col-12" *ngIf="isSales || isAdmin"
+        data-aos="fade-up" data-aos-delay="280" data-aos-duration="400"
+        data-aos-anchor="#viewLeadModalBody">
+        <div class="info-section">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="section-title mb-0">Call Log ({{ callLogs.length }})</h5>
+            <button class="btn btn-sm btn-custom" (click)="toggleAddCallForm()">
+              <i class="fe" [ngClass]="showAddCallForm ? 'fe-x' : 'fe-plus'"></i>
+              {{ showAddCallForm ? 'Cancel' : 'Add Call' }}
+            </button>
+          </div>
+
+          <!-- Add Call Form -->
+          <div *ngIf="showAddCallForm" class="add-call-form mb-4" [formGroup]="callForm">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="field-label">Call Type</label>
+                <select class="form-select form-select-sm" formControlName="callType">
+                  <option *ngFor="let opt of callTypeOptions" [value]="opt.value">{{ opt.label }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="field-label">Date</label>
+                <input type="date" class="form-control form-control-sm" formControlName="callDate">
+              </div>
+              <div class="col-md-2">
+                <label class="field-label">Time</label>
+                <input type="time" class="form-control form-control-sm" formControlName="callTime">
+              </div>
+              <div class="col-md-3">
+                <label class="field-label">Status</label>
+                <select class="form-select form-select-sm" formControlName="status">
+                  <option *ngFor="let opt of callStatusOptions" [value]="opt.value">{{ opt.label }}</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="field-label">Notes (Optional)</label>
+                <textarea class="form-control form-control-sm" rows="2" placeholder="Add notes..." formControlName="notes"></textarea>
+              </div>
+              <div class="col-12 d-flex justify-content-end">
+                <button class="btn btn-sm btn-custom" (click)="saveCall()" [disabled]="isSavingCall || callForm.invalid">
+                  <span *ngIf="isSavingCall" class="spinner-border spinner-border-sm me-1"></span>
+                  Save Call
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Call Timeline -->
+          <div *ngIf="isLoadingLogs" class="text-center py-3 text-muted">
+            <span class="spinner-border spinner-border-sm me-2"></span>Loading calls...
+          </div>
+          <div *ngIf="!isLoadingLogs && callLogs.length === 0 && !showAddCallForm" class="text-muted small text-center py-3">
+            No calls logged yet
+          </div>
+          <div class="call-timeline" *ngIf="!isLoadingLogs && callLogs.length > 0">
+            <div class="call-item" *ngFor="let log of callLogs">
+              <div class="call-dot"></div>
+              <div class="call-content">
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                  <span class="call-type-label">{{ getCallTypeLabel(log.callType) }}</span>
+                  <span class="call-status-badge" [ngClass]="getCallStatusClass(log.status)">
+                    {{ getCallStatusLabel(log.status) }}
+                  </span>
+                  <span class="call-date text-muted ms-auto">{{ formatCallDate(log.callDate, log.callTime) }}</span>
+                </div>
+                <p class="call-notes mb-0" *ngIf="log.notes">{{ log.notes }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Consent -->
-      <div
-        class="col-12"
-        data-aos="fade-up"
-        data-aos-delay="350"
-        data-aos-duration="700"
-      >
+      <div class="col-12"
+        data-aos="fade-up" data-aos-delay="310" data-aos-duration="400"
+        data-aos-anchor="#viewLeadModalBody">
         <div class="consent-box" [class.granted]="lead.consent" [class.denied]="!lead.consent">
           <div class="d-flex align-items-center gap-2">
             <div class="consent-dot"></div>

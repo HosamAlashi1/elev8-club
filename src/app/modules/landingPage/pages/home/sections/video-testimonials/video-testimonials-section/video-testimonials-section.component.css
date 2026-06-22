@@ -13,7 +13,7 @@
   --font-high-black: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
   --font-brand: "Akira Expanded-SuperBold", "Cerebri Sans", "Arial Black", sans-serif;
   display: block;
-  background: var(--bg);
+  background: transparent;
 }
 
 .proof-section {
@@ -24,33 +24,19 @@
   direction: rtl;
   color: #fff;
   font-family: var(--font-low-regular);
-  background:
-    radial-gradient(520px 330px at 18% 58%, rgba(0, 78, 238, 0.12), transparent 72%),
-    radial-gradient(600px 340px at 86% 78%, rgba(0, 78, 238, 0.13), transparent 74%),
-    linear-gradient(90deg, #05050a 0%, #050711 54%, #061025 100%);
+  background: transparent;
   border-top: 0;
-  border-bottom: 1px solid rgba(0, 78, 238, 0.20);
+  border-bottom: 0;
 }
 
-/* .proof-section::before {
-  content: "";
-  position: absolute;
-  inset: 0px 0 auto;
-  z-index: 1;
-  height: 1px;
-  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 7px, transparent 7px 18px);
-  opacity: 0.72;
-  pointer-events: none;
-} */
+.proof-section::before {
+  display: none;
+  content: none;
+}
 
 .proof-section::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  z-index: -1;
-  height: 132px;
-  background: linear-gradient(180deg, transparent, rgba(0, 24, 68, 0.48));
-  pointer-events: none;
+  display: none;
+  content: none;
 }
 
 .proof-shell {
@@ -63,7 +49,7 @@
   align-items: center;
   justify-content: center;
   gap: 35px;
-  padding: 72px 45px 0;
+  padding: 34px 45px 0;
   direction: ltr;
 }
 
@@ -613,11 +599,10 @@
 
 .student-card__head {
   display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 9px;
+  grid-template-columns: 1fr;
   align-items: center;
-  min-height: 52px;
-  padding: 7px 9px 7px 12px;
+  min-height: 46px;
+  padding: 9px 12px;
   border-radius: 13px;
   background:
     linear-gradient(180deg, rgba(38, 45, 62, 0.86), rgba(27, 32, 46, 0.82)),
@@ -627,44 +612,32 @@
     0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
-.student-card__head img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  grid-column: 1;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.student-card__head span {
-  display: none;
-}
-
 .student-card__head div {
-  grid-column: 2;
+  min-width: 0;
 }
 
 .student-card h3 {
   margin: 0;
   font-family: var(--font-high-extra);
-  font-size: 14.5px;
+  font-size: 15.5px;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.22;
   letter-spacing: 0;
+  text-align: center;
 }
 
 .student-card p {
   margin: 0;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 11.2px;
+  line-height: 1.58;
 }
 
 .student-card__summary {
-  margin: 13px 2px 0 !important;
+  margin: 12px 2px 0 !important;
   color: #fff !important;
-  font-size: 11.3px !important;
-  line-height: 1.72 !important;
+  font-size: 10.9px !important;
+  line-height: 1.68 !important;
 }
 
 .slider-controls {
@@ -881,11 +854,19 @@
 }
 
 @media (max-width: 640px) {
+  .proof-section::before {
+    display: none;
+    content: none;
+  }
+
+  .proof-section::after {
+    display: none;
+    content: none;
+  }
+
   .proof-section {
     min-height: auto;
-    background:
-      radial-gradient(260px 220px at 50% 74%, rgba(0, 78, 238, 0.18), transparent 78%),
-      linear-gradient(180deg, #05050a 0%, #05050a 58%, #06122a 100%);
+    background: transparent;
   }
 
   .proof-shell {
@@ -978,7 +959,7 @@
 
   .proof-visual {
     width: 345px;
-    height: 430px;
+    height: 470px;
     margin-top: 52px;
     justify-self: center;
     transform: none;
@@ -1027,30 +1008,26 @@
   }
 
   .student-card__head {
-    grid-template-columns: 48px 1fr;
-    gap: 10px;
-    min-height: 62px;
-    padding: 8px 9px 8px 12px;
+    grid-template-columns: 1fr;
+    min-height: 54px;
+    padding: 10px 13px;
     border-radius: 15px;
-  }
-
-  .student-card__head img {
-    width: 48px;
-    height: 48px;
   }
 
   .student-card h3 {
     font-size: 17px;
+    line-height: 1.24;
   }
 
   .student-card p {
     font-size: 12px;
+    line-height: 1.58;
   }
 
   .student-card__summary {
-    margin-top: 15px !important;
-    font-size: 12px !important;
-    line-height: 1.72 !important;
+    margin-top: 13px !important;
+    font-size: 11.6px !important;
+    line-height: 1.68 !important;
   }
 
   .student-card::before,

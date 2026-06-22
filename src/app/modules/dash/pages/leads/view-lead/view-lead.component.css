@@ -207,6 +207,193 @@
   text-decoration: underline;
 }
 
+/* ─── Sales Stepper ───────────────────────────────── */
+.sales-stepper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+  padding: 8px 0;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  cursor: default;
+}
+
+.stepper-step.clickable {
+  cursor: pointer;
+}
+
+.stepper-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.stepper-step.step-done:not(:last-child)::after,
+.stepper-step.step-active:not(:last-child)::after {
+  background: #cfae58;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 1;
+  position: relative;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 2px solid #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.stepper-step.step-done .step-circle {
+  background: #cfae58;
+  border-color: #cfae58;
+  color: white;
+}
+
+.stepper-step.step-active .step-circle {
+  background: white;
+  border-color: #cfae58;
+  color: #cfae58;
+  box-shadow: 0 0 0 4px rgba(207, 174, 88, 0.15);
+}
+
+.stepper-step.clickable:hover .step-circle {
+  border-color: #cfae58;
+  color: #cfae58;
+}
+
+.step-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  margin-top: 6px;
+  text-align: center;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+.stepper-step.step-done .step-label,
+.stepper-step.step-active .step-label {
+  color: #cfae58;
+  font-weight: 600;
+}
+
+.not-interested-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ─── Call Log ──────────────────────────────────────── */
+.add-call-form {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.call-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.call-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.call-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 16px;
+  bottom: 0;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.call-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #cfae58;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px #cfae58;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.call-content {
+  flex: 1;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.call-type-label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #374151;
+}
+
+.call-date {
+  font-size: 0.78rem;
+}
+
+.call-notes {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.call-status-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-answered {
+  background: rgba(52, 199, 89, 0.12);
+  color: #34c759;
+}
+
+.badge-no-answer {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.badge-busy {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
 /* Responsive tweaks */
 @media (max-width: 768px) {
   .lead-wrapper {
@@ -215,5 +402,13 @@
 
   .questionnaire-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sales-stepper {
+    gap: 4px;
+  }
+
+  .step-label {
+    font-size: 0.65rem;
   }
 }

@@ -2,7 +2,10 @@
   <header class="hiw-head" data-aos="fade-up" data-aos-delay="60">
     <span class="hiw-head-line hiw-head-line--right" aria-hidden="true"></span>
     <div class="hiw-head-copy">
-      <h2 id="hiw-title" class="hiw-title">كيف هاي الطريق بتشتغل</h2>
+      <h2 id="hiw-title" class="hiw-title">
+        كيف هاي الطريقة بتشتغل
+        <span class="hiw-title-keyword">التداول</span>
+      </h2>
       <p class="hiw-sub">
         التداول هو نفس التجارة الموجودة على أرض الواقع لكن بشكل أونلاين داخل الأسواق المالية
       </p>
@@ -18,8 +21,10 @@
       [attr.data-aos-delay]="110 + i * 90"
     >
       <div class="hiw-step-content">
-        <span class="hiw-step-num">{{ step.num }}</span>
-        <h3 class="hiw-step-title">{{ step.title }}</h3>
+        <div class="hiw-step-header">
+          <span class="hiw-step-num">{{ step.num }}</span>
+          <h3 class="hiw-step-title">{{ step.title }}</h3>
+        </div>
 
         <div class="hiw-step-text">
           <p *ngFor="let paragraph of step.paragraphs">{{ paragraph }}</p>
@@ -39,11 +44,11 @@
   </div>
 
   <div class="hiw-ai" data-aos="fade-up" data-aos-delay="520">
-    <h3>لكن الذكاء الاصطناعي غيّر كل شيء</h3>
+    <h3> الذكاء الاصطناعي غيّر كل شيء</h3>
 
     <div class="hiw-ai-panel">
       <p>
-        زمان كان التداول يحتاج شهور من التعلم حتى تبدأ تفهم السوق. اليوم؟ الذكاء الاصطناعي اختصر الطريق بالكامل. وصار الشخص المبتدئ يقدر يبدأ ويحقق أول نتيجة إله خلال دقائق باستخدام نظامنا البسيط
+        زمان كان التداول يحتاج شهور من التعلم حتى تبدأ تفهم السوق بس اليوم؟ الذكاء الاصطناعي اختصر الطريق بالكامل وصار الشخص المبتدئ يقدر يبدأ ويحقق أول نتيجة إله خلال دقائق باستخدام نظامنا المتكامل
       </p>
 
       <button class="hiw-cta" type="button" (click)="onOpenRegistration()" aria-label="احجز مقعدك مجاناً">

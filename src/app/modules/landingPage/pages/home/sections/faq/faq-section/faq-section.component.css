@@ -28,6 +28,25 @@
     radial-gradient(ellipse 820px 360px at 54% 34%, rgba(0, 78, 238, 0.16), rgba(0, 78, 238, 0.045) 46%, transparent 76%);
 }
 
+.faq--anima::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  height: 280px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--review-faq-handoff) 0%,
+    rgba(6, 20, 49, 0.96) 16%,
+    rgba(6, 20, 49, 0.74) 42%,
+    rgba(6, 20, 49, 0.3) 72%,
+    transparent 100%
+  );
+}
+
 .faq--anima .faq-heading {
   position: relative;
   z-index: 2;

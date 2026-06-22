@@ -27,10 +27,10 @@
   width: min(100%, 1446px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(330px, 392px) minmax(0, 1fr) 292px;
+  grid-template-columns: minmax(330px, 392px) 1fr;
   grid-template-areas:
-    "actions head visual"
-    "copy head visual";
+    "actions head"
+    "copy    head";
   align-items: center;
   column-gap: 46px;
   row-gap: 18px;
@@ -44,6 +44,15 @@
   grid-area: head;
   min-width: 0;
   text-align: center;
+}
+
+.footer-tagline {
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  font-weight: 400;
+  letter-spacing: 0.5px;
 }
 
 .footer-headline {
@@ -140,9 +149,9 @@
 .footer-copyright {
   grid-area: copy;
   margin: 0;
-  color: #ffffff;
-  font-family:  "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
-  font-size: 17px;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
+  font-size: 14px;
   line-height: 1.4;
   text-align: left;
   direction: ltr;
@@ -219,7 +228,7 @@
 
 @media (max-width: 1120px) {
   .footer-inner {
-    grid-template-columns: minmax(260px, 1fr) minmax(0, 1fr) 210px;
+    grid-template-columns: minmax(260px, 1fr) 1fr;
     padding-inline: 34px;
     column-gap: 24px;
   }
@@ -227,39 +236,25 @@
   .footer-headline {
     font-size: clamp(34px, 4.8vw, 48px);
   }
-
-  .footer-visual {
-    right: -4px;
-    width: 220px;
-  }
-
-  .footer-pill--main {
-    width: 220px;
-  }
-
-  .footer-pill--small {
-    right: 166px;
-    width: 54px;
-  }
 }
 
 @media (max-width: 768px) {
   .site-footer {
-    padding: 86px 16px 0;
+    padding: 48px 16px 0;
   }
 
   .footer-inner {
-    min-height: 390px;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "visual"
-      "head"
-      "actions"
-      "copy";
-    row-gap: 28px;
-    padding: 142px 22px 34px;
-    text-align: center;
+    padding: 36px 24px 32px;
     border-radius: 22px 22px 0 0;
+  }
+
+  .footer-head {
+    text-align: center;
+  }
+
+  .footer-tagline {
+    font-size: 13px;
+    margin-bottom: 8px;
   }
 
   .footer-headline {
@@ -269,42 +264,29 @@
 
   .footer-brand {
     font-size: 14px;
+    margin-top: 10px;
   }
 
   .footer-actions {
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 22px;
+    gap: 20px;
   }
 
   .footer-cta-btn {
-    width: min(100%, 260px);
-    min-height: 58px;
-    font-size: 18px;
+    width: min(100%, 280px);
+    min-height: 56px;
+    font-size: 17px;
+  }
+
+  .footer-socials {
+    gap: 28px;
   }
 
   .footer-copyright {
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
-  }
-
-  .footer-visual {
-    top: -66px;
-    right: 50%;
-    width: 180px;
-    height: 210px;
-    transform: translateX(50%);
-  }
-
-  .footer-pill--main {
-    right: -12px;
-    width: 190px;
-  }
-
-  .footer-pill--small {
-    right: 126px;
-    top: 74px;
-    width: 48px;
   }
 }
 

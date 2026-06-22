@@ -9,7 +9,7 @@
   min-height: 762px;
   padding: 0 clamp(18px, 5vw, 92px) 60px;
   overflow: visible;
-  background: #05050a;
+  background: transparent;
   isolation: isolate;
 }
 

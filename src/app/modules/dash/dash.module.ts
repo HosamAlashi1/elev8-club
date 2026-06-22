@@ -22,7 +22,8 @@ import {
   BarChart2,
   Settings,
   UserCog,
-  UserCheck
+  UserCheck,
+  Briefcase
 } from 'lucide-angular';
 import { HeaderComponent } from './components/header/header.component';
 import { PublicSharedModule } from '../shared/public-shared.module';
@@ -57,7 +58,8 @@ import { PublicSharedModule } from '../shared/public-shared.module';
       BarChart2,
       Settings,
       UserCog,
-      UserCheck
+      UserCheck,
+      Briefcase
     })
   ],
   providers: [

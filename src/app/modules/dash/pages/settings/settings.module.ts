@@ -15,6 +15,9 @@ import { SalesSettingsComponent } from './sales-settings/sales-settings.componen
 import { GeneralSettingsComponent } from './general-settings/general-settings.component';
 import { AddEditSalesItemComponent } from './sales-settings/add-edit-sales-item/add-edit-sales-item.component';
 import { EmailCampaignComponent } from './email-campaign/email-campaign.component';
+import { SalesMembersSettingsComponent } from './sales-members-settings/sales-members-settings.component';
+import { AccountManagersSettingsComponent } from './account-managers-settings/account-managers-settings.component';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
 @NgModule({
   declarations: [
@@ -22,7 +25,9 @@ import { EmailCampaignComponent } from './email-campaign/email-campaign.componen
     SalesSettingsComponent,
     GeneralSettingsComponent,
     AddEditSalesItemComponent,
-    EmailCampaignComponent
+    EmailCampaignComponent,
+    SalesMembersSettingsComponent,
+    AccountManagersSettingsComponent
   ],
   imports: [
     CommonModule,
@@ -39,6 +44,7 @@ import { EmailCampaignComponent } from './email-campaign/email-campaign.componen
     MdbDropdownModule,
     MdbRippleModule,
     SharedModule,
+    AngularFireAuthModule,
     QuillModule.forRoot()
   ]
 })

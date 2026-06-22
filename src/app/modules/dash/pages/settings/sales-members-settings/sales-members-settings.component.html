@@ -1,0 +1,165 @@
+<div class="sales-members">
+
+  <!-- Header -->
+  <div class="sm-header">
+    <div>
+      <h3 class="sm-title">Sales Members</h3>
+      <small class="text-muted">{{ members.length }} member(s) in current version</small>
+    </div>
+    <button class="btn sm-btn-add" (click)="toggleForm()">
+      <i class="fe" [ngClass]="showAddForm ? 'fe-x' : 'fe-user-plus'"></i>
+      {{ showAddForm ? 'Cancel' : 'Add Member' }}
+    </button>
+  </div>
+
+  <!-- Add Form -->
+  <div class="sm-form-panel" [class.sm-form-panel--open]="showAddForm" [formGroup]="addForm">
+    <div class="sm-form-inner">
+      <div class="sm-form-title">
+        <i class="fe fe-user-plus me-2"></i>New Sales Member
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="sm-label">Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control sm-input" formControlName="name" placeholder="Full name">
+          <div class="sm-error" *ngIf="f['name'].invalid && f['name'].touched">Name is required</div>
+        </div>
+        <div class="col-md-6">
+          <label class="sm-label">Email <span class="text-danger">*</span></label>
+          <input type="email" class="form-control sm-input" formControlName="email" placeholder="email@example.com">
+          <div class="sm-error" *ngIf="f['email'].invalid && f['email'].touched">Valid email required</div>
+        </div>
+        <div class="col-md-6">
+          <label class="sm-label">Phone</label>
+          <input type="text" class="form-control sm-input" formControlName="phone" placeholder="+962...">
+        </div>
+        <div class="col-md-6">
+          <label class="sm-label">Initial Password <span class="text-danger">*</span></label>
+          <input type="password" class="form-control sm-input" formControlName="password" placeholder="Min 8 characters">
+          <div class="sm-error" *ngIf="f['password'].invalid && f['password'].touched">Min 8 characters required</div>
+        </div>
+
+        <!-- isActive toggle -->
+        <div class="col-12">
+          <div class="sm-toggle-row" [formGroup]="addForm">
+            <div>
+              <div class="sm-toggle-label">Account Status</div>
+              <small class="text-muted">Active members will receive lead assignments</small>
+            </div>
+            <div class="sm-toggle-switch">
+              <input type="checkbox" id="addIsActive" formControlName="isActive" class="sm-toggle-input">
+              <label for="addIsActive" class="sm-toggle-track">
+                <span class="sm-toggle-thumb"></span>
+              </label>
+              <span class="sm-toggle-text" [ngClass]="f['isActive'].value ? 'text-success' : 'text-muted'">
+                {{ f['isActive'].value ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+          <button class="btn sm-btn-save" (click)="saveNewMember()" [disabled]="isSaving || addForm.invalid">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+            <i *ngIf="!isSaving" class="fe fe-check me-2"></i>
+            Create Member
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="mt-3">
+    <ngx-skeleton-loader count="3" appearance="line"
+      [theme]="{ height: '72px', 'border-radius': '12px', 'margin-bottom': '10px' }">
+    </ngx-skeleton-loader>
+  </div>
+
+  <!-- Members List -->
+  <div *ngIf="!isLoading">
+    <div *ngIf="members.length === 0" class="sm-empty">
+      <i class="fe fe-users"></i>
+      <p>No sales members yet.<br>Click "Add Member" to get started.</p>
+    </div>
+
+    <div class="sm-member-card" *ngFor="let member of members" [class.sm-member-card--editing]="editingMember?.key === member.key">
+
+      <!-- Card Display Row -->
+      <div class="sm-card-row">
+        <div class="sm-avatar" [class.sm-avatar--inactive]="!member.isActive">
+          {{ getInitial(member.name) }}
+        </div>
+        <div class="sm-card-info">
+          <div class="sm-card-name">{{ member.name }}</div>
+          <div class="sm-card-meta">
+            <span>{{ member.email }}</span>
+            <span *ngIf="member.phone" class="ms-2">• {{ member.phone }}</span>
+          </div>
+        </div>
+        <div class="sm-card-actions">
+          <span class="sm-status-badge" [ngClass]="member.isActive ? 'sm-status-badge--active' : 'sm-status-badge--inactive'">
+            <i class="fe" [ngClass]="member.isActive ? 'fe-check-circle' : 'fe-x-circle'"></i>
+            {{ member.isActive ? 'Active' : 'Inactive' }}
+          </span>
+          <button class="sm-action-btn sm-action-btn--edit"
+            (click)="editingMember?.key === member.key ? cancelEdit() : startEdit(member)"
+            [title]="editingMember?.key === member.key ? 'Cancel edit' : 'Edit member'">
+            <i class="fe" [ngClass]="editingMember?.key === member.key ? 'fe-x' : 'fe-edit-2'"></i>
+          </button>
+          <button class="sm-action-btn sm-action-btn--toggle"
+            (click)="toggleActive(member)"
+            [title]="member.isActive ? 'Deactivate' : 'Activate'">
+            <i class="fe" [ngClass]="member.isActive ? 'fe-toggle-right' : 'fe-toggle-left'"></i>
+          </button>
+          <button class="sm-action-btn sm-action-btn--delete" (click)="delete(member)" title="Delete member">
+            <i class="fe fe-trash-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inline Edit Form -->
+      <div class="sm-edit-panel" *ngIf="editingMember?.key === member.key" [formGroup]="editForm">
+        <div class="sm-edit-divider"></div>
+        <div class="row g-3 mt-1">
+          <div class="col-md-6">
+            <label class="sm-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control sm-input" formControlName="name" placeholder="Full name">
+            <div class="sm-error" *ngIf="ef['name'].invalid && ef['name'].touched">Name is required</div>
+          </div>
+          <div class="col-md-6">
+            <label class="sm-label">Phone</label>
+            <input type="text" class="form-control sm-input" formControlName="phone" placeholder="+962...">
+          </div>
+          <div class="col-12">
+            <div class="sm-toggle-row">
+              <div>
+                <div class="sm-toggle-label">Account Status</div>
+                <small class="text-muted">Active members receive new lead assignments</small>
+              </div>
+              <div class="sm-toggle-switch">
+                <input type="checkbox" [id]="'edit-' + member.key" formControlName="isActive" class="sm-toggle-input">
+                <label [for]="'edit-' + member.key" class="sm-toggle-track">
+                  <span class="sm-toggle-thumb"></span>
+                </label>
+                <span class="sm-toggle-text" [ngClass]="ef['isActive'].value ? 'text-success' : 'text-muted'">
+                  {{ ef['isActive'].value ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 d-flex justify-content-end gap-2">
+            <button class="btn sm-btn-cancel-edit" (click)="cancelEdit()">Cancel</button>
+            <button class="btn sm-btn-save" (click)="saveEdit()" [disabled]="isEditing || editForm.invalid">
+              <span *ngIf="isEditing" class="spinner-border spinner-border-sm me-2"></span>
+              <i *ngIf="!isEditing" class="fe fe-check me-2"></i>
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

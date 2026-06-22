@@ -1,0 +1,181 @@
+<div class="sales-members">
+
+  <!-- Header -->
+  <div class="sm-header">
+    <div>
+      <h3 class="sm-title">Account Managers</h3>
+      <small class="text-muted">{{ managers.length }} account manager(s)</small>
+    </div>
+    <button class="btn sm-btn-add" (click)="toggleForm()">
+      <i class="fe" [ngClass]="showAddForm ? 'fe-x' : 'fe-user-plus'"></i>
+      {{ showAddForm ? 'Cancel' : 'Add Account Manager' }}
+    </button>
+  </div>
+
+  <!-- Add Form -->
+  <div class="sm-form-panel" [class.sm-form-panel--open]="showAddForm" [formGroup]="addForm">
+    <div class="sm-form-inner">
+      <div class="sm-form-title">
+        <i class="fe fe-briefcase me-2"></i>New Account Manager
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="sm-label">Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control sm-input" formControlName="name" placeholder="Full name">
+          <div class="sm-error" *ngIf="f['name'].invalid && f['name'].touched">Name is required</div>
+        </div>
+        <div class="col-md-6">
+          <label class="sm-label">Email <span class="text-danger">*</span></label>
+          <input type="email" class="form-control sm-input" formControlName="email" placeholder="email@example.com">
+          <div class="sm-error" *ngIf="f['email'].invalid && f['email'].touched">Valid email required</div>
+        </div>
+        <div class="col-md-6">
+          <label class="sm-label">Initial Password <span class="text-danger">*</span></label>
+          <input type="password" class="form-control sm-input" formControlName="password" placeholder="Min 8 characters">
+          <div class="sm-error" *ngIf="f['password'].invalid && f['password'].touched">Min 8 characters required</div>
+        </div>
+        <div class="col-md-6">
+          <label class="sm-label">Linked Affiliate <span class="text-danger">*</span></label>
+          <select class="form-select sm-input" formControlName="affiliateKey" (change)="onAffiliateChange($event)">
+            <option value="">-- Select Affiliate --</option>
+            <option *ngFor="let aff of affiliates" [value]="aff.key">
+              {{ aff.name }} ({{ aff.code }})
+            </option>
+          </select>
+          <div class="sm-error" *ngIf="f['affiliateKey'].invalid && f['affiliateKey'].touched">Please select an affiliate</div>
+        </div>
+
+        <!-- isActive toggle -->
+        <div class="col-12">
+          <div class="sm-toggle-row">
+            <div>
+              <div class="sm-toggle-label">Account Status</div>
+              <small class="text-muted">Active managers can log in and manage their leads</small>
+            </div>
+            <div class="sm-toggle-switch">
+              <input type="checkbox" id="addAmIsActive" formControlName="isActive" class="sm-toggle-input">
+              <label for="addAmIsActive" class="sm-toggle-track">
+                <span class="sm-toggle-thumb"></span>
+              </label>
+              <span class="sm-toggle-text" [ngClass]="f['isActive'].value ? 'text-success' : 'text-muted'">
+                {{ f['isActive'].value ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+          <button class="btn sm-btn-save" (click)="saveNewManager()" [disabled]="isSaving || addForm.invalid">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+            <i *ngIf="!isSaving" class="fe fe-check me-2"></i>
+            Create Account Manager
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="mt-3">
+    <ngx-skeleton-loader count="3" appearance="line"
+      [theme]="{ height: '72px', 'border-radius': '12px', 'margin-bottom': '10px' }">
+    </ngx-skeleton-loader>
+  </div>
+
+  <!-- Managers List -->
+  <div *ngIf="!isLoading">
+    <div *ngIf="managers.length === 0" class="sm-empty">
+      <i class="fe fe-briefcase"></i>
+      <p>No account managers yet.<br>Click "Add Account Manager" to get started.</p>
+    </div>
+
+    <div class="sm-member-card" *ngFor="let manager of managers"
+      [class.sm-member-card--editing]="editingManager?.uid === manager.uid">
+
+      <!-- Card Row -->
+      <div class="sm-card-row">
+        <div class="sm-avatar" [class.sm-avatar--inactive]="!manager.isActive">
+          {{ getInitial(manager.name) }}
+        </div>
+        <div class="sm-card-info">
+          <div class="sm-card-name">{{ manager.name }}</div>
+          <div class="sm-card-meta">
+            <span>{{ manager.email }}</span>
+            <span *ngIf="manager.affiliateKey" class="ms-2 sm-affiliate-chip">
+              <i class="fe fe-link" style="font-size:0.65rem"></i>
+              {{ getAffiliateName(manager.affiliateKey) }}
+              <span *ngIf="getAffiliateCode(manager.affiliateKey)" class="sm-code-badge">{{ getAffiliateCode(manager.affiliateKey) }}</span>
+            </span>
+          </div>
+        </div>
+        <div class="sm-card-actions">
+          <span class="sm-status-badge" [ngClass]="manager.isActive ? 'sm-status-badge--active' : 'sm-status-badge--inactive'">
+            <i class="fe" [ngClass]="manager.isActive ? 'fe-check-circle' : 'fe-x-circle'"></i>
+            {{ manager.isActive ? 'Active' : 'Inactive' }}
+          </span>
+          <button class="sm-action-btn sm-action-btn--edit"
+            (click)="editingManager?.uid === manager.uid ? cancelEdit() : startEdit(manager)"
+            [title]="editingManager?.uid === manager.uid ? 'Cancel edit' : 'Edit'">
+            <i class="fe" [ngClass]="editingManager?.uid === manager.uid ? 'fe-x' : 'fe-edit-2'"></i>
+          </button>
+          <button class="sm-action-btn sm-action-btn--toggle"
+            (click)="toggleActive(manager)"
+            [title]="manager.isActive ? 'Deactivate' : 'Activate'">
+            <i class="fe" [ngClass]="manager.isActive ? 'fe-toggle-right' : 'fe-toggle-left'"></i>
+          </button>
+          <button class="sm-action-btn sm-action-btn--delete" (click)="delete(manager)" title="Remove">
+            <i class="fe fe-trash-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inline Edit Form -->
+      <div class="sm-edit-panel" *ngIf="editingManager?.uid === manager.uid" [formGroup]="editForm">
+        <div class="sm-edit-divider"></div>
+        <div class="row g-3 mt-1">
+          <div class="col-md-6">
+            <label class="sm-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control sm-input" formControlName="name" placeholder="Full name">
+            <div class="sm-error" *ngIf="ef['name'].invalid && ef['name'].touched">Name is required</div>
+          </div>
+          <div class="col-md-6">
+            <label class="sm-label">Linked Affiliate <span class="text-danger">*</span></label>
+            <select class="form-select sm-input" formControlName="affiliateKey">
+              <option value="">-- Select Affiliate --</option>
+              <option *ngFor="let aff of affiliates" [value]="aff.key">
+                {{ aff.name }} ({{ aff.code }})
+              </option>
+            </select>
+          </div>
+          <div class="col-12">
+            <div class="sm-toggle-row">
+              <div>
+                <div class="sm-toggle-label">Account Status</div>
+                <small class="text-muted">Active managers can log in to the system</small>
+              </div>
+              <div class="sm-toggle-switch">
+                <input type="checkbox" [id]="'edit-am-' + manager.uid" formControlName="isActive" class="sm-toggle-input">
+                <label [for]="'edit-am-' + manager.uid" class="sm-toggle-track">
+                  <span class="sm-toggle-thumb"></span>
+                </label>
+                <span class="sm-toggle-text" [ngClass]="ef['isActive'].value ? 'text-success' : 'text-muted'">
+                  {{ ef['isActive'].value ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 d-flex justify-content-end gap-2">
+            <button class="btn sm-btn-cancel-edit" (click)="cancelEdit()">Cancel</button>
+            <button class="btn sm-btn-save" (click)="saveEdit()" [disabled]="isEditing || editForm.invalid">
+              <span *ngIf="isEditing" class="spinner-border spinner-border-sm me-2"></span>
+              <i *ngIf="!isEditing" class="fe fe-check me-2"></i>
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

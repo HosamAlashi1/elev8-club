@@ -45,8 +45,37 @@ export class PublicService {
   }
 
   public getUserData() {
-    const data = this.decryptStorage();
-    return data ? data.user : null;
+    const raw = localStorage.getItem('elev8-club-data');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+
+  public getUserRole(): string {
+    return this.getUserData()?.role || 'admin';
+  }
+
+  public isAdmin(): boolean {
+    return this.getUserRole() === 'admin';
+  }
+
+  public isSales(): boolean {
+    return this.getUserRole() === 'sales';
+  }
+
+  public isAccountManager(): boolean {
+    return this.getUserRole() === 'account_manager';
+  }
+
+  public getSalesMemberKey(): string | null {
+    return this.getUserData()?.salesMemberKey || null;
+  }
+
+  public getAffiliateKey(): string | null {
+    return this.getUserData()?.affiliateKey || null;
+  }
+
+  public getCurrentUserUid(): string | null {
+    return this.getUserData()?.uid || null;
   }
 
   public getDeviceId(): string {

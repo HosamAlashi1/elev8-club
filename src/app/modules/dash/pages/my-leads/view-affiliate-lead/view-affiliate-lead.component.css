@@ -1,0 +1,42 @@
+.lead-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(207,174,88,0.15); border: 1px solid rgba(207,174,88,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #cfae58; font-size: 1rem; flex-shrink: 0;
+}
+
+.section-card {
+  background: #f9fafb; border-radius: 12px;
+  padding: 14px 16px; border: 1px solid #e5e7eb;
+}
+
+.section-title { font-size: 0.92rem; font-weight: 600; color: #374151; margin-bottom: 12px; }
+
+.field-label { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; margin-bottom: 2px; display: block; }
+
+.add-call-form { background: white; border-radius: 10px; padding: 14px; border: 1px solid #e5e7eb; }
+
+.call-timeline { display: flex; flex-direction: column; }
+
+.call-item { display: flex; gap: 12px; position: relative; padding-bottom: 14px; }
+
+.call-item:not(:last-child)::before {
+  content: ''; position: absolute; left: 7px; top: 16px; bottom: 0; width: 2px; background: #e5e7eb;
+}
+
+.call-dot {
+  width: 16px; height: 16px; border-radius: 50%; background: #cfae58;
+  border: 2px solid white; box-shadow: 0 0 0 2px #cfae58; flex-shrink: 0; margin-top: 2px;
+}
+
+.call-content {
+  flex: 1; background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 8px 12px;
+}
+
+.call-date { font-size: 0.78rem; }
+.call-notes { font-size: 0.83rem; color: #6b7280; margin-top: 4px; }
+
+.call-status-badge { padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge-answered { background: rgba(52,199,89,0.12); color: #34c759; }
+.badge-no-answer { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.badge-busy { background: rgba(239,68,68,0.1); color: #ef4444; }

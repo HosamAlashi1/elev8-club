@@ -4,20 +4,23 @@
   <div class="home-story-flow">
     <app-audience-section></app-audience-section>
     <app-resources-guides-section></app-resources-guides-section>
+  </div>
+
+  <div class="home-proof-flow">
     <app-stats-section [onOpenRegistration]="openPopupFromStats"></app-stats-section>
   </div>
 
-  <app-video-testimonials-section [onOpenRegistration]="openPopupFromVideoTestimonials"></app-video-testimonials-section>
+  <div class="home-video-shots-flow">
+    <app-video-testimonials-section [onOpenRegistration]="openPopupFromVideoTestimonials"></app-video-testimonials-section>
+    <app-screenshots-section></app-screenshots-section>
+  </div>
 
-  <app-screenshots-section></app-screenshots-section>
-
-  <app-how-it-works-section [onOpenRegistration]="openPopupFromHowItWorks"></app-how-it-works-section>
-
-  <app-learn-section [onOpenRegistration]="openPopupFromLearn"></app-learn-section>
-
-  <app-why-free-section [onOpenRegistration]="openPopupFromWhyFree"></app-why-free-section>
-
-  <app-why-trust-section></app-why-trust-section>
+  <div class="home-content-flow">
+    <app-how-it-works-section [onOpenRegistration]="openPopupFromHowItWorks"></app-how-it-works-section>
+    <app-learn-section [onOpenRegistration]="openPopupFromLearn"></app-learn-section>
+    <app-why-free-section [onOpenRegistration]="openPopupFromWhyFree"></app-why-free-section>
+    <app-why-trust-section></app-why-trust-section>
+  </div>
 
   <div class="home-support-flow">
     <app-challenge-review-section></app-challenge-review-section>
@@ -29,6 +32,7 @@
       <div class="final-cta__content">
         <div class="final-cta__brand">
           <h2>لا تضيع فرصتك!</h2>
+          <p class="final-cta__tagline">فرصتك لتحقيق دخل من التداول الآن مجانية <bdi dir="ltr">100%</bdi></p>
           <span>ELEV8 CLUB</span>
         </div>
 
@@ -65,4 +69,9 @@
     [isOpen]="isRegistrationPopupOpen"
     (closePopup)="closeRegistrationPopup()">
   </app-register-popup>
+
+  <app-exit-intent-offer
+    [isRegistrationOpen]="isRegistrationPopupOpen"
+    (register)="openPopupFromExitIntent()">
+  </app-exit-intent-offer>
 </main>

@@ -14,8 +14,15 @@ import { LogoutConfirmationModalComponent } from '../../../shared/logout-confirm
 export class HeaderComponent implements OnInit {
 
   user: any;
+  userRoleLabel: string = 'Admin';
   isNotificationsOpen = false;
   unreadCount$: Observable<number>;
+
+  private readonly roleLabelMap: Record<string, string> = {
+    admin: 'Admin',
+    sales: 'Sales',
+    account_manager: 'Account Manager'
+  };
 
   constructor(
     private authService: AuthService,
@@ -23,7 +30,8 @@ export class HeaderComponent implements OnInit {
     private notificationService: NotificationService,
     private modalService: NgbModal
   ) {
-    this.user = JSON.parse(localStorage.getItem('elev8-club-data') || '{}');
+    this.user = this.publicService.getUserData();
+    this.userRoleLabel = this.roleLabelMap[this.publicService.getUserRole()] || 'Admin';
 
     // this.unreadCount$ = this.notificationService.unreadCount$;
   }

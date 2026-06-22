@@ -1,11 +1,36 @@
 :host,
 app-why-free-section {
   display: block;
-  background: #05050a;
+  background: transparent;
+}
+
+:host {
+  position: relative;
+  isolation: isolate;
+}
+
+:host::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  height: 360px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(7, 21, 56, 0.34) 28%,
+    rgba(7, 21, 56, 0.78) 58%,
+    rgba(7, 21, 56, 0.98) 84%,
+    var(--free-trust-handoff) 100%
+  );
 }
 
 .why-free {
   position: relative;
+  z-index: 1;
   isolation: isolate;
   display: grid;
   grid-template-columns: 558px 716px;
@@ -14,12 +39,12 @@ app-why-free-section {
   gap: 84px;
   width: 100%;
   max-width: 1440px;
-  min-height: 828px;
+  min-height: 760px;
   margin: 0 auto;
   padding: 38px 72px 0px 0;
   overflow: hidden;
   direction: ltr;
-  background: #05050a;
+  background: transparent;
 }
 
 .why-free::before {
@@ -35,28 +60,11 @@ app-why-free-section {
   opacity: 0.28;
 }
 
-/* .why-free::after {
-  content: "";
-  position: absolute;
-  right: -80px;
-  bottom: -58px;
-  z-index: -1;
-  width: min(760px, 58vw);
-  height: 210px;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 82% 65%, rgba(0, 108, 255, 0.64) 0%, rgba(0, 72, 210, 0.30) 34%, transparent 70%),
-    linear-gradient(90deg, transparent 0%, rgba(0, 42, 138, 0.22) 52%, rgba(0, 78, 238, 0.48) 100%);
-  filter: blur(10px);
-  opacity: 0.76;
-  animation: whyFreeGlowDrift 9s ease-in-out infinite alternate;
-} */
-
 .why-free__media {
   position: relative;
   direction: rtl;
   width: 100%;
-  height: 782px;
+  height: 724px;
   overflow: hidden;
 }
 
@@ -162,15 +170,31 @@ app-why-free-section {
 }
 
 .why-free__lead {
-  width: min(100%, 650px);
-  margin: 0 0 23px;
+  width: min(100%, 666px);
+  margin: 0 0 22px;
   color: rgba(255, 255, 255, 0.74);
   font-family: var(--font-low-regular);
-  font-size: 14.5px;
+  font-size: 15.5px;
   font-weight: 400;
   line-height: 1.82;
   text-align: right;
   margin-inline: 0 auto;
+}
+
+.why-free__list {
+  width: 100%;
+  margin-top: 24px;
+  direction: rtl;
+}
+
+.why-free__list-label {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-low-regular);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .why-free .info-box {
@@ -284,6 +308,41 @@ app-why-free-section {
   text-align: right;
 }
 
+
+.why-free__lead--mt {
+  margin-top: 14px;
+}
+
+
+.why-free__bullets {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.why-free__bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--font-low-regular);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: right;
+  direction: rtl;
+}
+
+.why-free__bullets li::before {
+  content: "✓";
+  flex-shrink: 0;
+  color: #d7a747;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
 .why-free__cta {
   direction: ltr;
   display: flex;
@@ -291,8 +350,8 @@ app-why-free-section {
   justify-content: space-between;
   gap: 20px;
   width: 100%;
-  min-height: 88px;
-  margin-top: 24px;
+  min-height: 82px;
+  margin-top: 16px;
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, 0.095);
   border-radius: 20px;
@@ -348,9 +407,10 @@ app-why-free-section {
 
 .why-free__cta p {
   margin: 0;
+  direction: rtl;
   color: #ffffff;
   font-family: var(--font-low-bold);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.52;
   text-align: right;
@@ -397,7 +457,7 @@ app-why-free-section {
   .why-free .info-box strong {
     grid-column: 1;
     grid-row: 1;
-    justify-self: end;
+    justify-self: start;
     text-align: right;
   }
 
@@ -419,7 +479,7 @@ app-why-free-section {
   }
 
   .why-free__media {
-    height: clamp(600px, 54.3vw, 782px);
+    height: clamp(560px, 50.3vw, 724px);
   }
 
   .why-free__copy {
@@ -429,6 +489,10 @@ app-why-free-section {
   .why-free__lead,
   .why-free .info-box p {
     font-size: 13.25px;
+  }
+
+  .why-free__lead {
+    font-size: 15px;
   }
 
   .why-free .info-box {
@@ -482,7 +546,7 @@ app-why-free-section {
   }
 
   .why-free::before {
-    top: 24px;
+    top: 50px;
   }
 
   .why-free__media {
@@ -506,9 +570,9 @@ app-why-free-section {
 
   .why-free__copy {
     width: 100%;
-    max-width: 382px;
-    margin-inline: auto;
-    text-align: center;
+    max-width: 100%;
+    margin-inline: 0;
+    text-align: right;
   }
 
   .why-free h2 {
@@ -524,61 +588,64 @@ app-why-free-section {
   }
 
   .why-free__lead {
-    width: min(100%, 360px);
-    margin-inline: auto;
-    font-size: 14px;
-    line-height: 1.68;
-    text-align: center;
-  }
-
-  .why-free .info-box {
-    grid-template-columns: 1fr;
-    gap: 16px;
     width: 100%;
     max-width: 100%;
-    min-height: 0;
-    padding: 22px;
-  }
-
-  .why-free .info-box::before {
-    display: block;
-    grid-column: 1;
-    grid-row: 2;
-    justify-self: center;
-    width: 100%;
-  }
-
-  .why-free .info-box strong {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: end;
+    margin-inline: 0;
+    font-size: 13.5px;
+    line-height: 1.72;
     text-align: right;
   }
 
-  .why-free .info-box p {
-    grid-column: 1;
-    grid-row: 3;
-    justify-self: stretch;
-    width: 100%;
+  .why-free__list {
+    margin-top: 22px;
     text-align: right;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
+  .why-free__list-label {
+    text-align: right;
+    margin-bottom: 12px;
+    font-size: 11px;
+  }
+
+  .why-free__bullets {
+    gap: 11px;
+  }
+
+  .why-free__bullets li {
+    font-size: 13.5px;
   }
 
   .why-free__cta {
     flex-direction: column;
-    gap: 15px;
+    gap: 0;
     width: 100%;
     max-width: 100%;
-    padding: 15px;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    margin-top: 28px;
   }
 
   .why-free .gold-btn {
     flex: none;
     width: 100%;
     min-width: 0;
+    height: 52px;
+    font-size: 15px;
   }
 
   .why-free__cta p {
+    direction: rtl;
     text-align: center;
+    order: -1;
+    margin-bottom: 14px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 500;
   }
 }
 
@@ -615,7 +682,6 @@ app-why-free-section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .why-free::after,
   .why-free__media img,
   .why-free .info-box::before {
     animation: none;

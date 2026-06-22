@@ -441,6 +441,39 @@ body.collapsed .main-header {
   color: #64748B;
 }
 
+.pill-warning {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.pill-danger {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.pill-info {
+  background: #DBEAFE;
+  color: #2563EB;
+}
+
+.pill-primary {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+
+/* Sales member chip */
+.sales-member-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(207,174,88,0.12);
+  color: #b8962e;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* Utilities */
 .minw-150 {
   min-width: 150px;

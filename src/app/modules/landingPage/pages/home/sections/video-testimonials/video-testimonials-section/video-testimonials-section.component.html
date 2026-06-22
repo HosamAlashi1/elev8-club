@@ -70,14 +70,11 @@
 
       <article class="student-card">
         <div class="student-card__head">
-          <img [src]="activeSlide.avatar" [alt]="activeSlide.name" loading="lazy" decoding="async" />
-          <span aria-hidden="true"></span>
           <div>
             <h3>{{ activeSlide.name }}</h3>
-            <p>{{ activeSlide.role }}</p>
           </div>
         </div>
-        <p class="student-card__summary">{{ activeSlide.summary }}</p>
+        <p class="student-card__summary">{{ activeSlide.role }} {{ activeSlide.summary }}</p>
       </article>
 
       <div class="slider-controls" aria-label="نتائج الطلاب">
@@ -93,12 +90,11 @@
     <div class="proof-copy">
       <!-- <span class="proof-eyebrow">نتائج من النسخ السابقة</span> -->
       <h2 id="proof-title">
-        <span class="proof-title__muted">هاد النظام بنجح</span>
+        <span class="proof-title__muted">نظامنا المتكامل ينجح</span>
         <span class="proof-title__main">مهما كان وضعك الحالي</span>
       </h2>
       <p>
-        أول مرتين أطلقنا فيهم هذا التحدي المباشر.. شفنا أشخاص من ظروف
-        وحياة مختلفة تماماً يحققوا نتائج حقيقية.
+        اول مرتين أطلقنا فيهم هاد التحدي ، شفنا أشخاص من ظروف وحياة مختلفة تماماً تخلصوا من أكبر مشكلة عندهم الضغط  المالي ، وقدروا يحققوا نتائج حقيقة 
       </p>
 
       <div class="proof-avatars" aria-label="أكثر من 150 نتيجة">

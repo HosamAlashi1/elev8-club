@@ -88,26 +88,44 @@ export class LiveRegistrationsComponent implements OnInit, OnDestroy {
   }
 
   private randomCycle(): void {
-    // إظهار الإشعار
+    this.clearTimers();
+
     this.isVisible = true;
 
-    // اختيار سجل جديد
     this.currentIndex = (this.currentIndex + 1) % this.registrations.length;
 
-    // وقت الظهور العشوائي بين 3-6 ثواني
-    const visibleDuration = this.random(3000, 6000);
+    const visibleDuration = this.random(1800, 3200);
 
     this.displayTimeout = setTimeout(() => {
-      this.isVisible = false;
-
-      // وقت الانتظار العشوائي قبل الإشعار التالي (5-11 ثانية)
-      const nextDelay = this.random(5000, 11000);
-
-      this.cycleTimeout = setTimeout(() => {
-        this.randomCycle();
-      }, nextDelay);
-
+      this.hideAndScheduleNext();
     }, visibleDuration);
+  }
+
+  dismiss(): void {
+    this.clearTimers();
+    this.hideAndScheduleNext();
+  }
+
+  private hideAndScheduleNext(): void {
+    this.isVisible = false;
+
+    const nextDelay = this.random(4500, 9000);
+
+    this.cycleTimeout = setTimeout(() => {
+      this.randomCycle();
+    }, nextDelay);
+  }
+
+  private clearTimers(): void {
+    if (this.displayTimeout) {
+      clearTimeout(this.displayTimeout);
+      this.displayTimeout = null;
+    }
+
+    if (this.cycleTimeout) {
+      clearTimeout(this.cycleTimeout);
+      this.cycleTimeout = null;
+    }
   }
 
   private random(min: number, max: number): number {
@@ -115,7 +133,6 @@ export class LiveRegistrationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.displayTimeout) clearTimeout(this.displayTimeout);
-    if (this.cycleTimeout) clearTimeout(this.cycleTimeout);
+    this.clearTimers();
   }
 }

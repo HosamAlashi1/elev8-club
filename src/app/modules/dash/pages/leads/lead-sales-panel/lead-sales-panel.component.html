@@ -1,0 +1,213 @@
+<!-- ── Lead Mini Header ──────────────────────────── -->
+<div class="sp-header">
+  <div class="sp-lead-info">
+    <div class="sp-avatar">{{ getInitial() }}</div>
+    <div class="sp-meta">
+      <div class="sp-name">{{ lead.fullName }}</div>
+      <div class="sp-sub">{{ lead.email }}</div>
+    </div>
+  </div>
+  <button class="sp-close" (click)="close()">
+    <i class="fe fe-x"></i>
+  </button>
+</div>
+
+<!-- ── Sales Status Stepper ──────────────────────── -->
+<div class="sp-section">
+
+  <div *ngIf="lead.sales_status === 'not_interested'" class="sp-ni-banner">
+    <div class="sp-ni-icon"><i class="fe fe-slash"></i></div>
+    <div>
+      <div class="sp-ni-title">Not Interested</div>
+      <button class="sp-ni-reset" (click)="resetStatus()">
+        <i class="fe fe-refresh-cw"></i> Reset status
+      </button>
+    </div>
+  </div>
+
+  <div class="sp-stepper" *ngIf="lead.sales_status !== 'not_interested'">
+    <ng-container *ngFor="let step of salesSteps; let last = last">
+      <div class="sp-step"
+        [class.sp-step--done]="getStepState(step.key) === 'done'"
+        [class.sp-step--active]="getStepState(step.key) === 'active'"
+        [class.sp-step--pending]="getStepState(step.key) === 'pending'"
+        (click)="changeStatus(step.key)">
+        <div class="sp-step-bubble">
+          <i class="fe fe-check" *ngIf="getStepState(step.key) === 'done'"></i>
+          <i [class]="'fe ' + step.icon" *ngIf="getStepState(step.key) !== 'done'"></i>
+        </div>
+        <span class="sp-step-label">{{ step.label }}</span>
+      </div>
+      <div class="sp-step-line" *ngIf="!last"
+        [class.sp-step-line--done]="getStepState(step.key) === 'done'"></div>
+    </ng-container>
+  </div>
+
+  <button *ngIf="lead.sales_status !== 'not_interested'" class="sp-ni-btn" (click)="markNotInterested()">
+    <i class="fe fe-x-circle me-1"></i>Mark Not Interested
+  </button>
+</div>
+
+<!-- ── Call Log ───────────────────────────────────── -->
+<div class="sp-section sp-calls-section">
+
+  <div class="sp-calls-header">
+    <div class="sp-section-title">
+      <i class="fe fe-phone me-1"></i>
+      Call Log
+      <span class="sp-count">{{ callLogs.length }}</span>
+    </div>
+    <button class="sp-log-btn" (click)="showCallForm = !showCallForm; editingLogKey = null">
+      <i class="fe" [ngClass]="showCallForm ? 'fe-x' : 'fe-plus'"></i>
+      {{ showCallForm ? 'Cancel' : 'Log Call' }}
+    </button>
+  </div>
+
+  <!-- ── Add Call Form ─────────────────────────── -->
+  <div class="sp-call-form" *ngIf="showCallForm" [formGroup]="callForm">
+    <div class="sp-field-group">
+      <label class="sp-label">Call Type</label>
+      <select class="sp-select" formControlName="callType">
+        <option *ngFor="let opt of callTypeOptions" [value]="opt.value">{{ opt.label }}</option>
+      </select>
+    </div>
+    <div class="sp-row">
+      <div class="sp-field-group sp-field-group--half">
+        <label class="sp-label">Date</label>
+        <input type="date" class="sp-input" formControlName="callDate">
+      </div>
+      <div class="sp-field-group sp-field-group--half">
+        <label class="sp-label">Time</label>
+        <input type="time" class="sp-input" formControlName="callTime">
+      </div>
+    </div>
+    <div class="sp-field-group">
+      <label class="sp-label">Call Result</label>
+      <div class="sp-status-pills">
+        <label class="sp-status-pill" *ngFor="let opt of callStatusOptions"
+          [class.sp-status-pill--answered]="opt.value === 'answered' && callForm.value.status === opt.value"
+          [class.sp-status-pill--no_answer]="opt.value === 'no_answer' && callForm.value.status === opt.value"
+          [class.sp-status-pill--busy]="opt.value === 'busy' && callForm.value.status === opt.value"
+          [class.sp-status-pill--inactive]="callForm.value.status !== opt.value">
+          <input type="radio" formControlName="status" [value]="opt.value" class="sp-radio">
+          <i class="fe" [ngClass]="opt.icon"></i>
+          {{ opt.label }}
+        </label>
+      </div>
+    </div>
+    <div class="sp-field-group">
+      <label class="sp-label">Notes <span class="sp-optional">(optional)</span></label>
+      <textarea class="sp-input sp-textarea" rows="2" placeholder="Any notes about this call..." formControlName="notes"></textarea>
+    </div>
+    <button class="sp-save-btn" (click)="saveCall()" [disabled]="isSavingCall || callForm.invalid">
+      <span *ngIf="isSavingCall" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!isSavingCall" class="fe fe-check me-1"></i>Save Call
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoadingLogs" class="sp-empty">
+    <span class="spinner-border spinner-border-sm me-2 text-muted"></span>Loading calls...
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!isLoadingLogs && callLogs.length === 0 && !showCallForm" class="sp-empty">
+    <div class="sp-empty-icon"><i class="fe fe-phone-off"></i></div>
+    <div class="sp-empty-text">No calls yet</div>
+    <button class="btn btn-link sp-empty-link" (click)="showCallForm = true">Log the first call</button>
+  </div>
+
+  <!-- ── Timeline ──────────────────────────────── -->
+  <div class="sp-timeline" *ngIf="!isLoadingLogs && callLogs.length > 0">
+
+    <div class="sp-tl-item" *ngFor="let log of callLogs">
+
+      <!-- Normal view -->
+      <ng-container *ngIf="editingLogKey !== log.key">
+        <div class="sp-tl-track">
+          <div class="sp-tl-dot" [ngClass]="'sp-tl-dot--' + log.status"></div>
+        </div>
+        <div class="sp-tl-content">
+          <div class="sp-tl-row">
+            <span class="sp-tl-type">{{ getCallTypeLabel(log.callType) }}</span>
+            <span class="sp-tl-badge" [ngClass]="'sp-tl-badge--' + log.status">
+              <i class="fe" [ngClass]="getCallStatusIcon(log.status)"></i>
+              {{ getCallStatusLabel(log.status) }}
+            </span>
+            <!-- Action buttons -->
+            <div class="sp-tl-actions ms-auto">
+              <button class="sp-tl-action-btn sp-tl-action-btn--edit" (click)="startEdit(log)" title="Edit">
+                <i class="fe fe-edit-2"></i>
+              </button>
+              <button class="sp-tl-action-btn sp-tl-action-btn--delete" (click)="deleteCall(log)" title="Delete">
+                <i class="fe fe-trash-2"></i>
+              </button>
+            </div>
+          </div>
+          <div class="sp-tl-date">{{ log.callDate }} · {{ log.callTime }}</div>
+          <div class="sp-tl-notes" *ngIf="log.notes">{{ log.notes }}</div>
+        </div>
+      </ng-container>
+
+      <!-- Edit view (inline) -->
+      <ng-container *ngIf="editingLogKey === log.key && editForm">
+        <div class="sp-edit-form" [formGroup]="editForm">
+          <div class="sp-edit-header">
+            <span class="sp-edit-title">Edit Call</span>
+            <button class="sp-close-edit" (click)="cancelEdit()">
+              <i class="fe fe-x"></i>
+            </button>
+          </div>
+
+          <div class="sp-field-group">
+            <label class="sp-label">Call Type</label>
+            <select class="sp-select" formControlName="callType">
+              <option *ngFor="let opt of callTypeOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+
+          <div class="sp-row">
+            <div class="sp-field-group sp-field-group--half">
+              <label class="sp-label">Date</label>
+              <input type="date" class="sp-input" formControlName="callDate">
+            </div>
+            <div class="sp-field-group sp-field-group--half">
+              <label class="sp-label">Time</label>
+              <input type="time" class="sp-input" formControlName="callTime">
+            </div>
+          </div>
+
+          <div class="sp-field-group">
+            <label class="sp-label">Call Result</label>
+            <div class="sp-status-pills">
+              <label class="sp-status-pill" *ngFor="let opt of callStatusOptions"
+                [class.sp-status-pill--answered]="opt.value === 'answered' && editForm.value.status === opt.value"
+                [class.sp-status-pill--no_answer]="opt.value === 'no_answer' && editForm.value.status === opt.value"
+                [class.sp-status-pill--busy]="opt.value === 'busy' && editForm.value.status === opt.value"
+                [class.sp-status-pill--inactive]="editForm.value.status !== opt.value">
+                <input type="radio" formControlName="status" [value]="opt.value" class="sp-radio">
+                <i class="fe" [ngClass]="opt.icon"></i>
+                {{ opt.label }}
+              </label>
+            </div>
+          </div>
+
+          <div class="sp-field-group">
+            <label class="sp-label">Notes</label>
+            <textarea class="sp-input sp-textarea" rows="2" placeholder="Notes..." formControlName="notes"></textarea>
+          </div>
+
+          <div class="sp-edit-actions">
+            <button class="sp-cancel-btn" (click)="cancelEdit()">Cancel</button>
+            <button class="sp-save-btn sp-save-btn--sm" (click)="saveEdit()" [disabled]="isSavingEdit || editForm.invalid">
+              <span *ngIf="isSavingEdit" class="spinner-border spinner-border-sm me-1"></span>
+              <i *ngIf="!isSavingEdit" class="fe fe-check me-1"></i>Save
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+
+</div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../../services/firebase.service';
+import { PublicService } from '../../../services/public.service';
 import { Version, Lead } from '../../../../core/models';
 import { forkJoin } from 'rxjs';
 
@@ -48,7 +49,10 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor(private firebaseService: FirebaseService) { }
+  constructor(
+    private firebaseService: FirebaseService,
+    private publicService: PublicService
+  ) { }
 
   ngOnInit(): void {
     this.startTime = performance.now();
@@ -75,57 +79,88 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    if (!this.currentVersion) {
-      console.warn('⚠️ No current version available');
-      return;
+    if (!this.currentVersion) return;
+
+    const role = this.publicService.getUserRole();
+    const salesMemberKey = this.publicService.getSalesMemberKey();
+    const affiliateKey = this.publicService.getAffiliateKey();
+
+    if (role === 'sales' && salesMemberKey) {
+      this.loadSalesDashboard(salesMemberKey);
+    } else if (role === 'account_manager' && affiliateKey) {
+      this.loadAffiliateDashboard(affiliateKey);
+    } else {
+      this.loadAdminDashboard();
     }
+  }
 
-    console.log('📊 Loading dashboard data for version:', this.currentVersion.name, 'Key:', this.currentVersion.key);
+  private loadAdminDashboard(): void {
+    this.dashboardCards = [
+      { label: 'Total Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
+      { label: 'Completed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
+      { label: 'Pending', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' },
+      { label: 'Active Affiliates', icon: 'fe fe-user-plus', iconClass: 'icon-customers', prefix: '' }
+    ];
 
-    // جلب جميع البيانات دفعة واحدة
     forkJoin({
-      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion.key),
+      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion!.key),
       allAffiliates: this.firebaseService.getAllAffiliates()
     }).subscribe({
       next: (data) => {
         const leads = data.allLeads;
-        const affiliates = data.allAffiliates;
-
-        // Card 1: Total Leads
         const totalLeads = leads.length;
-
-        // Card 2: Completed Leads (step = 2)
         const completedLeads = leads.filter((l: Lead) => l.step === 2).length;
-
-        // Card 3: Pending Leads (step = 1)
         const pendingLeads = leads.filter((l: Lead) => l.step === 1).length;
-
-        // Card 4: Active Affiliates (unique affiliateKey من الليدز)
-        const uniqueAffiliateKeys = new Set(
-          leads
-            .filter((l: Lead) => l.affiliateKey)
-            .map((l: Lead) => l.affiliateKey)
-        );
-        const activeAffiliates = uniqueAffiliateKeys.size;
-
-        // تحديث الأرقام للأنيميشن
-        this.targetNumbers = [totalLeads, completedLeads, pendingLeads, activeAffiliates];
-        console.log('📈 Statistics:', {
-          totalLeads,
-          completedLeads,
-          pendingLeads,
-          activeAffiliates
-        });
-
-        // تحضير بيانات الشارت: Leads Per Day
+        const uniqueAffiliateKeys = new Set(leads.filter((l: Lead) => l.affiliateKey).map((l: Lead) => l.affiliateKey));
+        this.targetNumbers = [totalLeads, completedLeads, pendingLeads, uniqueAffiliateKeys.size];
         this.leadsPerDayData = this.buildLeadsPerDayChart(leads);
-        console.log('📊 Chart data points:', this.leadsPerDayData.length);
-
         this.animateNumbers();
       },
-      error: (err: any) => {
-        console.error('❌ Error loading dashboard data:', err);
-      }
+      error: (err: any) => console.error('Dashboard error:', err)
+    });
+  }
+
+  private loadSalesDashboard(salesMemberKey: string): void {
+    this.dashboardCards = [
+      { label: 'My Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
+      { label: 'Closed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
+      { label: 'Follow-up', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' },
+      { label: 'Not Interested', icon: 'fe fe-x-circle', iconClass: 'icon-customers', prefix: '' }
+    ];
+
+    this.firebaseService.getLeadsBySalesMember(salesMemberKey).subscribe({
+      next: (leads) => {
+        const total = leads.length;
+        const closed = leads.filter(l => l.sales_status === 'closed').length;
+        const followUp = leads.filter(l => l.sales_status === 'follow_up').length;
+        const notInterested = leads.filter(l => l.sales_status === 'not_interested').length;
+        this.targetNumbers = [total, closed, followUp, notInterested];
+        this.leadsPerDayData = this.buildLeadsPerDayChart(leads);
+        this.animateNumbers();
+      },
+      error: (err: any) => console.error('Sales dashboard error:', err)
+    });
+  }
+
+  private loadAffiliateDashboard(affiliateKey: string): void {
+    this.dashboardCards = [
+      { label: 'Closed Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
+      { label: 'Renewed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
+      { label: 'Not Renewed', icon: 'fe fe-x-circle', iconClass: 'icon-customers', prefix: '' },
+      { label: 'In Follow-up', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' }
+    ];
+
+    this.firebaseService.getClosedLeadsByAffiliate(affiliateKey).subscribe({
+      next: (leads) => {
+        const total = leads.length;
+        const renewed = leads.filter(l => l.affiliate_status === 'renewed').length;
+        const notRenewed = leads.filter(l => l.affiliate_status === 'not_renewed').length;
+        const inFollowup = leads.filter(l => !l.affiliate_status || l.affiliate_status === 'renewal_followup').length;
+        this.targetNumbers = [total, renewed, notRenewed, inFollowup];
+        this.leadsPerDayData = [];
+        this.animateNumbers();
+      },
+      error: (err: any) => console.error('Affiliate dashboard error:', err)
     });
   }
 

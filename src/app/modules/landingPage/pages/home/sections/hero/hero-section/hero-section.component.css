@@ -327,7 +327,7 @@
   font-family: var(--font-high-extra);
   font-weight: 800;
   color: #fff;
-  font-size: 36px;
+  font-size: 32px;
   line-height: 1.55;
   text-align: right;
 }
@@ -519,9 +519,9 @@
   margin: 0;
   color: #fff;
   font-family: var(--font-low-regular);
-  font-size: 14px;
-  /* line-height: normal; */
+  font-size: 16px;
   text-align: right;
+  word-spacing: 4px;
 }
 
 .gold-btn {
@@ -908,12 +908,12 @@
 
   .hero__copy {
     position: relative;
-    top: -50px;
+    top: 10px;
     right: auto;
     left: auto;
     width: 100%;
     margin-top: -112px;
-    text-align: right;
+    text-align: center;
   }
 
   .eyebrow {
@@ -927,9 +927,9 @@
   .hero h1 {
     margin: 18px 0 0;
     /* width: min(100%, 344px); */
-    font-size: clamp(18px, 4.5vw, 21px);
+    font-size: clamp(18px, 3.5vw, 21px);
     line-height: 1.65;
-    text-align: right;
+    text-align: center;
   }
 
   .hero-title-line {
@@ -1017,9 +1017,9 @@
     order: -1;
     width: 100%;
     flex: none;
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.7;
-    text-align: right;
+    text-align: center;
   }
 
   .gold-btn {
@@ -1157,7 +1157,12 @@
 @media (max-width: 560px) {
   .hero {
     max-width: min(100%, 430px);
-    padding: 84px 12px 28px;
+    padding: 25px 12px 28px;
+  }
+
+  .hero__visual img {
+    transform: scale(1.20);
+    transform-origin: center top;
   }
 
   .hero-topbar {

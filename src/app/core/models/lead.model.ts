@@ -14,6 +14,24 @@ export interface LeadAnswers {
   systemGoal?: string;
 }
 
+export type SalesStatus = 'new' | 'pre_meeting' | 'post_meeting' | 'follow_up' | 'closed' | 'not_interested';
+export type AffiliateStatus = 'renewal_followup' | 'renewed' | 'not_renewed';
+
+export const SALES_STATUS_LABELS: Record<SalesStatus, string> = {
+  new: 'New',
+  pre_meeting: 'Pre-Meeting',
+  post_meeting: 'Post-Meeting',
+  follow_up: 'Follow-up',
+  closed: 'Closed',
+  not_interested: 'Not Interested'
+};
+
+export const AFFILIATE_STATUS_LABELS: Record<AffiliateStatus, string> = {
+  renewal_followup: 'Renewal Follow-up',
+  renewed: 'Renewed',
+  not_renewed: 'Not Renewed'
+};
+
 export interface Lead {
   key?: string;
   versionKey: string;
@@ -40,4 +58,9 @@ export interface Lead {
     assigned_via: string;
     versionKey?: string;
   };
+  // Sales tracking fields
+  salesMemberKey?: string;
+  sales_status?: SalesStatus;
+  // Affiliate tracking fields
+  affiliate_status?: AffiliateStatus;
 }

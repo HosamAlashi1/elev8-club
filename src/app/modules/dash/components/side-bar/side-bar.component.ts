@@ -20,33 +20,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   unreadOrdersCount = 0;
   private countUpdateInterval: any;
 
-  menu: any[] = [
-    {
-      label: 'Dashboard',
-      icon: 'home',
-      route: '/dashboard',
-    },
-    {
-      label: 'Affiliates',
-      icon: 'users',
-      route: '/dashboard/affiliates',
-    },
-    {
-      label: 'Leads',
-      icon: 'user-check',
-      route: '/dashboard/leads',
-    },
-    // {
-    //   label: 'Admins',
-    //   icon: 'user-cog',
-    //   route: '/dashboard/admins',
-    // },
-    {
-      label: 'Settings',
-      icon: 'settings',
-      route: '/dashboard/settings',
-    }
-  ];
+  menu: any[] = [];
 
   constructor(
     private authService: AuthService,
@@ -55,9 +29,24 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private router: Router,
   ) { }
 
+  private buildMenu(): void {
+    const role = this.publicService.getUserRole();
+
+    const allMenu: any[] = [
+      { label: 'Dashboard', icon: 'home', route: '/dashboard', roles: ['admin', 'sales', 'account_manager'] },
+      { label: 'Affiliates', icon: 'users', route: '/dashboard/affiliates', roles: ['admin'] },
+      { label: 'Leads', icon: 'user-check', route: '/dashboard/leads', roles: ['admin', 'sales'] },
+      { label: 'My Leads', icon: 'briefcase', route: '/dashboard/my-leads', roles: ['admin', 'account_manager'] },
+      { label: 'Settings', icon: 'settings', route: '/dashboard/settings', roles: ['admin'] },
+    ];
+
+    this.menu = allMenu.filter(item => item.roles.includes(role));
+  }
+
   ngOnInit(): void {
     this.onResize();
     this.user = this.publicService.getUserData();
+    this.buildMenu();
 
     // استمع لتغيير التنقل واضبط القائمة تلقائيًا
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {

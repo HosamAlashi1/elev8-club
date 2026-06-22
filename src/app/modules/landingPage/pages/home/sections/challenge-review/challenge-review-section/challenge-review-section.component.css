@@ -26,7 +26,36 @@
   transform: translateX(-50%);
   pointer-events: none;
   background:
+    linear-gradient(
+        180deg,
+        var(--trust-review-handoff) 0%,
+        rgba(5, 11, 29, 0.98) 16%,
+        rgba(5, 11, 29, 0.74) 44%,
+        rgba(5, 11, 29, 0.28) 74%,
+        transparent 100%
+      )
+      center 130px / 100% 340px no-repeat,
     radial-gradient(ellipse 1120px 500px at 50% 38%, rgba(0, 78, 238, 0.09), rgba(0, 78, 238, 0.025) 48%, transparent 74%);
+}
+
+.review--challenge::after {
+  content: "";
+  position: absolute;
+  right: 50%;
+  bottom: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 280px;
+  pointer-events: none;
+  transform: translateX(50%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(6, 20, 49, 0.3) 28%,
+    rgba(6, 20, 49, 0.74) 58%,
+    rgba(6, 20, 49, 0.96) 84%,
+    var(--review-faq-handoff) 100%
+  );
 }
 
 .review--challenge .section-heading {
@@ -151,6 +180,11 @@
     min-height: auto;
     padding: 0 0 28px;
     border-bottom: 1px dashed rgba(0, 78, 238, 0.55);
+    align-items: center;
+  }
+  .review--challenge .review-grid p {
+    width: 100%;
+    text-align: center;
   }
 
   .review--challenge .review-grid article::before {

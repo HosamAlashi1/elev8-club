@@ -219,9 +219,18 @@
 }
 
 .modern-select-option.disabled {
-  color: #adb5bd;
-  cursor: not-allowed;
-  opacity: 0.6;
+  color: #9ca3af;
+  cursor: default;
+  pointer-events: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding-top: 12px;
+  padding-bottom: 2px;
+  opacity: 1;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 4px;
 }
 
 .modern-select-option.disabled:hover {

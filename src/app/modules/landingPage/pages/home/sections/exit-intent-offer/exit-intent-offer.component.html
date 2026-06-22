@@ -1,0 +1,44 @@
+<div
+  *ngIf="isVisible"
+  class="exit-offer"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="exit-offer-title"
+  aria-describedby="exit-offer-description"
+  dir="rtl"
+>
+  <button class="exit-offer__backdrop" type="button" aria-label="إغلاق العرض" (click)="close()"></button>
+
+  <section class="exit-offer__card">
+    <button class="exit-offer__close" type="button" aria-label="إغلاق" (click)="close()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 5 15 15M15 5 5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <p class="exit-offer__eyebrow"><span>لحظة قبل ما تغادر</span></p>
+
+    <h2 id="exit-offer-title">
+      <span>الفرصة هلق قدامك</span>
+      <span>مجانية بالكامل</span>
+    </h2>
+
+    <div class="exit-offer__copy">
+      <p id="exit-offer-description">
+        مش صدفة إنك دخلت الموقع هاد اليوم. في شي داخلك تعبان منه الراتب اللي ما بيكفي،
+        الوقت اللي مش إلك، أو الانتظار لفرصة بتحس إنها فاتتك.
+      </p>
+      <p>ما تسكر التاب وترجع لنفس الروتين.</p>
+    </div>
+
+    <div class="exit-offer__actions">
+      <button class="exit-offer__primary" type="button" (click)="continueToRegistration()">
+        احجز مقعدك مجاناً
+      </button>
+
+      <button class="exit-offer__secondary" type="button" (click)="close()">
+        أكمل تصفح الصفحة
+      </button>
+    </div>
+  </section>
+</div>

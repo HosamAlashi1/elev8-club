@@ -3,22 +3,20 @@
 
   <div class="stats-section__shell">
     <p class="stats-section__intro" data-aos="fade-up" data-aos-delay="80" data-aos-duration="700">
-      هاي الطريقة البسيطة حققت آلاف الدولارات للمشاركين السابقين، أول مرة أطلقنا فيه هذا التحدي كان 30 يوم
-      <br />
-      والمرة الثانية 7 أيام، والمرة هاي مختلفة تماماً
+      النسخ السابقة من التحدي حققت آلاف الدولارات للمشاركين والآن نسخة <strong>0.3</strong><br>  مبنية بالكامل لتكون الأسرع في التنفيذ والأقوى في النتائج
     </p>
 
     <div class="stats-section__constellation" aria-labelledby="stats-heading" data-aos="zoom-in" data-aos-delay="160" data-aos-duration="850">
       <h2 id="stats-heading" class="sr-only">نتائج المشاركين السابقين</h2>
 
       <div class="stats-section__metric stats-section__metric--students">
-        <span class="strong">50K</span>
-        <span>طالب ناجح</span>
+        <span>عدد الطلاب الناجحين</span>
+        <span class="strong">{{ formattedStudents }}</span>
       </div>
 
       <div class="stats-section__metric stats-section__metric--profits">
-        <span>أرباح</span>
-        <span class="strong">$600k</span>
+        <span>أرباح طلابنا</span>
+        <span class="strong">{{ formattedProfits }}</span>
       </div>
 
       <div class="stats-section__metric stats-section__metric--countries">
@@ -64,12 +62,12 @@
     <div class="stats-section__note-wrap" data-aos="fade-up" data-aos-delay="220" data-aos-duration="750">
       <span aria-hidden="true"></span>
       <p class="stats-section__note">
-        أغلبهم ما كان عنده أي خبرة سابقة، كثير منهم كانوا لسه موظفين بوظائف 9-5، وبعضهم أصلًا ما كان يعرف شو يعني “بزنس اونلاين أو تداول” قبل ما يبدأ
+        أغلبهم ما كان عنده أي خبرة سابقة كثير منهم كانوا لسه موظفين بوظائف 9-5 وبعضهم أصلًا ما كان يعرف شو يعني “بزنس اونلاين أو تداول” قبل ما يبدأ
       </p>
     </div>
 
     <div class="stats-section__cta-card" data-aos="fade-up" data-aos-delay="280" data-aos-duration="750">
-      <p>هذا النظام البسيط ساعدهم يتجاوزوا كل التوقعات، ويحققوا مجتمعين آلاف الدولارات أونلاين</p>
+      <p>بحضور التحدي وتطبيق النظام البسيط قدروا  يتجاوزوا كل التوقعات، ويحققوا مجتمعين آلاف الدولارات أونلاين</p>
       <button class="stats-section__button" type="button" (click)="openRegistration()" aria-label="احجز مقعدك مجاناً">
         احجز مقعدك مجاناً
       </button>

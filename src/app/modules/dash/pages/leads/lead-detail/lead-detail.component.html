@@ -1,0 +1,219 @@
+<!-- Loading -->
+<div *ngIf="isLoading" class="ld-loading">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <ngx-skeleton-loader count="5" appearance="line" [theme]="{ height: '60px', 'border-radius': '12px', 'margin-bottom': '12px' }"></ngx-skeleton-loader>
+    </div>
+    <div class="col-lg-8">
+      <ngx-skeleton-loader count="4" appearance="line" [theme]="{ height: '80px', 'border-radius': '12px', 'margin-bottom': '12px' }"></ngx-skeleton-loader>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!isLoading && lead" class="ld-page">
+
+  <!-- ── Page Header ──────────────────────────────── -->
+  <div class="ld-header">
+    <button class="ld-back-btn" (click)="goBack()">
+      <i class="fe fe-arrow-left"></i>
+      <span>Leads</span>
+    </button>
+
+    <div class="ld-header-center">
+      <div class="ld-avatar">{{ getInitial() }}</div>
+      <div>
+        <h2 class="ld-name">{{ lead.fullName }}</h2>
+        <div class="ld-sub">
+          <span>{{ lead.email }}</span>
+          <span *ngIf="lead.phone" class="ld-dot">•</span>
+          <span *ngIf="lead.phone">{{ lead.phone }}</span>
+          <span *ngIf="lead.salesMemberName" class="ld-dot">•</span>
+          <span *ngIf="lead.salesMemberName" class="ld-sales-chip">
+            <i class="fe fe-user"></i> {{ lead.salesMemberName }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ld-header-actions">
+      <span class="ld-status-pill" [ngClass]="lead.step === 2 ? 'ld-pill-done' : 'ld-pill-pending'">
+        {{ lead.step === 2 ? 'Completed' : 'Pending' }}
+      </span>
+      <button *ngIf="(isSales || isAdmin) && lead.sales_status !== 'not_interested'"
+        class="btn btn-sm btn-outline-danger" (click)="markNotInterested()">
+        <i class="fe fe-x-circle me-1"></i>Not Interested
+      </button>
+      <button *ngIf="(isSales || isAdmin) && lead.sales_status === 'not_interested'"
+        class="btn btn-sm btn-outline-secondary" (click)="resetStatus()">
+        <i class="fe fe-refresh-cw me-1"></i>Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Body ─────────────────────────────────────── -->
+  <div class="ld-body">
+
+    <!-- LEFT: Lead Info -->
+    <aside class="ld-sidebar">
+
+      <!-- Contact Card -->
+      <div class="ld-card">
+        <div class="ld-card-title"><i class="fe fe-user me-2"></i>Contact</div>
+        <div class="ld-field" *ngIf="lead.email">
+          <i class="fe fe-mail ld-fi"></i>
+          <span>{{ lead.email }}</span>
+        </div>
+        <div class="ld-field" *ngIf="lead.phone">
+          <i class="fe fe-phone ld-fi"></i>
+          <span>{{ lead.phone }}</span>
+        </div>
+        <div class="ld-field" *ngIf="lead.city || lead.country">
+          <i class="fe fe-map-pin ld-fi"></i>
+          <span>{{ lead.city }}{{ lead.city && lead.country ? ', ' : '' }}{{ lead.country }}</span>
+        </div>
+        <div class="ld-field">
+          <i class="fe fe-clock ld-fi"></i>
+          <span>{{ lead.createdAt | date:'mediumDate' }}</span>
+        </div>
+      </div>
+
+      <!-- Affiliate Card -->
+      <div class="ld-card" *ngIf="lead.affiliateName || lead.affiliateKey">
+        <div class="ld-card-title"><i class="fe fe-link me-2"></i>Affiliate</div>
+        <div class="ld-field">
+          <i class="fe fe-user-check ld-fi"></i>
+          <span>{{ lead.affiliateName || lead.affiliateKey }}</span>
+        </div>
+        <div class="ld-field" *ngIf="lead.affiliateCode">
+          <i class="fe fe-tag ld-fi"></i>
+          <code class="ld-code">{{ lead.affiliateCode }}</code>
+        </div>
+      </div>
+
+      <!-- Questionnaire Card -->
+      <div class="ld-card" *ngIf="getAnswers().length > 0">
+        <div class="ld-card-title"><i class="fe fe-list me-2"></i>Questionnaire</div>
+        <div class="ld-qa" *ngFor="let a of getAnswers(); let i = index">
+          <div class="ld-qa-num">{{ i + 1 }}</div>
+          <div>
+            <div class="ld-qa-q">{{ a.label }}</div>
+            <div class="ld-qa-a">{{ a.value }}</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT: Sales Workflow -->
+    <main class="ld-main">
+
+      <!-- Sales Status Stepper -->
+      <div class="ld-card ld-stepper-card" *ngIf="isSales || isAdmin">
+
+        <!-- Not Interested Banner -->
+        <div *ngIf="lead.sales_status === 'not_interested'" class="ld-not-interested-banner">
+          <i class="fe fe-x-circle me-2"></i>
+          This lead is marked as <strong>Not Interested</strong>
+        </div>
+
+        <div *ngIf="lead.sales_status !== 'not_interested'">
+          <div class="ld-stepper">
+            <div class="ld-step"
+              *ngFor="let step of salesSteps; let last = last"
+              [class.ld-step--done]="getStepState(step.key) === 'done'"
+              [class.ld-step--active]="getStepState(step.key) === 'active'"
+              [class.ld-step--pending]="getStepState(step.key) === 'pending'"
+              (click)="changeStatus(step.key)">
+              <div class="ld-step-node">
+                <i class="fe fe-check" *ngIf="getStepState(step.key) === 'done'"></i>
+                <i [class]="'fe ' + step.icon" *ngIf="getStepState(step.key) !== 'done'"></i>
+              </div>
+              <div class="ld-step-connector" *ngIf="!last"></div>
+              <div class="ld-step-label">{{ step.label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call Log Card -->
+      <div class="ld-card ld-calls-card" *ngIf="isSales || isAdmin">
+        <div class="ld-calls-header">
+          <div class="ld-card-title mb-0">
+            <i class="fe fe-phone me-2"></i>Call Log
+            <span class="ld-calls-count">{{ callLogs.length }}</span>
+          </div>
+          <button class="ld-add-call-btn" (click)="showCallForm = !showCallForm">
+            <i class="fe" [ngClass]="showCallForm ? 'fe-x' : 'fe-plus'"></i>
+            {{ showCallForm ? 'Cancel' : 'Log a Call' }}
+          </button>
+        </div>
+
+        <!-- Add Call Form -->
+        <div class="ld-call-form" *ngIf="showCallForm" [formGroup]="callForm">
+          <div class="row g-3">
+            <div class="col-md-5">
+              <label class="ld-label">Call Type</label>
+              <select class="form-select ld-select" formControlName="callType">
+                <option *ngFor="let opt of callTypeOptions" [value]="opt.value">{{ opt.label }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="ld-label">Date</label>
+              <input type="date" class="form-control ld-input" formControlName="callDate">
+            </div>
+            <div class="col-md-2">
+              <label class="ld-label">Time</label>
+              <input type="time" class="form-control ld-input" formControlName="callTime">
+            </div>
+            <div class="col-md-2 d-flex flex-column">
+              <label class="ld-label">Status</label>
+              <select class="form-select ld-select" formControlName="status">
+                <option *ngFor="let opt of callStatusOptions" [value]="opt.value">{{ opt.label }}</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="ld-label">Notes <span class="text-muted">(optional)</span></label>
+              <textarea class="form-control ld-input" rows="2" placeholder="Add notes about this call..." formControlName="notes"></textarea>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button class="btn ld-save-btn" (click)="saveCall()" [disabled]="isSavingCall || callForm.invalid">
+                <span *ngIf="isSavingCall" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!isSavingCall" class="fe fe-check me-2"></i>
+                Save Call
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Call Timeline -->
+        <div *ngIf="isLoadingLogs" class="ld-calls-empty">
+          <span class="spinner-border spinner-border-sm me-2 text-muted"></span>Loading calls...
+        </div>
+
+        <div *ngIf="!isLoadingLogs && callLogs.length === 0 && !showCallForm" class="ld-calls-empty">
+          <i class="fe fe-phone-off d-block mb-2" style="font-size:1.8rem;color:#d1d5db"></i>
+          No calls logged yet.<br>
+          <button class="btn btn-link p-0 mt-1" (click)="showCallForm = true">Log your first call</button>
+        </div>
+
+        <div class="ld-timeline" *ngIf="!isLoadingLogs && callLogs.length > 0">
+          <div class="ld-timeline-item" *ngFor="let log of callLogs">
+            <div class="ld-tl-dot" [ngClass]="'ld-tl-dot--' + log.status"></div>
+            <div class="ld-tl-body">
+              <div class="ld-tl-top">
+                <span class="ld-tl-type">{{ getCallTypeLabel(log.callType) }}</span>
+                <span class="ld-tl-status" [ngClass]="'ld-tl-status--' + log.status">
+                  <i class="fe" [ngClass]="getCallStatusConfig(log.status).icon"></i>
+                  {{ getCallStatusLabel(log.status) }}
+                </span>
+                <span class="ld-tl-date ms-auto">{{ log.callDate }} {{ log.callTime }}</span>
+              </div>
+              <p class="ld-tl-notes" *ngIf="log.notes">{{ log.notes }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
