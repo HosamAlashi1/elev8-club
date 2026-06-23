@@ -555,6 +555,18 @@ export class FirebaseService {
     );
   }
 
+  public getClosedLeadsByVersion(versionKey: string): Observable<Lead[]> {
+    return this.db.list<Lead>('leads', ref =>
+      ref.orderByChild('versionKey').equalTo(versionKey)
+    ).snapshotChanges().pipe(
+      map(changes => changes
+        .map(c => ({ ...(c.payload.val() as Lead), key: c.payload.key || '' }))
+        .filter(l => l.sales_status === 'closed')
+      ),
+      take(1)
+    );
+  }
+
   // ==========================================
   // Call Logs
   // ==========================================

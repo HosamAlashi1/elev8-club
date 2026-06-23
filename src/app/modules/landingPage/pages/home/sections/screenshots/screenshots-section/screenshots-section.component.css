@@ -686,7 +686,7 @@
 
   .shots-preview__image {
     max-width: 94vw;
-    max-height: 86vh;
+    max-height: 72vh;
     border-radius: 14px;
   }
 }

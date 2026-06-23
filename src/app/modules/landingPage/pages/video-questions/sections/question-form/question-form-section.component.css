@@ -672,15 +672,23 @@
 }
 
 .whatsapp-button:not(.is-ready) {
-  opacity: 0;
-  transform: translateY(10px);
-  pointer-events: none;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .whatsapp-button.is-ready {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+.whatsapp-button:disabled,
+.whatsapp-button.is-loading {
+  cursor: progress;
+  opacity: 0.76;
+  pointer-events: none;
+  transform: none;
 }
 
 @keyframes typeCaretBlink {

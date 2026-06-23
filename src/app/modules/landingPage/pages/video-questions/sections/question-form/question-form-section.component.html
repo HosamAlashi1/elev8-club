@@ -9,6 +9,7 @@
       aria-modal="true"
       data-aos="fade-in"
       data-aos-duration="420"
+      (click)="onSuccessPanelClick($event)"
       aria-labelledby="whatsapp-popup-title">
       <div class="success-backdrop" aria-hidden="true"></div>
 
@@ -50,6 +51,8 @@
         <button
           class="whatsapp-button"
           [class.is-ready]="isSuccessTypingDone"
+          [class.is-loading]="isOpeningWhatsApp"
+          [disabled]="isOpeningWhatsApp"
           data-aos="fade-up"
           data-aos-delay="460"
           data-aos-duration="620"

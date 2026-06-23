@@ -54,6 +54,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     'assets/images/screenshots/elev8-screenshot-12.webp',
     'assets/images/screenshots/elev8-screenshot-13.webp',
     'assets/images/screenshots/elev8-screenshot-14.webp',
+    'assets/images/screenshots/elev8-screenshot-15.webp',
   ];
 
   /** نصوص الكروت الأربعة أسفل السكشن — بترتيب DOM يسار ← يمين (نفس الأنيما). */

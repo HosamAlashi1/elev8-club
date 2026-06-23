@@ -4,8 +4,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
 import { PublicService } from '../../../services/public.service';
 import { ToastrsService } from '../../../services/toater.service';
-import { Lead, AFFILIATE_STATUS_LABELS, AffiliateStatus } from '../../../../core/models';
+import { Lead, AFFILIATE_STATUS_LABELS, AffiliateStatus, Affiliate } from '../../../../core/models';
 import { ViewAffiliateLeadComponent } from './view-affiliate-lead/view-affiliate-lead.component';
+import { SelectOption } from '../../shared/modern-select/modern-select.component';
+
+const FILTER_WITH_AFFILIATE = '__with__';
+const FILTER_ALL = '__all__';
 
 @Component({
   selector: 'app-my-leads',
@@ -23,6 +27,11 @@ export class MyLeadsComponent implements OnInit {
   size = 15;
   totalCount = 0;
 
+  isAdmin = false;
+  selectedAffiliateFilter = FILTER_WITH_AFFILIATE;
+  affiliateOptions: SelectOption[] = [];
+  affiliateMap: Record<string, string> = {};
+
   constructor(
     private firebaseService: FirebaseService,
     private publicService: PublicService,
@@ -31,23 +40,31 @@ export class MyLeadsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isAdmin = this.publicService.isAdmin();
     this.loadLeads();
   }
 
   loadLeads(): void {
+    if (this.isAdmin) {
+      this.loadAdminLeads();
+    } else {
+      this.loadAffiliateLeads();
+    }
+  }
+
+  private loadAffiliateLeads(): void {
     const affiliateKey = this.publicService.getAffiliateKey();
     if (!affiliateKey) {
       this.isLoading$.next(false);
       return;
     }
-
     this.isLoading$.next(true);
     this.firebaseService.getClosedLeadsByAffiliate(affiliateKey).subscribe(
       leads => {
         this.allLeads = leads.sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-        this.applySearch();
+        this.applyFilters();
         this.isLoading$.next(false);
       },
       () => {
@@ -57,24 +74,77 @@ export class MyLeadsComponent implements OnInit {
     );
   }
 
-  applySearch(): void {
-    if (!this.searchText.trim()) {
-      this.leads = [...this.allLeads];
-    } else {
+  private loadAdminLeads(): void {
+    this.isLoading$.next(true);
+    this.firebaseService.getCurrentVersion().subscribe(version => {
+      if (!version) { this.isLoading$.next(false); return; }
+
+      this.firebaseService.getAffiliatesByVersion(version.key).subscribe(affiliates => {
+        this.buildAffiliateOptions(affiliates);
+      });
+
+      this.firebaseService.getClosedLeadsByVersion(version.key).subscribe(
+        leads => {
+          this.allLeads = leads.sort((a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          this.applyFilters();
+          this.isLoading$.next(false);
+        },
+        () => {
+          this.toastr.showError('Failed to load leads');
+          this.isLoading$.next(false);
+        }
+      );
+    });
+  }
+
+  private buildAffiliateOptions(affiliates: Affiliate[]): void {
+    this.affiliateMap = {};
+    affiliates.forEach(a => { if (a.key) this.affiliateMap[a.key] = a.name; });
+
+    const sorted = [...affiliates].sort((a, b) => a.name.localeCompare(b.name));
+    this.affiliateOptions = [
+      { value: FILTER_WITH_AFFILIATE, label: 'Without Affiliate' },
+      { value: FILTER_ALL,            label: 'All Leads' },
+      ...sorted.map(a => ({ value: a.key || '', label: a.name }))
+    ];
+  }
+
+  applyFilters(): void {
+    let result = [...this.allLeads];
+
+    if (this.isAdmin) {
+      if (this.selectedAffiliateFilter === FILTER_WITH_AFFILIATE) {
+        result = result.filter(l => !l.affiliateKey);
+      } else if (this.selectedAffiliateFilter !== FILTER_ALL) {
+        result = result.filter(l => l.affiliateKey === this.selectedAffiliateFilter);
+      }
+    }
+
+    if (this.searchText.trim()) {
       const q = this.searchText.toLowerCase();
-      this.leads = this.allLeads.filter(l =>
+      result = result.filter(l =>
         l.fullName.toLowerCase().includes(q) ||
         l.email.toLowerCase().includes(q) ||
         l.phone?.toLowerCase().includes(q)
       );
     }
-    this.totalCount = this.leads.length;
+
+    this.leads = result;
+    this.totalCount = result.length;
     this.page = 1;
   }
+
+  applySearch(): void { this.applyFilters(); }
 
   get paginatedLeads(): Lead[] {
     const start = (this.page - 1) * this.size;
     return this.leads.slice(start, start + this.size);
+  }
+
+  getAffiliateName(affiliateKey?: string): string {
+    return affiliateKey ? (this.affiliateMap[affiliateKey] || affiliateKey) : '—';
   }
 
   getAffiliateStatusLabel(status?: string): string {

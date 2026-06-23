@@ -436,9 +436,15 @@
     filter 280ms ease;
 }
 
-.phone-video.is-playing {
+.phone-video.is-playing,
+.phone-video.is-native-visible {
   opacity: 1;
   filter: brightness(1.08);
+}
+
+.phone-video.is-native-visible {
+  z-index: 4;
+  pointer-events: auto;
 }
 
 .phone-video.is-frame-visible {
@@ -468,6 +474,7 @@
 }
 
 .proof-visual.is-video-preparing .play-button {
+  z-index: 7;
   opacity: 0.82;
   pointer-events: none;
   transform: translateX(-50%) scale(0.94);
@@ -494,6 +501,36 @@
 
 .play-button.is-loading {
   cursor: default;
+}
+
+.video-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  border-radius: inherit;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(2, 5, 16, 0.48);
+  pointer-events: none;
+}
+
+.video-loading-overlay i {
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  border: 3px solid rgba(255, 255, 255, 0.22);
+  border-top-color: var(--gold-light);
+  border-radius: 50%;
+  animation: proofPlayLoading 720ms linear infinite;
+}
+
+.video-loading-overlay span {
+  font-family: var(--font-low-bold);
+  font-size: 13px;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 .play-button b,
@@ -1036,7 +1073,12 @@
   }
 
   .play-button {
+    z-index: 12;
     top: 165px;
+  }
+
+  .proof-visual.is-video-preparing .play-button {
+    z-index: 12;
   }
 
   .slider-controls {
@@ -1046,12 +1088,14 @@
     width: 261px;
     justify-content: space-between;
     gap: 0;
+    pointer-events: none;
   }
 
   .slider-controls button {
     width: 46px;
     height: 46px;
     border-radius: 12px;
+    pointer-events: auto;
   }
 
   .slider-controls img {

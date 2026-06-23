@@ -12,8 +12,8 @@ export class ExitIntentOfferComponent implements OnInit, OnDestroy {
   isVisible = false;
 
   private readonly storageKey = 'elev8_exit_intent_offer_seen_v2';
-  private readonly exitDwellMs = 12000;
-  private readonly engagedDwellMs = 18000;
+  private readonly exitDwellMs = 45000;
+  private readonly engagedDwellMs = 45000;
   private readonly passiveDwellMs = 45000;
   private readonly mobileIdleMs = 14000;
   private enteredAt = Date.now();

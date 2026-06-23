@@ -850,7 +850,7 @@ button {
 .final-cta.section-shell {
   width: min(100%, 1446px);
   max-width: 1446px;
-  padding: 118px 0 0;
+  padding: 18px 0 0;
 }
 
 .final-cta__panel {
@@ -994,6 +994,14 @@ button {
   line-height: 1.4;
   text-align: left;
   direction: ltr;
+}
+
+.final-cta .final-cta__tagline {
+  grid-area: auto;
+  width: fit-content;
+  margin: 12px 0 0 auto;
+  direction: rtl;
+  text-align: right;
 }
 
 .final-cta__visual {
@@ -1285,7 +1293,7 @@ button {
 
   .final-cta.section-shell {
     width: min(100%, calc(100% - 32px));
-    padding-top: 48px;
+    padding-top: 18px;
   }
 
   .final-cta__panel {
@@ -1314,9 +1322,12 @@ button {
     line-height: 1.05;
   }
 
-  .final-cta__tagline {
+  .final-cta .final-cta__tagline {
     font-size: 13px;
     margin-top: 10px;
+    width: 100%;
+    margin-inline: auto;
+    text-align: center;
   }
 
   .final-cta span {

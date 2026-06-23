@@ -121,6 +121,8 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   displayedSuccessCopy = '';
   isSuccessTyping = false;
   isSuccessTypingDone = false;
+  isOpeningWhatsApp = false;
+  hasRequestedWhatsApp = false;
   successTypingTarget: 'title' | 'copy' | 'done' = 'done';
 
   private leadKey: string | null = null;
@@ -394,6 +396,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   private openSuccessPanel(): void {
     const wasAlreadyOpen = this.showCTA;
     this.showCTA = true;
+    this.hasRequestedWhatsApp = false;
 
     if (!wasAlreadyOpen) {
       this.startSuccessTypewriter();
@@ -410,26 +413,11 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
 
   private startSuccessTypewriter(): void {
     this.clearSuccessTypeTimer();
-    this.displayedSuccessTitle = '';
-    this.displayedSuccessCopy = '';
-    this.isSuccessTyping = true;
-    this.isSuccessTypingDone = false;
-    this.successTypingTarget = 'title';
-
-    this.typeText(this.successTitleText, value => {
-      this.displayedSuccessTitle = value;
-    }, () => {
-      this.successTypeTimer = setTimeout(() => {
-        this.successTypingTarget = 'copy';
-        this.typeText(this.successCopyText, value => {
-          this.displayedSuccessCopy = value;
-        }, () => {
-          this.isSuccessTyping = false;
-          this.isSuccessTypingDone = true;
-          this.successTypingTarget = 'done';
-        }, 24);
-      }, 180);
-    }, 32);
+    this.displayedSuccessTitle = this.successTitleText;
+    this.displayedSuccessCopy = this.successCopyText;
+    this.isSuccessTyping = false;
+    this.isSuccessTypingDone = true;
+    this.successTypingTarget = 'done';
   }
 
   private typeText(
@@ -463,64 +451,107 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     }
   }
 
+  onSuccessPanelClick(event: MouseEvent): void {
+    if (!this.hasRequestedWhatsApp) return;
+
+    const target = event.target as HTMLElement;
+    if (target.closest('.whatsapp-button')) return;
+
+    this.showCTA = false;
+  }
+
   async completeRegistration(): Promise<void> {
+    if (this.isOpeningWhatsApp) return;
+
+    this.hasRequestedWhatsApp = true;
+    this.isOpeningWhatsApp = true;
+    const pendingWindow = this.openPendingWhatsAppWindow();
+
     try {
       const versionKey = this.currentLead?.versionKey;
 
       if (!versionKey) {
-        console.error('No lead version found for WhatsApp group assignment');
-        return;
+        throw new Error('No lead version found for WhatsApp group assignment');
       }
 
       const groups = await this.firebaseService.getSalesByVersion(versionKey).pipe(take(1)).toPromise();
 
       if (!groups || groups.length === 0) {
-        console.error('No WhatsApp groups found for current version');
-        return;
+        throw new Error('No WhatsApp groups found for current version');
       }
 
       const assignment = await this.reserveNextWhatsAppGroup(groups, 1000);
 
       if (!assignment) {
-        console.error('All WhatsApp groups are full or missing links');
-        return;
+        throw new Error('All WhatsApp groups are full or missing links');
       }
 
       const { group: selectedGroup, groupUrl, groupKey, assignedAt } = assignment;
 
-      if (this.leadKey && groupKey) {
-        await this.firebaseService.update('leads', this.leadKey, {
-          assigned_sales: {
-            sales_id: groupKey,
-            group_id: groupKey,
-            group_name: selectedGroup.group_name || selectedGroup.name || `WhatsApp Group ${selectedGroup.group_order || ''}`.trim(),
-            group_link: groupUrl,
-            group_order: Number(selectedGroup.group_order) || null,
-            whatsapp_number: selectedGroup.whatsapp_number || '',
-            assigned_at: assignedAt,
-            assigned_via: 'whatsapp_group',
-            versionKey
-          }
-        });
-
-        // Assign next available sales member (round-robin)
-        try {
-          const salesMemberKey = await this.firebaseService.assignNextSalesMember(versionKey);
-          if (salesMemberKey) {
-            await this.firebaseService.assignSalesMemberToLead(this.leadKey, salesMemberKey);
-          }
-        } catch (salesErr) {
-          console.warn('Could not assign sales member:', salesErr);
-        }
-      }
-
-      this.openWhatsAppGroup(groupUrl, selectedGroup);
+      this.openWhatsAppGroup(groupUrl, selectedGroup, pendingWindow);
+      void this.persistWhatsAppAssignment(selectedGroup, groupUrl, groupKey, assignedAt, versionKey)
+        .catch(err => console.warn('Could not persist WhatsApp assignment:', err));
     } catch (err) {
       console.error('Error in completeRegistration:', err);
+      this.closePendingWindow(pendingWindow);
+      alert('تعذر فتح رابط الواتساب حالياً، حاول مرة أخرى بعد لحظات.');
+    } finally {
+      this.isOpeningWhatsApp = false;
     }
   }
 
-  private openWhatsAppGroup(groupUrl: string, group: any): void {
+  private openPendingWhatsAppWindow(): Window | null {
+    const pendingWindow = window.open('', '_blank');
+
+    if (pendingWindow) {
+      pendingWindow.document.title = 'Opening WhatsApp';
+      pendingWindow.document.body.style.cssText = 'margin:0;display:grid;place-items:center;min-height:100vh;background:#05050a;color:#fff;font-family:Arial,sans-serif;text-align:center;';
+      pendingWindow.document.body.innerHTML = '<p>Opening WhatsApp...</p>';
+    }
+
+    return pendingWindow;
+  }
+
+  private closePendingWindow(pendingWindow: Window | null): void {
+    if (pendingWindow && !pendingWindow.closed) {
+      pendingWindow.close();
+    }
+  }
+
+  private async persistWhatsAppAssignment(
+    selectedGroup: any,
+    groupUrl: string,
+    groupKey: string,
+    assignedAt: number,
+    versionKey: string
+  ): Promise<void> {
+    if (!this.leadKey || !groupKey) return;
+
+    await this.firebaseService.update('leads', this.leadKey, {
+      assigned_sales: {
+        sales_id: groupKey,
+        group_id: groupKey,
+        group_name: selectedGroup.group_name || selectedGroup.name || `WhatsApp Group ${selectedGroup.group_order || ''}`.trim(),
+        group_link: groupUrl,
+        group_order: Number(selectedGroup.group_order) || null,
+        whatsapp_number: selectedGroup.whatsapp_number || '',
+        assigned_at: assignedAt,
+        assigned_via: 'whatsapp_group',
+        versionKey
+      }
+    });
+
+    try {
+      const salesMemberKey = await this.firebaseService.assignNextSalesMember(versionKey);
+      if (salesMemberKey) {
+        await this.firebaseService.assignSalesMemberToLead(this.leadKey, salesMemberKey);
+      }
+    } catch (salesErr) {
+      console.warn('Could not assign sales member:', salesErr);
+    }
+  }
+
+  private openWhatsAppGroup(groupUrl: string, group: any, pendingWindow: Window | null = null): void {
     if (this.leadKey) {
       this.gtm.trackWhatsAppContact(this.leadKey, groupUrl, {
         user_name: this.currentLead?.fullName || 'new lead',
@@ -530,6 +561,11 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
         affiliate_code: this.affiliateCode || 'none',
         affiliate_key: this.currentAffiliate?.key || 'none'
       });
+    }
+
+    if (pendingWindow && !pendingWindow.closed) {
+      pendingWindow.location.href = groupUrl;
+      return;
     }
 
     const newWindow = window.open(groupUrl, '_blank');

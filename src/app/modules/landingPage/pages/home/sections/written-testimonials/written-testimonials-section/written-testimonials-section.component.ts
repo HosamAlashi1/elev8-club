@@ -14,7 +14,7 @@ type SlideItem = {
           <div class="screens-head">
             <span class="screens-eyebrow">سكرينات</span>
             <h2>عندي حرفيا مئات الـ screenshots ومئات النتائج</h2>
-            <p>لأشخاص قدروا يتخلصوا من ضغطهم المالي ويحققوا نتائج حقيقة بعد حضورهم التدريب وتطبيق نظامنا المتكامل.</p>
+            <p>لأشخاص قدروا يتخلصوا من ضغطهم المالي ويحققوا نتائج حقيقة بعد حضورهم التدريب وتطبيق نظامنا المتكامل</p>
           </div>
 
           <div class="screens-slider" data-aos="zoom-in" data-aos-delay="160">

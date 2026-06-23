@@ -35,9 +35,12 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
   isAnimating = false;
   isVideoPlaying = false;
   isVideoPreparing = false;
+  showNativeVideoControls = false;
   transitionDirection: SlideDirection = 'next';
 
   private animationTimer?: ReturnType<typeof setTimeout>;
+  private warmupTimer?: ReturnType<typeof setTimeout>;
+  private playbackFallbackTimer?: ReturnType<typeof setTimeout>;
   private pendingPlayToken = 0;
   private loadedVideoSource = '';
   private readonly proofAvatars = [
@@ -49,7 +52,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     {
       name: 'أنصار من فلسطين 🇵🇸',
       country: 'PS',
-      role: 'كانت تشتغل بالمجال التسويق',
+      role: 'كانت تشتغل بمجال التسويق',
       amount: '+1,000$',
       video: 'assets/videos/testimonials/ansar-palestine.mp4',
       poster: 'assets/images/anima-home/proof-frame-ansar.webp',
@@ -125,6 +128,10 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     if (this.animationTimer) {
       clearTimeout(this.animationTimer);
     }
+    if (this.warmupTimer) {
+      clearTimeout(this.warmupTimer);
+    }
+    this.clearPlaybackFallbackTimer();
   }
 
   nextSlide(): void {
@@ -149,6 +156,12 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     this.playActiveVideo();
   }
 
+  onPlayButtonPress(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.toggleVideo();
+  }
+
   trackBySlideName(_: number, slide: ProofSlide): string {
     return slide.name;
   }
@@ -165,6 +178,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     this.pauseVideo(false);
     this.pendingPlayToken++;
     this.loadedVideoSource = '';
+    this.showNativeVideoControls = false;
     this.transitionDirection = direction;
     this.activeIndex = (index + this.slides.length) % this.slides.length;
     this.isAnimating = true;
@@ -173,11 +187,18 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     if (this.animationTimer) {
       clearTimeout(this.animationTimer);
     }
+    if (this.warmupTimer) {
+      clearTimeout(this.warmupTimer);
+    }
 
     this.animationTimer = setTimeout(() => {
       this.isAnimating = false;
       this.cdr.markForCheck();
     }, 520);
+
+    this.warmupTimer = setTimeout(() => {
+      this.warmActiveVideo();
+    }, 580);
   }
 
   private setupVideo(): void {
@@ -188,14 +209,62 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
     video.muted = false;
     video.volume = 1;
-    video.preload = 'none';
+    video.preload = 'metadata';
     video.playsInline = true;
+    video.controls = false;
     video.onended = () => {
       this.isVideoPlaying = false;
       this.isVideoPreparing = false;
+      this.showNativeVideoControls = false;
+      video.controls = false;
       video.currentTime = 0;
       this.cdr.markForCheck();
     };
+    this.warmActiveVideo();
+  }
+
+  onVideoWaiting(): void {
+    if (!this.isVideoPlaying && !this.isVideoPreparing) {
+      return;
+    }
+
+    this.isVideoPreparing = true;
+    this.cdr.markForCheck();
+  }
+
+  onVideoPlaying(): void {
+    this.isVideoPlaying = true;
+    this.isVideoPreparing = false;
+    this.clearPlaybackFallbackTimer();
+    this.cdr.markForCheck();
+  }
+
+  onVideoCanPlay(): void {
+    if (!this.isVideoPreparing) {
+      return;
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  onVideoError(): void {
+    this.isVideoPlaying = false;
+    this.isVideoPreparing = false;
+    this.showNativeVideoControls = false;
+    this.loadedVideoSource = '';
+    this.clearPlaybackFallbackTimer();
+    this.cdr.markForCheck();
+  }
+
+  onVideoPaused(): void {
+    const video = this.proofVideo?.nativeElement;
+    if (!video || video.ended || this.isVideoPreparing) {
+      return;
+    }
+
+    this.isVideoPlaying = false;
+    this.clearPlaybackFallbackTimer();
+    this.cdr.markForCheck();
   }
 
   private playActiveVideo(): void {
@@ -205,9 +274,19 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     }
 
     const token = ++this.pendingPlayToken;
+    const shouldUseNativeControls = this.isTouchPlaybackDevice();
     this.isVideoPreparing = true;
+    this.showNativeVideoControls = false;
+    video.controls = false;
     this.cdr.markForCheck();
-    this.ensureActiveVideoSource(video);
+    this.ensureActiveVideoSource(video, true);
+
+    this.clearPlaybackFallbackTimer();
+    this.playbackFallbackTimer = setTimeout(() => {
+      if (token === this.pendingPlayToken && this.isVideoPreparing && shouldUseNativeControls) {
+        this.revealNativePlaybackControls(video);
+      }
+    }, 1400);
 
     video.play()
       .then(() => {
@@ -218,31 +297,51 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
         this.isVideoPlaying = true;
         this.isVideoPreparing = false;
+        this.clearPlaybackFallbackTimer();
         this.cdr.markForCheck();
       })
       .catch(() => {
         if (token === this.pendingPlayToken) {
-          this.isVideoPlaying = false;
-          this.isVideoPreparing = false;
-          this.cdr.markForCheck();
+          if (shouldUseNativeControls) {
+            this.revealNativePlaybackControls(video);
+          } else {
+            this.isVideoPlaying = false;
+            this.isVideoPreparing = false;
+            this.clearPlaybackFallbackTimer();
+            this.cdr.markForCheck();
+          }
         }
       });
   }
 
-  private ensureActiveVideoSource(video: HTMLVideoElement): void {
+  private ensureActiveVideoSource(video: HTMLVideoElement, forceLoad = false): void {
     const slide = this.activeSlide;
-    if (this.loadedVideoSource === slide.video) {
+    if (this.loadedVideoSource === slide.video && !forceLoad) {
       return;
     }
 
+    const sourceChanged = this.loadedVideoSource !== slide.video || video.getAttribute('src') !== slide.video;
     this.loadedVideoSource = slide.video;
-    video.src = slide.video;
+    if (sourceChanged) {
+      video.src = slide.video;
+    }
     if (slide.poster) {
       video.poster = slide.poster;
     } else {
       video.removeAttribute('poster');
     }
-    video.load();
+    if (sourceChanged || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      video.load();
+    }
+  }
+
+  private warmActiveVideo(): void {
+    const video = this.proofVideo?.nativeElement;
+    if (!video || this.isVideoPlaying || this.isVideoPreparing) {
+      return;
+    }
+
+    this.ensureActiveVideoSource(video);
   }
 
   private pauseVideo(resetToStart = true): void {
@@ -254,6 +353,9 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     video.pause();
     this.isVideoPlaying = false;
     this.isVideoPreparing = false;
+    this.showNativeVideoControls = false;
+    video.controls = false;
+    this.clearPlaybackFallbackTimer();
 
     if (resetToStart) {
       try {
@@ -264,6 +366,24 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     }
 
     this.cdr.markForCheck();
+  }
+
+  private revealNativePlaybackControls(video: HTMLVideoElement): void {
+    video.controls = true;
+    this.showNativeVideoControls = true;
+    this.isVideoPreparing = false;
+    this.cdr.markForCheck();
+  }
+
+  private clearPlaybackFallbackTimer(): void {
+    if (this.playbackFallbackTimer) {
+      clearTimeout(this.playbackFallbackTimer);
+      this.playbackFallbackTimer = undefined;
+    }
+  }
+
+  private isTouchPlaybackDevice(): boolean {
+    return typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches;
   }
 
 }

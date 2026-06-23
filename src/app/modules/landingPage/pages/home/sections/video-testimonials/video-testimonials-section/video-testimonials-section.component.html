@@ -1,4 +1,4 @@
-<section class="proof-section" data-aos="fade-up" aria-labelledby="proof-title">
+<section class="proof-section" aria-labelledby="proof-title">
   <div class="proof-shell">
     <div
       class="proof-visual"
@@ -35,7 +35,7 @@
         aria-label="تشغيل أو إيقاف الفيديو"
       >
         <img
-          *ngIf="activeSlide.poster && !isVideoPlaying"
+          *ngIf="activeSlide.poster && !isVideoPlaying && !showNativeVideoControls"
           class="phone-frame-image"
           [src]="activeSlide.poster"
           [alt]="activeSlide.name"
@@ -46,24 +46,40 @@
           #proofVideo
           class="phone-video"
           [class.is-playing]="isVideoPlaying"
+          [class.is-native-visible]="showNativeVideoControls"
           [class.is-frame-visible]="!isVideoPlaying && !activeSlide.poster"
           [attr.poster]="activeSlide.poster || null"
-          preload="none"
+          [attr.controls]="showNativeVideoControls ? '' : null"
+          preload="metadata"
           playsinline
           webkit-playsinline
+          (click)="$event.stopPropagation()"
+          (waiting)="onVideoWaiting()"
+          (stalled)="onVideoWaiting()"
+          (playing)="onVideoPlaying()"
+          (pause)="onVideoPaused()"
+          (canplay)="onVideoCanPlay()"
+          (error)="onVideoError()"
         ></video>
 
         <button
-          *ngIf="!isVideoPlaying"
+          *ngIf="!isVideoPlaying && (!showNativeVideoControls || isVideoPreparing)"
           class="play-button"
           [class.is-loading]="isVideoPreparing"
           type="button"
-          (click)="$event.stopPropagation(); toggleVideo()"
+          (click)="onPlayButtonPress($event)"
+          (keydown.enter)="onPlayButtonPress($event)"
+          (keydown.space)="onPlayButtonPress($event)"
           aria-label="تشغيل الفيديو"
         >
           <span *ngIf="!isVideoPreparing" aria-hidden="true"></span>
           <i *ngIf="isVideoPreparing" aria-hidden="true"></i>
         </button>
+
+        <div class="video-loading-overlay" *ngIf="isVideoPreparing" aria-live="polite">
+          <i aria-hidden="true"></i>
+          <span>جاري تحميل الفيديو...</span>
+        </div>
       </div>
 
       <strong class="amount-badge" [attr.data-text]="activeSlide.amount">{{ activeSlide.amount }}</strong>
