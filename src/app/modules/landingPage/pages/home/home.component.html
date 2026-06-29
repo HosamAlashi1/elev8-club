@@ -62,8 +62,56 @@
         <img class="final-cta__pill final-cta__pill--small" src="assets/images/anima-home/magicpill-2.png" alt="" loading="lazy" decoding="async" />
         <img class="final-cta__pill final-cta__pill--main" src="assets/images/anima-home/magicpill-1.png" alt="" loading="lazy" decoding="async" />
       </div> -->
+
+      <div class="final-legal" dir="ltr">
+        <button class="final-legal__button" type="button" (click)="openLegalDisclaimer()">
+          <span>Risk disclaimer &amp; terms</span>
+          <small>Trading involves risk. Elev8 Club does not guarantee profits or financial results.</small>
+        </button>
+      </div>
     </div>
   </footer>
+
+  <div
+    *ngIf="isLegalDisclaimerOpen"
+    class="final-legal-modal"
+    dir="ltr"
+    role="presentation"
+    tabindex="0"
+    (click)="closeLegalDisclaimer()"
+    (keydown.escape)="closeLegalDisclaimer()">
+    <div
+      class="final-legal-modal__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="legal-disclaimer-title"
+      (click)="$event.stopPropagation()">
+      <button class="final-legal-modal__close" type="button" aria-label="Close legal disclaimer" (click)="closeLegalDisclaimer()">&times;</button>
+
+      <div class="final-legal__body" aria-label="Elev8 Club legal disclaimer">
+        <h3 id="legal-disclaimer-title">Risk disclaimer &amp; terms</h3>
+      <p class="final-legal__copyright">Copyright © 2026 | Elev8 Club | Terms &amp; Conditions</p>
+      <p>
+        <strong>NOT FACEBOOK:</strong> This website is not part of Facebook™ or Meta Platforms, Inc. and is not endorsed by Facebook™ in any way. FACEBOOK™ is a trademark of Meta Platforms, Inc.
+      </p>
+      <p>
+        <strong>RISK DISCLAIMER:</strong> Please understand that trading involves risk and is not suitable for everyone. Past results do not guarantee future results. Any examples, testimonials, profit figures, or case studies presented on this website are provided for educational and illustrative purposes only and should not be interpreted as guarantees of future performance.
+      </p>
+      <p>
+        We do not guarantee that you will earn money, generate profits, or achieve any specific financial result through the information, education, signals, tools, or resources provided by Elev8 Club. Your results will depend on many factors including your experience, capital, risk management, market conditions, and ability to follow instructions consistently.
+      </p>
+      <p>
+        Nothing on this website, inside our community, or within our educational content should be considered financial, investment, legal, tax, or professional advice. All trading decisions are made solely by you, and you are fully responsible for any profits or losses resulting from those decisions.
+      </p>
+      <p>
+        Trading carries the risk of loss, including the potential loss of invested capital. Never trade with money you cannot afford to lose. We strongly encourage all members to practice proper risk management and seek independent professional advice where appropriate.
+      </p>
+      <p>
+        By using this website, registering for our community, or opening a trading account through our referral links, you acknowledge that you understand these risks and agree that Elev8 Club, its owners, employees, partners, and affiliates shall not be held liable for any trading results, financial losses, or decisions made based on the information provided.
+      </p>
+      </div>
+    </div>
+  </div>
 
   <app-register-popup
     [isOpen]="isRegistrationPopupOpen"

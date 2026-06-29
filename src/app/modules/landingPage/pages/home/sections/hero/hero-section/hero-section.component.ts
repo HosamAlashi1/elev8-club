@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
-import { FirebaseService } from 'src/app/modules/services/firebase.service';
+import { LandingSettingsService } from 'src/app/modules/services/landing-settings.service';
 import { Subject, takeUntil } from 'rxjs';
 import { trigger, style, transition, animate } from '@angular/animations';
 
@@ -58,7 +58,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   isCountdownLoaded = false;
 
   constructor(
-    private firebaseService: FirebaseService,
+    private landingSettings: LandingSettingsService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone
   ) {}
@@ -76,27 +76,18 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   }
 
   private loadCountdownSettings(): void {
-    this.firebaseService
-      .getObject('settings')
+    this.landingSettings
+      .getStartCounterDate()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (settings: any) => {
-          if (!settings?.start_counter_date) {
-            console.warn('Countdown - settings.start_counter_date not found');
-            this.isCountdownLoaded = false;
-            return;
-          }
-
-          const firebaseStartDate = this.parseDate(settings.start_counter_date);
-
-          if (!firebaseStartDate || isNaN(firebaseStartDate)) {
-            console.warn('Countdown - invalid start_counter_date value:', settings.start_counter_date);
+        next: (startDate: number) => {
+          if (!startDate || isNaN(startDate)) {
             this.isCountdownLoaded = false;
             return;
           }
 
           this.isCountdownLoaded = true;
-          this.initializeCountdown(firebaseStartDate);
+          this.initializeCountdown(startDate);
         },
         error: (err) => {
           console.error('Error loading countdown settings:', err);
@@ -131,29 +122,6 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
         }
       }, 100);
     });
-  }
-
-  /** نفس parseDate اللي عملناه في صفحة الإعدادات */
-  private parseDate(dateValue: any): number {
-    if (!dateValue) return 0;
-
-    if (typeof dateValue === 'number') {
-      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
-    }
-
-    if (typeof dateValue === 'string') {
-      const trimmedValue = dateValue.trim();
-      const numericValue = Number(trimmedValue);
-
-      if (!Number.isNaN(numericValue)) {
-        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
-      }
-
-      const timestamp = new Date(trimmedValue).getTime();
-      return isNaN(timestamp) ? 0 : timestamp;
-    }
-
-    return 0;
   }
 
   private updateCountdown(): void {

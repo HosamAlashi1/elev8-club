@@ -12,9 +12,9 @@ export class ExitIntentOfferComponent implements OnInit, OnDestroy {
   isVisible = false;
 
   private readonly storageKey = 'elev8_exit_intent_offer_seen_v2';
-  private readonly exitDwellMs = 45000;
-  private readonly engagedDwellMs = 45000;
-  private readonly passiveDwellMs = 45000;
+  private readonly exitDwellMs = 90000;
+  private readonly engagedDwellMs = 90000;
+  private readonly passiveDwellMs = 90000;
   private readonly mobileIdleMs = 14000;
   private enteredAt = Date.now();
   private lastScrollY = 0;
@@ -35,7 +35,7 @@ export class ExitIntentOfferComponent implements OnInit, OnDestroy {
     this.attachListeners();
     this.resetIdleTimer();
     this.passiveTimeout = setTimeout(() => {
-      if (this.maxScrollProgress >= 0.18 && this.canShowAfter(this.passiveDwellMs, 0.18)) {
+      if (this.canShowAfter(this.passiveDwellMs, 0)) {
         this.show();
       }
     }, this.passiveDwellMs);

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { FirebaseService } from 'src/app/modules/services/firebase.service';
+import { LandingSettingsService } from 'src/app/modules/services/landing-settings.service';
 
 type TrustStory = {
   title: string;
@@ -27,15 +27,13 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
 
   stories: TrustStory[] = this.buildStories();
 
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(private readonly landingSettings: LandingSettingsService) {}
 
   ngOnInit(): void {
-    this.firebaseService
-      .getObject('settings')
+    this.landingSettings
+      .getStartCounterDate()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((settings: any) => {
-        const startDate = this.parseDate(settings?.start_counter_date);
-
+      .subscribe((startDate: number) => {
         if (!startDate) {
           return;
         }
@@ -118,28 +116,6 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
       mediaKind: 'plain'
     }
     ];
-  }
-
-  private parseDate(dateValue: any): number {
-    if (!dateValue) return 0;
-
-    if (typeof dateValue === 'number') {
-      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
-    }
-
-    if (typeof dateValue === 'string') {
-      const trimmedValue = dateValue.trim();
-      const numericValue = Number(trimmedValue);
-
-      if (!Number.isNaN(numericValue)) {
-        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
-      }
-
-      const timestamp = new Date(trimmedValue).getTime();
-      return isNaN(timestamp) ? 0 : timestamp;
-    }
-
-    return 0;
   }
 
   private formatShortDate(timestamp: number): string {

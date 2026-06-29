@@ -186,7 +186,7 @@
   overflow: hidden;
 }
 
-.faq--anima .faq-answer p {
+.faq--anima .faq-answer-copy {
   margin: 0;
   padding: 23px 31px 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -273,7 +273,7 @@
     font-size: 16px;
   }
 
-  .faq--anima .faq-answer p {
+  .faq--anima .faq-answer-copy {
     padding: 18px 18px 22px;
     font-size: 14.5px;
     line-height: 1.75;

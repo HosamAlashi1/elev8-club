@@ -147,6 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // حالة فتح/إغلاق الـ modal
   isRegistrationPopupOpen = false;
+  isLegalDisclaimerOpen = false;
 
   // فتح نافذة التسجيل (Base Method)
   private openRegistrationPopup = (source: string = 'unknown') => {
@@ -181,6 +182,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   closeRegistrationPopup = () => {
     this.isRegistrationPopupOpen = false;
     this.cd.detectChanges();
+  }
+
+  openLegalDisclaimer(): void {
+    this.isLegalDisclaimerOpen = true;
+  }
+
+  closeLegalDisclaimer(): void {
+    this.isLegalDisclaimerOpen = false;
   }
 
   ngOnDestroy(): void {

@@ -3,19 +3,10 @@
   background: #05050a;
 }
 
-.footer-warning {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
 .site-footer {
   position: relative;
   overflow: visible;
-  padding: 118px clamp(22px, 6.2vw, 102px) 0;
+  padding: 118px clamp(22px, 6.2vw, 102px) 26px;
   background: #05050a;
   color: #ffffff;
   direction: rtl;
@@ -30,7 +21,8 @@
   grid-template-columns: minmax(330px, 392px) 1fr;
   grid-template-areas:
     "actions head"
-    "copy    head";
+    "copy    head"
+    "legal   legal";
   align-items: center;
   column-gap: 46px;
   row-gap: 18px;
@@ -157,6 +149,132 @@
   direction: ltr;
 }
 
+.footer-legal {
+  grid-area: legal;
+  padding-top: 4px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: "Doran", "IBM Plex Sans Arabic", "Tajawal", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.footer-legal__button {
+  min-height: 46px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(2, 8, 28, 0.18);
+  color: rgba(255, 255, 255, 0.86);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.footer-legal__button:hover {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(2, 8, 28, 0.26);
+}
+
+.footer-legal__button span {
+  display: inline;
+  margin: 0;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+.footer-legal__button small {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.footer-legal-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 5, 10, 0.74);
+  backdrop-filter: blur(8px);
+}
+
+.footer-legal-modal__panel {
+  position: relative;
+  width: min(860px, calc(100vw - 32px));
+  max-height: min(620px, calc(100svh - 80px));
+  padding: 26px 28px 28px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: #090a10;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: "Doran", "IBM Plex Sans Arabic", "Tajawal", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.75;
+  text-align: left;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+}
+
+.footer-legal-modal__close {
+  position: sticky;
+  top: 0;
+  float: right;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  margin: -6px -6px 8px 14px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.footer-legal-modal__close:hover {
+  background: rgba(255, 255, 255, 0.11);
+  color: #fff;
+}
+
+.footer-legal__body h3 {
+  margin: 0 42px 12px 0;
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.footer-legal__copyright {
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 700;
+}
+
+.footer-legal__body p {
+  margin: 0;
+}
+
+.footer-legal__body p + p {
+  margin-top: 7px;
+}
+
+.footer-legal__body strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
 .footer-visual {
   grid-area: visual;
   position: absolute;
@@ -240,10 +358,16 @@
 
 @media (max-width: 768px) {
   .site-footer {
-    padding: 48px 16px 0;
+    padding: 48px 16px 24px;
   }
 
   .footer-inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "actions"
+      "copy"
+      "legal";
     padding: 36px 24px 32px;
     border-radius: 22px 22px 0 0;
   }
@@ -287,6 +411,42 @@
   .footer-copyright {
     font-size: 13px;
     text-align: center;
+  }
+
+  .footer-legal {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .footer-legal__button {
+    min-height: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 11px 14px;
+  }
+
+  .footer-legal__button small {
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .footer-legal-modal {
+    padding: 14px;
+  }
+
+  .footer-legal-modal__panel {
+    width: calc(100vw - 28px);
+    max-height: calc(100svh - 64px);
+    padding: 18px 16px 20px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .footer-legal__body h3 {
+    margin-right: 36px;
+    font-size: 16px;
   }
 }
 

@@ -15,6 +15,7 @@ export class FooterComponent {
   @Input() pinterest: string = '#';
   @Input() tiktok: string = '#';
   currentYear: number = new Date().getFullYear();
+  isLegalDisclaimerOpen = false;
 
   scrollTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -26,5 +27,13 @@ export class FooterComponent {
 
   isValidLink(link: string): boolean {
     return !!(link && link.trim() !== '' && link !== '#');
+  }
+
+  openLegalDisclaimer(): void {
+    this.isLegalDisclaimerOpen = true;
+  }
+
+  closeLegalDisclaimer(): void {
+    this.isLegalDisclaimerOpen = false;
   }
 }

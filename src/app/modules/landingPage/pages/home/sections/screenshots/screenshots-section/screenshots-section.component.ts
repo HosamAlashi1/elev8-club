@@ -7,7 +7,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { FirebaseService } from 'src/app/modules/services/firebase.service';
+import { LandingSettingsService } from 'src/app/modules/services/landing-settings.service';
 
 type SlideState = {
   src: string;
@@ -40,6 +40,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
    * يفضّل 7 صور أو أكثر حتى يصير الـ wrap خلف الكواليس بدون قفزة.
    */
   readonly slides: string[] = [
+    'assets/images/screenshots/elev8-screenshot-11.webp',
     'assets/images/screenshots/elev8-screenshot-01.webp',
     'assets/images/screenshots/elev8-screenshot-02.webp',
     'assets/images/screenshots/elev8-screenshot-03.webp',
@@ -50,7 +51,6 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     'assets/images/screenshots/elev8-screenshot-08.webp',
     'assets/images/screenshots/elev8-screenshot-09.webp',
     'assets/images/screenshots/elev8-screenshot-10.webp',
-    'assets/images/screenshots/elev8-screenshot-11.webp',
     'assets/images/screenshots/elev8-screenshot-12.webp',
     'assets/images/screenshots/elev8-screenshot-13.webp',
     'assets/images/screenshots/elev8-screenshot-14.webp',
@@ -69,7 +69,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly cdr: ChangeDetectorRef,
-    private readonly firebaseService: FirebaseService
+    private readonly landingSettings: LandingSettingsService
   ) {
     this.updateSlideStates();
     this.preloadNearbySlides(1);
@@ -89,12 +89,10 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
   }
 
   private loadChallengeDate(): void {
-    this.firebaseService
-      .getObject('settings')
+    this.landingSettings
+      .getStartCounterDate()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((settings: any) => {
-        const startDate = this.parseDate(settings?.start_counter_date);
-
+      .subscribe((startDate: number) => {
         if (!startDate) {
           return;
         }
@@ -102,28 +100,6 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
         this.challengeDateLabel = this.formatShortDate(startDate);
         this.cdr.markForCheck();
       });
-  }
-
-  private parseDate(dateValue: any): number {
-    if (!dateValue) return 0;
-
-    if (typeof dateValue === 'number') {
-      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
-    }
-
-    if (typeof dateValue === 'string') {
-      const trimmedValue = dateValue.trim();
-      const numericValue = Number(trimmedValue);
-
-      if (!Number.isNaN(numericValue)) {
-        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
-      }
-
-      const timestamp = new Date(trimmedValue).getTime();
-      return isNaN(timestamp) ? 0 : timestamp;
-    }
-
-    return 0;
   }
 
   private formatShortDate(timestamp: number): string {

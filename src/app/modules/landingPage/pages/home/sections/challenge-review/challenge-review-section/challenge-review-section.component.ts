@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { FirebaseService } from 'src/app/modules/services/firebase.service';
+import { LandingSettingsService } from 'src/app/modules/services/landing-settings.service';
 
 @Component({
   selector: 'app-challenge-review-section',
@@ -15,15 +15,13 @@ export class ChallengeReviewSectionComponent implements OnInit, OnDestroy {
 
   reviewItems = this.buildReviewItems();
 
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(private readonly landingSettings: LandingSettingsService) {}
 
   ngOnInit(): void {
-    this.firebaseService
-      .getObject('settings')
+    this.landingSettings
+      .getStartCounterDate()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((settings: any) => {
-        const startDate = this.parseDate(settings?.start_counter_date);
-
+      .subscribe((startDate: number) => {
         if (!startDate) {
           return;
         }
@@ -61,28 +59,6 @@ export class ChallengeReviewSectionComponent implements OnInit, OnDestroy {
       text: 'لأن الذكاء الاصطناعي خلق فرصة جديدة بالكامل أصبح المبتدئين قادرين يبنوا دخل أونلاين ممكن يغير حياتهم بالكامل',
     }
     ];
-  }
-
-  private parseDate(dateValue: any): number {
-    if (!dateValue) return 0;
-
-    if (typeof dateValue === 'number') {
-      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
-    }
-
-    if (typeof dateValue === 'string') {
-      const trimmedValue = dateValue.trim();
-      const numericValue = Number(trimmedValue);
-
-      if (!Number.isNaN(numericValue)) {
-        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
-      }
-
-      const timestamp = new Date(trimmedValue).getTime();
-      return isNaN(timestamp) ? 0 : timestamp;
-    }
-
-    return 0;
   }
 
   private formatChallengeDateTime(timestamp: number): string {

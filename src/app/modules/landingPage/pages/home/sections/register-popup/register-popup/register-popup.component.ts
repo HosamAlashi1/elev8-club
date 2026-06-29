@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef }
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../../../../../services/firebase.service';
+import { LandingSettingsService } from '../../../../../../services/landing-settings.service';
 import { GtmService } from '../../../../../../services/gtm.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
 
@@ -172,6 +173,7 @@ export class RegisterPopupComponent implements OnInit {
 
   constructor(
     private firebaseService: FirebaseService,
+    private landingSettings: LandingSettingsService,
     private router: Router,
     private route: ActivatedRoute,
     private gtm: GtmService
@@ -203,9 +205,9 @@ export class RegisterPopupComponent implements OnInit {
   }
 
   private loadTrainingDate(): void {
-    this.firebaseService.getObject('settings').subscribe({
-      next: (settings: any) => {
-        this.startCounterDate = this.parseDate(settings?.start_counter_date);
+    this.landingSettings.getStartCounterDate().subscribe({
+      next: (startDate: number) => {
+        this.startCounterDate = startDate;
       },
       error: (err) => {
         console.error('Error loading registration training date:', err);
@@ -228,28 +230,6 @@ export class RegisterPopupComponent implements OnInit {
     const minuteLabel = minutes ? `:${minutes.toString().padStart(2, '0')}` : '';
 
     return `${weekday} ${day}-${month} / الساعة ${hour12}${minuteLabel} ${period}`;
-  }
-
-  private parseDate(dateValue: any): number {
-    if (!dateValue) return 0;
-
-    if (typeof dateValue === 'number') {
-      return dateValue < 10000000000 ? dateValue * 1000 : dateValue;
-    }
-
-    if (typeof dateValue === 'string') {
-      const trimmedValue = dateValue.trim();
-      const numericValue = Number(trimmedValue);
-
-      if (!Number.isNaN(numericValue)) {
-        return numericValue < 10000000000 ? numericValue * 1000 : numericValue;
-      }
-
-      const timestamp = new Date(trimmedValue).getTime();
-      return isNaN(timestamp) ? 0 : timestamp;
-    }
-
-    return 0;
   }
 
   private loadCountryCodes(): void {

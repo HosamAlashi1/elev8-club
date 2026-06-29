@@ -5,6 +5,19 @@
   <meta charset="utf-8" />
   <title>Elev8 Club</title>
   <base href="/" />
+  <meta name="description" content="تحدي Elev8 Club المجاني لمساعدتك تبدأ دخل أونلاين من التداول بخطوات بسيطة وواضحة، بدون خبرة مسبقة." />
+  <meta name="theme-color" content="#004eee" />
+  <meta name="apple-mobile-web-app-title" content="Elev8 Club" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Elev8 Club" />
+  <meta property="og:title" content="Elev8 Club Challenge 0.3" />
+  <meta property="og:description" content="احجز مقعدك مجاناً في تحدي Elev8 Club وتعلّم كيف تبدأ دخل أونلاين من التداول بخطوات بسيطة وواضحة." />
+  <meta property="og:url" content="https://www.elev8club.com/" />
+  <meta property="og:image" content="https://www.elev8club.com/assets/images/canva/elev8-instagram.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Elev8 Club Challenge 0.3" />
+  <meta name="twitter:description" content="احجز مقعدك مجاناً في تحدي Elev8 Club وتعلّم كيف تبدأ دخل أونلاين من التداول بخطوات بسيطة وواضحة." />
+  <meta name="twitter:image" content="https://www.elev8club.com/assets/images/canva/elev8-instagram.jpg" />
 
   <meta
     name="viewport"
@@ -72,18 +85,6 @@
       display: none;
     }
 
-    #lottie-loader[data-slow="true"]::before {
-      content: "التحميل أخذ وقت أكثر من المعتاد. حدّث الصفحة إذا استمر.";
-      position: absolute;
-      bottom: calc(50% - 180px);
-      width: min(86vw, 420px);
-      color: #334155;
-      font-family: "Tajawal", Arial, sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
     @keyframes index-loader-spin {
       to {
         transform: rotate(360deg);
@@ -145,10 +146,6 @@
         });
       };
 
-      window.setTimeout(function () {
-        var activeLoader = document.getElementById('lottie-loader');
-        if (activeLoader) activeLoader.setAttribute('data-slow', 'true');
-      }, 12000);
     })();
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/lottie-web/build/player/lottie.min.js"

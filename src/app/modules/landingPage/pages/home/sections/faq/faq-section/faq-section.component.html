@@ -18,10 +18,11 @@
     <h2 id="faq-heading">الأسئلة الشائعة</h2>
   </div>
 
-  <div class="faq-list">
-    <article
+  <div class="faq-list" role="list">
+    <div
       *ngFor="let faq of faqs; let i = index"
       class="faq-item"
+      role="listitem"
       [class.is-open]="faq.open"
       data-aos="fade-up"
       [attr.data-aos-delay]="110 + i * 55"
@@ -39,9 +40,9 @@
 
       <div class="faq-answer" [id]="'faq-answer-' + i">
         <div class="faq-answer-inner">
-          <p>{{ faq.answer }}</p>
+          <div class="faq-answer-copy" aria-live="polite">{{ faq.answer }}</div>
         </div>
       </div>
-    </article>
+    </div>
   </div>
 </section>
