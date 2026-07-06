@@ -41,8 +41,10 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
   private animationTimer?: ReturnType<typeof setTimeout>;
   private warmupTimer?: ReturnType<typeof setTimeout>;
   private playbackFallbackTimer?: ReturnType<typeof setTimeout>;
+  private autoSlideTimer?: ReturnType<typeof setTimeout>;
   private pendingPlayToken = 0;
   private loadedVideoSource = '';
+  private readonly autoSlideDelayMs = 6500;
   private readonly proofAvatars = [
     'assets/images/anima-home/proof-avatar-1.webp',
     'assets/images/anima-home/proof-avatar-2.webp',
@@ -121,6 +123,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
   ngAfterViewInit(): void {
     this.setupVideo();
+    this.scheduleAutoSlide();
   }
 
   ngOnDestroy(): void {
@@ -131,15 +134,16 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     if (this.warmupTimer) {
       clearTimeout(this.warmupTimer);
     }
+    this.clearAutoSlideTimer();
     this.clearPlaybackFallbackTimer();
   }
 
   nextSlide(): void {
-    this.goToSlide(this.activeIndex + 1, 'next');
+    this.goToSlide(this.activeIndex + 1, 'next', true);
   }
 
   prevSlide(): void {
-    this.goToSlide(this.activeIndex - 1, 'prev');
+    this.goToSlide(this.activeIndex - 1, 'prev', true);
   }
 
   toggleVideo(): void {
@@ -150,6 +154,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
     if (this.isVideoPlaying) {
       this.pauseVideo(false);
+      this.scheduleAutoSlide();
       return;
     }
 
@@ -170,7 +175,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     return index;
   }
 
-  private goToSlide(index: number, direction: SlideDirection): void {
+  private goToSlide(index: number, direction: SlideDirection, resetAutoSlide = false): void {
     if (this.isAnimating) {
       return;
     }
@@ -199,6 +204,10 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     this.warmupTimer = setTimeout(() => {
       this.warmActiveVideo();
     }, 580);
+
+    if (resetAutoSlide) {
+      this.scheduleAutoSlide();
+    }
   }
 
   private setupVideo(): void {
@@ -218,6 +227,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
       this.showNativeVideoControls = false;
       video.controls = false;
       video.currentTime = 0;
+      this.scheduleAutoSlide();
       this.cdr.markForCheck();
     };
     this.warmActiveVideo();
@@ -253,6 +263,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     this.showNativeVideoControls = false;
     this.loadedVideoSource = '';
     this.clearPlaybackFallbackTimer();
+    this.scheduleAutoSlide();
     this.cdr.markForCheck();
   }
 
@@ -275,6 +286,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
 
     const token = ++this.pendingPlayToken;
     const shouldUseNativeControls = this.isTouchPlaybackDevice();
+    this.clearAutoSlideTimer();
     this.isVideoPreparing = true;
     this.showNativeVideoControls = false;
     video.controls = false;
@@ -308,6 +320,7 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
             this.isVideoPlaying = false;
             this.isVideoPreparing = false;
             this.clearPlaybackFallbackTimer();
+            this.scheduleAutoSlide();
             this.cdr.markForCheck();
           }
         }
@@ -373,6 +386,35 @@ export class VideoTestimonialsSectionComponent implements AfterViewInit, OnDestr
     this.showNativeVideoControls = true;
     this.isVideoPreparing = false;
     this.cdr.markForCheck();
+  }
+
+  private scheduleAutoSlide(): void {
+    this.clearAutoSlideTimer();
+
+    if (this.slides.length < 2) {
+      return;
+    }
+
+    this.autoSlideTimer = setTimeout(() => {
+      this.advanceAutomatically();
+    }, this.autoSlideDelayMs);
+  }
+
+  private advanceAutomatically(): void {
+    if (this.isAnimating || this.isVideoPlaying || this.isVideoPreparing || this.showNativeVideoControls) {
+      this.scheduleAutoSlide();
+      return;
+    }
+
+    this.goToSlide(this.activeIndex + 1, 'next');
+    this.scheduleAutoSlide();
+  }
+
+  private clearAutoSlideTimer(): void {
+    if (this.autoSlideTimer) {
+      clearTimeout(this.autoSlideTimer);
+      this.autoSlideTimer = undefined;
+    }
   }
 
   private clearPlaybackFallbackTimer(): void {

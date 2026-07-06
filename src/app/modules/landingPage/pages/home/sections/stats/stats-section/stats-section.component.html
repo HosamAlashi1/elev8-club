@@ -1,4 +1,10 @@
-<section class="stats-section" dir="rtl" lang="ar" aria-labelledby="stats-heading">
+<section
+  class="stats-section"
+  [class.stats-section--active]="isStatsActive"
+  [class.stats-section--counting]="isCounting"
+  dir="rtl"
+  lang="ar"
+  aria-labelledby="stats-heading">
   <div class="stats-section__bg" aria-hidden="true"></div>
 
   <div class="stats-section__shell">
@@ -11,12 +17,12 @@
 
       <div class="stats-section__metric stats-section__metric--students">
         <span>عدد الطلاب الناجحين</span>
-        <span class="strong">{{ formattedStudents }}</span>
+        <bdi class="strong" dir="ltr" [attr.aria-label]="formattedStudents">{{ formattedStudents }}</bdi>
       </div>
 
       <div class="stats-section__metric stats-section__metric--profits">
         <span>أرباح طلابنا</span>
-        <span class="strong">{{ formattedProfits }}</span>
+        <bdi class="strong" dir="ltr" [attr.aria-label]="formattedProfits">{{ formattedProfits }}</bdi>
       </div>
 
       <div class="stats-section__metric stats-section__metric--countries">

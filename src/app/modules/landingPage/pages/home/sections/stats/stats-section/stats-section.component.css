@@ -135,14 +135,34 @@
 }
 
 .stats-section__metric .strong {
+  position: relative;
+  display: inline-block;
+  min-width: 3.2ch;
   color: var(--gold);
   font-family: var(--font-high-extra);
   font-size: 40px;
   font-weight: 800;
   line-height: 91px;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
   text-shadow: 0 0 100px rgba(255, 255, 255, 0.5);
   -webkit-text-stroke: 1px #fff38a;
   paint-order: stroke fill;
+  transform-origin: center;
+  will-change: transform, filter;
+}
+
+.stats-section__metric--profits .strong {
+  min-width: 4.8ch;
+}
+
+.stats-section--counting .stats-section__metric .strong {
+  animation: stats-number-count 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stats-section--active .stats-section__metric .strong {
+  filter: drop-shadow(0 0 14px rgba(253, 242, 142, 0.54));
 }
 
 .stats-section__metric--students {
@@ -208,6 +228,20 @@
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
+  }
+}
+
+@keyframes stats-number-count {
+  0% {
+    transform: translateY(8px) scale(0.92);
+  }
+
+  60% {
+    transform: translateY(-2px) scale(1.045);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -1170,6 +1204,7 @@
   .stats-section__motion-bars i,
   .stats-section__pill--main,
   .stats-section__icon,
+  .stats-section__metric .strong,
   .stats-section__button::after {
     animation: none;
   }

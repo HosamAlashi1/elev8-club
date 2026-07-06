@@ -30,6 +30,8 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
   challengeDateLabel = 'قريباً';
 
   private animationTimer?: ReturnType<typeof setTimeout>;
+  private autoSlideTimer?: ReturnType<typeof setTimeout>;
+  private readonly autoSlideDelayMs = 4000;
   private readonly preloadedImages: HTMLImageElement[] = [];
   private readonly preloadedImageSources = new Set<string>();
   private readonly destroy$ = new Subject<void>();
@@ -77,6 +79,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadChallengeDate();
+    this.scheduleAutoSlide();
   }
 
   ngOnDestroy(): void {
@@ -86,6 +89,7 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     if (this.animationTimer) {
       clearTimeout(this.animationTimer);
     }
+    this.clearAutoSlideTimer();
   }
 
   private loadChallengeDate(): void {
@@ -134,11 +138,11 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
   }
 
   nextSlide(): void {
-    this.go(1, 'next');
+    this.go(1, 'next', true);
   }
 
   prevSlide(): void {
-    this.go(-1, 'prev');
+    this.go(-1, 'prev', true);
   }
 
   trackBySlideSrc(_index: number, slide: SlideState): string {
@@ -151,20 +155,23 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     }
 
     this.selectedImage = slide.src;
+    this.clearAutoSlideTimer();
   }
 
   closeImagePreview(): void {
     this.selectedImage = null;
+    this.scheduleAutoSlide();
     this.cdr.markForCheck();
   }
 
-  private go(step: number, direction: 'next' | 'prev'): void {
+  private go(step: number, direction: 'next' | 'prev', resetAutoSlide = false): void {
     this.slideDirection = direction;
     this.activeIndex =
       (this.activeIndex + step + this.slides.length) % this.slides.length;
     this.updateSlideStates();
     this.preloadNearbySlides(2);
     this.isAnimating = true;
+    this.cdr.markForCheck();
 
     if (this.animationTimer) {
       clearTimeout(this.animationTimer);
@@ -173,6 +180,10 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
       this.isAnimating = false;
       this.cdr.markForCheck();
     }, 520);
+
+    if (resetAutoSlide) {
+      this.scheduleAutoSlide();
+    }
   }
 
   private updateSlideStates(): void {
@@ -221,5 +232,34 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
     }
 
     setTimeout(load, 700);
+  }
+
+  private scheduleAutoSlide(): void {
+    this.clearAutoSlideTimer();
+
+    if (this.slides.length < 2) {
+      return;
+    }
+
+    this.autoSlideTimer = setTimeout(() => {
+      this.advanceAutomatically();
+    }, this.autoSlideDelayMs);
+  }
+
+  private advanceAutomatically(): void {
+    if (this.isAnimating || this.selectedImage) {
+      this.scheduleAutoSlide();
+      return;
+    }
+
+    this.go(1, 'next');
+    this.scheduleAutoSlide();
+  }
+
+  private clearAutoSlideTimer(): void {
+    if (this.autoSlideTimer) {
+      clearTimeout(this.autoSlideTimer);
+      this.autoSlideTimer = undefined;
+    }
   }
 }

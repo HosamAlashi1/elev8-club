@@ -6,7 +6,7 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  min-height: 762px;
+  /* min-height: 762px; */
   padding: 0 clamp(18px, 5vw, 92px) 60px;
   overflow: visible;
   background: transparent;
@@ -93,17 +93,68 @@
 .learn-grid {
   position: relative;
   z-index: 2;
-  width: min(100%, 1622px);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: max-content;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
   gap: 30px;
   direction: rtl;
+  will-change: transform;
+}
+
+.learn-scroll-viewport {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1622px);
+  margin: 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  direction: rtl;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.learn-scroll-viewport::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* .learn-scroll-viewport::before,
+.learn-scroll-viewport::after {
+  content: "";
+  position: absolute;
+  inset-block: 8px;
+  z-index: 4;
+  width: clamp(42px, 5vw, 86px);
+  pointer-events: none;
+  opacity: 0.92;
+} */
+
+.learn-scroll-viewport::before {
+  right: 0;
+  background:
+    radial-gradient(ellipse at right, rgba(0, 108, 255, 0.16), transparent 62%),
+    linear-gradient(90deg, transparent 0%, rgba(5, 12, 28, 0.82) 100%);
+}
+
+.learn-scroll-viewport::after {
+  left: 0;
+  background:
+    radial-gradient(ellipse at left, rgba(0, 108, 255, 0.16), transparent 62%),
+    linear-gradient(270deg, transparent 0%, rgba(5, 12, 28, 0.82) 100%);
 }
 
 .learn-card-aos {
+  flex: 0 0 clamp(360px, 31vw, 520px);
   min-width: 0;
   height: 100%;
+  display: flex;
+  scroll-snap-align: start;
   will-change: transform, opacity;
 }
 
@@ -116,6 +167,7 @@
   justify-content: flex-start;
   gap: 22px;
   height: 100%;
+  width: 100%;
   min-height: 244px;
   padding: 34px 50px 34px 50px;
   overflow: hidden;
@@ -375,7 +427,7 @@
     text-align: center;
   }
 
-  .learn-grid {
+  .learn-scroll-viewport {
     width: min(100%, 1180px);
     margin-top: 48px;
   }
@@ -391,8 +443,8 @@
 }
 
 @media (max-width: 1100px) {
-  .learn-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .learn-card-aos {
+    flex-basis: clamp(340px, 44vw, 460px);
   }
 }
 
@@ -412,11 +464,27 @@
     line-height: 1.35;
   }
 
-  .learn-grid {
+  .learn-scroll-viewport {
     width: min(100%, 345px);
     margin-top: 34px;
-    grid-template-columns: 1fr;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .learn-scroll-viewport::before,
+  .learn-scroll-viewport::after {
+    content: none;
+  }
+
+  .learn-grid {
+    width: max-content;
+    display: flex;
+    flex-direction: row;
     gap: 16px;
+  }
+
+  .learn-card-aos {
+    flex: 0 0 min(100%, 345px);
   }
 
   .learn-card {

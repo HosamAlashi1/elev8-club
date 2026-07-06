@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-stats-section',
@@ -8,8 +8,15 @@ import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 export class StatsSectionComponent implements OnInit, OnDestroy {
   @Input() onOpenRegistration!: () => void;
 
+  private readonly studentsTarget = 50;
+  private readonly profitsTarget = 600;
+  private readonly animationDuration = 1800;
+  private readonly profitsDelay = 120;
+
   studentsCount = 0;
   profitsCount = 0;
+  isStatsActive = false;
+  isCounting = false;
 
   flags = [
     { code: 'sa', name: 'السعودية' },
@@ -35,51 +42,124 @@ export class StatsSectionComponent implements OnInit, OnDestroy {
   private observer!: IntersectionObserver;
   private animationDone = false;
   private flagInterval!: ReturnType<typeof setInterval>;
+  private flagTimeout?: ReturnType<typeof setTimeout>;
+  private animationInterval?: ReturnType<typeof setInterval>;
 
-  constructor(private el: ElementRef) {}
+  constructor(
+    private el: ElementRef,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
+    if (!('IntersectionObserver' in window)) {
+      this.startStatsAnimation();
+      return;
+    }
+
     this.observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !this.animationDone) {
-        this.animationDone = true;
-        this.animateCounter(50000, 2200, (v) => this.studentsCount = v);
-        this.animateCounter(600000, 2200, (v) => this.profitsCount = v);
-        this.flagInterval = setInterval(() => {
-          this.flagVisible = false;
-          setTimeout(() => {
-            this.currentFlagIndex = (this.currentFlagIndex + 1) % this.flags.length;
-            this.flagVisible = true;
-          }, 60);
-        }, 1800);
+        this.ngZone.run(() => this.startStatsAnimation());
       }
-    }, { threshold: 0.3 });
+    }, { threshold: 0.35, rootMargin: '0px 0px -12% 0px' });
+
     this.observer.observe(this.el.nativeElement);
   }
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
     clearInterval(this.flagInterval);
+    if (this.flagTimeout) {
+      clearTimeout(this.flagTimeout);
+    }
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+    }
   }
 
   get formattedStudents(): string {
-    const k = Math.round(this.studentsCount / 1000);
-    return k + 'K';
+    return this.studentsCount + 'K';
   }
 
   get formattedProfits(): string {
-    const k = Math.round(this.profitsCount / 1000);
-    return k + 'K$';
+    return '$' + this.profitsCount + 'K';
   }
 
-  private animateCounter(target: number, duration: number, setter: (v: number) => void): void {
-    const start = performance.now();
-    const tick = (now: number) => {
-      const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setter(Math.round(eased * target));
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+  private startStatsAnimation(): void {
+    if (this.animationDone) return;
+
+    this.animationDone = true;
+    this.isStatsActive = true;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.studentsCount = this.studentsTarget;
+      this.profitsCount = this.profitsTarget;
+      this.startFlagRotation();
+      return;
+    }
+
+    this.isCounting = true;
+    this.animateCounters();
+    this.startFlagRotation();
+  }
+
+  private animateCounters(): void {
+    const startedAt = performance.now();
+    let lastStudents = -1;
+    let lastProfits = -1;
+
+    this.ngZone.runOutsideAngular(() => {
+      this.animationInterval = setInterval(() => {
+        const now = performance.now();
+        const studentsProgress = this.clamp((now - startedAt) / this.animationDuration);
+        const profitsProgress = this.clamp((now - startedAt - this.profitsDelay) / this.animationDuration);
+
+        const nextStudents = Math.round(this.easeOutCubic(studentsProgress) * this.studentsTarget);
+        const nextProfits = Math.round(this.easeOutCubic(profitsProgress) * this.profitsTarget);
+
+        if (nextStudents !== lastStudents || nextProfits !== lastProfits) {
+          lastStudents = nextStudents;
+          lastProfits = nextProfits;
+          this.studentsCount = nextStudents;
+          this.profitsCount = nextProfits;
+          this.cdr.detectChanges();
+        }
+
+        if (studentsProgress >= 1 && profitsProgress >= 1) {
+          if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+            this.animationInterval = undefined;
+          }
+
+          this.ngZone.run(() => {
+            this.studentsCount = this.studentsTarget;
+            this.profitsCount = this.profitsTarget;
+            this.isCounting = false;
+            this.cdr.detectChanges();
+          });
+        }
+      }, 33);
+    });
+  }
+
+  private startFlagRotation(): void {
+    if (this.flagInterval) return;
+
+    this.flagInterval = setInterval(() => {
+      this.flagVisible = false;
+      this.flagTimeout = setTimeout(() => {
+        this.currentFlagIndex = (this.currentFlagIndex + 1) % this.flags.length;
+        this.flagVisible = true;
+      }, 90);
+    }, 1700);
+  }
+
+  private easeOutCubic(value: number): number {
+    return 1 - Math.pow(1 - value, 3);
+  }
+
+  private clamp(value: number): number {
+    return Math.min(Math.max(value, 0), 1);
   }
 
   openRegistration(): void {
