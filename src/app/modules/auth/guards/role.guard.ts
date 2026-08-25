@@ -20,7 +20,7 @@ export class RoleGuard implements CanActivate {
       return false;
     }
 
-    const userRole = sessionData.role || 'admin';
+    const userRole = sessionData.role || '';
     const allowedRoles: string[] = route.data['roles'] || ['admin'];
 
     if (allowedRoles.includes(userRole)) {

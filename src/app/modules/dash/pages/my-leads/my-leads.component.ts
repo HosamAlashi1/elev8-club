@@ -4,7 +4,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
 import { PublicService } from '../../../services/public.service';
 import { ToastrsService } from '../../../services/toater.service';
-import { Lead, AFFILIATE_STATUS_LABELS, AffiliateStatus, Affiliate } from '../../../../core/models';
+import {
+  Lead, AFFILIATE_STATUS_LABELS, AffiliateStatus, Affiliate,
+  SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus
+} from '../../../../core/models';
 import { ViewAffiliateLeadComponent } from './view-affiliate-lead/view-affiliate-lead.component';
 import { SelectOption } from '../../shared/modern-select/modern-select.component';
 
@@ -28,6 +31,8 @@ export class MyLeadsComponent implements OnInit {
   totalCount = 0;
 
   isAdmin = false;
+  isAccountManager = false;
+  isAffiliate = false;
   selectedAffiliateFilter = FILTER_WITH_AFFILIATE;
   affiliateOptions: SelectOption[] = [];
   affiliateMap: Record<string, string> = {};
@@ -41,6 +46,9 @@ export class MyLeadsComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.publicService.isAdmin();
+    this.isAccountManager = this.publicService.isAccountManager();
+    this.isAffiliate = this.publicService.isAffiliate();
+    if (this.isAccountManager) this.selectedAffiliateFilter = FILTER_ALL;
     this.loadLeads();
   }
 
@@ -48,8 +56,34 @@ export class MyLeadsComponent implements OnInit {
     if (this.isAdmin) {
       this.loadAdminLeads();
     } else {
-      this.loadAffiliateLeads();
+      this.isAffiliate ? this.loadAffiliateLeads() : this.loadAccountManagerLeads();
     }
+  }
+
+  private loadAccountManagerLeads(): void {
+    const accountManagerKey = this.publicService.getCurrentUserUid();
+    if (!accountManagerKey) { this.isLoading$.next(false); return; }
+    this.isLoading$.next(true);
+    this.firebaseService.getCurrentVersion().subscribe(version => {
+      if (!version) { this.isLoading$.next(false); return; }
+      this.firebaseService.getAffiliatesByAccountManager(accountManagerKey).subscribe(affiliates => {
+        this.buildAffiliateOptions(affiliates);
+        const affiliateKeys = new Set(affiliates.map(affiliate => affiliate.key));
+        this.firebaseService.getClosedLeadsByVersion(version.key).subscribe({
+          next: leads => {
+            this.allLeads = leads
+              .filter(lead => !!lead.affiliateKey && affiliateKeys.has(lead.affiliateKey))
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            this.applyFilters();
+            this.isLoading$.next(false);
+          },
+          error: () => {
+            this.toastr.showError('Failed to load leads');
+            this.isLoading$.next(false);
+          }
+        });
+      });
+    });
   }
 
   private loadAffiliateLeads(): void {
@@ -114,7 +148,7 @@ export class MyLeadsComponent implements OnInit {
   applyFilters(): void {
     let result = [...this.allLeads];
 
-    if (this.isAdmin) {
+    if (this.isAdmin || this.isAccountManager) {
       if (this.selectedAffiliateFilter === FILTER_WITH_AFFILIATE) {
         result = result.filter(l => !l.affiliateKey);
       } else if (this.selectedAffiliateFilter !== FILTER_ALL) {
@@ -151,9 +185,29 @@ export class MyLeadsComponent implements OnInit {
     return AFFILIATE_STATUS_LABELS[(status as AffiliateStatus)] || 'Renewal Follow-up';
   }
 
+  getSalesStatusLabel(lead: Lead): string {
+    const label = SALES_STATUS_LABELS[(lead.sales_status as SalesStatus)] || 'New';
+    return lead.sales_status === 'closed' && lead.sales_package
+      ? `${label} - ${SALES_PACKAGE_LABELS[lead.sales_package]}`
+      : label;
+  }
+
+  getRenewalStatusLabel(lead: Lead): string {
+    const status = lead.renewal_status || lead.affiliate_status || 'renewal_followup';
+    const label = this.getAffiliateStatusLabel(status);
+    return status === 'renewed' && lead.renewal_package
+      ? `${label} - ${SALES_PACKAGE_LABELS[lead.renewal_package]}`
+      : label;
+  }
+
+  getRenewalCount(lead: Lead): number {
+    return lead.renewal_count ?? (lead.affiliate_status === 'renewed' ? 1 : 0);
+  }
+
   getAffiliateStatusClass(status?: string): string {
     const map: Record<string, string> = {
       renewal_followup: 'pill-warning',
+      renew_later: 'pill-info',
       renewed: 'pill-success',
       not_renewed: 'pill-danger'
     };
@@ -175,6 +229,7 @@ export class MyLeadsComponent implements OnInit {
       centered: true, size: 'lg'
     });
     modalRef.componentInstance.lead = lead;
+    modalRef.componentInstance.readOnly = this.isAffiliate;
     modalRef.result.then(() => this.loadLeads(), () => {});
   }
 }

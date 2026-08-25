@@ -3,6 +3,12 @@ export const environment = {
   apiUrl: 'https://Elev8 Club-new-backend.nstechs.net/api',
   prefix: 'Elev8 Club-local',
   cryptoKey: 'Elev8 ClubSuperSecretKey123',
+  // ng serve serves .video-build/hls at this path (see angular.json development/local assets),
+  // so dev needs no CDN and no CORS.
+  video: {
+    challengeIntroHls: "/videos/challenge-intro/master.m3u8",
+    challengeIntroPoster: "/videos/challenge-intro/poster.jpg"
+  },
   firebase: {
     apiKey: 'AIzaSyAssOG7bw4BGipTDITaOdbdsRfwctu5MaY',
     authDomain: 'elev8-club.firebaseapp.com',

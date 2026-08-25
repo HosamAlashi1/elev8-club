@@ -21,7 +21,8 @@ export class HeaderComponent implements OnInit {
   private readonly roleLabelMap: Record<string, string> = {
     admin: 'Admin',
     sales: 'Sales',
-    account_manager: 'Account Manager'
+    account_manager: 'Account Manager',
+    affiliate: 'Affiliate'
   };
 
   constructor(

@@ -14,6 +14,7 @@
     <div
       [@scaleIn]
       class="video-container"
+      [class.is-playing]="isPlaying"
       (mouseenter)="showControls = true"
       (mouseleave)="showControls = false"
       data-aos="zoom-in"
@@ -26,8 +27,9 @@
         preload="metadata"
         playsinline
         webkit-playsinline
+        [poster]="posterUrl"
         [controls]="isIOS"
-        (click)="!isIOS && togglePlay()"
+        (click)="!isIOS && onVideoClick()"
         (play)="onVideoPlay()"
         (pause)="onVideoPause()"
         (loadeddata)="onVideoLoaded()"
@@ -35,7 +37,7 @@
         (error)="onVideoError($event)">
       </video>
 
-      <button class="play-overlay" *ngIf="!isPlaying && !isIOS" (click)="togglePlay()" aria-label="تشغيل الفيديو">
+      <button type="button" class="play-overlay" *ngIf="!isPlaying && !isIOS && !hasFatalError" (click)="togglePlay()" aria-label="تشغيل الفيديو">
         <span class="play-button">
           <svg class="play-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
@@ -43,11 +45,16 @@
         </span>
       </button>
 
+      <div class="video-error" *ngIf="hasFatalError" role="alert">
+        <p class="video-error-text">تعذّر تشغيل الفيديو. تأكد من اتصالك بالإنترنت.</p>
+        <button type="button" class="video-error-retry" (click)="retryPlayback()">إعادة المحاولة</button>
+      </div>
+
       <div
         class="video-controls"
         *ngIf="!isIOS"
-        [class.visible]="showControls || isPlaying"
-        [class.mobile-hidden]="isPlaying"
+        [class.visible]="showControls"
+        [class.mobile-hidden]="isPlaying && !showControls"
         (touchstart)="onTouchControls($event)"
         (click)="onClickControls($event)">
 
@@ -59,7 +66,7 @@
 
         <div class="controls-row">
           <div class="controls-group">
-            <button class="control-btn play-btn" (click)="togglePlay()" aria-label="تشغيل/إيقاف">
+            <button type="button" class="control-btn play-btn" (click)="togglePlay()" aria-label="تشغيل/إيقاف">
               <svg *ngIf="!isPlaying" class="icon" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
               </svg>
@@ -71,7 +78,7 @@
           </div>
 
           <div class="controls-group controls-secondary">
-            <button class="control-btn fullscreen-btn" (click)="toggleFullscreen()" aria-label="ملء الشاشة">
+            <button type="button" class="control-btn fullscreen-btn" (click)="toggleFullscreen()" aria-label="ملء الشاشة">
               <svg *ngIf="!isFullscreen" class="icon" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
               </svg>
@@ -81,7 +88,7 @@
             </button>
 
             <div class="volume-control">
-              <button class="control-btn volume-btn" (click)="toggleMute()" aria-label="كتم الصوت">
+              <button type="button" class="control-btn volume-btn" (click)="toggleMute()" aria-label="كتم الصوت">
                 <svg *ngIf="!isMuted && volume > 0" class="icon" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.5 3.75a.75.75 0 00-1.264-.546L5.203 7H2.667a.75.75 0 00-.75.75v4.5c0 .414.336.75.75.75h2.536l4.033 3.796a.75.75 0 001.264-.546V3.75zM16.713 7.51a.75.75 0 10-1.026 1.094 3.75 3.75 0 010 2.812.75.75 0 101.026 1.094 5.25 5.25 0 000-4.999z" />
                 </svg>

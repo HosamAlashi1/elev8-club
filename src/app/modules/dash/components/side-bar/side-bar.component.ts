@@ -33,10 +33,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const role = this.publicService.getUserRole();
 
     const allMenu: any[] = [
-      { label: 'Dashboard', icon: 'home', route: '/dashboard', roles: ['admin', 'sales', 'account_manager'] },
+      { label: 'Dashboard', icon: 'home', route: '/dashboard', roles: ['admin', 'sales', 'account_manager', 'affiliate'] },
       { label: 'Affiliates', icon: 'users', route: '/dashboard/affiliates', roles: ['admin'] },
       { label: 'Leads', icon: 'user-check', route: '/dashboard/leads', roles: ['admin', 'sales'] },
-      { label: 'My Leads', icon: 'briefcase', route: '/dashboard/my-leads', roles: ['admin', 'account_manager'] },
+      { label: 'My Leads', icon: 'briefcase', route: '/dashboard/my-leads', roles: ['admin', 'account_manager', 'affiliate'] },
       { label: 'Settings', icon: 'settings', route: '/dashboard/settings', roles: ['admin'] },
     ];
 

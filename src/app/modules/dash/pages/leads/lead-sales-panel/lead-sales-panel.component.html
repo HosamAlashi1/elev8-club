@@ -43,6 +43,34 @@
     </ng-container>
   </div>
 
+  <div class="sp-package-selector" *ngIf="showPackageSelector">
+    <div class="sp-package-title">
+      <i class="fe fe-shopping-bag"></i>
+      Which package did the customer choose?
+    </div>
+    <div class="sp-package-options">
+      <button
+        type="button"
+        class="sp-package-option"
+        *ngFor="let package of salesPackages"
+        [class.sp-package-option--selected]="selectedSalesPackage === package.value"
+        (click)="selectedSalesPackage = package.value">
+        <i class="fe" [ngClass]="package.icon"></i>
+        {{ package.label }}
+      </button>
+    </div>
+    <div class="sp-package-actions">
+      <button type="button" class="sp-package-cancel" (click)="cancelPackageSelection()" [disabled]="isSavingStatus">
+        Cancel
+      </button>
+      <button type="button" class="sp-package-confirm" (click)="saveClosedStatus()"
+        [disabled]="!selectedSalesPackage || isSavingStatus">
+        <span *ngIf="isSavingStatus" class="spinner-border spinner-border-sm me-1"></span>
+        Confirm Closed
+      </button>
+    </div>
+  </div>
+
   <button *ngIf="lead.sales_status !== 'not_interested'" class="sp-ni-btn" (click)="markNotInterested()">
     <i class="fe fe-x-circle me-1"></i>Mark Not Interested
   </button>

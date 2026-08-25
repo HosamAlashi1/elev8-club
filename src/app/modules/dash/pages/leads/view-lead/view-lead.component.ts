@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import * as AOS from 'aos';
-import { Lead, SalesStatus, SALES_STATUS_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType } from '../../../../../core/models';
+import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType } from '../../../../../core/models';
 import { FirebaseService } from '../../../../services/firebase.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
@@ -51,6 +51,9 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingLogs = false;
   showAddCallForm = false;
   isSavingCall = false;
+  showPackageSelector = false;
+  selectedSalesPackage: SalesPackage | null = null;
+  isSavingStatus = false;
   callForm!: FormGroup;
   private destroy$ = new Subject<void>();
 
@@ -60,6 +63,12 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'post_meeting', label: 'Post-Meeting' },
     { key: 'follow_up', label: 'Follow-up' },
     { key: 'closed', label: 'Closed' },
+  ];
+
+  readonly salesPackages: { value: SalesPackage; label: string }[] = [
+    { value: 'starter', label: SALES_PACKAGE_LABELS.starter },
+    { value: 'pro', label: SALES_PACKAGE_LABELS.pro },
+    { value: 'ai', label: SALES_PACKAGE_LABELS.ai },
   ];
 
   readonly callTypeOptions: { value: CallType; label: string }[] = [
@@ -162,17 +171,44 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeStatus(status: SalesStatus): void {
-    if (!this.lead.key || !this.canChangeTo(status)) return;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, status).then(() => {
+    if (!this.lead.key || !this.canChangeTo(status) || this.isSavingStatus) return;
+    if (status === 'closed') {
+      this.selectedSalesPackage = this.lead.sales_package || null;
+      this.showPackageSelector = true;
+      return;
+    }
+    this.persistStatus(status);
+  }
+
+  saveClosedStatus(): void {
+    if (!this.selectedSalesPackage) return;
+    this.persistStatus('closed', this.selectedSalesPackage);
+  }
+
+  cancelPackageSelection(): void {
+    this.showPackageSelector = false;
+    this.selectedSalesPackage = null;
+  }
+
+  private persistStatus(status: SalesStatus, salesPackage?: SalesPackage): void {
+    if (!this.lead.key) return;
+    this.isSavingStatus = true;
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage).then(() => {
       this.lead.sales_status = status;
-      this.toastr.showSuccess('Status updated');
-    }).catch(() => this.toastr.showError('Failed to update status'));
+      this.lead.sales_package = status === 'closed' ? salesPackage : undefined;
+      this.showPackageSelector = false;
+      this.selectedSalesPackage = null;
+      const packageLabel = salesPackage ? ` - ${SALES_PACKAGE_LABELS[salesPackage]}` : '';
+      this.toastr.showSuccess(`${SALES_STATUS_LABELS[status]}${packageLabel}`);
+    }).catch(() => this.toastr.showError('Failed to update status'))
+      .finally(() => this.isSavingStatus = false);
   }
 
   markNotInterested(): void {
     if (!this.lead.key) return;
     this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested').then(() => {
       this.lead.sales_status = 'not_interested';
+      this.lead.sales_package = undefined;
       this.toastr.showSuccess('Marked as Not Interested');
     }).catch(() => this.toastr.showError('Failed to update status'));
   }

@@ -51,7 +51,7 @@ export class PublicService {
   }
 
   public getUserRole(): string {
-    return this.getUserData()?.role || 'admin';
+    return this.getUserData()?.role || '';
   }
 
   public isAdmin(): boolean {
@@ -64,6 +64,10 @@ export class PublicService {
 
   public isAccountManager(): boolean {
     return this.getUserRole() === 'account_manager';
+  }
+
+  public isAffiliate(): boolean {
+    return this.getUserRole() === 'affiliate';
   }
 
   public getSalesMemberKey(): string | null {

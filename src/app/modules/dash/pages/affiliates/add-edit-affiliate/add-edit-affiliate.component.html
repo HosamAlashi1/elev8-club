@@ -26,13 +26,33 @@
         </div>
       </div>
 
+      <!-- Password -->
+      <div class="col-12 mb-3">
+        <label class="form-label">
+          {{ affiliate?.userId ? 'New Password (optional)' : 'Initial Password' }}
+          <span class="text-danger" *ngIf="!affiliate?.userId">*</span>
+        </label>
+        <div class="password-input-wrapper">
+          <input class="form-control" formControlName="password"
+            [type]="showPassword ? 'text' : 'password'" autocomplete="new-password"
+            [placeholder]="affiliate?.userId ? 'Leave blank to keep current password' : 'Minimum 8 characters'"
+            [ngClass]="{ 'is-invalid': submitted && (f['password'].invalid || (!affiliate?.userId && !f['password'].value)) }" />
+          <button type="button" class="password-toggle" (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+            <i class="fe" [ngClass]="showPassword ? 'fe-eye-off' : 'fe-eye'"></i>
+          </button>
+        </div>
+        <div *ngIf="submitted && (f['password'].invalid || (!affiliate?.userId && !f['password'].value))"
+          class="invalid-feedback d-block">Password must contain at least 8 characters</div>
+      </div>
+
       <!-- Code -->
       <div class="col-12 mb-3">
         <label class="form-label">Affiliate Code <span class="text-danger">*</span></label>
         <input class="form-control" formControlName="code" placeholder="AHM1 (uppercase, no spaces)"
           [ngClass]="{ 'is-invalid': submitted && f['code'].invalid, 'is-valid': submitted && f['code'].valid }" />
         <div *ngIf="submitted && f['code'].invalid" class="invalid-feedback">
-          Code is required (uppercase letters and numbers only)
+          Code is required (letters and numbers only)
         </div>
         <small class="text-muted">This code will be used in the affiliate link: ?ref=CODE</small>
       </div>

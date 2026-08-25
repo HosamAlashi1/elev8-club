@@ -1,0 +1,25 @@
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper .form-control {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.85rem;
+  transform: translateY(-50%);
+  border: 0;
+  padding: 0.25rem;
+  background: transparent;
+  color: #64748b;
+  line-height: 1;
+  z-index: 5;
+}
+
+.password-toggle:hover,
+.password-toggle:focus {
+  color: #c59b32;
+}

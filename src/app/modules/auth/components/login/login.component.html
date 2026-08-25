@@ -31,16 +31,23 @@
     <!-- Password -->
     <div class="form-group mb-4">
       <label class="form-label">Password :</label>
-      <input
-        type="password"
-        class="form-control"
-        formControlName="password"
-        placeholder="Enter your password"
-        [ngClass]="{
-          'is-invalid': f.password.invalid && loginForm.touched,
-          'is-valid': f.password.valid && loginForm.touched
-        }"
-      />
+      <div class="password-input-wrapper">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          class="form-control"
+          formControlName="password"
+          autocomplete="current-password"
+          placeholder="Enter your password"
+          [ngClass]="{
+            'is-invalid': f.password.invalid && loginForm.touched,
+            'is-valid': f.password.valid && loginForm.touched
+          }"
+        />
+        <button type="button" class="password-toggle" (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+          <i class="fe" [ngClass]="showPassword ? 'fe-eye-off' : 'fe-eye'"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Submit -->

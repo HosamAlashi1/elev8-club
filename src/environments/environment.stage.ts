@@ -3,6 +3,11 @@ export const environment = {
   apiUrl: 'https://Elev8 Clubeat-stage.nstechs.net/admin-api/v1',
   prefix: 'Elev8 Club-stage',
   cryptoKey: 'Elev8 ClubSuperSecretKey123',
+  // Hosted on Cloudflare Pages (free, unlimited bandwidth). Deploy with: npm run video:deploy
+  video: {
+    challengeIntroHls: "https://elev8-video.pages.dev/challenge-intro/master.m3u8",
+    challengeIntroPoster: "https://elev8-video.pages.dev/challenge-intro/poster.jpg"
+  },
   firebase: {
     apiKey: "AIzaSyAssOG7bw4BGipTDITaOdbdsRfwctu5MaY",
     authDomain: "elev8-club.firebaseapp.com",

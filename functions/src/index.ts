@@ -228,45 +228,137 @@ export const sendBulkEmail = functions.https.onCall(async (data, context) => {
 
 /**
  * Firebase Function لإنشاء مستخدم Dashboard جديد (Sales / Account Manager)
- * تستقبل: email, password, name, role, salesMemberKey?, affiliateKey?
+ * Creates a dashboard login without changing the admin's browser session.
  */
-export const createDashboardUser = functions.https.onCall(async (data, context) => {
+const publicHttps = functions.runWith({invoker: "public"}).https;
+
+export const createDashboardUser = publicHttps.onCall(async (
+  data,
+  context,
+) => {
   if (!context.auth) {
-    throw new functions.https.HttpsError("unauthenticated", "Must be authenticated");
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "Must be authenticated",
+    );
   }
 
   // Verify caller is admin
   const callerUid = context.auth.uid;
-  const callerSnap = await admin.database().ref(`dashboard_users/${callerUid}`).once("value");
+  const callerSnap = await admin.database()
+    .ref(`dashboard_users/${callerUid}`)
+    .once("value");
   const caller = callerSnap.val();
   if (!caller || caller.role !== "admin") {
-    throw new functions.https.HttpsError("permission-denied", "Only admins can create users");
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Only admins can create users",
+    );
   }
 
-  const { email, password, name, role, salesMemberKey, affiliateKey } = data;
+  const {
+    email, password, name, role, salesMemberKey, affiliateKey, versionKey,
+  } = data;
 
   if (!email || !password || !name || !role) {
-    throw new functions.https.HttpsError("invalid-argument", "Missing required fields");
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Missing required fields",
+    );
+  }
+  if (!["sales", "account_manager", "affiliate"].includes(role)) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Invalid dashboard role",
+    );
   }
 
   try {
     // Create Firebase Auth user
-    const userRecord = await admin.auth().createUser({ email, password, displayName: name });
+    const userRecord = await admin.auth().createUser({
+      email,
+      password,
+      displayName: name,
+      emailVerified: true,
+    });
     const uid = userRecord.uid;
 
     // Write to dashboard_users
     const userData: any = {
       uid, email, name, role,
       isActive: true,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
     if (salesMemberKey) userData.salesMemberKey = salesMemberKey;
     if (affiliateKey) userData.affiliateKey = affiliateKey;
+    if (versionKey) userData.versionKey = versionKey;
+    if (role === "account_manager") userData.last_assigned_at = null;
 
     await admin.database().ref(`dashboard_users/${uid}`).set(userData);
 
-    return { uid, success: true };
+    return {uid, success: true};
   } catch (err: any) {
-    throw new functions.https.HttpsError("internal", err.message || "Failed to create user");
+    throw new functions.https.HttpsError(
+      "internal",
+      err.message || "Failed to create user",
+    );
+  }
+});
+
+/** Update Firebase Auth credentials and the matching dashboard profile. */
+export const updateDashboardUserAuth = publicHttps.onCall(async (
+  data,
+  context,
+) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "Must be authenticated",
+    );
+  }
+
+  const callerSnap = await admin.database()
+    .ref(`dashboard_users/${context.auth.uid}`)
+    .once("value");
+  const caller = callerSnap.val();
+  if (!caller || caller.role !== "admin") {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Only admins can update users",
+    );
+  }
+
+  const {uid, email, password, name, isActive} = data;
+  if (!uid) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "User id is required",
+    );
+  }
+
+  const authUpdate: admin.auth.UpdateRequest = {};
+  if (email) authUpdate.email = email;
+  if (password) authUpdate.password = password;
+  if (name) authUpdate.displayName = name;
+  if (typeof isActive === "boolean") authUpdate.disabled = !isActive;
+
+  try {
+    if (Object.keys(authUpdate).length) {
+      await admin.auth().updateUser(uid, authUpdate);
+    }
+    const profileUpdate: Record<string, unknown> = {};
+    if (email) profileUpdate.email = email;
+    if (name) profileUpdate.name = name;
+    if (typeof isActive === "boolean") profileUpdate.isActive = isActive;
+    if (Object.keys(profileUpdate).length) {
+      await admin.database()
+        .ref(`dashboard_users/${uid}`)
+        .update(profileUpdate);
+    }
+  } catch (err: any) {
+    throw new functions.https.HttpsError(
+      "internal",
+      err.message || "Failed to update dashboard user",
+    );
   }
 });

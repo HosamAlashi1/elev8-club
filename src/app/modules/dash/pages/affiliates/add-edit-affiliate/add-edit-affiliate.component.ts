@@ -17,6 +17,7 @@ export class AddEditAffiliateComponent implements OnInit {
   form!: FormGroup;
   submitted = false;
   isSubmitting = false;
+  showPassword = false;
 
   get isEdit(): boolean {
     return !!this.affiliate;
@@ -43,7 +44,8 @@ export class AddEditAffiliateComponent implements OnInit {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
       email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(190)]),
-      code: new FormControl('', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]+$/)]),
+      password: new FormControl('', Validators.minLength(8)),
+      code: new FormControl('', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Za-z0-9]+$/)]),
       whatsappNumber: new FormControl('', [Validators.required, Validators.maxLength(20)])
     });
   }
@@ -59,7 +61,7 @@ export class AddEditAffiliateComponent implements OnInit {
     });
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     this.submitted = true;
 
     if (this.form.invalid) {
@@ -75,6 +77,12 @@ export class AddEditAffiliateComponent implements OnInit {
       return;
     }
 
+    if (!this.affiliate?.userId && !this.form.value.password) {
+      this.toastr.showError('An initial password is required for the affiliate login');
+      this.isSubmitting = false;
+      return;
+    }
+
     const data: Omit<Affiliate, 'key' | 'createdAt'> = {
       versionKey: this.affiliate?.versionKey || this.versionKey,
       name: this.form.value.name.trim(),
@@ -83,30 +91,56 @@ export class AddEditAffiliateComponent implements OnInit {
       whatsappNumber: this.form.value.whatsappNumber.trim()
     };
 
-    if (this.isEdit && this.affiliate) {
-      // Update
-      this.firebaseService.updateAffiliate(this.affiliate.key, data)
-        .then(() => {
-          this.toastr.showSuccess('Affiliate updated successfully');
-          this.activeModal.close('updated');
-        })
-        .catch(error => {
-          console.error('Error updating affiliate:', error);
-          this.toastr.showError('Failed to update affiliate');
-          this.isSubmitting = false;
-        });
-    } else {
-      // Add
-      this.firebaseService.addAffiliate(data)
-        .then(() => {
-          this.toastr.showSuccess('Affiliate added successfully');
-          this.activeModal.close('added');
-        })
-        .catch(error => {
-          console.error('Error adding affiliate:', error);
-          this.toastr.showError('Failed to add affiliate');
-          this.isSubmitting = false;
-        });
+    try {
+      if (this.isEdit && this.affiliate) {
+        if (this.affiliate.userId) {
+          await this.firebaseService.updateDashboardAuthUser({
+            uid: this.affiliate.userId,
+            name: data.name,
+            email: data.email,
+            password: this.form.value.password || undefined
+          });
+        } else {
+          const result = await this.firebaseService.createDashboardAuthUser({
+            email: data.email,
+            password: this.form.value.password,
+            name: data.name,
+            role: 'affiliate',
+            versionKey: data.versionKey,
+            affiliateKey: this.affiliate.key
+          });
+          data.userId = result.uid;
+        }
+        await this.firebaseService.updateAffiliate(this.affiliate.key, data);
+        this.toastr.showSuccess('Affiliate updated successfully');
+        this.activeModal.close('updated');
+      } else {
+        const affiliateKey = await this.firebaseService.addAffiliate(data);
+        try {
+          const result = await this.firebaseService.createDashboardAuthUser({
+            email: data.email,
+            password: this.form.value.password,
+            name: data.name,
+            role: 'affiliate',
+            versionKey: data.versionKey,
+            affiliateKey
+          });
+          await this.firebaseService.updateAffiliate(affiliateKey, { userId: result.uid });
+        } catch (error) {
+          await this.firebaseService.deleteAffiliate(affiliateKey);
+          throw error;
+        }
+        this.toastr.showSuccess('Affiliate and login created successfully');
+        this.activeModal.close('added');
+      }
+    } catch (error: any) {
+      console.error('Error saving affiliate:', error);
+      this.toastr.showError(error?.message || 'Failed to save affiliate account');
+      this.isSubmitting = false;
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

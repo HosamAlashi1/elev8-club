@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../../../services/firebase.service';
 import { PublicService } from '../../../services/public.service';
 import { Version, Lead } from '../../../../core/models';
-import { forkJoin } from 'rxjs';
+import { forkJoin, take } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -87,8 +87,11 @@ export class DashboardComponent implements OnInit {
 
     if (role === 'sales' && salesMemberKey) {
       this.loadSalesDashboard(salesMemberKey);
-    } else if (role === 'account_manager' && affiliateKey) {
+    } else if (role === 'affiliate' && affiliateKey) {
       this.loadAffiliateDashboard(affiliateKey);
+    } else if (role === 'account_manager') {
+      const accountManagerKey = this.publicService.getCurrentUserUid();
+      if (accountManagerKey) this.loadAccountManagerDashboard(accountManagerKey);
     } else {
       this.loadAdminDashboard();
     }
@@ -103,7 +106,7 @@ export class DashboardComponent implements OnInit {
     ];
 
     forkJoin({
-      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion!.key),
+      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion!.key).pipe(take(1)),
       allAffiliates: this.firebaseService.getAllAffiliates()
     }).subscribe({
       next: (data) => {
@@ -153,14 +156,45 @@ export class DashboardComponent implements OnInit {
     this.firebaseService.getClosedLeadsByAffiliate(affiliateKey).subscribe({
       next: (leads) => {
         const total = leads.length;
-        const renewed = leads.filter(l => l.affiliate_status === 'renewed').length;
-        const notRenewed = leads.filter(l => l.affiliate_status === 'not_renewed').length;
-        const inFollowup = leads.filter(l => !l.affiliate_status || l.affiliate_status === 'renewal_followup').length;
+        const renewed = leads.filter(l => (l.renewal_status || l.affiliate_status) === 'renewed').length;
+        const notRenewed = leads.filter(l => (l.renewal_status || l.affiliate_status) === 'not_renewed').length;
+        const inFollowup = leads.filter(l => {
+          const status = l.renewal_status || l.affiliate_status;
+          return !status || status === 'renewal_followup' || status === 'renew_later';
+        }).length;
         this.targetNumbers = [total, renewed, notRenewed, inFollowup];
         this.leadsPerDayData = [];
         this.animateNumbers();
       },
       error: (err: any) => console.error('Affiliate dashboard error:', err)
+    });
+  }
+
+  private loadAccountManagerDashboard(accountManagerKey: string): void {
+    this.dashboardCards = [
+      { label: 'Closed Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
+      { label: 'Renewed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
+      { label: 'Not Renewed', icon: 'fe fe-x-circle', iconClass: 'icon-customers', prefix: '' },
+      { label: 'In Follow-up', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' }
+    ];
+
+    this.firebaseService.getAffiliatesByAccountManager(accountManagerKey).subscribe(affiliates => {
+      const affiliateKeys = new Set(affiliates.map(affiliate => affiliate.key));
+      this.firebaseService.getClosedLeadsByVersion(this.currentVersion!.key).subscribe({
+        next: allLeads => {
+          const leads = allLeads.filter(lead => !!lead.affiliateKey && affiliateKeys.has(lead.affiliateKey));
+          const statusOf = (lead: Lead) => lead.renewal_status || lead.affiliate_status;
+          this.targetNumbers = [
+            leads.length,
+            leads.filter(lead => statusOf(lead) === 'renewed').length,
+            leads.filter(lead => statusOf(lead) === 'not_renewed').length,
+            leads.filter(lead => !statusOf(lead) || statusOf(lead) === 'renewal_followup' || statusOf(lead) === 'renew_later').length
+          ];
+          this.leadsPerDayData = [];
+          this.animateNumbers();
+        },
+        error: (err: any) => console.error('Account manager dashboard error:', err)
+      });
     });
   }
 

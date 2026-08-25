@@ -306,6 +306,28 @@
   font-weight: 600;
 }
 
+.sales-package-selector {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(207, 174, 88, 0.4);
+  border-radius: 12px;
+  background: #fffdf7;
+}
+
+.sales-package-title { margin-bottom: 11px; color: #374151; font-size: 0.85rem; font-weight: 700; }
+.sales-package-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.sales-package-options button {
+  padding: 9px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background: white;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.sales-package-options button.active { border-color: #cfae58; background: rgba(207, 174, 88, 0.1); color: #9a761d; }
+.sales-package-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
 /* ─── Call Log ──────────────────────────────────────── */
 .add-call-form {
   background: #f8fafc;

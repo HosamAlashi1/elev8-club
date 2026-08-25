@@ -3,99 +3,117 @@
     <div class="lead-avatar">{{ getInitial(lead.fullName) }}</div>
     <div>
       <h5 class="modal-title mb-0">{{ lead.fullName }}</h5>
-      <small class="text-muted">{{ lead.email }} • {{ lead.phone }}</small>
+      <small class="text-muted" *ngIf="!readOnly">{{ lead.email }} • {{ lead.phone }}</small>
     </div>
   </div>
   <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
 </div>
 
 <div class="modal-body pt-3">
-
-  <!-- Renewal Status -->
-  <div class="section-card mb-3">
-    <h6 class="section-title">Renewal Status</h6>
-    <div class="d-flex gap-2 flex-wrap">
-      <button
-        *ngFor="let s of affiliateStatuses"
-        class="btn btn-sm"
-        [ngClass]="currentStatus === s.key ? 'btn-custom' : 'btn-outline-secondary'"
-        (click)="changeStatus(s.key)"
-        [disabled]="isUpdatingStatus">
-        {{ s.label }}
-      </button>
-    </div>
-    <div class="mt-3">
-      <span class="pill" [ngClass]="getStatusClass(currentStatus)">
-        {{ getStatusLabel(currentStatus) }}
-      </span>
-    </div>
+  <div *ngIf="isLoadingRenewals || isCreatingInitialCycle" class="text-center text-muted py-4">
+    <span class="spinner-border spinner-border-sm me-2"></span>Loading renewal history...
   </div>
 
-  <!-- Call Log -->
-  <div class="section-card">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <h6 class="section-title mb-0">Call Log ({{ callLogs.length }})</h6>
-      <button class="btn btn-sm btn-custom" (click)="toggleAddCallForm()">
-        <i class="fe" [ngClass]="showAddCallForm ? 'fe-x' : 'fe-plus'"></i>
-        {{ showAddCallForm ? 'Cancel' : 'Add Call' }}
-      </button>
-    </div>
+  <ng-container *ngIf="!isLoadingRenewals && renewalCycles.length">
+    <div class="section-card mb-3">
+      <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3">
+        <div>
+          <h6 class="section-title mb-1">Current Renewal Follow-up #{{ currentCycle?.cycleNumber }}</h6>
+          <small class="text-muted">Maximum 4 calls for this follow-up</small>
+        </div>
+        <button *ngIf="!readOnly && currentStatus !== 'renewal_followup'"
+          class="btn btn-sm btn-outline-secondary" (click)="startNextRenewal()" [disabled]="isStartingCycle">
+          <span *ngIf="isStartingCycle" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!isStartingCycle" class="fe fe-plus me-1"></i>Start Next Renewal
+        </button>
+      </div>
 
-    <!-- Add Call Form -->
-    <div *ngIf="showAddCallForm" class="add-call-form mb-3" [formGroup]="callForm">
-      <div class="row g-2">
-        <div class="col-md-4">
-          <label class="field-label">Date</label>
-          <input type="date" class="form-control form-control-sm" formControlName="callDate">
+      <div class="d-flex gap-2 flex-wrap" *ngIf="!readOnly">
+        <button *ngFor="let status of renewalStatuses" class="btn btn-sm"
+          [ngClass]="currentStatus === status.key ? 'btn-custom' : 'btn-outline-secondary'"
+          (click)="changeStatus(status.key)" [disabled]="isUpdatingStatus">
+          {{ status.label }}
+        </button>
+      </div>
+
+      <div class="renewal-package-selector mt-3" *ngIf="showPackageSelector && !readOnly">
+        <div class="field-label mb-2">Select the renewed package</div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" *ngFor="let package of renewalPackages" class="btn btn-sm"
+            [ngClass]="selectedRenewalPackage === package.key ? 'btn-custom' : 'btn-outline-secondary'"
+            (click)="selectedRenewalPackage = package.key">{{ package.label }}</button>
         </div>
-        <div class="col-md-3">
-          <label class="field-label">Time</label>
-          <input type="time" class="form-control form-control-sm" formControlName="callTime">
+        <div class="d-flex justify-content-end gap-2 mt-3">
+          <button class="btn btn-sm btn-light" (click)="cancelPackageSelection()">Cancel</button>
+          <button class="btn btn-sm btn-custom" (click)="saveRenewedStatus()"
+            [disabled]="!selectedRenewalPackage || isUpdatingStatus">Confirm Renewal</button>
         </div>
-        <div class="col-md-5">
-          <label class="field-label">Status</label>
-          <select class="form-select form-select-sm" formControlName="status">
-            <option *ngFor="let opt of callStatusOptions" [value]="opt.value">{{ opt.label }}</option>
-          </select>
-        </div>
-        <div class="col-12">
-          <label class="field-label">Notes (Optional)</label>
-          <textarea class="form-control form-control-sm" rows="2" placeholder="Add notes..." formControlName="notes"></textarea>
-        </div>
-        <div class="col-12 text-end">
-          <button class="btn btn-sm btn-custom" (click)="saveCall()" [disabled]="isSavingCall || callForm.invalid">
-            <span *ngIf="isSavingCall" class="spinner-border spinner-border-sm me-1"></span>
-            Save Call
-          </button>
-        </div>
+      </div>
+
+      <div class="mt-3 d-flex align-items-center gap-2 flex-wrap">
+        <span class="pill" [ngClass]="getStatusClass(currentStatus)">{{ getStatusLabel(currentStatus) }}</span>
+        <span *ngIf="currentStatus === 'renewed' && currentCycle?.package" class="package-badge">
+          {{ getPackageLabel(currentCycle?.package) }}
+        </span>
+        <span class="renewal-count-label">Successful renewals: {{ lead.renewal_count || 0 }}</span>
       </div>
     </div>
 
-    <!-- Timeline -->
-    <div *ngIf="isLoadingLogs" class="text-center text-muted py-3">
-      <span class="spinner-border spinner-border-sm me-2"></span>Loading...
-    </div>
+    <div class="section-card mb-3" *ngIf="!readOnly && currentStatus === 'renewal_followup'">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 class="section-title mb-0">Current Calls ({{ getCurrentCycleCallCount() }}/4)</h6>
+        <button class="btn btn-sm btn-custom" (click)="toggleAddCallForm()" [disabled]="!canAddCall() && !showAddCallForm">
+          <i class="fe" [ngClass]="showAddCallForm ? 'fe-x' : 'fe-plus'"></i>
+          {{ showAddCallForm ? 'Cancel' : 'Add Call' }}
+        </button>
+      </div>
 
-    <div *ngIf="!isLoadingLogs && callLogs.length === 0 && !showAddCallForm" class="text-muted small text-center py-3">
-      No calls logged yet
-    </div>
-
-    <div class="call-timeline" *ngIf="!isLoadingLogs && callLogs.length > 0">
-      <div class="call-item" *ngFor="let log of callLogs">
-        <div class="call-dot"></div>
-        <div class="call-content">
-          <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-            <span class="call-status-badge" [ngClass]="getCallStatusClass(log.status)">
-              {{ getCallStatusLabel(log.status) }}
-            </span>
-            <span class="call-date text-muted ms-auto">{{ formatDate(log.callDate, log.callTime) }}</span>
+      <div *ngIf="showAddCallForm" class="add-call-form" [formGroup]="callForm">
+        <div class="row g-2">
+          <div class="col-md-4"><label class="field-label">Date</label><input type="date" class="form-control form-control-sm" formControlName="callDate"></div>
+          <div class="col-md-3"><label class="field-label">Time</label><input type="time" class="form-control form-control-sm" formControlName="callTime"></div>
+          <div class="col-md-5">
+            <label class="field-label">Status</label>
+            <select class="form-select form-select-sm" formControlName="status">
+              <option *ngFor="let option of callStatusOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
           </div>
-          <p class="call-notes mb-0" *ngIf="log.notes">{{ log.notes }}</p>
+          <div class="col-12"><label class="field-label">Notes (Optional)</label><textarea class="form-control form-control-sm" rows="2" formControlName="notes"></textarea></div>
+          <div class="col-12 text-end"><button class="btn btn-sm btn-custom" (click)="saveCall()" [disabled]="isSavingCall || callForm.invalid"><span *ngIf="isSavingCall" class="spinner-border spinner-border-sm me-1"></span>Save Call</button></div>
         </div>
       </div>
     </div>
-  </div>
 
+    <div class="section-card">
+      <h6 class="section-title mb-3">Renewal History</h6>
+      <div class="renewal-cycle" *ngFor="let cycle of renewalCycles; let cycleIndex = index">
+        <div class="renewal-cycle-header">
+          <strong>Follow-up #{{ cycle.cycleNumber }}</strong>
+          <div class="d-flex gap-2 align-items-center">
+            <span class="pill" [ngClass]="getStatusClass(cycle.status)">{{ getStatusLabel(cycle.status) }}</span>
+            <span class="package-badge" *ngIf="cycle.status === 'renewed' && cycle.package">{{ getPackageLabel(cycle.package) }}</span>
+          </div>
+        </div>
+        <div class="call-timeline mt-3" *ngIf="getCycleCalls(cycle, cycleIndex).length; else noCycleCalls">
+          <div class="call-item" *ngFor="let log of getCycleCalls(cycle, cycleIndex)">
+            <div class="call-dot"></div>
+            <div class="call-content">
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <span class="call-status-badge" [ngClass]="getCallStatusClass(log.status)">{{ getCallStatusLabel(log.status) }}</span>
+                <span class="call-date text-muted ms-auto">{{ formatDate(log.callDate, log.callTime) }}</span>
+              </div>
+              <p class="call-notes mb-0" *ngIf="log.notes">{{ log.notes }}</p>
+            </div>
+          </div>
+        </div>
+        <ng-template #noCycleCalls><div class="text-muted small py-2">No calls logged for this follow-up.</div></ng-template>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="!isLoadingRenewals && !renewalCycles.length && readOnly" class="section-card text-muted text-center py-4">
+    No renewal history is available yet.
+  </div>
 </div>
 
 <div class="modal-footer border-0">

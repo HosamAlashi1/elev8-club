@@ -12,6 +12,7 @@ export interface LeadExportRow {
   salesName?: string;
   salesMemberName?: string;
   sales_status?: string;
+  sales_package?: string;
   step: number;
   createdAt: string;
   completedAt?: string;
@@ -32,6 +33,12 @@ const SALES_LABELS: Record<string, string> = {
   follow_up:      'Follow-up',
   closed:         'Closed',
   not_interested: 'Not Interested',
+};
+
+const PACKAGE_LABELS: Record<string, string> = {
+  starter: 'Starter',
+  pro: 'Pro',
+  ai: 'AI',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -130,7 +137,9 @@ export class ExcelExportService {
         lead.affiliateCode || '',
         lead.salesName || '',
         lead.salesMemberName || '',
-        SALES_LABELS[lead.sales_status || ''] || 'New',
+        lead.sales_status === 'closed' && lead.sales_package
+          ? `Closed - ${PACKAGE_LABELS[lead.sales_package] || lead.sales_package}`
+          : SALES_LABELS[lead.sales_status || ''] || 'New',
         lead.step === 2 ? 'Completed' : 'Pending',
         this.fmt(lead.createdAt),
         lead.completedAt ? this.fmt(lead.completedAt) : '',

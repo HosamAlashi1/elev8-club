@@ -40,3 +40,34 @@
 .badge-answered { background: rgba(52,199,89,0.12); color: #34c759; }
 .badge-no-answer { background: rgba(245,158,11,0.12); color: #f59e0b; }
 .badge-busy { background: rgba(239,68,68,0.1); color: #ef4444; }
+.renewal-package-selector {
+  padding: 14px;
+  border: 1px solid rgba(207, 174, 88, 0.4);
+  border-radius: 10px;
+  background: #fffdf7;
+}
+
+.renewal-count-label {
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.package-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(207, 174, 88, 0.15);
+  color: #9a761d;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.renewal-cycle {
+  padding: 14px 0;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.renewal-cycle:last-child { border-bottom: 0; padding-bottom: 0; }
+.renewal-cycle-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }

@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'sales' | 'account_manager';
+export type UserRole = 'admin' | 'sales' | 'account_manager' | 'affiliate';
 
 export interface DashboardUser {
   uid: string;
@@ -8,5 +8,7 @@ export interface DashboardUser {
   isActive: boolean;
   createdAt: string;
   salesMemberKey?: string;   // only for role = sales
-  affiliateKey?: string;     // only for role = account_manager
+  affiliateKey?: string;     // only for role = affiliate
+  versionKey?: string;
+  last_assigned_at?: number | null; // only for role = account_manager
 }

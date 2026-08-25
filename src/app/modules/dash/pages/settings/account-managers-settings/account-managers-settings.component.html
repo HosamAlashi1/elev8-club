@@ -34,17 +34,6 @@
           <input type="password" class="form-control sm-input" formControlName="password" placeholder="Min 8 characters">
           <div class="sm-error" *ngIf="f['password'].invalid && f['password'].touched">Min 8 characters required</div>
         </div>
-        <div class="col-md-6">
-          <label class="sm-label">Linked Affiliate <span class="text-danger">*</span></label>
-          <select class="form-select sm-input" formControlName="affiliateKey" (change)="onAffiliateChange($event)">
-            <option value="">-- Select Affiliate --</option>
-            <option *ngFor="let aff of affiliates" [value]="aff.key">
-              {{ aff.name }} ({{ aff.code }})
-            </option>
-          </select>
-          <div class="sm-error" *ngIf="f['affiliateKey'].invalid && f['affiliateKey'].touched">Please select an affiliate</div>
-        </div>
-
         <!-- isActive toggle -->
         <div class="col-12">
           <div class="sm-toggle-row">
@@ -101,11 +90,6 @@
           <div class="sm-card-name">{{ manager.name }}</div>
           <div class="sm-card-meta">
             <span>{{ manager.email }}</span>
-            <span *ngIf="manager.affiliateKey" class="ms-2 sm-affiliate-chip">
-              <i class="fe fe-link" style="font-size:0.65rem"></i>
-              {{ getAffiliateName(manager.affiliateKey) }}
-              <span *ngIf="getAffiliateCode(manager.affiliateKey)" class="sm-code-badge">{{ getAffiliateCode(manager.affiliateKey) }}</span>
-            </span>
           </div>
         </div>
         <div class="sm-card-actions">
@@ -139,13 +123,14 @@
             <div class="sm-error" *ngIf="ef['name'].invalid && ef['name'].touched">Name is required</div>
           </div>
           <div class="col-md-6">
-            <label class="sm-label">Linked Affiliate <span class="text-danger">*</span></label>
-            <select class="form-select sm-input" formControlName="affiliateKey">
-              <option value="">-- Select Affiliate --</option>
-              <option *ngFor="let aff of affiliates" [value]="aff.key">
-                {{ aff.name }} ({{ aff.code }})
-              </option>
-            </select>
+            <label class="sm-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control sm-input" formControlName="email" placeholder="email@example.com">
+            <div class="sm-error" *ngIf="ef['email'].invalid && ef['email'].touched">Valid email required</div>
+          </div>
+          <div class="col-md-6">
+            <label class="sm-label">New Password <span class="text-muted">(optional)</span></label>
+            <input type="password" class="form-control sm-input" formControlName="password" placeholder="Leave blank to keep current password">
+            <div class="sm-error" *ngIf="ef['password'].invalid && ef['password'].touched">Min 8 characters required</div>
           </div>
           <div class="col-12">
             <div class="sm-toggle-row">

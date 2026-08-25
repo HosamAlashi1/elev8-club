@@ -182,6 +182,22 @@
             </div>
           </div>
 
+          <div class="sales-package-selector" *ngIf="showPackageSelector">
+            <div class="sales-package-title">Which package did the customer choose?</div>
+            <div class="sales-package-options">
+              <button type="button" *ngFor="let package of salesPackages"
+                [class.active]="selectedSalesPackage === package.value"
+                (click)="selectedSalesPackage = package.value">
+                {{ package.label }}
+              </button>
+            </div>
+            <div class="sales-package-actions">
+              <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cancelPackageSelection()" [disabled]="isSavingStatus">Cancel</button>
+              <button type="button" class="btn btn-sm btn-custom" (click)="saveClosedStatus()"
+                [disabled]="!selectedSalesPackage || isSavingStatus">Confirm Closed</button>
+            </div>
+          </div>
+
           <div *ngIf="lead.sales_status === 'not_interested'" class="not-interested-badge mt-3">
             <i class="fe fe-x-circle me-2"></i>Marked as Not Interested
           </div>

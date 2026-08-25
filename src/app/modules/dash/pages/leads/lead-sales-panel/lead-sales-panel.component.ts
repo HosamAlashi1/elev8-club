@@ -6,7 +6,7 @@ import { FirebaseService } from '../../../../services/firebase.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
 import {
-  Lead, SalesStatus, SALES_STATUS_LABELS,
+  Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS,
   CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType
 } from '../../../../../core/models';
 
@@ -33,6 +33,9 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
   callForm!: FormGroup;
   isAdmin = false;
   isSales = false;
+  showPackageSelector = false;
+  selectedSalesPackage: SalesPackage | null = null;
+  isSavingStatus = false;
 
   // Edit state
   editingLogKey: string | null = null;
@@ -48,6 +51,12 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
     { key: 'post_meeting', label: 'Post-Meeting', icon: 'fe-check-square' },
     { key: 'follow_up',   label: 'Follow-up',    icon: 'fe-phone' },
     { key: 'closed',      label: 'Closed',       icon: 'fe-award' },
+  ];
+
+  readonly salesPackages: { value: SalesPackage; label: string; icon: string }[] = [
+    { value: 'starter', label: SALES_PACKAGE_LABELS.starter, icon: 'fe-zap' },
+    { value: 'pro', label: SALES_PACKAGE_LABELS.pro, icon: 'fe-star' },
+    { value: 'ai', label: SALES_PACKAGE_LABELS.ai, icon: 'fe-cpu' },
   ];
 
   readonly callTypeOptions: { value: CallType; label: string }[] = [
@@ -84,6 +93,8 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
       if (newKey && newKey !== this.currentLeadKey) {
         this.callLogs = [];
         this.showCallForm = false;
+        this.showPackageSelector = false;
+        this.selectedSalesPackage = null;
         this.editingLogKey = null;
         this.buildCallForm();
         this.loadCallLogs();
@@ -139,17 +150,45 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   changeStatus(status: SalesStatus): void {
+    if (!this.lead?.key || this.isSavingStatus) return;
+    if (status === 'closed') {
+      this.selectedSalesPackage = this.lead.sales_package || null;
+      this.showPackageSelector = true;
+      return;
+    }
+
+    this.persistStatus(status);
+  }
+
+  saveClosedStatus(): void {
+    if (!this.selectedSalesPackage) return;
+    this.persistStatus('closed', this.selectedSalesPackage);
+  }
+
+  cancelPackageSelection(): void {
+    this.showPackageSelector = false;
+    this.selectedSalesPackage = null;
+  }
+
+  private persistStatus(status: SalesStatus, salesPackage?: SalesPackage): void {
     if (!this.lead?.key) return;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, status).then(() => {
+    this.isSavingStatus = true;
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage).then(() => {
       this.lead.sales_status = status;
-      this.toastr.showSuccess(SALES_STATUS_LABELS[status]);
-    }).catch(() => this.toastr.showError('Failed'));
+      this.lead.sales_package = status === 'closed' ? salesPackage : undefined;
+      this.showPackageSelector = false;
+      this.selectedSalesPackage = null;
+      const packageLabel = salesPackage ? ` - ${SALES_PACKAGE_LABELS[salesPackage]}` : '';
+      this.toastr.showSuccess(`${SALES_STATUS_LABELS[status]}${packageLabel}`);
+    }).catch(() => this.toastr.showError('Failed to update status'))
+      .finally(() => this.isSavingStatus = false);
   }
 
   markNotInterested(): void {
     if (!this.lead?.key || !confirm('Mark as Not Interested?')) return;
     this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested').then(() => {
       this.lead.sales_status = 'not_interested';
+      this.lead.sales_package = undefined;
       this.toastr.showSuccess('Marked as Not Interested');
     });
   }
@@ -158,6 +197,7 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.lead?.key) return;
     this.firebaseService.updateLeadSalesStatus(this.lead.key, 'new').then(() => {
       this.lead.sales_status = 'new';
+      this.lead.sales_package = undefined;
       this.toastr.showSuccess('Status reset');
     });
   }

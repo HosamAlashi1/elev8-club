@@ -1,0 +1,15 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "versions": {
+      ".indexOn": ["isCurrent"]
+    },
+    "affiliates": {
+      ".indexOn": ["code", "versionKey", "accountManagerKey"]
+    },
+    "leads": {
+      ".indexOn": ["versionKey", "affiliateKey", "salesMemberKey", "step"]
+    }
+  }
+}

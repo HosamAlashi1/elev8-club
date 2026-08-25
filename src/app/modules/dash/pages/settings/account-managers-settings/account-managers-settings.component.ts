@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, of, combineLatest } from 'rxjs';
-import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FirebaseService } from '../../../../services/firebase.service';
 import { ToastrsService } from '../../../../services/toater.service';
 import { DashboardUser } from '../../../../../core/models';
-import { Affiliate } from '../../../../../core/models';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-account-managers-settings',
@@ -15,7 +13,6 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 })
 export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
   managers: DashboardUser[] = [];
-  affiliates: Affiliate[] = [];
   isLoading = true;
   isSaving = false;
   isEditing = false;
@@ -28,8 +25,7 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private firebaseService: FirebaseService,
-    private toastr: ToastrsService,
-    private afAuth: AngularFireAuth
+    private toastr: ToastrsService
   ) {}
 
   currentVersionKey = '';
@@ -38,7 +34,6 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
     this.buildAddForm();
     this.firebaseService.getCurrentVersion().pipe(takeUntil(this.destroy$)).subscribe(v => {
       this.currentVersionKey = v?.key || '';
-      this.loadAffiliates();
     });
     this.loadManagers();
   }
@@ -53,7 +48,6 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      affiliateKey: ['', Validators.required],
       isActive: [true]
     });
   }
@@ -61,52 +55,36 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
   private buildEditForm(manager: DashboardUser): void {
     this.editForm = this.fb.group({
       name: [manager.name, Validators.required],
-      affiliateKey: [manager.affiliateKey || '', Validators.required],
+      email: [manager.email, [Validators.required, Validators.email]],
+      password: ['', Validators.minLength(8)],
       isActive: [manager.isActive]
     });
-  }
-
-  loadAffiliates(): void {
-    if (!this.currentVersionKey) return;
-    this.firebaseService.getAffiliatesByVersion(this.currentVersionKey)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(affiliates => {
-        this.affiliates = affiliates;
-      });
-  }
-
-  onAffiliateChange(event: Event): void {
-    const key = (event.target as HTMLSelectElement).value;
-    const affiliate = this.affiliates.find(a => a.key === key);
-    if (affiliate) {
-      this.addForm.patchValue({
-        name: affiliate.name,
-        email: affiliate.email
-      });
-    }
   }
 
   loadManagers(): void {
     this.firebaseService.getAllDashboardUsers().pipe(takeUntil(this.destroy$)).subscribe(users => {
       this.managers = users.filter(u => u.role === 'account_manager');
+      this.managers.forEach(manager => this.migrateLegacyAffiliateLink(manager));
       this.isLoading = false;
     });
   }
 
-  getAffiliateName(affiliateKey: string): string {
-    const affiliate = this.affiliates.find(a => a.key === affiliateKey);
-    return affiliate ? affiliate.name : affiliateKey;
-  }
-
-  getAffiliateCode(affiliateKey: string): string {
-    const affiliate = this.affiliates.find(a => a.key === affiliateKey);
-    return affiliate ? affiliate.code : '';
+  private migrateLegacyAffiliateLink(manager: DashboardUser): void {
+    if (!manager.uid || !manager.affiliateKey) return;
+    this.firebaseService.updateAffiliate(manager.affiliateKey, {
+      accountManagerKey: manager.uid,
+      accountManagerAssignedAt: Date.now()
+    });
+    this.firebaseService.updateDashboardUser(manager.uid, {
+      affiliateKey: null as any,
+      versionKey: manager.versionKey || this.currentVersionKey
+    });
   }
 
   toggleActive(manager: DashboardUser): void {
     if (!manager.uid) return;
     const newStatus = !manager.isActive;
-    this.firebaseService.updateDashboardUser(manager.uid, { isActive: newStatus })
+    this.firebaseService.updateDashboardAuthUser({ uid: manager.uid, isActive: newStatus })
       .then(() => {
         manager.isActive = newStatus;
         this.toastr.showSuccess(`Account manager ${newStatus ? 'activated' : 'deactivated'}`);
@@ -116,7 +94,10 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
 
   delete(manager: DashboardUser): void {
     if (!manager.uid || !confirm(`Delete account for ${manager.name}? This cannot be undone.`)) return;
-    this.firebaseService.updateDashboardUser(manager.uid, { role: 'deleted' as any, isActive: false })
+    Promise.all([
+      this.firebaseService.updateDashboardUser(manager.uid, { role: 'deleted' as any, isActive: false }),
+      this.firebaseService.updateDashboardAuthUser({ uid: manager.uid, isActive: false })
+    ])
       .then(() => this.toastr.showSuccess('Account manager removed'))
       .catch(() => this.toastr.showError('Failed to delete'));
   }
@@ -141,10 +122,16 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
     if (!this.editingManager?.uid || this.editForm.invalid || this.isEditing) return;
     this.isEditing = true;
 
-    const { name, affiliateKey, isActive } = this.editForm.value;
+    const { name, email, password, isActive } = this.editForm.value;
 
     try {
-      await this.firebaseService.updateDashboardUser(this.editingManager.uid, { name, affiliateKey, isActive });
+      await this.firebaseService.updateDashboardAuthUser({
+        uid: this.editingManager.uid,
+        name: name.trim(),
+        email: email.trim(),
+        password: password || undefined,
+        isActive
+      });
       this.toastr.showSuccess('Account manager updated');
       this.editingManager = null;
     } catch {
@@ -158,19 +145,19 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
     if (this.addForm.invalid || this.isSaving) return;
     this.isSaving = true;
 
-    const { name, email, password, affiliateKey, isActive } = this.addForm.value;
+    const { name, email, password, isActive } = this.addForm.value;
 
     try {
-      const cred = await this.afAuth.createUserWithEmailAndPassword(email, password);
-      const uid = cred.user!.uid;
-
-      await this.firebaseService.createDashboardUser(uid, {
-        email, name,
+      const result = await this.firebaseService.createDashboardAuthUser({
+        email: email.trim(),
+        password,
+        name: name.trim(),
         role: 'account_manager',
-        isActive,
-        affiliateKey,
-        createdAt: new Date().toISOString()
+        versionKey: this.currentVersionKey
       });
+      if (!isActive) {
+        await this.firebaseService.updateDashboardAuthUser({ uid: result.uid, isActive: false });
+      }
 
       this.showAddForm = false;
       this.buildAddForm();

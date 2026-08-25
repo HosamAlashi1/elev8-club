@@ -12,7 +12,12 @@
     "start:live": "ng s -o --configuration=live",
     "build:stage": "ng build --configuration=stage",
     "build:live": "ng build --configuration=live",
-    "optimize:media": "node tools/optimize-media.mjs"
+    "optimize:media": "node tools/optimize-media.mjs",
+    "video:encode": "node tools/video-hls.mjs encode",
+    "video:deploy": "node tools/video-hls.mjs deploy",
+    "prestart": "node tools/video-hls.mjs ensure",
+    "prebuild": "node tools/video-hls.mjs ensure",
+    "prewatch": "node tools/video-hls.mjs ensure"
   },
   "private": true,
   "dependencies": {

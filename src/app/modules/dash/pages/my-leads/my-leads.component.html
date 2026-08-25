@@ -14,7 +14,7 @@
 
         <!-- Affiliate Filter (admin only) -->
         <app-modern-select
-          *ngIf="isAdmin"
+          *ngIf="isAdmin || isAccountManager"
           [(ngModel)]="selectedAffiliateFilter"
           [options]="affiliateOptions"
           placeholder2="Filter by Affiliate"
@@ -45,16 +45,18 @@
           <thead>
             <tr>
               <th>Lead</th>
-              <th>Phone</th>
-              <th *ngIf="isAdmin">Affiliate</th>
-              <th>Closed Date</th>
+              <th *ngIf="!isAffiliate">Phone</th>
+              <th *ngIf="isAdmin || isAccountManager">Affiliate</th>
+              <th *ngIf="!isAffiliate">Closed Date</th>
+              <th>Sales Status</th>
               <th>Renewal Status</th>
-              <th>Actions</th>
+              <th>Renewal Count</th>
+              <th>Details</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="paginatedLeads.length === 0">
-              <td [attr.colspan]="isAdmin ? 6 : 5" class="text-center py-5 text-muted">
+              <td [attr.colspan]="isAffiliate ? 5 : 8" class="text-center py-5 text-muted">
                 <i class="fe fe-inbox fs-2 d-block mb-2"></i>
                 No closed leads yet
               </td>
@@ -65,23 +67,27 @@
                   <div class="lead-avatar-sm">{{ getInitial(lead.fullName) }}</div>
                   <div>
                     <div class="fw-semibold">{{ lead.fullName }}</div>
-                    <small class="text-muted">{{ lead.email }}</small>
+                    <small *ngIf="!isAffiliate" class="text-muted">{{ lead.email }}</small>
                   </div>
                 </div>
               </td>
-              <td class="text-muted">{{ lead.phone || '-' }}</td>
-              <td *ngIf="isAdmin" class="text-muted">
+              <td *ngIf="!isAffiliate" class="text-muted">{{ lead.phone || '-' }}</td>
+              <td *ngIf="isAdmin || isAccountManager" class="text-muted">
                 <span *ngIf="lead.affiliateKey" class="fw-semibold text-dark">
                   {{ getAffiliateName(lead.affiliateKey) }}
                 </span>
                 <span *ngIf="!lead.affiliateKey" class="text-muted fst-italic">No affiliate</span>
               </td>
-              <td class="text-muted">{{ getDate(lead.completedAt || lead.createdAt) }}</td>
+              <td *ngIf="!isAffiliate" class="text-muted">{{ getDate(lead.completedAt || lead.createdAt) }}</td>
               <td>
-                <span class="pill" [ngClass]="getAffiliateStatusClass(lead.affiliate_status)">
-                  {{ getAffiliateStatusLabel(lead.affiliate_status) }}
+                <span class="pill pill-success">{{ getSalesStatusLabel(lead) }}</span>
+              </td>
+              <td>
+                <span class="pill" [ngClass]="getAffiliateStatusClass(lead.renewal_status || lead.affiliate_status)">
+                  {{ getRenewalStatusLabel(lead) }}
                 </span>
               </td>
+              <td><span class="renewal-count-badge">{{ getRenewalCount(lead) }}</span></td>
               <td>
                 <button class="btn btn-sm btn-outline-secondary" (click)="view(lead)">
                   <i class="fe fe-eye me-1"></i>View

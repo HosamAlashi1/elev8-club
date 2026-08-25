@@ -8,7 +8,7 @@ export type CallType =
 
 export type CallStatus = 'answered' | 'no_answer' | 'busy';
 
-export type CallLogType = 'sales' | 'affiliate';
+export type CallLogType = 'sales' | 'affiliate' | 'renewal';
 
 export interface CallLog {
   key?: string;
@@ -22,6 +22,8 @@ export interface CallLog {
   type: CallLogType;
   createdBy: string;
   createdAt: string;
+  renewalCycleKey?: string;
+  renewalCycleNumber?: number;
 }
 
 export const CALL_TYPE_LABELS: Record<CallType, string> = {

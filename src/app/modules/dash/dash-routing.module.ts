@@ -50,7 +50,7 @@ const routes: Routes = [
       {
         path: 'my-leads',
         canActivate: [RoleGuard],
-        data: { animation: 'myLeadsPage', roles: ['admin', 'account_manager'] },
+        data: { animation: 'myLeadsPage', roles: ['admin', 'account_manager', 'affiliate'] },
         loadChildren: () =>
           import('./pages/my-leads/my-leads.module').then((m) => m.MyLeadsModule),
         title: 'My Leads | Elev8 Club',

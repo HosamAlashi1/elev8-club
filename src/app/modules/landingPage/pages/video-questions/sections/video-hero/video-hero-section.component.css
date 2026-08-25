@@ -57,6 +57,15 @@
   isolation: isolate;
 }
 
+.video-container:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+}
+
 .video-container::after {
   content: "";
   position: absolute;
@@ -116,6 +125,49 @@
   width: 22px;
   height: 22px;
   margin-right: 2px;
+}
+
+.video-error {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  justify-items: center;
+  padding: 20px;
+  text-align: center;
+  background: rgba(5, 7, 11, 0.86);
+  backdrop-filter: blur(2px);
+}
+
+.video-error-text {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(14px, 1.2vw, 17px);
+  font-weight: 600;
+}
+
+.video-error-retry {
+  padding: 10px 26px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 236, 137, 0.78);
+  background: linear-gradient(135deg, #fff38f 0%, #f3c849 38%, #cfa235 100%);
+  color: #070707;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    0 14px 30px rgba(208, 164, 53, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.48);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.video-error-retry:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow:
+    0 18px 40px rgba(208, 164, 53, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .answer-prompt {
@@ -340,6 +392,16 @@
 }
 
 @media (max-width: 640px) {
+  .video-hero-section {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .title-wrapper {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
   .main-title {
     font-size: 40px;
   }
@@ -349,10 +411,31 @@
     line-height: 1.75;
   }
 
-  .controls-secondary,
-  .volume-control,
-  .fullscreen-btn {
+  .volume-control {
     display: none;
+  }
+
+  .controls-secondary {
+    display: flex;
+  }
+
+  .fullscreen-btn {
+    display: inline-grid;
+  }
+
+  .play-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+  }
+
+  .play-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .video-controls {
+    padding: 36px 10px 10px;
   }
 
   .video-controls.mobile-hidden {

@@ -1,15 +1,24 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { map, Observable, take } from 'rxjs';
+import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { combineLatest, firstValueFrom, map, Observable, take } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { Version, Affiliate, Lead, SalesMember, CallLog, DashboardUser } from '../../core/models';
+import {
+  Version, Affiliate, Lead, SalesMember, CallLog, DashboardUser,
+  SalesPackage, SalesStatus, RenewalCycle, RenewalStatus
+} from '../../core/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor(
+    private db: AngularFireDatabase,
+    private fns: AngularFireFunctions,
+    private auth: AngularFireAuth
+  ) { }
 
   /** =======================
    *  LIST – جلب قائمة كاملة
@@ -250,14 +259,24 @@ export class FirebaseService {
   }
 
   /** إضافة أفلييت جديد */
-  public addAffiliate(data: Omit<Affiliate, 'key' | 'createdAt'>): Promise<any> {
+  public async addAffiliate(data: Omit<Affiliate, 'key' | 'createdAt'>): Promise<string> {
+    const accountManagerKey = data.versionKey
+      ? await this.assignNextAccountManager(data.versionKey)
+      : null;
+    if (!accountManagerKey) {
+      throw new Error('Create an active account manager before adding an affiliate');
+    }
+    const now = new Date().toISOString();
     const affiliateData = {
       ...data,
-      createdAt: new Date().toISOString()
+      createdAt: now,
+      accountManagerKey,
+      accountManagerAssignedAt: Date.now()
     };
-    return this.db.list('affiliates').push(affiliateData).then(ref => {
-      return this.db.object(`affiliates/${ref.key}`).update({ key: ref.key });
-    });
+    const ref = await this.db.list('affiliates').push(affiliateData);
+    const key = ref.key || '';
+    await this.db.object(`affiliates/${key}`).update({ key });
+    return key;
   }
 
   // ==========================================
@@ -455,6 +474,83 @@ export class FirebaseService {
       );
   }
 
+  private async ensureAuthenticatedFunctionCall(): Promise<void> {
+    const user = await this.auth.currentUser;
+    if (!user) {
+      throw new Error('Your session has expired. Please sign in again.');
+    }
+
+    // Ensure AngularFire Functions can attach a fresh Firebase ID token.
+    await user.getIdToken(true);
+  }
+
+  public async createDashboardAuthUser(data: {
+    email: string;
+    password: string;
+    name: string;
+    role: 'account_manager' | 'affiliate';
+    versionKey?: string;
+    affiliateKey?: string;
+  }): Promise<{ uid: string }> {
+    await this.ensureAuthenticatedFunctionCall();
+    const result = await firstValueFrom(
+      this.fns.httpsCallable('createDashboardUser')(data)
+    ) as { uid?: string } | undefined;
+    if (!result?.uid) throw new Error('Failed to create dashboard user');
+    return { uid: result.uid };
+  }
+
+  public async updateDashboardAuthUser(data: {
+    uid: string;
+    email?: string;
+    password?: string;
+    name?: string;
+    isActive?: boolean;
+  }): Promise<void> {
+    await this.ensureAuthenticatedFunctionCall();
+    await firstValueFrom(this.fns.httpsCallable('updateDashboardUserAuth')(data));
+  }
+
+  public getActiveAccountManagersByVersion(versionKey: string): Observable<DashboardUser[]> {
+    return this.getAllDashboardUsers().pipe(
+      map(users => users.filter(user =>
+        user.role === 'account_manager' &&
+        user.isActive &&
+        (!user.versionKey || user.versionKey === versionKey)
+      ))
+    );
+  }
+
+  /** Round-robin: assign the least recently assigned active account manager. */
+  public assignNextAccountManager(versionKey: string): Promise<string | null> {
+    return this.getActiveAccountManagersByVersion(versionKey).pipe(take(1)).toPromise()
+      .then(managers => {
+        if (!managers?.length) return null;
+        const sorted = [...managers].sort((a, b) => {
+          if (!a.last_assigned_at && !b.last_assigned_at) return 0;
+          if (!a.last_assigned_at) return -1;
+          if (!b.last_assigned_at) return 1;
+          return a.last_assigned_at - b.last_assigned_at;
+        });
+        const chosen = sorted[0];
+        return this.db.object(`dashboard_users/${chosen.uid}`).update({
+          last_assigned_at: Date.now()
+        }).then(() => chosen.uid);
+      });
+  }
+
+  public getAffiliatesByAccountManager(accountManagerKey: string): Observable<Affiliate[]> {
+    return combineLatest([
+      this.getAllAffiliates(),
+      this.getDashboardUser(accountManagerKey)
+    ]).pipe(
+      map(([affiliates, manager]) => affiliates.filter(affiliate =>
+        affiliate.accountManagerKey === accountManagerKey ||
+        (!!manager?.affiliateKey && affiliate.key === manager.affiliateKey)
+      ))
+    );
+  }
+
   // ==========================================
   // Sales Members
   // ==========================================
@@ -517,18 +613,163 @@ export class FirebaseService {
   // Lead Sales Status
   // ==========================================
 
-  public updateLeadSalesStatus(leadKey: string, status: string): Promise<void> {
-    return this.db.object(`leads/${leadKey}`).update({ sales_status: status });
+  public updateLeadSalesStatus(
+    leadKey: string,
+    status: SalesStatus,
+    salesPackage?: SalesPackage
+  ): Promise<void> {
+    if (status === 'closed' && !salesPackage) {
+      return Promise.reject(new Error('A package is required when closing a lead'));
+    }
+
+    return this.db.object(`leads/${leadKey}`).update({
+      sales_status: status,
+      sales_package: status === 'closed' ? salesPackage : null
+    });
   }
 
   public updateLeadAffiliateStatus(leadKey: string, status: string): Promise<void> {
     return this.db.object(`leads/${leadKey}`).update({ affiliate_status: status });
   }
 
+  public getRenewalCycles(leadKey: string): Observable<RenewalCycle[]> {
+    return this.db.list<RenewalCycle>(`lead_renewals/${leadKey}`)
+      .snapshotChanges()
+      .pipe(
+        map(changes => changes
+          .map(change => ({
+            ...(change.payload.val() as RenewalCycle),
+            key: change.payload.key || ''
+          }))
+          .sort((a, b) => a.cycleNumber - b.cycleNumber)
+        )
+      );
+  }
+
+  public async createRenewalCycle(
+    lead: Lead,
+    cycleNumber: number,
+    createdBy: string
+  ): Promise<RenewalCycle> {
+    if (!lead.key) throw new Error('Lead key is required');
+    const now = new Date().toISOString();
+    const data: Omit<RenewalCycle, 'key'> = {
+      leadKey: lead.key,
+      versionKey: lead.versionKey,
+      cycleNumber,
+      status: 'renewal_followup',
+      createdAt: now,
+      updatedAt: now,
+      resolvedAt: null,
+      createdBy
+    };
+    const ref = await this.db.list(`lead_renewals/${lead.key}`).push(data);
+    const key = ref.key || '';
+    await Promise.all([
+      this.db.object(`lead_renewals/${lead.key}/${key}`).update({ key }),
+      this.db.object(`leads/${lead.key}`).update({
+        current_renewal_cycle_key: key,
+        renewal_status: 'renewal_followup',
+        renewal_package: null,
+        affiliate_status: 'renewal_followup'
+      })
+    ]);
+    return { ...data, key };
+  }
+
+  public async ensureInitialRenewalCycle(lead: Lead, createdBy: string): Promise<RenewalCycle> {
+    if (!lead.key) throw new Error('Lead key is required');
+    const existing = await this.getRenewalCycles(lead.key).pipe(take(1)).toPromise();
+    if (existing?.length) return existing[existing.length - 1];
+
+    const now = new Date().toISOString();
+    const status = lead.renewal_status || lead.affiliate_status || 'renewal_followup';
+    const renewalCount = lead.renewal_count ?? (status === 'renewed' ? 1 : 0);
+    const data: Omit<RenewalCycle, 'key'> = {
+      leadKey: lead.key,
+      versionKey: lead.versionKey,
+      cycleNumber: Math.max(1, renewalCount || 1),
+      status,
+      createdAt: now,
+      updatedAt: now,
+      resolvedAt: status === 'renewal_followup' ? null : now,
+      createdBy
+    };
+    if (status === 'renewed' && lead.renewal_package) data.package = lead.renewal_package;
+    const ref = await this.db.list(`lead_renewals/${lead.key}`).push(data);
+    const key = ref.key || '';
+    await Promise.all([
+      this.db.object(`lead_renewals/${lead.key}/${key}`).update({ key }),
+      this.db.object(`leads/${lead.key}`).update({
+        current_renewal_cycle_key: key,
+        renewal_status: status,
+        renewal_package: status === 'renewed' ? lead.renewal_package || null : null,
+        renewal_count: renewalCount,
+        affiliate_status: status
+      })
+    ]);
+    return { ...data, key };
+  }
+
+  public async updateRenewalCycleStatus(
+    lead: Lead,
+    cycle: RenewalCycle,
+    status: RenewalStatus,
+    salesPackage?: SalesPackage
+  ): Promise<void> {
+    if (!lead.key || !cycle.key) throw new Error('Lead and renewal cycle are required');
+    if (status === 'renewed' && !salesPackage) {
+      throw new Error('A package is required for renewed leads');
+    }
+
+    const wasRenewed = cycle.status === 'renewed';
+    const willBeRenewed = status === 'renewed';
+    const currentCount = lead.renewal_count ?? (lead.affiliate_status === 'renewed' ? 1 : 0);
+    const renewalCount = Math.max(0, currentCount + (willBeRenewed ? 1 : 0) - (wasRenewed ? 1 : 0));
+    const now = new Date().toISOString();
+    const isResolved = status !== 'renewal_followup';
+
+    await Promise.all([
+      this.db.object(`lead_renewals/${lead.key}/${cycle.key}`).update({
+        status,
+        package: status === 'renewed' ? salesPackage : null,
+        updatedAt: now,
+        resolvedAt: isResolved ? now : null
+      }),
+      this.db.object(`leads/${lead.key}`).update({
+        renewal_status: status,
+        renewal_package: status === 'renewed' ? salesPackage : null,
+        renewal_count: renewalCount,
+        current_renewal_cycle_key: cycle.key,
+        affiliate_status: status
+      })
+    ]);
+  }
+
+  public async addRenewalCall(
+    leadKey: string,
+    cycle: RenewalCycle,
+    data: Omit<CallLog, 'key' | 'createdAt' | 'renewalCycleKey' | 'renewalCycleNumber'>
+  ): Promise<string> {
+    const logs = await this.getCallLogs(leadKey).pipe(take(1)).toPromise();
+    const cycleCalls = (logs || []).filter(log =>
+      log.renewalCycleKey === cycle.key ||
+      (cycle.cycleNumber === 1 && log.type === 'affiliate' && !log.renewalCycleKey)
+    );
+    if (cycleCalls.length >= 4) throw new Error('Maximum of 4 calls reached for this renewal follow-up');
+    return this.addCallLog(leadKey, {
+      ...data,
+      type: 'renewal',
+      renewalCycleKey: cycle.key,
+      renewalCycleNumber: cycle.cycleNumber
+    });
+  }
+
   public assignSalesMemberToLead(leadKey: string, salesMemberKey: string): Promise<void> {
     return this.db.object(`leads/${leadKey}`).update({
       salesMemberKey,
-      sales_status: 'new'
+      sales_status: 'new',
+      sales_package: null
     });
   }
 

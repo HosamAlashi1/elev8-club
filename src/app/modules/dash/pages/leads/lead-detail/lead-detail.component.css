@@ -177,6 +177,34 @@
 .ld-step--active .ld-step-label { color: #cfae58; }
 .ld-step--done .ld-step-label { color: #374151; }
 
+.ld-package-selector {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(207, 174, 88, 0.4);
+  border-radius: 12px;
+  background: #fffdf7;
+}
+
+.ld-package-title { margin-bottom: 11px; color: #374151; font-size: 0.85rem; font-weight: 700; }
+.ld-package-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.ld-package-options button {
+  padding: 9px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background: white;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.ld-package-options button.active { border-color: #cfae58; background: rgba(207, 174, 88, 0.1); color: #9a761d; }
+.ld-package-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.ld-package-cancel,
+.ld-package-save { padding: 7px 13px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; }
+.ld-package-cancel { border: 1px solid #e5e7eb; background: white; color: #6b7280; }
+.ld-package-save { border: none; background: #1a1a2e; color: white; }
+.ld-package-save:disabled,
+.ld-package-cancel:disabled { opacity: 0.55; }
+
 /* ── Call Log Card ───────────────────────────────── */
 .ld-calls-card { padding: 20px; }
 

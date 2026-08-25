@@ -125,7 +125,46 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "assets": [
+                "src/favicon.ico",
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "/assets",
+                  "ignore": [
+                    "images/figma-home/**",
+                    "images/anima-home/proof-avatar-*.svg",
+                    "images/anima-home/proof-avatar-*.png",
+                    "images/anima-home/faq-question-mark.svg",
+                    "images/anima-home/proof-frame-*.jpg",
+                    "images/anima-home/proof-phone-*.png",
+                    "images/anima-home/shots-screenshot.png",
+                    "images/anima-home/trust-*.png",
+                    "images/anima-home/learn-education.png",
+                    "images/anima-home/group-80.png",
+                    "images/anima-home/group-8.svg",
+                    "images/anima-home/shots-phones-*.svg",
+                    "images/canva/trading-screenshot.png",
+                    "images/canva/khalil-gaza.jpg",
+                    "images/canva/khalil-pill.jpg",
+                    "images/canva/khalil-office.png",
+                    "images/canva/khalil-main.jpg",
+                    "images/canva/video-proof-*.png",
+                    "images/canva/elev8-instagram.jpg",
+                    "images/video-questions/whatsapp-coin.svg",
+                    "images/screenshots/*.jpeg"
+                  ]
+                },
+                "src/.htaccess",
+                "src/web.config",
+                "src/firebase-messaging-sw.js",
+                {
+                  "glob": "**/*",
+                  "input": ".video-build/hls",
+                  "output": "/videos/challenge-intro"
+                }
+              ]
             },
             "local": {
               "buildOptimizer": false,
@@ -138,6 +177,45 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local.ts"
+                }
+              ],
+              "assets": [
+                "src/favicon.ico",
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "/assets",
+                  "ignore": [
+                    "images/figma-home/**",
+                    "images/anima-home/proof-avatar-*.svg",
+                    "images/anima-home/proof-avatar-*.png",
+                    "images/anima-home/faq-question-mark.svg",
+                    "images/anima-home/proof-frame-*.jpg",
+                    "images/anima-home/proof-phone-*.png",
+                    "images/anima-home/shots-screenshot.png",
+                    "images/anima-home/trust-*.png",
+                    "images/anima-home/learn-education.png",
+                    "images/anima-home/group-80.png",
+                    "images/anima-home/group-8.svg",
+                    "images/anima-home/shots-phones-*.svg",
+                    "images/canva/trading-screenshot.png",
+                    "images/canva/khalil-gaza.jpg",
+                    "images/canva/khalil-pill.jpg",
+                    "images/canva/khalil-office.png",
+                    "images/canva/khalil-main.jpg",
+                    "images/canva/video-proof-*.png",
+                    "images/canva/elev8-instagram.jpg",
+                    "images/video-questions/whatsapp-coin.svg",
+                    "images/screenshots/*.jpeg"
+                  ]
+                },
+                "src/.htaccess",
+                "src/web.config",
+                "src/firebase-messaging-sw.js",
+                {
+                  "glob": "**/*",
+                  "input": ".video-build/hls",
+                  "output": "/videos/challenge-intro"
                 }
               ]
             },

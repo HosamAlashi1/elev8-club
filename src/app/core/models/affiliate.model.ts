@@ -6,4 +6,7 @@ export interface Affiliate {
   code: string;
   whatsappNumber: string;
   createdAt: string;
+  userId?: string;
+  accountManagerKey?: string;
+  accountManagerAssignedAt?: number;
 }

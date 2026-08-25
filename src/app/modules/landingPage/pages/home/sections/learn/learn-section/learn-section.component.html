@@ -28,12 +28,13 @@
     </h2>
   </header>
 
-  <div class="learn-scroll-viewport">
-
   <div class="learn-grid" aria-label="أجزاء المحتوى">
     <div
       class="learn-card-aos"
       *ngFor="let item of parts; let i = index"
+      data-aos="fade-up"
+      [attr.data-aos-delay]="90 + i * 45"
+      data-aos-duration="650"
     >
       <article class="learn-card">
         <div class="learn-card-head">
@@ -47,6 +48,9 @@
 
     <div
       class="learn-card-aos"
+      data-aos="zoom-in"
+      data-aos-delay="320"
+      data-aos-duration="680"
     >
       <article class="learn-card learn-card--cta">
         <p class="learn-cta-text">
@@ -62,6 +66,5 @@
         </button>
       </article>
     </div>
-  </div>
   </div>
 </section>

@@ -1,10 +1,10 @@
 ﻿import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
-import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SalesStatus, SalesMember } from '../../../../core/models';
+import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember } from '../../../../core/models';
 import { ToastrsService } from '../../../services/toater.service';
 import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { DeleteComponent } from '../../shared/delete/delete.component';
@@ -123,7 +123,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
     this.firebaseService.getCurrentVersion().subscribe(version => {
       this.currentVersion = version;
       if (version) {
-        this.loadAffiliates();
+        this.loadLeads();
       } else {
         this.toastr.showError('No active version found');
         this.isLoading$.next(false);
@@ -179,8 +179,16 @@ export class LeadsComponent implements OnInit, OnDestroy {
       ? this.firebaseService.getLeadsBySalesMember(this.salesMemberKey)
       : this.firebaseService.getLeadsByVersion(this.currentVersion.key);
 
-    leads$.pipe(takeUntil(this.destroy$)).subscribe(
-      leads => {
+    forkJoin({
+      affiliates: this.firebaseService.getAffiliatesByVersion(this.currentVersion.key).pipe(take(1)),
+      sales: this.firebaseService.getSalesByVersion(this.currentVersion.key).pipe(take(1)),
+      salesMembers: this.firebaseService.getSalesMembersByVersion(this.currentVersion.key).pipe(take(1)),
+      leads: leads$.pipe(take(1))
+    }).pipe(takeUntil(this.destroy$)).subscribe(
+      ({ affiliates, sales, salesMembers, leads }) => {
+        this.affiliates = affiliates;
+        this.salesList = sales || [];
+        this.salesMembers = salesMembers;
         this.allLeads = leads.map(lead => {
           const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
           const sales = lead.assigned_sales ? this.salesList.find(s => s.key === (lead.assigned_sales?.group_id || lead.assigned_sales?.sales_id)) : null;
@@ -323,6 +331,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
           salesName:       l.salesName,
           salesMemberName: l.salesMemberName,
           sales_status:    l.sales_status,
+          sales_package:   l.sales_package,
           step:            l.step,
           createdAt:       l.createdAt,
           completedAt:     (l as any).completedAt
@@ -345,8 +354,10 @@ export class LeadsComponent implements OnInit, OnDestroy {
     return step === 2 ? 'Completed' : 'Pending';
   }
 
-  getSalesStatusLabel(status?: string): string {
-    return SALES_STATUS_LABELS[(status as SalesStatus)] || 'New';
+  getSalesStatusLabel(lead: Lead): string {
+    const statusLabel = SALES_STATUS_LABELS[(lead.sales_status as SalesStatus)] || 'New';
+    if (lead.sales_status !== 'closed' || !lead.sales_package) return statusLabel;
+    return `${statusLabel} - ${SALES_PACKAGE_LABELS[lead.sales_package]}`;
   }
 
   getSalesStatusClass(status?: string): string {

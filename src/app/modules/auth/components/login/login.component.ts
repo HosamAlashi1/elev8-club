@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   message: string;
   messageType: string;
   isLoginLoading: boolean = false;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -42,6 +43,10 @@ export class LoginComponent implements OnInit {
     this.messageType = success ? 'success' : 'danger';
     this.changeDetectorRef.detectChanges();
   }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
   submit() {
     this.message = '';
     this.messageType = '';
@@ -50,6 +55,9 @@ export class LoginComponent implements OnInit {
     this.authService.SignIn(this.f.email.value, this.f.password.value)
       .then(async (res: any) => {
         const user = res.user;
+
+        // Finish restoring/minting the Firebase session before dashboard navigation.
+        await user.getIdToken(true);
 
         if (!user.emailVerified) {
           this.authService.SendVerificationMail();
@@ -64,8 +72,15 @@ export class LoginComponent implements OnInit {
           dashUser = (await this.service.getDashboardUser(user.uid).toPromise()) ?? null;
         } catch (e) {}
 
+        if (!dashUser) {
+          await this.authService.SignOut();
+          this.showMsg(false, 'Dashboard access is not configured for this account.');
+          this.isLoginLoading = false;
+          return;
+        }
+
         // Block inactive users
-        if (dashUser && !dashUser.isActive) {
+        if (!dashUser.isActive) {
           await this.authService.SignOut();
           this.showMsg(false, 'Your account is inactive. Please contact an administrator.');
           this.isLoginLoading = false;
@@ -75,10 +90,10 @@ export class LoginComponent implements OnInit {
         const sessionData = {
           uid: user.uid,
           email: user.email,
-          role: dashUser?.role || 'admin',
-          name: dashUser?.name || user.displayName || '',
-          salesMemberKey: dashUser?.salesMemberKey || null,
-          affiliateKey: dashUser?.affiliateKey || null,
+          role: dashUser.role,
+          name: dashUser.name || user.displayName || '',
+          salesMemberKey: dashUser.salesMemberKey || null,
+          affiliateKey: dashUser.affiliateKey || null,
         };
 
         localStorage.setItem('elev8-club-data', JSON.stringify(sessionData));
