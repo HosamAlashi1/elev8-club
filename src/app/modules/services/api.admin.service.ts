@@ -188,10 +188,14 @@ export class ApiAdminService {
 
 	/**
 	 * Send bulk email campaign to leads
-	 * @param emailData - { subject: string, htmlContent: string, recipients: string[] }
+	 * @param emailData - Personalized recipients with email and lead name.
 	 * @returns Observable with response
 	 */
-	sendBulkEmail(emailData: { subject: string; htmlContent: string; recipients: string[] }): Observable<any> {
+	sendBulkEmail(emailData: {
+		subject: string;
+		htmlContent: string;
+		recipients: Array<{ email: string; name: string }>;
+	}): Observable<any> {
 		const callable = this.fns.httpsCallable('sendBulkEmail');
 		return callable(emailData);
 	}

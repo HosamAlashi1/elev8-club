@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseService } from 'src/app/modules/services/firebase.service';
-import { Subject, takeUntil } from 'rxjs';
+import { of, Subject, switchMap, takeUntil } from 'rxjs';
 import { ToastrsService } from '../../../../services/toater.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddEditSalesItemComponent } from './add-edit-sales-item/add-edit-sales-item.component';
@@ -49,17 +49,21 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
   loadCurrentVersion(): void {
     this.isLoading = true;
     this.firebaseService.getCurrentVersion()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: version => {
+      .pipe(
+        switchMap(version => {
           this.currentVersion = version;
-          if (!version) {
-            this.toastr.showError('No active version found');
+          return version ? this.firebaseService.getSalesByVersion(version.key) : of(null);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: items => {
+          if (!items) {
+            this.salesItems = [];
             this.isLoading = false;
             return;
           }
-
-          this.loadSalesItems();
+          this.applySalesItems(items);
         },
         error: err => {
           console.error('Error loading current version:', err);
@@ -70,14 +74,11 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
   }
 
   loadSalesItems(): void {
-    if (!this.currentVersion) return;
+    // The live Firebase subscription refreshes this list automatically.
+  }
 
-    this.isLoading = true;
-    this.firebaseService.getSalesByVersion(this.currentVersion.key)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (items: any[]) => {
-          this.salesItems = items.map((item, index) => ({
+  private applySalesItems(items: any[]): void {
+          this.salesItems = items.map((item: any, index: number) => ({
             id: item.key,
             group_name: item.group_name || item.name || `WhatsApp Group ${item.group_order || index + 1}`,
             group_link: item.group_link || item.whatsapp_link || this.getLegacyWhatsAppLink(item.whatsapp_number),
@@ -87,13 +88,6 @@ export class SalesSettingsComponent implements OnInit, OnDestroy {
             versionKey: item.versionKey
           })).sort((a, b) => a.group_order - b.group_order);
           this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Error loading WhatsApp groups:', err);
-          this.toastr.showError('Failed to load WhatsApp groups');
-          this.isLoading = false;
-        }
-      });
   }
 
   add(): void {

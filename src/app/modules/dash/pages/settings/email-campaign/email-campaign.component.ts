@@ -1,19 +1,64 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { of, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { FirebaseService } from 'src/app/modules/services/firebase.service';
 import { ApiAdminService } from 'src/app/modules/services/api.admin.service';
 import { ToastrsService } from 'src/app/modules/services/toater.service';
 import { Lead } from 'src/app/core/models';
 import Quill from 'quill';
 
+interface CampaignRecipient {
+  email: string;
+  name: string;
+}
+
+const DEFAULT_EMAIL_SUBJECT = 'موعد Elev8 Challenge 0.3 ورابط مجموعة الواتساب';
+
+const DEFAULT_EMAIL_CONTENT = `
+  <div dir="rtl" style="text-align: right; line-height: 1.9; font-family: Arial, sans-serif;">
+    <p>مرحباً {{الاسم}} 👋</p>
+    <p>تم تسجيل بياناتك بنجاح في <strong>Elev8 Challenge 0.3</strong>.</p>
+    <p>
+      📅 <strong>موعد التحدي:</strong> 15 سبتمبر 2026<br>
+      🕘 <strong>الساعة:</strong> 9:00 مساءً بتوقيت مصر<br>
+      💻 <strong>عبر Zoom</strong>
+    </p>
+    <p><strong>لكن في خطوة مهمة جداً قبل موعد التحدي:</strong></p>
+    <p>انضم إلى مجموعة الواتساب الخاصة بالتحدي 👇</p>
+    <p>من خلال المجموعة رح نرسل لك:</p>
+    <ul>
+      <li>🔗 رابط الدخول إلى Zoom</li>
+      <li>⏰ تذكيرات قبل بداية التحدي</li>
+      <li>📢 جميع التحديثات المهمة</li>
+      <li>🎯 التعليمات والتفاصيل الخاصة بالتحدي</li>
+    </ul>
+    <p><strong>اضغط هنا للانضمام إلى المجموعة:</strong></p>
+    <p>
+      <a href="https://chat.whatsapp.com/FE8WeRqJZtdBRCqz6Euw5d?s=cl&amp;p=i&amp;mlu=4"
+         target="_blank"
+         rel="noopener noreferrer"
+         style="display: inline-block; padding: 12px 22px; border-radius: 8px; background: #25D366; color: #ffffff; text-decoration: none; font-weight: bold;">
+        انضم إلى مجموعة الواتساب
+      </a>
+    </p>
+    <p>⚠️ <strong>مهم:</strong> رابط Zoom والتحديثات الخاصة بالتحدي رح يتم إرسالها داخل مجموعة الواتساب، لذلك تأكد من انضمامك للمجموعة حتى ما يفوتك أي شيء.</p>
+    <p>نشوفك يوم 15 سبتمبر الساعة 9 مساءً بتوقيت مصر 🔥</p>
+    <p>فريق Elev8</p>
+  </div>
+`;
+
 @Component({
   selector: 'app-email-campaign',
   templateUrl: './email-campaign.component.html',
   styleUrls: ['./email-campaign.component.css']
 })
-export class EmailCampaignComponent implements OnInit {
+export class EmailCampaignComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  readonly namePlaceholder = '{{الاسم}}';
+
   // Email Form
-  emailSubject = '';
-  emailContent = '';
+  emailSubject = DEFAULT_EMAIL_SUBJECT;
+  emailContent = DEFAULT_EMAIL_CONTENT;
 
   // Quill Config
   quillModules = {
@@ -39,6 +84,7 @@ export class EmailCampaignComponent implements OnInit {
   // Test Mode
   testMode = true;
   testEmail = 'hosam22.1.2003@gmail.com';
+  testRecipientName = 'خليل';
   
   // Loading States
   isLoadingLeads = true;
@@ -57,46 +103,45 @@ export class EmailCampaignComponent implements OnInit {
     this.loadLeads();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadLeads(): void {
     this.isLoadingLeads = true;
     
-    this.firebaseService.getCurrentVersion().subscribe(version => {
-      if (!version) {
-        this.toastr.showError('No active version found');
-        this.isLoadingLeads = false;
-        return;
-      }
-
-      this.firebaseService.getLeadsByVersion(version.key).subscribe(
-        leads => {
+    this.firebaseService.getCurrentVersion().pipe(
+      switchMap(version => version ? this.firebaseService.getLeadsByVersion(version.key) : of(null)),
+      takeUntil(this.destroy$)
+    ).subscribe({
+        next: leads => {
+          if (!leads) {
+            this.allLeads = [];
+            this.updateTargetedCount();
+            this.isLoadingLeads = false;
+            return;
+          }
           this.allLeads = leads;
           this.updateTargetedCount();
           this.isLoadingLeads = false;
         },
-        error => {
+        error: () => {
           this.toastr.showError('Failed to load leads');
           this.isLoadingLeads = false;
         }
-      );
     });
   }
 
   updateTargetedCount(): void {
-    let filteredLeads = [...this.allLeads];
-
-    if (this.filterStatus === 'completed') {
-      filteredLeads = filteredLeads.filter(lead => lead.step === 2);
-    } else if (this.filterStatus === 'pending') {
-      filteredLeads = filteredLeads.filter(lead => lead.step !== 2);
-    }
-
-    this.targetedLeadsCount = filteredLeads.length;
+    this.targetedLeadsCount = this.getTargetedRecipients().length;
   }
 
-  getTargetedLeadsEmails(): string[] {
-    // إذا كان Test Mode مفعل، أرسل فقط لإيميل الاختبار
+  getTargetedRecipients(): CampaignRecipient[] {
     if (this.testMode) {
-      return [this.testEmail];
+      return this.isValidEmail(this.testEmail)
+        ? [{ email: this.testEmail.trim(), name: this.testRecipientName }]
+        : [];
     }
 
     let filteredLeads = [...this.allLeads];
@@ -107,9 +152,21 @@ export class EmailCampaignComponent implements OnInit {
       filteredLeads = filteredLeads.filter(lead => lead.step !== 2);
     }
 
-    return filteredLeads
-      .filter(lead => lead.email && this.isValidEmail(lead.email))
-      .map(lead => lead.email);
+    const uniqueRecipients = new Map<string, CampaignRecipient>();
+    filteredLeads.forEach(lead => {
+      const email = (lead.email || '').trim();
+      if (!this.isValidEmail(email)) return;
+
+      const normalizedEmail = email.toLowerCase();
+      if (!uniqueRecipients.has(normalizedEmail)) {
+        uniqueRecipients.set(normalizedEmail, {
+          email,
+          name: (lead.fullName || '').trim()
+        });
+      }
+    });
+
+    return Array.from(uniqueRecipients.values());
   }
 
   isValidEmail(email: string): boolean {
@@ -128,6 +185,14 @@ export class EmailCampaignComponent implements OnInit {
 
   togglePreview(): void {
     this.showPreview = !this.showPreview;
+  }
+
+  get previewEmailContent(): string {
+    const previewName = this.testMode ? this.testRecipientName : 'اسم المشترك';
+    return this.emailContent.replace(
+      /\{\{\s*(?:الاسم|name)\s*\}\}/gi,
+      previewName
+    );
   }
 
   sendCampaign(): void {
@@ -150,7 +215,7 @@ export class EmailCampaignComponent implements OnInit {
     const emailData = {
       subject: this.emailSubject,
       htmlContent: this.emailContent,
-      recipients: this.getTargetedLeadsEmails()
+      recipients: this.getTargetedRecipients()
     };
 
     this.apiAdminService.sendBulkEmail(emailData).subscribe({
@@ -171,8 +236,8 @@ export class EmailCampaignComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.emailSubject = '';
-    this.emailContent = '';
+    this.emailSubject = DEFAULT_EMAIL_SUBJECT;
+    this.emailContent = DEFAULT_EMAIL_CONTENT;
     this.filterStatus = 'all';
     this.showPreview = false;
   }

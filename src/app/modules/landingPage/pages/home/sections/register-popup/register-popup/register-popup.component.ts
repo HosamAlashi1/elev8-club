@@ -5,6 +5,7 @@ import { FirebaseService } from '../../../../../../services/firebase.service';
 import { LandingSettingsService } from '../../../../../../services/landing-settings.service';
 import { GtmService } from '../../../../../../services/gtm.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
+import { take } from 'rxjs/operators';
 
 interface FormData {
   fullName: string;
@@ -191,7 +192,7 @@ export class RegisterPopupComponent implements OnInit {
       this.currentAffiliate = null;
 
       // جلب النسخة الحالية
-      this.firebaseService.getCurrentVersion().subscribe(version => {
+      this.firebaseService.getCurrentVersion().pipe(take(1)).subscribe(version => {
         this.currentVersion = version;
 
         if (this.affiliateCode && version?.key) {

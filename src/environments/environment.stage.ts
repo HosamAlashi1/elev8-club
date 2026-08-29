@@ -9,13 +9,13 @@ export const environment = {
     challengeIntroPoster: "https://elev8-video.pages.dev/challenge-intro/poster.jpg"
   },
   firebase: {
-    apiKey: "AIzaSyAssOG7bw4BGipTDITaOdbdsRfwctu5MaY",
-    authDomain: "elev8-club.firebaseapp.com",
-    databaseURL: "https://elev8-club-default-rtdb.firebaseio.com",
-    projectId: "elev8-club",
-    storageBucket: "elev8-club.firebasestorage.app",
-    messagingSenderId: "642324793888",
-    appId: "1:642324793888:web:e2e27e218dd60c7d5aca45",
-    measurementId: "G-H4HYFB0DNV"
+    apiKey: "AIzaSyDbwiL9Ia_imWqEufvi2g9DRd6T9rcr-zI",
+    authDomain: "elev8-club-3.firebaseapp.com",
+    databaseURL: "https://elev8-club-3-default-rtdb.firebaseio.com",
+    projectId: "elev8-club-3",
+    storageBucket: "elev8-club-3.firebasestorage.app",
+    messagingSenderId: "631927284455",
+    appId: "1:631927284455:web:4b46b999a88cc83f8eb842",
+    measurementId: "G-0ZGCDMTWWF"
   }
 };

@@ -1,15 +1,57 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true,
+    ".read": false,
+    ".write": false,
     "versions": {
+      ".read": true,
+      ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
       ".indexOn": ["isCurrent"]
     },
     "affiliates": {
+      ".read": true,
+      ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
       ".indexOn": ["code", "versionKey", "accountManagerKey"]
     },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'"
+    },
+    "sales": {
+      ".read": true,
+      ".indexOn": ["versionKey"],
+      "$salesId": {
+        ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin' || data.exists() && newData.exists() && newData.child('counter').isNumber() && newData.child('counter').val() == data.child('counter').val() + 1 && newData.child('last_assigned_at').isNumber() && newData.child('versionKey').val() == data.child('versionKey').val() && newData.child('whatsapp_number').val() == data.child('whatsapp_number').val()"
+      }
+    },
+    "sales_members": {
+      ".read": true,
+      ".indexOn": ["versionKey", "isActive", "last_assigned_at"],
+      "$memberId": {
+        ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin' || data.exists() && newData.exists() && newData.child('last_assigned_at').isNumber() && newData.child('versionKey').val() == data.child('versionKey').val() && newData.child('name').val() == data.child('name').val() && newData.child('email').val() == data.child('email').val() && newData.child('phone').val() == data.child('phone').val() && newData.child('userId').val() == data.child('userId').val() && newData.child('isActive').val() == data.child('isActive').val()"
+      }
+    },
     "leads": {
-      ".indexOn": ["versionKey", "affiliateKey", "salesMemberKey", "step"]
+      ".read": "auth != null",
+      ".indexOn": ["versionKey", "affiliateKey", "salesMemberKey", "step"],
+      "$leadId": {
+        ".read": true,
+        ".write": "auth != null || !data.exists() && newData.exists() && newData.child('versionKey').isString() && newData.child('fullName').isString() && newData.child('email').isString() && newData.child('phone').isString() && newData.child('step').val() == 1 || data.exists() && newData.exists() && newData.child('versionKey').val() == data.child('versionKey').val() && newData.child('fullName').val() == data.child('fullName').val() && newData.child('email').val() == data.child('email').val() && newData.child('phone').val() == data.child('phone').val() && newData.child('createdAt').val() == data.child('createdAt').val()"
+      }
+    },
+    "dashboard_users": {
+      ".read": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin')",
+        ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'"
+      }
+    },
+    "lead_calls": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "lead_renewals": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     }
   }
 }

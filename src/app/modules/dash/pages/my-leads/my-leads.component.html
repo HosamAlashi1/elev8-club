@@ -28,7 +28,9 @@
         </app-modern-select>
       </div>
 
-      <small class="text-muted">{{ totalCount }} closed leads</small>
+      <small class="text-muted">
+        {{ totalCount }} {{ isAffiliate ? 'leads' : 'closed leads' }}
+      </small>
     </div>
 
     <div class="card mb-0">
@@ -51,14 +53,15 @@
               <th>Sales Status</th>
               <th>Renewal Status</th>
               <th>Renewal Count</th>
-              <th>Details</th>
+              <th *ngIf="isAffiliate">Created At</th>
+              <th *ngIf="!isAffiliate">Details</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="paginatedLeads.length === 0">
               <td [attr.colspan]="isAffiliate ? 5 : 8" class="text-center py-5 text-muted">
                 <i class="fe fe-inbox fs-2 d-block mb-2"></i>
-                No closed leads yet
+                {{ isAffiliate ? 'No leads yet' : 'No closed leads yet' }}
               </td>
             </tr>
             <tr *ngFor="let lead of paginatedLeads">
@@ -88,7 +91,10 @@
                 </span>
               </td>
               <td><span class="renewal-count-badge">{{ getRenewalCount(lead) }}</span></td>
-              <td>
+              <td *ngIf="isAffiliate" class="text-muted">
+                {{ getDate(lead.createdAt) }}
+              </td>
+              <td *ngIf="!isAffiliate">
                 <button class="btn btn-sm btn-outline-secondary" (click)="view(lead)">
                   <i class="fe fe-eye me-1"></i>View
                 </button>

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
 import { PublicService } from '../../../services/public.service';
@@ -19,8 +20,9 @@ const FILTER_ALL = '__all__';
   templateUrl: './my-leads.component.html',
   styleUrls: ['./my-leads.component.css']
 })
-export class MyLeadsComponent implements OnInit {
+export class MyLeadsComponent implements OnInit, OnDestroy {
   isLoading$ = new BehaviorSubject<boolean>(true);
+  private destroy$ = new Subject<void>();
 
   leads: Lead[] = [];
   allLeads: Lead[] = [];
@@ -52,6 +54,11 @@ export class MyLeadsComponent implements OnInit {
     this.loadLeads();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadLeads(): void {
     if (this.isAdmin) {
       this.loadAdminLeads();
@@ -64,25 +71,28 @@ export class MyLeadsComponent implements OnInit {
     const accountManagerKey = this.publicService.getCurrentUserUid();
     if (!accountManagerKey) { this.isLoading$.next(false); return; }
     this.isLoading$.next(true);
-    this.firebaseService.getCurrentVersion().subscribe(version => {
-      if (!version) { this.isLoading$.next(false); return; }
-      this.firebaseService.getAffiliatesByAccountManager(accountManagerKey).subscribe(affiliates => {
+    this.firebaseService.getCurrentVersion().pipe(
+      switchMap(version => !version ? of(null) : combineLatest({
+        affiliates: this.firebaseService.getAffiliatesByAccountManager(accountManagerKey),
+        leads: this.firebaseService.getClosedLeadsByVersion(version.key)
+      })),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: data => {
+        if (!data) { this.isLoading$.next(false); return; }
+        const { affiliates, leads } = data;
         this.buildAffiliateOptions(affiliates);
         const affiliateKeys = new Set(affiliates.map(affiliate => affiliate.key));
-        this.firebaseService.getClosedLeadsByVersion(version.key).subscribe({
-          next: leads => {
-            this.allLeads = leads
-              .filter(lead => !!lead.affiliateKey && affiliateKeys.has(lead.affiliateKey))
-              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-            this.applyFilters();
-            this.isLoading$.next(false);
-          },
-          error: () => {
-            this.toastr.showError('Failed to load leads');
-            this.isLoading$.next(false);
-          }
-        });
-      });
+        this.allLeads = leads
+          .filter(lead => !!lead.affiliateKey && affiliateKeys.has(lead.affiliateKey))
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        this.applyFilters();
+        this.isLoading$.next(false);
+      },
+      error: () => {
+        this.toastr.showError('Failed to load leads');
+        this.isLoading$.next(false);
+      }
     });
   }
 
@@ -93,7 +103,7 @@ export class MyLeadsComponent implements OnInit {
       return;
     }
     this.isLoading$.next(true);
-    this.firebaseService.getClosedLeadsByAffiliate(affiliateKey).subscribe(
+    this.firebaseService.getLeadsByAffiliate(affiliateKey).pipe(takeUntil(this.destroy$)).subscribe(
       leads => {
         this.allLeads = leads.sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -110,26 +120,26 @@ export class MyLeadsComponent implements OnInit {
 
   private loadAdminLeads(): void {
     this.isLoading$.next(true);
-    this.firebaseService.getCurrentVersion().subscribe(version => {
-      if (!version) { this.isLoading$.next(false); return; }
-
-      this.firebaseService.getAffiliatesByVersion(version.key).subscribe(affiliates => {
-        this.buildAffiliateOptions(affiliates);
-      });
-
-      this.firebaseService.getClosedLeadsByVersion(version.key).subscribe(
-        leads => {
-          this.allLeads = leads.sort((a, b) =>
+    this.firebaseService.getCurrentVersion().pipe(
+      switchMap(version => !version ? of(null) : combineLatest({
+        affiliates: this.firebaseService.getAffiliatesByVersion(version.key),
+        leads: this.firebaseService.getClosedLeadsByVersion(version.key)
+      })),
+      takeUntil(this.destroy$)
+    ).subscribe({
+        next: data => {
+          if (!data) { this.isLoading$.next(false); return; }
+          this.buildAffiliateOptions(data.affiliates);
+          this.allLeads = data.leads.sort((a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
           this.applyFilters();
           this.isLoading$.next(false);
         },
-        () => {
+        error: () => {
           this.toastr.showError('Failed to load leads');
           this.isLoading$.next(false);
         }
-      );
     });
   }
 
@@ -230,6 +240,7 @@ export class MyLeadsComponent implements OnInit {
     });
     modalRef.componentInstance.lead = lead;
     modalRef.componentInstance.readOnly = this.isAffiliate;
-    modalRef.result.then(() => this.loadLeads(), () => {});
+    // Firebase emits the updated lead automatically when the modal saves.
+    modalRef.result.then(() => {}, () => {});
   }
 }

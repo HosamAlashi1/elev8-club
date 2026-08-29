@@ -5,6 +5,62 @@ import * as sgMail from "@sendgrid/mail";
 
 admin.initializeApp();
 
+interface BulkEmailRecipient {
+  email: string;
+  name: string;
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Normalizes a legacy email string or a personalized recipient object.
+ * @param {unknown} recipient Raw callable input.
+ * @return {BulkEmailRecipient|null} A valid normalized recipient.
+ */
+function normalizeRecipient(recipient: unknown): BulkEmailRecipient | null {
+  if (typeof recipient === "string") {
+    const email = recipient.trim();
+    return EMAIL_PATTERN.test(email) ? {email, name: ""} : null;
+  }
+
+  if (!recipient || typeof recipient !== "object") return null;
+  const value = recipient as Record<string, unknown>;
+  if (typeof value.email !== "string") return null;
+
+  const email = value.email.trim();
+  if (!EMAIL_PATTERN.test(email)) return null;
+
+  return {
+    email,
+    name: typeof value.name === "string" ? value.name.trim() : "",
+  };
+}
+
+/**
+ * Escapes a lead name before inserting it into an HTML email.
+ * @param {string} value Untrusted display name.
+ * @return {string} HTML-safe text.
+ */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
+ * Replaces supported name placeholders in an email template.
+ * @param {string} html Campaign HTML.
+ * @param {string} name Recipient display name.
+ * @return {string} Personalized campaign HTML.
+ */
+function personalizeEmail(html: string, name: string): string {
+  const safeName = escapeHtml(name || "بك");
+  return html.replace(/\{\{\s*(?:الاسم|name)\s*\}\}/gi, safeName);
+}
+
 // معلومات الـ Google Sheet
 // ID فقط من الـ URL
 const SPREADSHEET_ID = "15EijmLwIpjWgdOHhHR8YbsGJsg_K8b46T5qwLw1gkks";
@@ -111,9 +167,11 @@ export const onLeadUpdated = functions.firestore
 
 /**
  * Firebase Function لإرسال الإيميلات الجماعية
- * تستقبل: subject, htmlContent, recipients[]
+ * تستقبل: subject, htmlContent, recipients[{email, name}]
  */
-export const sendBulkEmail = functions.https.onCall(async (data, context) => {
+export const sendBulkEmail = functions.runWith({
+  secrets: ["SENDGRID_API_KEY"],
+}).https.onCall(async (data, context) => {
   // التحقق من أن المستخدم مصادق عليه
   if (!context.auth) {
     throw new functions.https.HttpsError(
@@ -122,10 +180,24 @@ export const sendBulkEmail = functions.https.onCall(async (data, context) => {
     );
   }
 
+  const callerSnapshot = await admin.database()
+    .ref(`dashboard_users/${context.auth.uid}`)
+    .once("value");
+  if (callerSnapshot.val()?.role !== "admin") {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Only admins can send bulk emails"
+    );
+  }
+
   const {subject, htmlContent, recipients} = data;
 
   // التحقق من البيانات المطلوبة
-  if (!subject || !htmlContent || !recipients || !Array.isArray(recipients)) {
+  if (
+    typeof subject !== "string" ||
+    typeof htmlContent !== "string" ||
+    !Array.isArray(recipients)
+  ) {
     throw new functions.https.HttpsError(
       "invalid-argument",
       "Missing required fields: subject, htmlContent, or recipients"
@@ -139,23 +211,61 @@ export const sendBulkEmail = functions.https.onCall(async (data, context) => {
     );
   }
 
+  if (recipients.length > 1000) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "A campaign cannot exceed 1000 recipients"
+    );
+  }
+
+  if (String(subject).length > 150 || String(htmlContent).length > 200000) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Email subject or content is too large"
+    );
+  }
+
+  const uniqueRecipients = new Map<string, BulkEmailRecipient>();
+  recipients.forEach((recipient: unknown) => {
+    const normalized = normalizeRecipient(recipient);
+    if (normalized) {
+      uniqueRecipients.set(normalized.email.toLowerCase(), normalized);
+    }
+  });
+  const validRecipients = Array.from(uniqueRecipients.values());
+
+  if (validRecipients.length === 0) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Recipients do not contain any valid email addresses"
+    );
+  }
+
   try {
     // جلب إعدادات البريد من Firebase
+    const sendgridKey = process.env.SENDGRID_API_KEY;
+    if (!sendgridKey) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "SendGrid API key is not configured"
+      );
+    }
+
     const settingsSnapshot = await admin.database()
       .ref("settings")
       .once("value");
 
     const settings = settingsSnapshot.val();
 
-    if (!settings || !settings.sendgrid_key) {
+    if (!settings) {
       throw new functions.https.HttpsError(
         "failed-precondition",
-        "SendGrid API key not configured in settings"
+        "Email sender settings are not configured"
       );
     }
 
     // تهيئة SendGrid
-    sgMail.setApiKey(settings.sendgrid_key);
+    sgMail.setApiKey(sendgridKey);
 
     const senderEmail = settings.sender_email ||
       "noreply@elev8club.com";
@@ -167,34 +277,34 @@ export const sendBulkEmail = functions.https.onCall(async (data, context) => {
     let successCount = 0;
     let failedCount = 0;
 
-    for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
-      const batch = recipients.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < validRecipients.length; i += BATCH_SIZE) {
+      const batch = validRecipients.slice(i, i + BATCH_SIZE);
       batches.push(batch);
     }
 
-    const batchMsg = "📧 Sending to " + recipients.length +
+    const batchMsg = "📧 Sending to " + validRecipients.length +
       " recipients in " + batches.length + " batches";
     console.log(batchMsg);
 
     // معالجة كل دفعة
     for (const batch of batches) {
-      const emailPromises = batch.map(async (email: string) => {
+      const emailPromises = batch.map(async (recipient) => {
         try {
           await sgMail.send({
-            to: email,
+            to: recipient.email,
             from: {
               email: senderEmail,
               name: senderName,
             },
             subject: subject,
-            html: htmlContent,
+            html: personalizeEmail(htmlContent, recipient.name),
           });
           successCount++;
-          return {email, success: true};
+          return {success: true};
         } catch (error) {
-          console.error("Failed to send to " + email + ":", error);
+          console.error("Failed to send campaign email:", error);
           failedCount++;
-          return {email, success: false};
+          return {success: false};
         }
       });
 
@@ -206,16 +316,17 @@ export const sendBulkEmail = functions.https.onCall(async (data, context) => {
     console.log(completeMsg);
 
     const resultMsg = "Email sent to " + successCount +
-      " out of " + recipients.length + " recipients";
+      " out of " + validRecipients.length + " recipients";
 
     return {
       success: true,
-      totalRecipients: recipients.length,
+      totalRecipients: validRecipients.length,
       successCount,
       failedCount,
       message: resultMsg,
     };
   } catch (error: unknown) {
+    if (error instanceof functions.https.HttpsError) throw error;
     const errorMessage = error instanceof Error ?
       error.message : "Unknown error";
     console.error("❌ Error sending bulk emails:", error);

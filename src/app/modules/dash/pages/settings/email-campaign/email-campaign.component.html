@@ -35,6 +35,9 @@
               [styles]="{ height: '350px' }"
               placeholder="Write your email content here..."
             ></quill-editor>
+            <small class="text-muted d-block mt-2">
+              استخدم <code [textContent]="namePlaceholder"></code> لإضافة اسم كل مشترك تلقائيًا.
+            </small>
           </div>
 
           <!-- Preview Toggle -->
@@ -60,7 +63,7 @@
                   <strong>Subject:</strong> {{ emailSubject || '(No subject)' }}
                 </div>
                 <hr />
-                <div [innerHTML]="emailContent" class="email-preview-content"></div>
+                <div [innerHTML]="previewEmailContent" class="email-preview-content"></div>
               </div>
             </div>
           </div>

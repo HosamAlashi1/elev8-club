@@ -144,14 +144,13 @@ export class FirebaseService {
             };
           });
           return items.length > 0 ? items[0] : null;
-        }),
-        take(1)
+        })
       );
   }
 
   /** جلب جميع النسخ */
   public getAllVersions(): Observable<Version[]> {
-    return this.list('versions').pipe(take(1));
+    return this.list('versions');
   }
 
   /** إضافة نسخة جديدة */
@@ -213,14 +212,13 @@ export class FirebaseService {
 
   /** جلب جميع الأفلييت */
   public getAllAffiliates(): Observable<Affiliate[]> {
-    return this.list('affiliates').pipe(take(1));
+    return this.list('affiliates');
   }
 
   /** جلب جميع الأفلييتس لنسخة معينة */
   public getAffiliatesByVersion(versionKey: string): Observable<Affiliate[]> {
     return this.getAllAffiliates().pipe(
-      map(affiliates => affiliates.filter(affiliate => affiliate.versionKey === versionKey)),
-      take(1)
+      map(affiliates => affiliates.filter(affiliate => affiliate.versionKey === versionKey))
     );
   }
 
@@ -229,13 +227,12 @@ export class FirebaseService {
   // ==========================================
 
   public getAllSales(): Observable<any[]> {
-    return this.list('sales').pipe(take(1));
+    return this.list('sales');
   }
 
   public getSalesByVersion(versionKey: string): Observable<any[]> {
     return this.getAllSales().pipe(
-      map(sales => sales.filter(item => item.versionKey === versionKey)),
-      take(1)
+      map(sales => sales.filter(item => item.versionKey === versionKey))
     );
   }
 
@@ -310,17 +307,16 @@ export class FirebaseService {
     return this.db.object<Lead>(`leads/${leadKey}`)
       .valueChanges()
       .pipe(
-        map(lead => lead || null),
-        take(1)
+        map(lead => lead || null)
       );
   }
 
   public getAffiliateByKey(key: string): Observable<Affiliate | null> {
-    return this.db.object<Affiliate>(`affiliates/${key}`).valueChanges().pipe(map(a => a || null), take(1));
+    return this.db.object<Affiliate>(`affiliates/${key}`).valueChanges().pipe(map(a => a || null));
   }
 
   public getSalesMemberByKey(key: string): Observable<SalesMember | null> {
-    return this.db.object<SalesMember>(`sales_members/${key}`).valueChanges().pipe(map(m => m || null), take(1));
+    return this.db.object<SalesMember>(`sales_members/${key}`).valueChanges().pipe(map(m => m || null));
   }
 
   /** جلب جميع Leads لنسخة معينة */
@@ -330,7 +326,7 @@ export class FirebaseService {
 
   /** جلب Leads لأفلييت معين */
   public getLeadsByAffiliate(affiliateKey: string): Observable<Lead[]> {
-    return this.list('leads', 'affiliateKey', affiliateKey).pipe(take(1));
+    return this.list('leads', 'affiliateKey', affiliateKey);
   }
 
   /** جلب Leads لنسخة + أفلييت معين */
@@ -450,8 +446,7 @@ export class FirebaseService {
     return this.db.object<DashboardUser>(`dashboard_users/${uid}`)
       .valueChanges()
       .pipe(
-        map(user => user || null),
-        take(1)
+        map(user => user || null)
       );
   }
 
@@ -791,8 +786,7 @@ export class FirebaseService {
       map(changes => changes
         .map(c => ({ ...(c.payload.val() as Lead), key: c.payload.key || '' }))
         .filter(l => l.sales_status === 'closed')
-      ),
-      take(1)
+      )
     );
   }
 
@@ -803,8 +797,7 @@ export class FirebaseService {
       map(changes => changes
         .map(c => ({ ...(c.payload.val() as Lead), key: c.payload.key || '' }))
         .filter(l => l.sales_status === 'closed')
-      ),
-      take(1)
+      )
     );
   }
 

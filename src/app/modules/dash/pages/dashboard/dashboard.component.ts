@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FirebaseService } from '../../../services/firebase.service';
 import { PublicService } from '../../../services/public.service';
 import { Version, Lead } from '../../../../core/models';
-import { forkJoin, take } from 'rxjs';
+import { combineLatest, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // Dashboard stats
   numbers: number[] = [0, 0, 0, 0];
   targetNumbers: number[] = [0, 0, 0, 0];
@@ -59,9 +61,14 @@ export class DashboardComponent implements OnInit {
     this.loadCurrentVersion();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadCurrentVersion(): void {
     console.log('🔍 Fetching current version...');
-    this.firebaseService.getCurrentVersion().subscribe({
+    this.firebaseService.getCurrentVersion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (version: Version | null) => {
         console.log('✅ Current version received:', version);
         this.currentVersion = version;
@@ -105,10 +112,10 @@ export class DashboardComponent implements OnInit {
       { label: 'Active Affiliates', icon: 'fe fe-user-plus', iconClass: 'icon-customers', prefix: '' }
     ];
 
-    forkJoin({
-      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion!.key).pipe(take(1)),
-      allAffiliates: this.firebaseService.getAllAffiliates()
-    }).subscribe({
+    combineLatest({
+      allLeads: this.firebaseService.getLeadsByVersion(this.currentVersion!.key),
+      allAffiliates: this.firebaseService.getAffiliatesByVersion(this.currentVersion!.key)
+    }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         const leads = data.allLeads;
         const totalLeads = leads.length;
@@ -131,7 +138,7 @@ export class DashboardComponent implements OnInit {
       { label: 'Not Interested', icon: 'fe fe-x-circle', iconClass: 'icon-customers', prefix: '' }
     ];
 
-    this.firebaseService.getLeadsBySalesMember(salesMemberKey).subscribe({
+    this.firebaseService.getLeadsBySalesMember(salesMemberKey).pipe(takeUntil(this.destroy$)).subscribe({
       next: (leads) => {
         const total = leads.length;
         const closed = leads.filter(l => l.sales_status === 'closed').length;
@@ -147,23 +154,20 @@ export class DashboardComponent implements OnInit {
 
   private loadAffiliateDashboard(affiliateKey: string): void {
     this.dashboardCards = [
-      { label: 'Closed Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
-      { label: 'Renewed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
-      { label: 'Not Renewed', icon: 'fe fe-x-circle', iconClass: 'icon-customers', prefix: '' },
-      { label: 'In Follow-up', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' }
+      { label: 'Total Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
+      { label: 'Completed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
+      { label: 'Pending', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' },
+      { label: 'Closed Deals', icon: 'fe fe-briefcase', iconClass: 'icon-customers', prefix: '' }
     ];
 
-    this.firebaseService.getClosedLeadsByAffiliate(affiliateKey).subscribe({
+    this.firebaseService.getLeadsByAffiliate(affiliateKey).pipe(takeUntil(this.destroy$)).subscribe({
       next: (leads) => {
         const total = leads.length;
-        const renewed = leads.filter(l => (l.renewal_status || l.affiliate_status) === 'renewed').length;
-        const notRenewed = leads.filter(l => (l.renewal_status || l.affiliate_status) === 'not_renewed').length;
-        const inFollowup = leads.filter(l => {
-          const status = l.renewal_status || l.affiliate_status;
-          return !status || status === 'renewal_followup' || status === 'renew_later';
-        }).length;
-        this.targetNumbers = [total, renewed, notRenewed, inFollowup];
-        this.leadsPerDayData = [];
+        const completed = leads.filter(l => l.step === 2).length;
+        const pending = leads.filter(l => l.step !== 2).length;
+        const closed = leads.filter(l => l.sales_status === 'closed').length;
+        this.targetNumbers = [total, completed, pending, closed];
+        this.leadsPerDayData = this.buildLeadsPerDayChart(leads);
         this.animateNumbers();
       },
       error: (err: any) => console.error('Affiliate dashboard error:', err)
@@ -178,10 +182,12 @@ export class DashboardComponent implements OnInit {
       { label: 'In Follow-up', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' }
     ];
 
-    this.firebaseService.getAffiliatesByAccountManager(accountManagerKey).subscribe(affiliates => {
-      const affiliateKeys = new Set(affiliates.map(affiliate => affiliate.key));
-      this.firebaseService.getClosedLeadsByVersion(this.currentVersion!.key).subscribe({
-        next: allLeads => {
+    combineLatest({
+      affiliates: this.firebaseService.getAffiliatesByAccountManager(accountManagerKey),
+      allLeads: this.firebaseService.getClosedLeadsByVersion(this.currentVersion!.key)
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: ({ affiliates, allLeads }) => {
+          const affiliateKeys = new Set(affiliates.map(affiliate => affiliate.key));
           const leads = allLeads.filter(lead => !!lead.affiliateKey && affiliateKeys.has(lead.affiliateKey));
           const statusOf = (lead: Lead) => lead.renewal_status || lead.affiliate_status;
           this.targetNumbers = [
@@ -194,7 +200,6 @@ export class DashboardComponent implements OnInit {
           this.animateNumbers();
         },
         error: (err: any) => console.error('Account manager dashboard error:', err)
-      });
     });
   }
 

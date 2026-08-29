@@ -1,7 +1,7 @@
 ﻿import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, forkJoin, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
 import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember } from '../../../../core/models';
@@ -120,31 +120,63 @@ export class LeadsComponent implements OnInit, OnDestroy {
   }
 
   loadCurrentVersion(): void {
-    this.firebaseService.getCurrentVersion().subscribe(version => {
-      this.currentVersion = version;
-      if (version) {
-        this.loadLeads();
-      } else {
-        this.toastr.showError('No active version found');
+    this.isLoading$.next(true);
+    this.firebaseService.getCurrentVersion().pipe(
+      switchMap(version => {
+        this.currentVersion = version;
+        if (!version) return of(null);
+
+        const leads$ = (this.isSales && this.salesMemberKey)
+          ? this.firebaseService.getLeadsBySalesMember(this.salesMemberKey)
+          : this.firebaseService.getLeadsByVersion(version.key);
+
+        return combineLatest({
+          affiliates: this.firebaseService.getAffiliatesByVersion(version.key),
+          sales: this.firebaseService.getSalesByVersion(version.key),
+          salesMembers: this.firebaseService.getSalesMembersByVersion(version.key),
+          leads: leads$
+        });
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: data => {
+        if (!data) {
+          this.allLeads = [];
+          this.applyFilters(false, false);
+          this.isLoading$.next(false);
+          return;
+        }
+
+        this.affiliates = data.affiliates;
+        this.salesList = data.sales || [];
+        this.salesMembers = data.salesMembers;
+        this.allLeads = data.leads.map(lead => {
+          const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
+          const sales = lead.assigned_sales
+            ? this.salesList.find(s => s.key === (lead.assigned_sales?.group_id || lead.assigned_sales?.sales_id))
+            : null;
+          const salesMember = lead.salesMemberKey
+            ? this.salesMembers.find(m => m.key === lead.salesMemberKey)
+            : null;
+          return {
+            ...lead,
+            affiliateName: affiliate?.name || 'none',
+            affiliateCode: affiliate?.code || lead.affiliateCode,
+            salesName: lead.assigned_sales?.group_name || sales?.group_name || sales?.name || (lead.assigned_sales ? 'Assigned Group' : 'Not Assigned'),
+            salesMemberName: salesMember?.name || undefined
+          };
+        }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        this.buildGroupOptions();
+        const firstLoad = !this.leadsLoaded;
+        this.leadsLoaded = true;
+        this.applyFilters(false, firstLoad);
+      },
+      error: error => {
+        console.error('Error loading leads:', error);
+        this.toastr.showError('Failed to load leads');
         this.isLoading$.next(false);
       }
-    });
-  }
-
-  loadAffiliates(): void {
-    if (!this.currentVersion) return;
-
-    this.firebaseService.getAffiliatesByVersion(this.currentVersion.key).subscribe(affiliates => {
-      this.affiliates = affiliates;
-      this.loadSales();
-    });
-  }
-
-  loadSales(): void {
-    if (!this.currentVersion) return;
-    this.firebaseService.getSalesByVersion(this.currentVersion.key).subscribe((sales: any[]) => {
-      this.salesList = sales || [];
-      this.loadSalesMembers();
     });
   }
 
@@ -162,57 +194,8 @@ export class LeadsComponent implements OnInit, OnDestroy {
     this.salesOptions = [{ value: '', label: 'All Groups' }, ...groups];
   }
 
-  loadSalesMembers(): void {
-    if (!this.currentVersion) return;
-    this.firebaseService.getSalesMembersByVersion(this.currentVersion.key).subscribe(members => {
-      this.salesMembers = members;
-      this.loadLeads();
-    });
-  }
-
   loadLeads(): void {
-    if (!this.currentVersion) return;
-
-    this.isLoading$.next(true);
-
-    const leads$ = (this.isSales && this.salesMemberKey)
-      ? this.firebaseService.getLeadsBySalesMember(this.salesMemberKey)
-      : this.firebaseService.getLeadsByVersion(this.currentVersion.key);
-
-    forkJoin({
-      affiliates: this.firebaseService.getAffiliatesByVersion(this.currentVersion.key).pipe(take(1)),
-      sales: this.firebaseService.getSalesByVersion(this.currentVersion.key).pipe(take(1)),
-      salesMembers: this.firebaseService.getSalesMembersByVersion(this.currentVersion.key).pipe(take(1)),
-      leads: leads$.pipe(take(1))
-    }).pipe(takeUntil(this.destroy$)).subscribe(
-      ({ affiliates, sales, salesMembers, leads }) => {
-        this.affiliates = affiliates;
-        this.salesList = sales || [];
-        this.salesMembers = salesMembers;
-        this.allLeads = leads.map(lead => {
-          const affiliate = this.affiliates.find(a => a.key === lead.affiliateKey);
-          const sales = lead.assigned_sales ? this.salesList.find(s => s.key === (lead.assigned_sales?.group_id || lead.assigned_sales?.sales_id)) : null;
-          const salesMember = lead.salesMemberKey ? this.salesMembers.find(m => m.key === lead.salesMemberKey) : null;
-          return {
-            ...lead,
-            affiliateName: affiliate?.name || 'none',
-            affiliateCode: affiliate?.code || lead.affiliateCode,
-            salesName: lead.assigned_sales?.group_name || sales?.group_name || sales?.name || (lead.assigned_sales ? 'Assigned Group' : 'Not Assigned'),
-            salesMemberName: salesMember?.name || undefined
-          };
-        }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        this.buildGroupOptions();
-        const firstLoad = !this.leadsLoaded;
-        this.leadsLoaded = true;
-        this.applyFilters(false, firstLoad);
-      },
-      error => {
-        console.error('Error loading leads:', error);
-        this.toastr.showError('Failed to load leads');
-        this.isLoading$.next(false);
-      }
-    );
+    // The live Firebase subscription refreshes this table automatically.
   }
 
   /**

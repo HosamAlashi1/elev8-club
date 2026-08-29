@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseService } from 'src/app/modules/services/firebase.service';
-import { Subject, takeUntil, take } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 interface GeneralSettings {
   id?: string;
   sender_email: string;
   sender_name: string;
-  sendgrid_key: string;
   start_counter_date: number;
   whatsapp_link: string;
 }
@@ -24,7 +23,6 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
     id: undefined,
     sender_email: '',
     sender_name: '',
-    sendgrid_key: '',
     start_counter_date: 0,
     whatsapp_link: ''
   };
@@ -53,17 +51,14 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     this.firebaseService.getObject('settings')
-      .pipe(takeUntil(this.destroy$), take(1))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (settings: any) => {
-          console.log('Loaded settings:', settings);
-
           if (settings) {
             this.settings = {
               id: 'settings',
               sender_email: settings.sender_email || '',
               sender_name: settings.sender_name || '',
-              sendgrid_key: settings.sendgrid_key || '',
               start_counter_date: this.parseDate(settings.start_counter_date),
               whatsapp_link: settings.whatsapp_link || ''
             };
@@ -117,13 +112,10 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
 
     this.isSaving = true;
     
-    console.log('Saving settings:', this.settings);
-    
     // Update the entire settings object
     const updateData = {
       sender_email: this.settings.sender_email,
       sender_name: this.settings.sender_name,
-      sendgrid_key: this.settings.sendgrid_key || '',
       start_counter_date: this.settings.start_counter_date || 0,
       whatsapp_link: this.settings.whatsapp_link || ''
     };

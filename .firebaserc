@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "elev8-club"
+    "default": "elev8-club-3",
+    "legacy": "elev8-club"
   }
 }

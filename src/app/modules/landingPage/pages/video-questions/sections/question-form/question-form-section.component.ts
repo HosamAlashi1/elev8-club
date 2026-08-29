@@ -152,7 +152,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.firebaseService.getLeadByKey(this.leadKey).subscribe(lead => {
+      this.firebaseService.getLeadByKey(this.leadKey).pipe(take(1)).subscribe(lead => {
         if (!lead) {
           alert('لم يتم العثور على بيانات التسجيل');
           this.router.navigate(['/home']);

@@ -29,14 +29,10 @@
         <small class="text-muted d-block mt-1">Current: {{ settings.sender_name || 'Not set' }}</small>
       </div>
 
-      <!-- SendGrid Key -->
       <div class="col-md-12">
-        <label class="form-label">SendGrid Key</label>
-        <input 
-          type="text" 
-          class="form-control" 
-          [(ngModel)]="settings.sendgrid_key">
-        <small class="text-muted d-block mt-1">Current: {{ settings.sendgrid_key ? '••••••••••••' + settings.sendgrid_key.slice(-8) : 'Not set' }}</small>
+        <div class="alert alert-info mb-0">
+          The SendGrid API key is stored securely in Firebase Secret Manager and is not exposed here.
+        </div>
       </div>
 
       <!-- Start Counter Date -->

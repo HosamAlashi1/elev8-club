@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
 import { Version, Affiliate, Lead } from '../../../../core/models';
@@ -20,8 +21,9 @@ interface AffiliateWithStats extends Affiliate {
   templateUrl: './affiliates.component.html',
   styleUrls: ['./affiliates.component.css']
 })
-export class AffiliatesComponent implements OnInit {
+export class AffiliatesComponent implements OnInit, OnDestroy {
   isLoading$ = new BehaviorSubject<boolean>(true);
+  private destroy$ = new Subject<void>();
 
   affiliates: AffiliateWithStats[] = [];
   allAffiliates: AffiliateWithStats[] = [];
@@ -47,6 +49,11 @@ export class AffiliatesComponent implements OnInit {
     this.loadCurrentVersion();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   /** 🔥 Helper Function لتفعيل لودر الطاولة */
   private setTableLoading(fn: () => void, delay: number = 150): void {
     this.isLoading$.next(true);
@@ -55,58 +62,46 @@ export class AffiliatesComponent implements OnInit {
   }
 
   loadCurrentVersion(): void {
-    this.firebaseService.getCurrentVersion().subscribe(version => {
-      this.currentVersion = version;
-      if (version) {
-        this.loadAffiliates();
-      } else {
-        this.toastr.showError('No active version found');
+    this.firebaseService.getCurrentVersion().pipe(
+      switchMap(version => {
+        this.currentVersion = version;
+        if (!version) return of(null);
+        return combineLatest({
+          affiliates: this.firebaseService.getAffiliatesByVersion(version.key),
+          leads: this.firebaseService.getLeadsByVersion(version.key)
+        });
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: data => {
+        if (!data) {
+          this.allAffiliates = [];
+          this.onSearchChange();
+          this.isLoading$.next(false);
+          return;
+        }
+
+        this.allAffiliates = data.affiliates.map(affiliate => {
+          const leads = data.leads.filter(lead => lead.affiliateKey === affiliate.key);
+          return {
+            ...affiliate,
+            leadsCount: leads.length,
+            completedCount: leads.filter(lead => lead.step === 2).length
+          };
+        });
+        this.onSearchChange();
+        this.isLoading$.next(false);
+      },
+      error: error => {
+        console.error('Error loading affiliates:', error);
+        this.toastr.showError('Failed to load affiliates');
         this.isLoading$.next(false);
       }
     });
   }
 
   loadAffiliates(): void {
-    if (!this.currentVersion) return;
-
-    this.isLoading$.next(true);
-
-    this.firebaseService.getAffiliatesByVersion(this.currentVersion.key).subscribe(affiliates => {
-      const affiliatesWithStats: AffiliateWithStats[] = [];
-
-      if (affiliates.length === 0) {
-        this.affiliates = [];
-        this.isLoading$.next(false);
-        return;
-      }
-
-      let processed = 0;
-      affiliates.forEach(aff => {
-        this.firebaseService.getLeadsByAffiliate(aff.key).subscribe(leads => {
-          const versionLeads = leads.filter(l => l.versionKey === this.currentVersion!.key);
-
-          affiliatesWithStats.push({
-            ...aff,
-            leadsCount: versionLeads.length,
-            completedCount: versionLeads.filter(l => l.step === 2).length
-          });
-
-          processed++;
-
-          if (processed === affiliates.length) {
-            this.allAffiliates = affiliatesWithStats;
-            this.affiliates = affiliatesWithStats;
-            this.totalCount = affiliatesWithStats.length;
-            this.isLoading$.next(false);
-          }
-        });
-      });
-
-    }, error => {
-      console.error('Error loading affiliates:', error);
-      this.toastr.showError('Failed to load affiliates');
-      this.isLoading$.next(false);
-    });
+    // The live Firebase subscription refreshes affiliates and their stats.
   }
 
   /** 🔍 Search with loader */
