@@ -32,6 +32,15 @@ const routes: Routes = [
         title: 'Settings | Elev8 Club',
       },
       {
+        path: 'support-inbox',
+        canActivate: [RoleGuard],
+        data: { animation: 'supportInboxPage', roles: ['admin'] },
+        loadChildren: () =>
+          import('./pages/support-inbox/support-inbox.module')
+            .then((m) => m.SupportInboxModule),
+        title: 'Website Questions | Elev8 Club',
+      },
+      {
         path: 'affiliates',
         canActivate: [RoleGuard],
         data: { animation: 'affiliatesPage', roles: ['admin'] },

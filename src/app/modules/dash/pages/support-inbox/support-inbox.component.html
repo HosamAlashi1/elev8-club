@@ -1,0 +1,153 @@
+<div class="support-page" [class.has-selection]="selectedChat">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">LIVE SUPPORT</span>
+      <h1>Website questions</h1>
+      <p>Anonymous conversations coming directly from the landing page.</p>
+    </div>
+    <div class="heading-stat">
+      <span class="live-indicator"></span>
+      <div><strong>{{ totalUnread }}</strong><small>unread</small></div>
+    </div>
+  </header>
+
+  <section class="inbox-shell">
+    <aside class="thread-list-pane">
+      <div class="thread-tools">
+        <div class="search-control">
+          <lucide-icon [name]="'search'" [size]="17" aria-hidden="true"></lucide-icon>
+          <input [(ngModel)]="searchText" placeholder="Search conversations..." aria-label="Search conversations" />
+        </div>
+        <div class="filter-row" role="tablist" aria-label="Conversation status">
+          <button
+            *ngFor="let filter of filters"
+            type="button"
+            [class.active]="activeFilter === filter.value"
+            (click)="setFilter(filter.value)"
+          >
+            {{ filter.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="thread-list" *ngIf="!isLoading">
+        <button
+          *ngFor="let chat of filteredChats; trackBy: trackChat"
+          type="button"
+          class="thread-card"
+          [class.active]="chat.id === selectedChatId"
+          [class.unread]="chat.unreadAdmin > 0"
+          (click)="selectChat(chat)"
+        >
+          <span class="visitor-avatar"><lucide-icon [name]="'user-round'" [size]="20" aria-hidden="true"></lucide-icon></span>
+          <span class="thread-copy">
+            <span class="thread-title-row">
+              <strong>{{ visitorLabel(chat) }}</strong>
+              <time>{{ formatRelative(chat.lastMessageAt) }}</time>
+            </span>
+            <span class="thread-preview">{{ chat.lastMessagePreview }}</span>
+            <span class="thread-meta">
+              <span class="status-pill" [attr.data-status]="chat.status">{{ chat.status }}</span>
+              <span>{{ chat.messageCount }} messages</span>
+            </span>
+          </span>
+          <span class="unread-pill" *ngIf="chat.unreadAdmin > 0">
+            {{ chat.unreadAdmin > 9 ? '9+' : chat.unreadAdmin }}
+          </span>
+        </button>
+
+        <div class="empty-list" *ngIf="filteredChats.length === 0">
+          <lucide-icon [name]="'inbox'" [size]="32" aria-hidden="true"></lucide-icon>
+          <strong>No conversations here</strong>
+          <span>New landing-page questions will appear instantly.</span>
+        </div>
+      </div>
+
+      <div class="thread-skeletons" *ngIf="isLoading" aria-label="Loading conversations">
+        <span *ngFor="let item of [1,2,3,4,5]"></span>
+      </div>
+    </aside>
+
+    <main class="conversation-pane" *ngIf="selectedChat as chat; else noSelection">
+      <header class="conversation-header">
+        <button class="mobile-back" type="button" (click)="closeConversationOnMobile()" aria-label="Back to conversations">
+          <lucide-icon [name]="'arrow-left'" [size]="17" aria-hidden="true"></lucide-icon>
+        </button>
+        <span class="visitor-avatar visitor-avatar--large"><lucide-icon [name]="'user-round'" [size]="21" aria-hidden="true"></lucide-icon></span>
+        <div class="conversation-person">
+          <strong>{{ visitorLabel(chat) }}</strong>
+          <span><i></i> Connected anonymously · same browser</span>
+        </div>
+        <div class="conversation-status" [attr.data-status]="chat.status">
+          <lucide-icon
+            [name]="chat.status === 'answered' ? 'check-circle-2' : 'clock-3'"
+            [size]="14"
+            aria-hidden="true"
+          ></lucide-icon>
+          <span>{{ chat.status }}</span>
+        </div>
+      </header>
+
+      <div class="conversation-messages" #conversationViewport>
+        <div class="date-divider"><span>{{ formatConversationDate(chat.createdAt) }}</span></div>
+
+        <ng-container *ngFor="let message of chat.messages; trackBy: trackMessage">
+          <div class="system-note" *ngIf="message.sender === 'system'">
+            <lucide-icon [name]="'check-check'" [size]="13" aria-hidden="true"></lucide-icon>
+            <span>Automatic acknowledgement sent to visitor</span>
+          </div>
+
+          <article
+            class="dashboard-message"
+            *ngIf="message.sender !== 'system'"
+            [class.dashboard-message--admin]="message.sender === 'admin'"
+          >
+            <span class="message-author">
+              {{ message.sender === 'admin' ? (message.senderName || 'Elev8 Club') : visitorLabel(chat) }}
+            </span>
+            <div class="message-body">
+              <p>{{ message.text }}</p>
+              <time>{{ formatMessageTime(message.createdAt) }}</time>
+            </div>
+          </article>
+        </ng-container>
+      </div>
+
+      <footer class="reply-composer">
+        <div class="reply-box">
+          <textarea
+            #replyInput
+            [(ngModel)]="replyDraft"
+            (keydown)="onReplyKeydown($event)"
+            [disabled]="isReplying"
+            maxlength="1000"
+            rows="2"
+            placeholder="Write a reply..."
+            aria-label="Reply to visitor"
+          ></textarea>
+          <button
+            type="button"
+            (click)="sendReply()"
+            [disabled]="replyDraft.trim().length < 2 || isReplying"
+          >
+            <span class="reply-spinner" *ngIf="isReplying"></span>
+            <lucide-icon *ngIf="!isReplying" [name]="'send'" [size]="15" aria-hidden="true"></lucide-icon>
+            <span>{{ isReplying ? 'Sending' : 'Reply' }}</span>
+          </button>
+        </div>
+        <div class="reply-footer">
+          <span>Replies appear instantly on the visitor's device.</span>
+          <span>{{ replyDraft.length }}/1000</span>
+        </div>
+      </footer>
+    </main>
+
+    <ng-template #noSelection>
+      <main class="conversation-pane conversation-empty">
+        <span class="empty-art"><lucide-icon [name]="'message-circle'" [size]="29" aria-hidden="true"></lucide-icon></span>
+        <h2>Select a conversation</h2>
+        <p>Choose a website question to read it and reply in real time.</p>
+      </main>
+    </ng-template>
+  </section>
+</div>

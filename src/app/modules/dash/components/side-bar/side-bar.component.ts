@@ -6,6 +6,8 @@ import { PublicService } from '../../../services/public.service';
 import { HttpService } from '../../../services/http.service';
 import { ApiAdminService } from '../../../services/api.admin.service';
 import { filter } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { SupportChatService } from '../../../services/support-chat.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -21,13 +23,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private countUpdateInterval: any;
 
   menu: any[] = [];
+  unreadSupportCount$: Observable<number>;
 
   constructor(
     private authService: AuthService,
     private modalService: NgbModal,
     public publicService: PublicService,
     private router: Router,
-  ) { }
+    private supportChat: SupportChatService,
+  ) {
+    this.unreadSupportCount$ = this.supportChat.unreadAdminCount$;
+  }
 
   private buildMenu(): void {
     const role = this.publicService.getUserRole();
@@ -37,6 +43,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { label: 'Affiliates', icon: 'users', route: '/dashboard/affiliates', roles: ['admin'] },
       { label: 'Leads', icon: 'user-check', route: '/dashboard/leads', roles: ['admin', 'sales'] },
       { label: 'My Leads', icon: 'briefcase', route: '/dashboard/my-leads', roles: ['admin', 'account_manager', 'affiliate'] },
+      { label: 'Website Questions', icon: 'message-circle', route: '/dashboard/support-inbox', roles: ['admin'] },
       { label: 'Settings', icon: 'settings', route: '/dashboard/settings', roles: ['admin'] },
     ];
 

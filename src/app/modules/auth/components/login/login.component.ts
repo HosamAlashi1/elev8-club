@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FirebaseService } from 'src/app/modules/services/firebase.service';
 import { DashboardUser } from 'src/app/core/models';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -69,7 +70,7 @@ export class LoginComponent implements OnInit {
         // Fetch dashboard user profile (role, etc.)
         let dashUser: DashboardUser | null = null;
         try {
-          dashUser = (await this.service.getDashboardUser(user.uid).toPromise()) ?? null;
+          dashUser = await firstValueFrom(this.service.getDashboardUser(user.uid));
         } catch (e) {}
 
         if (!dashUser) {

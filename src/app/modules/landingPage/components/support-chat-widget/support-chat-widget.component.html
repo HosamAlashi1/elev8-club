@@ -1,0 +1,104 @@
+<section class="support-widget" dir="rtl" [class.is-open]="isOpen">
+  <div
+    class="support-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="support-chat-title"
+    [attr.aria-hidden]="!isOpen"
+  >
+    <header class="support-header">
+      <div class="support-brand-mark" aria-hidden="true">
+        <lucide-icon [name]="'message-circle'"></lucide-icon>
+      </div>
+      <div class="support-heading">
+        <span class="support-kicker">نحن هنا لمساعدتك</span>
+        <h2 id="support-chat-title">اسأل Elev8</h2>
+        <p><span class="online-dot"></span> عادةً نرد في أقرب وقت</p>
+      </div>
+      <button class="close-chat" type="button" (click)="toggleChat()" aria-label="إغلاق المحادثة">
+        <lucide-icon [name]="'x'"></lucide-icon>
+      </button>
+    </header>
+
+    <div class="support-messages" #messagesViewport aria-live="polite">
+      <div class="welcome-message" *ngIf="messages.length === 0">
+        <span class="welcome-spark"><lucide-icon [name]="'sparkles'"></lucide-icon></span>
+        <h3>أهلًا وسهلًا 👋</h3>
+        <p>اكتب سؤالك هنا، وسيصل مباشرةً لفريق Elev8. لا تحتاج إلى تسجيل أو بريد إلكتروني.</p>
+        <span class="privacy-note">نتذكّر محادثتك على هذا الجهاز دون إنشاء حساب</span>
+      </div>
+
+      <ng-container *ngFor="let message of messages; trackBy: trackMessage">
+        <div class="system-message" *ngIf="message.sender === 'system'">
+          <lucide-icon [name]="'check-check'"></lucide-icon>
+          <span>{{ message.text }}</span>
+        </div>
+
+        <article
+          *ngIf="message.sender !== 'system'"
+          class="message-row"
+          [class.message-row--visitor]="message.sender === 'visitor'"
+          [class.message-row--admin]="message.sender === 'admin'"
+        >
+          <div class="message-avatar" *ngIf="message.sender === 'admin'">E8</div>
+          <div class="message-bubble">
+            <span class="sender-name" *ngIf="message.sender === 'admin'">
+              {{ message.senderName || 'فريق Elev8' }}
+            </span>
+            <p>{{ message.text }}</p>
+            <time>{{ formatMessageTime(message.createdAt) }}</time>
+          </div>
+        </article>
+      </ng-container>
+    </div>
+
+    <div class="composer-error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
+
+    <footer class="support-composer">
+      <div class="composer-box">
+        <textarea
+          #messageInput
+          [(ngModel)]="draft"
+          (keydown)="onComposerKeydown($event)"
+          [disabled]="isSending"
+          maxlength="1000"
+          rows="1"
+          aria-label="اكتب سؤالك"
+          placeholder="اكتب سؤالك هنا..."
+        ></textarea>
+        <button
+          type="button"
+          class="send-button"
+          (click)="sendMessage()"
+          [disabled]="draft.trim().length < 2 || isSending"
+          aria-label="إرسال السؤال"
+        >
+          <span class="send-loader" *ngIf="isSending"></span>
+          <lucide-icon *ngIf="!isSending" [name]="'send'"></lucide-icon>
+        </button>
+      </div>
+      <span class="composer-hint">Enter للإرسال · Shift + Enter لسطر جديد</span>
+    </footer>
+  </div>
+
+  <button
+    class="support-launcher"
+    type="button"
+    (click)="toggleChat()"
+    [attr.aria-expanded]="isOpen"
+    aria-controls="support-chat-title"
+    aria-label="افتح محادثة الأسئلة"
+  >
+    <span class="launcher-rings" aria-hidden="true"></span>
+    <span class="launcher-icon">
+      <lucide-icon [name]="isOpen ? 'x' : 'message-circle'"></lucide-icon>
+      <span class="launcher-badge" *ngIf="unreadCount > 0" role="status">
+        {{ unreadCount > 9 ? '9+' : unreadCount }}
+      </span>
+    </span>
+    <span class="launcher-copy" *ngIf="!isOpen">
+      <strong>عندك سؤال؟</strong>
+      <small>احكِ معنا</small>
+    </span>
+  </button>
+</section>

@@ -68,6 +68,15 @@
   transform: scale(0.96);
 }
 
+.notification-btn lucide-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.notification-btn:has(.notification-badge) lucide-icon {
+  animation: notificationBell 2.8s ease-in-out infinite;
+}
+
 .notification-badge {
   position: absolute;
   top: 4px;
@@ -86,6 +95,13 @@
 
 .notification-badge.zero {
   display: none;
+}
+
+@keyframes notificationBell {
+  0%, 84%, 100% { transform: rotate(0); }
+  88% { transform: rotate(12deg); }
+  92% { transform: rotate(-10deg); }
+  96% { transform: rotate(6deg); }
 }
 
 /* User Profile Button */

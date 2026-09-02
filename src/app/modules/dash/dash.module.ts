@@ -23,7 +23,9 @@ import {
   Settings,
   UserCog,
   UserCheck,
-  Briefcase
+  Briefcase,
+  MessageCircle,
+  Bell
 } from 'lucide-angular';
 import { HeaderComponent } from './components/header/header.component';
 import { PublicSharedModule } from '../shared/public-shared.module';
@@ -59,7 +61,9 @@ import { PublicSharedModule } from '../shared/public-shared.module';
       Settings,
       UserCog,
       UserCheck,
-      Briefcase
+      Briefcase,
+      MessageCircle,
+      Bell
     })
   ],
   providers: [

@@ -52,6 +52,64 @@
     "lead_renewals": {
       ".read": "auth != null",
       ".write": "auth != null"
+    },
+    "support_chats": {
+      ".read": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
+      ".write": false,
+      ".indexOn": ["lastMessageAt", "lastVisitorMessageAt", "status"],
+      "$visitorId": {
+        ".read": "$visitorId.matches(/^[a-f0-9]{32}$/)",
+        ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
+        "visitorId": {
+          ".write": "!data.exists() && newData.val() == $visitorId",
+          ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{32}$/)"
+        },
+        "createdAt": {
+          ".write": "!data.exists() && newData.isNumber() && newData.val() >= now - 5000 && newData.val() <= now + 1000",
+          ".validate": "newData.isNumber()"
+        },
+        "pageUrl": {
+          ".write": "!data.exists() && newData.isString() && newData.val().length <= 500",
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "status": {
+          ".write": "newData.val() == 'new'",
+          ".validate": "newData.val() == 'new' || newData.val() == 'open' || newData.val() == 'answered'"
+        },
+        "lastMessageAt": {
+          ".write": "newData.isNumber() && newData.val() >= now - 5000 && newData.val() <= now + 1000",
+          ".validate": "newData.isNumber()"
+        },
+        "lastVisitorMessageAt": {
+          ".write": "newData.isNumber() && newData.val() >= now - 5000 && newData.val() <= now + 1000 && (!data.exists() || newData.val() - data.val() >= 1500)",
+          ".validate": "newData.isNumber()"
+        },
+        "lastMessagePreview": {
+          ".write": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 140",
+          ".validate": "newData.isString() && newData.val().length <= 140"
+        },
+        "lastSender": {
+          ".write": "newData.val() == 'visitor'",
+          ".validate": "newData.val() == 'visitor' || newData.val() == 'admin' || newData.val() == 'system'"
+        },
+        "unreadAdmin": {
+          ".write": "newData.isNumber() && ((!data.exists() && newData.val() == 1) || (data.isNumber() && newData.val() == data.val() + 1))",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "unreadVisitor": {
+          ".write": "data.exists() && newData.val() == 0",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "messageCount": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "messages": {
+          "$messageId": {
+            ".write": "!data.exists() && (newData.child('sender').val() == 'visitor' || ($messageId == 'welcome' && newData.child('sender').val() == 'system' && newData.child('senderName').val() == 'Elev8 Club'))",
+            ".validate": "newData.hasChildren(['text', 'sender', 'createdAt']) && newData.child('text').isString() && newData.child('text').val().length >= 2 && newData.child('text').val().length <= 1000 && (newData.child('sender').val() == 'visitor' || newData.child('sender').val() == 'admin' || newData.child('sender').val() == 'system') && newData.child('createdAt').isNumber() && newData.child('createdAt').val() >= now - 5000 && newData.child('createdAt').val() <= now + 1000"
+          }
+        }
+      }
     }
   }
 }

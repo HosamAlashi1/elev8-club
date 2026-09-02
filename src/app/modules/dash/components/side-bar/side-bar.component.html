@@ -21,6 +21,10 @@
         <div class="nav-content">
           <lucide-icon [name]="item.icon"></lucide-icon>
           <span *ngIf="!isCollapsed">{{ item.label }}</span>
+          <span
+            class="support-nav-badge"
+            *ngIf="item.route === '/dashboard/support-inbox' && (unreadSupportCount$ | async) as count"
+          >{{ count > 99 ? '99+' : count }}</span>
         </div>
       </a>
 

@@ -1,8 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AnimationOptions } from 'ngx-lottie';
 import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOverlayService.service';
+import { SupportChatService } from '../services/support-chat.service';
+import { PublicService } from '../services/public.service';
 
 
 @Component({
@@ -18,11 +20,17 @@ import { LottieOverlayService, LottieOverlayConfig } from '../services/LottieOve
     ])
   ]
 })
-export class DashComponent implements OnInit {
+export class DashComponent implements OnInit, OnDestroy {
   currentYear: number;
    lottieConfig: LottieOverlayConfig = { visible: false, options: { path: '' } };
 
-  constructor(private lottieService: LottieOverlayService, private cd: ChangeDetectorRef) {
+  constructor(
+    private lottieService: LottieOverlayService,
+    private cd: ChangeDetectorRef,
+    private supportChat: SupportChatService,
+    private publicService: PublicService,
+    private router: Router
+  ) {
     this.lottieService.state$.subscribe(config => this.lottieConfig = config);
     this.currentYear = new Date().getFullYear();
   }
@@ -30,10 +38,19 @@ export class DashComponent implements OnInit {
   ngOnInit(): void {
     // فرض اتجاه LTR للوحة التحكم
     this.enforceDashboardDirection();
+    if (this.publicService.isAdmin()) {
+      this.supportChat.startAdminMonitoring(() => {
+        void this.router.navigate(['/dashboard/support-inbox']);
+      });
+    }
   }
 
   ngAfterViewInit(): void {
     this.cd.detectChanges(); 
+  }
+
+  ngOnDestroy(): void {
+    this.supportChat.stopAdminMonitoring();
   }
 
   prepareRoute(outlet: RouterOutlet) {

@@ -67,7 +67,10 @@ import {
   Monitor,
   Home,
   Smile,
-  User
+  User,
+  X,
+  Send,
+  CheckCheck
 } from 'lucide-angular';
 import { WhoAmISectionComponent } from './pages/home/sections/who-am-i/who-am-i-section/who-am-i-section.component';
 import { HowItWorksSectionComponent } from './pages/home/sections/how-it-works/how-it-works-section/how-it-works-section.component';
@@ -79,6 +82,7 @@ import { ResourcesGuidesSectionComponent } from './pages/home/sections/resources
 import { ScreenshotsSectionComponent } from './pages/home/sections/screenshots/screenshots-section/screenshots-section.component';
 import { LearnSectionComponent } from './pages/home/sections/learn/learn-section/learn-section.component';
 import { ExitIntentOfferComponent } from './pages/home/sections/exit-intent-offer/exit-intent-offer.component';
+import { SupportChatWidgetComponent } from './components/support-chat-widget/support-chat-widget.component';
 
 
 
@@ -121,6 +125,7 @@ export function playerFactory() {
     ScreenshotsSectionComponent,
     LearnSectionComponent,
     ExitIntentOfferComponent,
+    SupportChatWidgetComponent,
     // NavbarComponent,
   ],
   imports: [
@@ -166,7 +171,10 @@ export function playerFactory() {
       Monitor,
       Home,
       Smile,
-      User
+      User,
+      X,
+      Send,
+      CheckCheck
     })
   ],
   providers: [

@@ -9,14 +9,20 @@
     <!-- Right Section -->
     <div class="user-section">
       <!-- 🔔 Notifications -->
-      <!-- <div class="notification-wrapper">
-        <button class="notification-btn" (click)="toggleNotifications($event)">
-          <i class="bi bi-bell"></i>
+      <div class="notification-wrapper" *ngIf="isAdmin">
+        <button
+          class="notification-btn"
+          type="button"
+          routerLink="/dashboard/support-inbox"
+          aria-label="Open website question notifications"
+          title="Website questions"
+        >
+          <lucide-icon [name]="'bell'"></lucide-icon>
           <span class="notification-badge" *ngIf="(unreadCount$ | async) as count" [class.zero]="count === 0">
             {{ count > 99 ? '99+' : count }}
           </span>
         </button>
-      </div> -->
+      </div>
 
       <!-- User Profile Dropdown -->
       <div class="dropdown">

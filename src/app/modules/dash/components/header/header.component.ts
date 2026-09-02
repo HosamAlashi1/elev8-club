@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PublicService } from '../../../services/public.service';
-import { NotificationService } from '../../../shared/notifications/notification.service';
 import { LogoutConfirmationModalComponent } from '../../../shared/logout-confirmation-modal/logout-confirmation-modal.component';
+import { SupportChatService } from '../../../services/support-chat.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
 
   user: any;
   userRoleLabel: string = 'Admin';
-  isNotificationsOpen = false;
   unreadCount$: Observable<number>;
+  isAdmin = false;
 
   private readonly roleLabelMap: Record<string, string> = {
     admin: 'Admin',
@@ -28,23 +28,14 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private publicService: PublicService,
-    private notificationService: NotificationService,
+    private supportChat: SupportChatService,
     private modalService: NgbModal
   ) {
     this.user = this.publicService.getUserData();
     this.userRoleLabel = this.roleLabelMap[this.publicService.getUserRole()] || 'Admin';
+    this.isAdmin = this.publicService.isAdmin();
+    this.unreadCount$ = this.supportChat.unreadAdminCount$;
 
-    // this.unreadCount$ = this.notificationService.unreadCount$;
-  }
-
-  ngOnInit(): void {
-    // Load unread count for admin
-    // this.notificationService.refreshUnreadCount('admin').subscribe();
-  }
-
-  toggleNotifications(event: Event): void {
-    event.stopPropagation();
-    this.isNotificationsOpen = !this.isNotificationsOpen;
   }
 
   logout() {

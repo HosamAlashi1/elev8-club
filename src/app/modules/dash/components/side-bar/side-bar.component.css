@@ -255,3 +255,29 @@
     transform: scale(0) translateX(-10px);
     opacity: 0;
 }
+
+.support-nav-badge {
+    min-width: 20px;
+    height: 20px;
+    display: inline-grid;
+    place-items: center;
+    margin-left: auto;
+    padding: 0 6px;
+    border-radius: 999px;
+    color: #fff;
+    background: #d4a017;
+    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.12);
+    font-size: 10px;
+    font-weight: 700;
+    animation: pulse 2s infinite;
+}
+
+.sidebar.collapsed .support-nav-badge {
+    position: absolute;
+    top: 5px;
+    right: 1px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    font-size: 8px;
+}
