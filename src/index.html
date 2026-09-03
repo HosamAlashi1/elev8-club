@@ -45,49 +45,313 @@
     rel="stylesheet" />
 
   <style>
-    #lottie-loader {
+    #initial-loader {
       position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      background: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       z-index: 9999;
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(0, 78, 238, 0.22), transparent 20rem),
+        radial-gradient(circle at 18% 12%, rgba(232, 181, 42, 0.07), transparent 17rem),
+        linear-gradient(145deg, #040713 0%, #070b1e 52%, #02040c 100%);
+      color: #fff;
       opacity: 1;
       visibility: visible;
-      transition: opacity 220ms ease, visibility 220ms ease;
+      transition: opacity 320ms ease, visibility 320ms ease;
     }
 
-    #lottie-loader.is-hidden {
+    #initial-loader::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background-image:
+        linear-gradient(rgba(102, 143, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 143, 255, 0.035) 1px, transparent 1px);
+      background-size: 54px 54px;
+      transform: perspective(520px) rotateX(64deg) translateY(26%);
+      transform-origin: center;
+      -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 68%);
+      mask-image: radial-gradient(circle, #000 0%, transparent 68%);
+      animation: loader-grid-drift 4.8s linear infinite;
+    }
+
+    #initial-loader::after {
+      content: "";
+      position: absolute;
+      width: min(76vw, 430px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(79, 126, 255, 0.08);
+      box-shadow:
+        0 0 90px rgba(0, 78, 238, 0.1),
+        inset 0 0 90px rgba(0, 78, 238, 0.05);
+      animation: loader-halo-breathe 2.8s ease-in-out infinite;
+    }
+
+    #initial-loader.is-hidden {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
 
-    #lottie-animation {
-      width: min(50vw, 320px);
-      height: min(50vw, 320px);
+    .initial-loader__content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      width: min(86vw, 360px);
+      text-align: center;
     }
 
-    #lottie-loader::after {
-      content: "";
-      width: 44px;
-      height: 44px;
-      border: 3px solid rgba(15, 23, 42, 0.16);
-      border-top-color: #0f172a;
+    .initial-loader__visual {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 190px;
+      height: 160px;
+    }
+
+    .initial-loader__chart {
+      position: absolute;
+      inset: 25px -26px auto;
+      width: 242px;
+      height: 104px;
+      overflow: visible;
+      filter: drop-shadow(0 0 9px rgba(0, 116, 255, 0.7));
+    }
+
+    .initial-loader__chart-path {
+      fill: none;
+      stroke: url(#loader-chart-gradient);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 265;
+      stroke-dashoffset: 265;
+      animation: loader-chart-rise 2.15s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+
+    .initial-loader__chart-dot {
+      fill: #f4ca61;
+      filter: drop-shadow(0 0 7px rgba(244, 202, 97, 0.95));
+      opacity: 0;
+      animation: loader-chart-dot 2.15s ease-in-out infinite;
+    }
+
+    .initial-loader__orbit {
+      position: absolute;
+      width: 108px;
+      height: 108px;
+      border: 1px solid rgba(102, 143, 255, 0.3);
       border-radius: 50%;
-      animation: index-loader-spin 0.8s linear infinite;
+      box-shadow: inset 0 0 28px rgba(0, 78, 238, 0.08);
+      animation: loader-orbit-spin 3.4s linear infinite;
     }
 
-    #lottie-loader.has-lottie::after {
-      display: none;
+    .initial-loader__orbit::before,
+    .initial-loader__orbit::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      margin-top: -3px;
+      border-radius: 50%;
+      background: #e8b52a;
+      box-shadow: 0 0 14px rgba(232, 181, 42, 0.95);
     }
 
-    @keyframes index-loader-spin {
+    .initial-loader__orbit::before {
+      left: -3px;
+    }
+
+    .initial-loader__orbit::after {
+      right: -3px;
+      background: #5a86ff;
+      box-shadow: 0 0 14px rgba(90, 134, 255, 0.95);
+    }
+
+    .initial-loader__pill {
+      position: relative;
+      width: 34px;
+      height: 72px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.56);
+      border-radius: 999px;
+      background: linear-gradient(90deg, #044acb 0%, #0878ff 50%, #3ba0ff 100%);
+      box-shadow:
+        0 0 0 8px rgba(0, 78, 238, 0.08),
+        0 0 30px rgba(0, 94, 255, 0.72),
+        inset 7px 0 12px rgba(255, 255, 255, 0.22),
+        inset -6px 0 11px rgba(0, 14, 74, 0.38);
+      transform: rotate(42deg);
+      animation: loader-pill-float 2.15s ease-in-out infinite;
+    }
+
+    .initial-loader__pill::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 0;
+      left: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.52);
+      box-shadow: 0 1px 4px rgba(0, 12, 60, 0.45);
+    }
+
+    .initial-loader__pill::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 7px;
+      height: 25px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.48);
+      filter: blur(1px);
+    }
+
+    .initial-loader__brand {
+      margin-top: 2px;
+      font-family: Inter, Arial, sans-serif;
+      font-size: clamp(27px, 7vw, 34px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.16em;
+      text-indent: 0.16em;
+      background: linear-gradient(100deg, #ffffff 15%, #9fbaff 48%, #ffffff 80%);
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: loader-brand-shine 2.8s linear infinite;
+    }
+
+    .initial-loader__caption {
+      margin: 12px 0 0;
+      color: rgba(229, 235, 255, 0.68);
+      font-family: "IBM Plex Sans Arabic", Tajawal, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .initial-loader__progress {
+      position: relative;
+      width: 148px;
+      height: 2px;
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(134, 159, 231, 0.16);
+    }
+
+    .initial-loader__progress::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, transparent, #005dff 38%, #e8b52a 72%, transparent);
+      transform: translateX(-100%);
+      animation: loader-progress 1.35s ease-in-out infinite;
+    }
+
+    @keyframes loader-grid-drift {
+      to {
+        transform: perspective(520px) rotateX(64deg) translateY(calc(26% + 54px));
+      }
+    }
+
+    @keyframes loader-halo-breathe {
+      50% {
+        opacity: 0.58;
+        transform: scale(1.045);
+      }
+    }
+
+    @keyframes loader-chart-rise {
+      0%, 12% {
+        stroke-dashoffset: 265;
+        opacity: 0.2;
+      }
+
+      58%, 82% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+      }
+
+      100% {
+        stroke-dashoffset: 0;
+        opacity: 0;
+      }
+    }
+
+    @keyframes loader-chart-dot {
+      0%, 54% {
+        opacity: 0;
+        transform: scale(0.4);
+      }
+
+      64%, 84% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.6);
+      }
+    }
+
+    @keyframes loader-orbit-spin {
       to {
         transform: rotate(360deg);
+      }
+    }
+
+    @keyframes loader-pill-float {
+      0%, 100% {
+        transform: translateY(3px) rotate(42deg) scale(0.96);
+      }
+
+      50% {
+        transform: translateY(-5px) rotate(42deg) scale(1.03);
+      }
+    }
+
+    @keyframes loader-brand-shine {
+      to {
+        background-position: -220% center;
+      }
+    }
+
+    @keyframes loader-progress {
+      60%, 100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #initial-loader::before,
+      #initial-loader::after,
+      .initial-loader__chart-path,
+      .initial-loader__chart-dot,
+      .initial-loader__orbit,
+      .initial-loader__pill,
+      .initial-loader__brand,
+      .initial-loader__progress::after {
+        animation: none;
+      }
+
+      .initial-loader__chart-path {
+        stroke-dashoffset: 0;
+      }
+
+      .initial-loader__chart-dot {
+        opacity: 1;
       }
     }
   </style>
@@ -121,35 +385,29 @@
   <!-- End Google Tag Manager (noscript) -->
 
   <app-root>
-    <div id="lottie-loader">
-      <div id="lottie-animation"></div>
+    <div id="initial-loader" role="status" aria-live="polite" aria-label="جاري تحميل Elev8 Club">
+      <div class="initial-loader__content">
+        <div class="initial-loader__visual" aria-hidden="true">
+          <svg class="initial-loader__chart" viewBox="0 0 242 104" focusable="false">
+            <defs>
+              <linearGradient id="loader-chart-gradient" x1="12" y1="88" x2="226" y2="18" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#004eee" />
+                <stop offset="0.72" stop-color="#4d86ff" />
+                <stop offset="1" stop-color="#e8b52a" />
+              </linearGradient>
+            </defs>
+            <path class="initial-loader__chart-path" d="M12 88C34 84 42 76 58 79C75 82 80 63 96 67C113 72 121 51 137 55C154 59 162 40 178 43C194 46 204 27 226 18" />
+            <circle class="initial-loader__chart-dot" cx="226" cy="18" r="4" />
+          </svg>
+          <span class="initial-loader__orbit"></span>
+          <span class="initial-loader__pill"></span>
+        </div>
+        <div class="initial-loader__brand" dir="ltr">ELEV8 CLUB</div>
+        <p class="initial-loader__caption">نجهّز لك تجربة ترتقي بك</p>
+        <span class="initial-loader__progress" aria-hidden="true"></span>
+      </div>
     </div>
   </app-root>
-
-  <!-- Lottie -->
-  <script>
-    (function () {
-      var loader = document.getElementById('lottie-loader');
-      var lottieAnimation = document.getElementById('lottie-animation');
-
-      window.startIndexLottie = function () {
-        if (!loader || !lottieAnimation || !window.lottie || lottieAnimation.dataset.loaded === 'true') return;
-
-        lottieAnimation.dataset.loaded = 'true';
-        loader.classList.add('has-lottie');
-        window.lottie.loadAnimation({
-          container: lottieAnimation,
-          renderer: 'svg',
-          loop: true,
-          autoplay: true,
-          path: '/assets/json/trading-loader.json'
-        });
-      };
-
-    })();
-  </script>
-  <script async src="https://cdn.jsdelivr.net/npm/lottie-web/build/player/lottie.min.js"
-    onload="window.startIndexLottie && window.startIndexLottie()"></script>
 
 </body>
 

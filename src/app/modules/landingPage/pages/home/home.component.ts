@@ -283,7 +283,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private hideInitialLoader(): void {
-    const loader = document.getElementById('lottie-loader');
+    const loader = document.getElementById('initial-loader');
     if (loader) loader.style.display = 'none';
   }
 

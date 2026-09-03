@@ -130,7 +130,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private hideInitialLoader(): void {
-    const loader = document.getElementById('lottie-loader');
+    const loader = document.getElementById('initial-loader');
     if (!loader) return;
 
     loader.classList.add('is-hidden');

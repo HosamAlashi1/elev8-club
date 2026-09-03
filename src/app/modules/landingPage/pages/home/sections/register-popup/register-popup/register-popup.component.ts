@@ -6,6 +6,7 @@ import { LandingSettingsService } from '../../../../../../services/landing-setti
 import { GtmService } from '../../../../../../services/gtm.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
 import { take } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 interface FormData {
   fullName: string;
@@ -374,6 +375,7 @@ export class RegisterPopupComponent implements OnInit {
       phone: fullPhoneNumber,
       step: 1,
       consent: true,
+      source: environment.leadSource,
       createdAt: new Date().toISOString()
     };
 

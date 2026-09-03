@@ -37,7 +37,7 @@
               <label class="field-label">Phone</label>
               <div class="field-value">{{ lead.phone || 'N/A' }}</div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
               <label class="field-label">Location</label>
               <div class="field-value">
                 <ng-container *ngIf="lead.city || lead.country; else noLoc">
@@ -45,6 +45,14 @@
                 </ng-container>
                 <ng-template #noLoc>N/A</ng-template>
               </div>
+            </div>
+            <div class="col-md-6">
+              <label class="field-label">Source</label>
+              <div class="field-value">{{ getSourceLabel() }}</div>
+            </div>
+            <div class="col-md-12" *ngIf="lead.qualification">
+              <label class="field-label">Qualification</label>
+              <div class="field-value">{{ getQualificationLabel() }}</div>
             </div>
           </div>
         </div>
@@ -97,6 +105,32 @@
             <div class="col-md-6">
               <label class="field-label">Assigned Via</label>
               <div class="field-value text-capitalize">{{ lead.assigned_sales!.assigned_via }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assigned Channel (v2 leads only — fixed AI-assistant/free-channel link, no WhatsApp group) -->
+        <div class="info-section mb-3"
+          data-aos="fade-up" data-aos-delay="160" data-aos-duration="400"
+          data-aos-anchor="#viewLeadModalBody"
+          *ngIf="lead.assigned_channel">
+          <h5 class="section-title">Assigned Channel</h5>
+          <div class="row g-3">
+            <div class="col-md-7">
+              <label class="field-label">Type</label>
+              <div class="field-value">{{ lead.assigned_channel!.type === 'ai_assistant' ? 'AI Assistant' : 'Free Channel' }}</div>
+            </div>
+            <div class="col-md-5">
+              <label class="field-label">Link</label>
+              <div class="field-value">
+                <a [href]="lead.assigned_channel!.link" target="_blank" class="whatsapp-link">
+                  <i class="fe fe-send me-1"></i>Open link
+                </a>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="field-label">Assigned At</label>
+              <div class="field-value">{{ lead.assigned_channel!.assigned_at | date:'medium' }}</div>
             </div>
           </div>
         </div>

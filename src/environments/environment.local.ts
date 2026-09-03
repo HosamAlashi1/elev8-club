@@ -1,5 +1,7 @@
 export const environment = {
   production: false,
+  // Stamped on every lead created from this landing page — see core/models/lead.model.ts's LeadSource.
+  leadSource: 'v1' as const,
   apiUrl: 'https://Elev8 Club-new-backend.nstechs.net/api',
   prefix: 'Elev8 Club-local',
   cryptoKey: 'Elev8 ClubSuperSecretKey123',

@@ -1,3 +1,10 @@
+/**
+ * ⚠️ SHARED SCHEMA — this file must stay in sync with
+ * elev8-club-v2/src/app/core/models/lead.model.ts (the v2 landing page project). Both
+ * projects write to the SAME Firebase `leads` node and are read by the SAME dashboard here.
+ * Any field you add/rename must be mirrored in both files. See
+ * elev8-club-v2/docs/06-SYNC-WITH-V1.md.
+ */
 export interface LeadAnswers {
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
   readyAmount?: '<200' | '200-1000' | '>1000';
@@ -12,6 +19,14 @@ export interface LeadAnswers {
   financialProblem?: string;
   investBudget?: string;
   systemGoal?: string;
+  // v2 (elev8-club-v2) question set — kept here too since both projects write to this same
+  // `leads` node. See elev8-club-v2/docs/05-QUALIFICATION.md.
+  v2Goal?: string;
+  v2TradingHistory?: string;
+  v2FirstDeposit?: string;
+  v2StartTiming?: string;
+  v2Blocker?: string;
+  v2HasTradingAccount?: string;
 }
 
 export type SalesStatus = 'new' | 'pre_meeting' | 'post_meeting' | 'follow_up' | 'closed' | 'not_interested';
@@ -42,6 +57,29 @@ export const AFFILIATE_STATUS_LABELS: Record<AffiliateStatus, string> = {
   not_renewed: 'Not Renewed'
 };
 
+/**
+ * Which landing page produced this lead. A record with no `source` predates this field — it
+ * was added after elev8-club-v2 (a second landing page, same database, same dashboard) was
+ * introduced. Read a missing `source` as 'v1' everywhere. Run
+ * scripts/backfill-lead-source.mjs once to stamp `source: 'v1'` on old records explicitly.
+ */
+export type LeadSource = 'v1' | 'v2';
+
+/** Dashboard display labels, per product decision: v1 = "Webinar", v2 = "Free community". */
+export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
+  v1: 'Webinar',
+  v2: 'Free community'
+};
+
+/** v2-only: outcome of elev8-club-v2's qualification engine, computed right after step-2 answers are saved. */
+export type LeadQualification = 'qualified' | 'qualified_prep' | 'not_qualified';
+
+export const LEAD_QUALIFICATION_LABELS: Record<LeadQualification, string> = {
+  qualified: 'Qualified',
+  qualified_prep: 'Qualified — needs prep',
+  not_qualified: 'Not qualified'
+};
+
 export interface RenewalCycle {
   key?: string;
   leadKey: string;
@@ -70,6 +108,10 @@ export interface Lead {
   answers?: LeadAnswers;
   createdAt: string;
   completedAt?: string;
+  /** Which landing page this lead registered on. Missing on pre-existing records — read as 'v1'. */
+  source?: LeadSource;
+  /** v2 only — set once the qualification questions are answered. */
+  qualification?: LeadQualification;
   assigned_sales?: {
     sales_id: string;
     whatsapp_number: string;
@@ -80,6 +122,17 @@ export interface Lead {
     assigned_at: number;
     assigned_via: string;
     versionKey?: string;
+  };
+  /**
+   * v2 only — which of its two fixed static links (AI assistant or free channel) this lead
+   * was shown after qualification. No round-robin, unlike v1's assigned_sales WhatsApp-group
+   * pool. See elev8-club-v2/src/app/core/config/qualification.config.ts.
+   */
+  assigned_channel?: {
+    platform: 'telegram';
+    type: 'ai_assistant' | 'group';
+    link: string;
+    assigned_at: number;
   };
   // Sales tracking fields
   salesMemberKey?: string;

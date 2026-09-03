@@ -22,6 +22,12 @@
                     [customWidth]="'160px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
                 </app-modern-select>
 
+                <!-- Source Filter: Webinar (v1) / Free community (v2) -->
+                <app-modern-select [(ngModel)]="selectedSource" [options]="sourceOptions" placeholder2="Source"
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'150px'" [icon]="'fe fe-globe'"
+                    [customWidth]="'165px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                </app-modern-select>
+
                 <!-- Unified Status Filter -->
                 <app-modern-select [(ngModel)]="selectedStatus" [options]="statusOptions" placeholder2="All Statuses"
                     size="sm" (selectionChange)="applyFilters()" [minWidth]="'150px'" [icon]="'fe fe-sliders'"
@@ -55,6 +61,7 @@
                             <th class="w-15">Email</th>
                             <th class="w-10">Phone</th>
                             <th class="w-10">Location</th>
+                            <th class="w-10">Source</th>
                             <th class="w-10" *ngIf="isAdmin">Affiliate</th>
                             <th class="w-10" *ngIf="isAdmin">Group</th>
                             <th class="w-10">Sales Member</th>
@@ -69,7 +76,7 @@
 
                      <tbody *ngIf="(isLoading$ | async)">
                         <tr *ngFor="let _ of [].constructor(size)">
-                            <td *ngFor="let __ of [].constructor(isAdmin ? 11 : 8)" style="padding:19.0198px 10px;">
+                            <td *ngFor="let __ of [].constructor(isAdmin ? 12 : 9)" style="padding:19.0198px 10px;">
                                 <ngx-skeleton-loader appearance="line" animation="progress-dark"
                                     [theme]="{ width: '60%', height: '24.01px', 'border-radius': '6px', margin: '0' }">
                                 </ngx-skeleton-loader>
@@ -89,6 +96,13 @@
                             <td class="text-muted">
                                 <span *ngIf="lead.city">{{ lead.city }}</span>
                                 <span *ngIf="!lead.city && !lead.country">-</span>
+                            </td>
+
+                            <!-- Source: Webinar (v1) / Free community (v2) -->
+                            <td>
+                                <span class="pill" [ngClass]="getSourceClass(lead.source)">
+                                    {{ lead.sourceLabel }}
+                                </span>
                             </td>
 
                             <!-- Affiliate (admin only) -->

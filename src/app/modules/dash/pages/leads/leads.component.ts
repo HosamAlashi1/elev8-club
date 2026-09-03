@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
-import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember } from '../../../../core/models';
+import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember, LeadSource, LEAD_SOURCE_LABELS } from '../../../../core/models';
 import { ToastrsService } from '../../../services/toater.service';
 import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { DeleteComponent } from '../../shared/delete/delete.component';
@@ -27,6 +27,7 @@ interface LeadWithAffiliate extends Lead {
   };
   salesName?: string;
   salesMemberName?: string;
+  sourceLabel?: string;
 }
 
 @Component({
@@ -55,6 +56,14 @@ export class LeadsComponent implements OnInit, OnDestroy {
   searchText = '';
   selectedSalesId = '';
   selectedStatus = '';
+  selectedSource = '';
+
+  // A lead with no `source` predates the field — it's a v1/Webinar lead.
+  readonly sourceOptions: { value: string; label: string }[] = [
+    { value: '', label: 'All Sources' },
+    { value: 'v1', label: LEAD_SOURCE_LABELS.v1 },
+    { value: 'v2', label: LEAD_SOURCE_LABELS.v2 },
+  ];
 
   // Pagination
   page = 1;
@@ -163,7 +172,9 @@ export class LeadsComponent implements OnInit, OnDestroy {
             affiliateName: affiliate?.name || 'none',
             affiliateCode: affiliate?.code || lead.affiliateCode,
             salesName: lead.assigned_sales?.group_name || sales?.group_name || sales?.name || (lead.assigned_sales ? 'Assigned Group' : 'Not Assigned'),
-            salesMemberName: salesMember?.name || undefined
+            salesMemberName: salesMember?.name || undefined,
+            // Missing `source` predates the field — treat as 'v1' (Webinar).
+            sourceLabel: LEAD_SOURCE_LABELS[(lead.source as LeadSource) || 'v1']
           };
         }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -214,13 +225,19 @@ export class LeadsComponent implements OnInit, OnDestroy {
           l.email.toLowerCase().includes(search) ||
           l.phone?.toLowerCase().includes(search) ||
           l.affiliateName?.toLowerCase().includes(search) ||
-          l.salesName?.toLowerCase().includes(search)
+          l.salesName?.toLowerCase().includes(search) ||
+          l.sourceLabel?.toLowerCase().includes(search)
         );
       }
 
       // فلتر WhatsApp Group (admin only) — يُقارن بـ group_name
       if (this.selectedSalesId && this.isAdmin) {
         filtered = filtered.filter(l => (l.assigned_sales?.group_name || '') === this.selectedSalesId);
+      }
+
+      // فلتر المصدر (Webinar / Free community) — missing `source` = 'v1'
+      if (this.selectedSource) {
+        filtered = filtered.filter(l => (l.source || 'v1') === this.selectedSource);
       }
 
       // فلتر الحالة الموحّد
@@ -353,6 +370,10 @@ export class LeadsComponent implements OnInit, OnDestroy {
       not_interested: 'pill-danger'
     };
     return map[status || 'new'] || 'pill-secondary';
+  }
+
+  getSourceClass(source?: string): string {
+    return (source || 'v1') === 'v2' ? 'pill-primary' : 'pill-secondary';
   }
 
   getCreatedDate(timestamp: string): string {

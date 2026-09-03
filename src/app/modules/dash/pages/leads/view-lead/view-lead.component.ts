@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import * as AOS from 'aos';
-import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType } from '../../../../../core/models';
+import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType, LeadSource, LEAD_SOURCE_LABELS, LEAD_QUALIFICATION_LABELS } from '../../../../../core/models';
 import { FirebaseService } from '../../../../services/firebase.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
@@ -328,6 +328,16 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   getInitial(): string {
     const name = this.lead?.fullName;
     return name ? name.trim().charAt(0).toUpperCase() : '?';
+  }
+
+  /** Missing `source` predates the field — treat as 'v1' (Webinar). */
+  getSourceLabel(): string {
+    return LEAD_SOURCE_LABELS[(this.lead?.source as LeadSource) || 'v1'];
+  }
+
+  /** v2 only — leads from v1 have no qualification result. */
+  getQualificationLabel(): string {
+    return this.lead?.qualification ? LEAD_QUALIFICATION_LABELS[this.lead.qualification] : '';
   }
 
   getStatusLabel(): string {

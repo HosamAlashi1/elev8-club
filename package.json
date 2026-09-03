@@ -17,7 +17,8 @@
     "video:deploy": "node tools/video-hls.mjs deploy",
     "prestart": "node tools/video-hls.mjs ensure",
     "prebuild": "node tools/video-hls.mjs ensure",
-    "prewatch": "node tools/video-hls.mjs ensure"
+    "prewatch": "node tools/video-hls.mjs ensure",
+    "backfill:lead-source": "node scripts/backfill-lead-source.mjs"
   },
   "private": true,
   "dependencies": {
@@ -77,6 +78,7 @@
     "@types/jquery": "^3.5.32",
     "@types/page-flip": "^2.0.4",
     "@types/uuid": "^10.0.0",
+    "firebase-admin": "^12.7.0",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
