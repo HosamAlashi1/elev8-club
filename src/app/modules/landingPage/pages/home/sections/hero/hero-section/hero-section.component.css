@@ -784,6 +784,92 @@
   }
 }
 
+/* Tablet layout: keep the portrait and copy in separate columns. */
+@media (min-width: 981px) and (max-width: 1280px) {
+  :host {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-areas: "visual copy";
+    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+    align-items: center;
+    gap: clamp(28px, 3.5vw, 44px);
+    height: auto;
+    min-height: 0;
+    padding: 118px clamp(28px, 4vw, 52px) 56px;
+    overflow: hidden;
+    direction: ltr;
+  }
+
+  .hero__visual {
+    position: relative;
+    grid-area: visual;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 610 / 710;
+    margin: 0;
+  }
+
+  .hero__visual img {
+    object-position: center top;
+  }
+
+  .hero__copy {
+    position: relative;
+    grid-area: copy;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+    min-width: 0;
+    direction: rtl;
+    text-align: right;
+  }
+
+  .hero h1 {
+    margin-top: 24px;
+    font-size: clamp(25px, 2.55vw, 31px);
+    line-height: 1.5;
+  }
+
+  .hero-title-line {
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .inline-list {
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+
+  .cta-strip {
+    width: 100%;
+    margin-top: 26px;
+  }
+
+  .cta-strip p {
+    font-size: 14px;
+    line-height: 1.65;
+    word-spacing: 2px;
+  }
+
+  .gold-btn {
+    flex-basis: 176px;
+    width: 176px;
+    min-width: 176px;
+    padding-inline: 12px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 980px) {
   :host {
     height: auto;
