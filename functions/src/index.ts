@@ -473,3 +473,68 @@ export const updateDashboardUserAuth = publicHttps.onCall(async (
     );
   }
 });
+
+/** Permanently delete a dashboard login from Firebase Auth and Realtime DB. */
+export const deleteDashboardUser = publicHttps.onCall(async (
+  data,
+  context,
+) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "Must be authenticated",
+    );
+  }
+
+  const callerUid = context.auth.uid;
+  const callerSnap = await admin.database()
+    .ref(`dashboard_users/${callerUid}`)
+    .once("value");
+  if (callerSnap.val()?.role !== "admin") {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Only admins can delete users",
+    );
+  }
+
+  const uid = typeof data?.uid === "string" ? data.uid.trim() : "";
+  if (!uid) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "User id is required",
+    );
+  }
+  if (uid === callerUid) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "You cannot delete your own admin account",
+    );
+  }
+
+  const targetRef = admin.database().ref(`dashboard_users/${uid}`);
+  const targetSnap = await targetRef.once("value");
+  const target = targetSnap.val();
+  const deletableRoles = ["sales", "account_manager", "affiliate"];
+  if (!target || !deletableRoles.includes(target.role)) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      "Dashboard user was not found",
+    );
+  }
+
+  try {
+    try {
+      await admin.auth().deleteUser(uid);
+    } catch (error: unknown) {
+      const authError = error as {code?: string};
+      if (authError.code !== "auth/user-not-found") throw error;
+    }
+
+    await targetRef.remove();
+    return {success: true};
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message :
+      "Failed to delete dashboard user";
+    throw new functions.https.HttpsError("internal", message);
+  }
+});

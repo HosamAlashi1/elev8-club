@@ -189,6 +189,7 @@ export class AffiliatesComponent implements OnInit, OnDestroy {
 
     modalRef.componentInstance.type = 'affiliate';
     modalRef.componentInstance.firebaseKey = affiliate.key;
+    modalRef.componentInstance.authUserId = affiliate.userId;
     modalRef.componentInstance.message =
       `Are you sure you want to delete "${affiliate.name}"? This action cannot be undone.`;
 

@@ -128,8 +128,18 @@
             <div class="sm-error" *ngIf="ef['name'].invalid && ef['name'].touched">Name is required</div>
           </div>
           <div class="col-md-6">
+            <label class="sm-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control sm-input" formControlName="email" placeholder="email@example.com">
+            <div class="sm-error" *ngIf="ef['email'].invalid && ef['email'].touched">Valid email required</div>
+          </div>
+          <div class="col-md-6">
             <label class="sm-label">Phone</label>
             <input type="text" class="form-control sm-input" formControlName="phone" placeholder="+962...">
+          </div>
+          <div class="col-md-6">
+            <label class="sm-label">New Password</label>
+            <input type="password" class="form-control sm-input" formControlName="password" placeholder="Leave blank to keep current password">
+            <div class="sm-error" *ngIf="ef['password'].invalid && ef['password'].touched">Min 8 characters required</div>
           </div>
           <div class="col-12">
             <div class="sm-toggle-row">

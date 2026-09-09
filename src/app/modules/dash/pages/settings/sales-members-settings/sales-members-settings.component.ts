@@ -64,7 +64,9 @@ export class SalesMembersSettingsComponent implements OnInit, OnDestroy {
   private buildEditForm(member: SalesMember): void {
     this.editForm = this.fb.group({
       name: [member.name, Validators.required],
+      email: [member.email, [Validators.required, Validators.email]],
       phone: [member.phone || ''],
+      password: ['', Validators.minLength(8)],
       isActive: [member.isActive]
     });
   }
@@ -85,7 +87,12 @@ export class SalesMembersSettingsComponent implements OnInit, OnDestroy {
 
   delete(member: SalesMember): void {
     if (!member.key || !confirm(`Delete ${member.name}? This cannot be undone.`)) return;
-    this.firebaseService.deleteSalesMember(member.key)
+    const deleteLogin = member.userId
+      ? this.firebaseService.deleteDashboardAuthUser(member.userId)
+      : Promise.resolve();
+
+    deleteLogin
+      .then(() => this.firebaseService.deleteSalesMember(member.key!))
       .then(() => this.toastr.showSuccess('Member deleted'))
       .catch(() => this.toastr.showError('Failed to delete'));
   }
@@ -110,19 +117,28 @@ export class SalesMembersSettingsComponent implements OnInit, OnDestroy {
     if (!this.editingMember?.key || this.editForm.invalid || this.isEditing) return;
     this.isEditing = true;
 
-    const { name, phone, isActive } = this.editForm.value;
+    const { name, email, phone, password, isActive } = this.editForm.value;
     const key = this.editingMember.key;
     const userId = this.editingMember.userId;
 
     try {
-      await this.firebaseService.updateSalesMember(key, { name, phone: phone || '', isActive });
-      if (userId) {
-        await this.firebaseService.updateDashboardUser(userId, { name, isActive });
-      }
+      await this.firebaseService.updateDashboardAuthUser({
+        uid: userId,
+        name: name.trim(),
+        email: email.trim(),
+        password: password || undefined,
+        isActive
+      });
+      await this.firebaseService.updateSalesMember(key, {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone?.trim() || '',
+        isActive
+      });
       this.toastr.showSuccess('Member updated');
       this.editingMember = null;
-    } catch {
-      this.toastr.showError('Failed to update member');
+    } catch (error: any) {
+      this.toastr.showError(error?.message || 'Failed to update member');
     } finally {
       this.isEditing = false;
     }

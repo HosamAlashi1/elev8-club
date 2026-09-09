@@ -60,14 +60,7 @@ export class LoginComponent implements OnInit {
         // Finish restoring/minting the Firebase session before dashboard navigation.
         await user.getIdToken(true);
 
-        if (!user.emailVerified) {
-          this.authService.SendVerificationMail();
-          this.showMsg(false, 'Please verify your email.');
-          this.isLoginLoading = false;
-          return;
-        }
-
-        // Fetch dashboard user profile (role, etc.)
+        // Dashboard access is controlled by the authorized, active dashboard profile.
         let dashUser: DashboardUser | null = null;
         try {
           dashUser = await firstValueFrom(this.service.getDashboardUser(user.uid));

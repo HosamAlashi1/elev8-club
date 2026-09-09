@@ -506,6 +506,11 @@ export class FirebaseService {
     await firstValueFrom(this.fns.httpsCallable('updateDashboardUserAuth')(data));
   }
 
+  public async deleteDashboardAuthUser(uid: string): Promise<void> {
+    await this.ensureAuthenticatedFunctionCall();
+    await firstValueFrom(this.fns.httpsCallable('deleteDashboardUser')({ uid }));
+  }
+
   public getActiveAccountManagersByVersion(versionKey: string): Observable<DashboardUser[]> {
     return this.getAllDashboardUsers().pipe(
       map(users => users.filter(user =>

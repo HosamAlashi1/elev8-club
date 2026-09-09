@@ -16,6 +16,7 @@ export class DeleteComponent {
   @Input() message: string;
   @Input() extraData: any;
   @Input() firebaseKey: string; // للـ Firebase items
+  @Input() authUserId?: string;
 
   alertMessage: string;
   messageType: string;
@@ -105,7 +106,10 @@ export class DeleteComponent {
 
     switch (this.type) {
       case 'affiliate':
-        deletePromise = this.firebaseService.deleteAffiliate(this.firebaseKey);
+        deletePromise = this.authUserId
+          ? this.firebaseService.deleteDashboardAuthUser(this.authUserId)
+              .then(() => this.firebaseService.deleteAffiliate(this.firebaseKey))
+          : this.firebaseService.deleteAffiliate(this.firebaseKey);
         break;
       case 'lead':
         deletePromise = this.firebaseService.delete('leads', this.firebaseKey);

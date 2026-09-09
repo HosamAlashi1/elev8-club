@@ -94,10 +94,7 @@ export class AccountManagersSettingsComponent implements OnInit, OnDestroy {
 
   delete(manager: DashboardUser): void {
     if (!manager.uid || !confirm(`Delete account for ${manager.name}? This cannot be undone.`)) return;
-    Promise.all([
-      this.firebaseService.updateDashboardUser(manager.uid, { role: 'deleted' as any, isActive: false }),
-      this.firebaseService.updateDashboardAuthUser({ uid: manager.uid, isActive: false })
-    ])
+    this.firebaseService.deleteDashboardAuthUser(manager.uid)
       .then(() => this.toastr.showSuccess('Account manager removed'))
       .catch(() => this.toastr.showError('Failed to delete'));
   }
