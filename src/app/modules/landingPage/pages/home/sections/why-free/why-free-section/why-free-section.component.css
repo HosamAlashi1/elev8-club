@@ -64,8 +64,14 @@ app-why-free-section {
   position: relative;
   direction: rtl;
   width: 100%;
-  height: 724px;
+  height: auto;
+  aspect-ratio: 3 / 2;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.34),
+    0 0 42px rgba(0, 78, 238, 0.12);
 }
 
 .why-free__media::after {
@@ -74,23 +80,15 @@ app-why-free-section {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(5, 5, 10, 0.16), transparent 30%, transparent 72%, rgba(5, 5, 10, 0.28)),
+    linear-gradient(90deg, rgba(5, 5, 10, 0.06), transparent 20%, transparent 80%, rgba(5, 5, 10, 0.1)),
     radial-gradient(circle at 32% 20%, rgba(255, 255, 255, 0.08), transparent 24%);
-  opacity: 0.58;
+  opacity: 0.24;
 }
 
 .why-free__picture {
   display: block;
   width: 100%;
   height: 100%;
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.18) 8%, rgba(0, 0, 0, 0.82) 20%, #000 32%, #000 84%, rgba(0, 0, 0, 0.52) 94%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.28) 8%, rgba(0, 0, 0, 0.78) 18%, #000 30%, #000 62%, rgba(0, 0, 0, 0.82) 76%, rgba(0, 0, 0, 0.34) 90%, transparent 100%);
-  mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.18) 8%, rgba(0, 0, 0, 0.82) 20%, #000 32%, #000 84%, rgba(0, 0, 0, 0.52) 94%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.28) 8%, rgba(0, 0, 0, 0.78) 18%, #000 30%, #000 62%, rgba(0, 0, 0, 0.82) 76%, rgba(0, 0, 0, 0.34) 90%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
 }
 
 .why-free__media img {
@@ -98,13 +96,11 @@ app-why-free-section {
   width: 100%;
   height: 100%;
   max-width: none;
-  border-radius: 0;
+  border-radius: inherit;
   object-fit: cover;
   object-position: center;
   box-shadow: none;
   mix-blend-mode: normal;
-  transform-origin: 50% 45%;
-  animation: whyFreeImageBreath 11s ease-in-out infinite alternate;
 }
 
 .why-free__copy {
@@ -426,8 +422,8 @@ app-why-free-section {
   }
 
   .why-free__media {
-    width: min(100%, 560px);
-    height: 430px;
+    width: min(100%, 720px);
+    height: auto;
     margin: 0 auto;
   }
 
@@ -472,18 +468,19 @@ app-why-free-section {
 
 @media (min-width: 1101px) and (max-width: 1450px) {
   .why-free {
-    grid-template-columns: minmax(360px, 39vw) minmax(0, 760px);
-    gap: clamp(48px, 5.8vw, 84px);
+    grid-template-columns: minmax(400px, 560px) minmax(0, 700px);
+    justify-content: center;
+    gap: clamp(36px, 3.2vw, 48px);
     max-width: 100%;
-    padding: 38px clamp(28px, 5vw, 72px) 0px clamp(0px, 2.5vw, 24px);
+    padding: 38px clamp(32px, 3.2vw, 48px) 48px;
   }
 
   .why-free__media {
-    height: clamp(560px, 50.3vw, 724px);
+    height: auto;
   }
 
   .why-free__copy {
-    width: min(100%, 760px);
+    width: min(100%, 700px);
   }
 
   .why-free__lead,
@@ -542,6 +539,7 @@ app-why-free-section {
 
 @media (max-width: 680px) {
   .why-free {
+    gap: 28px;
     padding: 46px 24px 56px;
   }
 
@@ -550,18 +548,19 @@ app-why-free-section {
   }
 
   .why-free__media {
-    width: calc(100% + 48px);
-    height: 351px;
-    margin-inline: -24px;
+    justify-self: center;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    margin-inline: auto;
+    border-radius: 18px;
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.3),
+      0 0 28px rgba(0, 78, 238, 0.1);
   }
 
   .why-free__picture {
-    -webkit-mask-image:
-      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.24) 7%, rgba(0, 0, 0, 0.86) 18%, #000 30%, #000 86%, rgba(0, 0, 0, 0.5) 96%, transparent 100%),
-      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 56%, rgba(0, 0, 0, 0.78) 72%, rgba(0, 0, 0, 0.28) 88%, transparent 100%);
-    mask-image:
-      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.24) 7%, rgba(0, 0, 0, 0.86) 18%, #000 30%, #000 86%, rgba(0, 0, 0, 0.5) 96%, transparent 100%),
-      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 8%, rgba(0, 0, 0, 0.82) 18%, #000 30%, #000 56%, rgba(0, 0, 0, 0.78) 72%, rgba(0, 0, 0, 0.28) 88%, transparent 100%);
+    border-radius: inherit;
   }
 
   .why-free__eyebrow {

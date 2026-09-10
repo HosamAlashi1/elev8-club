@@ -100,10 +100,9 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
       bodyLines: [
         'بعد ما طبّقت النظام وحققت نتائج قوية قررت أنقل هذا الشي لناس أكثر من خلال بيئة صحية ومنظمة اليوم قدرنا نساعد أكثر من 50,000 شاب وصبية من مختلف دول العالم يبدأوا أول دخل إلهم ويتعلموا التداول بالطريقة الصحيحة'
       ],
-      image: 'assets/images/anima-home/trust-instagram.webp',
-      imageAlt: 'صفحة Elev8 Club على إنستغرام',
-      mediaPosition: 'right',
-      mediaKind: 'plain'
+      image: 'assets/images/anima-home/elev8-event.webp',
+      imageAlt: 'خليل وسط الحضور في فعالية Elev8 Club',
+      mediaPosition: 'right'
     },
     {
       title: 'تحدي elev8 club',
