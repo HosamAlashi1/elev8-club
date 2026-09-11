@@ -4,7 +4,11 @@ import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
-import { Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember, LeadSource, LEAD_SOURCE_LABELS } from '../../../../core/models';
+import {
+  Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember,
+  LeadSource, LEAD_SOURCE_LABELS, effectiveSalesStatus,
+  AccountVerificationStatus, ACCOUNT_VERIFICATION_LABELS, BOT_TOTAL_STEPS
+} from '../../../../core/models';
 import { ToastrsService } from '../../../services/toater.service';
 import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { DeleteComponent } from '../../shared/delete/delete.component';
@@ -57,6 +61,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
   selectedSalesId = '';
   selectedStatus = '';
   selectedSource = '';
+  selectedVerification = '';
 
   // A lead with no `source` predates the field — it's a v1/Webinar lead.
   readonly sourceOptions: { value: string; label: string }[] = [
@@ -64,6 +69,21 @@ export class LeadsComponent implements OnInit, OnDestroy {
     { value: 'v1', label: LEAD_SOURCE_LABELS.v1 },
     { value: 'v2', label: LEAD_SOURCE_LABELS.v2 },
   ];
+
+  /**
+   * Trading-account verification. Only v2 leads have this field at all, so picking any value
+   * here also narrows the table to v2 — otherwise "Not Submitted" would sweep in every v1 lead
+   * that simply has no such concept, which is not what anyone means by that filter.
+   */
+  readonly verificationOptions: { value: string; label: string }[] = [
+    { value: '', label: 'All Verification' },
+    { value: 'not_submitted', label: ACCOUNT_VERIFICATION_LABELS.not_submitted },
+    { value: 'pending', label: ACCOUNT_VERIFICATION_LABELS.pending },
+    { value: 'verified', label: ACCOUNT_VERIFICATION_LABELS.verified },
+    { value: 'rejected', label: ACCOUNT_VERIFICATION_LABELS.rejected },
+  ];
+
+  readonly botTotalSteps = BOT_TOTAL_STEPS;
 
   // Pagination
   page = 1;
@@ -79,6 +99,8 @@ export class LeadsComponent implements OnInit, OnDestroy {
     { value: 'completed',   label: 'Completed' },
     { value: 'pending',     label: 'Pending' },
     { value: '__sales__',   label: 'Sales Status', disabled: true },
+    // v2's first step. Listed alongside v1's because the table mixes both sources.
+    { value: 'bot_followup', label: 'Bot Follow-up' },
     { value: 'new',         label: 'New' },
     { value: 'pre_meeting', label: 'Pre-Meeting' },
     { value: 'post_meeting',label: 'Post-Meeting' },
@@ -226,7 +248,11 @@ export class LeadsComponent implements OnInit, OnDestroy {
           l.phone?.toLowerCase().includes(search) ||
           l.affiliateName?.toLowerCase().includes(search) ||
           l.salesName?.toLowerCase().includes(search) ||
-          l.sourceLabel?.toLowerCase().includes(search)
+          l.sourceLabel?.toLowerCase().includes(search) ||
+          // A lead who quotes their subscription number on a call has to be findable by it —
+          // it is the only identifier they were ever shown.
+          l.subscriptionNumber?.toLowerCase().includes(search) ||
+          l.tradingAccountNumber?.toLowerCase().includes(search)
         );
       }
 
@@ -247,8 +273,18 @@ export class LeadsComponent implements OnInit, OnDestroy {
         } else if (this.selectedStatus === 'pending') {
           filtered = filtered.filter(l => l.step !== 2);
         } else {
-          filtered = filtered.filter(l => (l.sales_status || 'new') === this.selectedStatus);
+          // effectiveSalesStatus, not the raw field: a v2 lead sitting on the shared default
+          // 'new' belongs under "Bot Follow-up", which is the first step of its own pipeline.
+          filtered = filtered.filter(l => effectiveSalesStatus(l) === this.selectedStatus);
         }
+      }
+
+      // فلتر توثيق حساب التداول — v2 فقط، لأنه ما في هيك حقل بليدز النسخة الأولى
+      if (this.selectedVerification) {
+        filtered = filtered.filter(l =>
+          (l.source || 'v1') === 'v2' &&
+          this.verificationStatusOf(l) === this.selectedVerification
+        );
       }
 
       this.leads = filtered;
@@ -355,21 +391,54 @@ export class LeadsComponent implements OnInit, OnDestroy {
   }
 
   getSalesStatusLabel(lead: Lead): string {
-    const statusLabel = SALES_STATUS_LABELS[(lead.sales_status as SalesStatus)] || 'New';
-    if (lead.sales_status !== 'closed' || !lead.sales_package) return statusLabel;
+    const status = effectiveSalesStatus(lead);
+    const statusLabel = SALES_STATUS_LABELS[status] || 'New';
+    if (status !== 'closed' || !lead.sales_package) return statusLabel;
     return `${statusLabel} - ${SALES_PACKAGE_LABELS[lead.sales_package]}`;
   }
 
-  getSalesStatusClass(status?: string): string {
+  /** Takes the lead, not a bare status, so a v2 lead on the shared 'new' default reads right. */
+  getSalesStatusClass(lead: Lead): string {
     const map: Record<string, string> = {
       new: 'pill-secondary',
+      bot_followup: 'pill-info',
       pre_meeting: 'pill-info',
       post_meeting: 'pill-primary',
       follow_up: 'pill-warning',
       closed: 'pill-success',
       not_interested: 'pill-danger'
     };
-    return map[status || 'new'] || 'pill-secondary';
+    return map[effectiveSalesStatus(lead)] || 'pill-secondary';
+  }
+
+  // ── v2 bot columns ───────────────────────────────
+  isV2(lead: Lead): boolean {
+    return (lead.source || 'v1') === 'v2';
+  }
+
+  /** A v2 lead created before this field existed reads as 'not_submitted'. */
+  verificationStatusOf(lead: Lead): AccountVerificationStatus {
+    return (lead.accountVerificationStatus as AccountVerificationStatus) || 'not_submitted';
+  }
+
+  getVerificationLabel(lead: Lead): string {
+    return ACCOUNT_VERIFICATION_LABELS[this.verificationStatusOf(lead)];
+  }
+
+  getVerificationClass(lead: Lead): string {
+    const map: Record<AccountVerificationStatus, string> = {
+      not_submitted: 'pill-secondary',
+      pending: 'pill-warning',
+      verified: 'pill-success',
+      rejected: 'pill-danger'
+    };
+    return map[this.verificationStatusOf(lead)] || 'pill-secondary';
+  }
+
+  /** "3/7" once the lead has actually opened the bot; empty before that. */
+  getBotStepText(lead: Lead): string {
+    if (!lead.telegramChatId || !lead.currentStepNumber) return '';
+    return `${lead.currentStepNumber}/${BOT_TOTAL_STEPS}`;
   }
 
   getSourceClass(source?: string): string {

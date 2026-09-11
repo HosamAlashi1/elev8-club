@@ -13,7 +13,7 @@
                 <div class="search-wrap position-relative flex-grow-1" style="max-width: 260px;">
                     <i class="fe fe-search text-muted position-absolute"></i>
                     <input [(ngModel)]="searchText" class="form-control ps-5"
-                        placeholder="Search by name, email or phone..." (ngModelChange)="applyFilters()" />
+                        placeholder="Search by name, email, phone or subscription no..." (ngModelChange)="applyFilters()" />
                 </div>
 
                 <!-- WhatsApp Group Filter (admin only) -->
@@ -32,6 +32,14 @@
                 <app-modern-select [(ngModel)]="selectedStatus" [options]="statusOptions" placeholder2="All Statuses"
                     size="sm" (selectionChange)="applyFilters()" [minWidth]="'150px'" [icon]="'fe fe-sliders'"
                     [customWidth]="'175px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                </app-modern-select>
+
+                <!-- Trading-account verification (v2 leads only — picking a value also narrows
+                     the table to v2, since v1 leads have no such field) -->
+                <app-modern-select [(ngModel)]="selectedVerification" [options]="verificationOptions"
+                    placeholder2="All Verification"
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'160px'" [icon]="'fe fe-shield'"
+                    [customWidth]="'185px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
                 </app-modern-select>
 
                 <!-- Size Selector -->
@@ -66,6 +74,7 @@
                             <th class="w-10" *ngIf="isAdmin">Group</th>
                             <th class="w-10">Sales Member</th>
                             <th class="w-10">Sales Status</th>
+                            <th class="w-10">Bot</th>
                             <th class="w-8">Status</th>
                             <th class="w-10">Created At</th>
                             <th class="w-8">Actions</th>
@@ -76,7 +85,10 @@
 
                      <tbody *ngIf="(isLoading$ | async)">
                         <tr *ngFor="let _ of [].constructor(size)">
-                            <td *ngFor="let __ of [].constructor(isAdmin ? 12 : 9)" style="padding:19.0198px 10px;">
+                            <!-- One skeleton cell per column: 13 with the two admin-only ones,
+                                 11 without. (The non-admin count was 9 before the Bot column
+                                 arrived, one short of the 10 columns actually rendered.) -->
+                            <td *ngFor="let __ of [].constructor(isAdmin ? 13 : 11)" style="padding:19.0198px 10px;">
                                 <ngx-skeleton-loader appearance="line" animation="progress-dark"
                                     [theme]="{ width: '60%', height: '24.01px', 'border-radius': '6px', margin: '0' }">
                                 </ngx-skeleton-loader>
@@ -136,9 +148,26 @@
 
                             <!-- Sales Status -->
                             <td>
-                                <span class="pill" [ngClass]="getSalesStatusClass(lead.sales_status)">
+                                <span class="pill" [ngClass]="getSalesStatusClass(lead)">
                                     {{ getSalesStatusLabel(lead) }}
                                 </span>
+                            </td>
+
+                            <!-- Bot (v2 leads only) — how far through @elev8_club_community_bot
+                                 they are, and where their trading account stands. -->
+                            <td>
+                                <ng-container *ngIf="isV2(lead); else noBot">
+                                    <span class="pill" [ngClass]="getVerificationClass(lead)">
+                                        {{ getVerificationLabel(lead) }}
+                                    </span>
+                                    <!-- Blank until the lead actually opens the bot: "1/7" for
+                                         someone who never started reads as progress they have
+                                         not made. -->
+                                    <small class="text-muted d-block mt-1" *ngIf="getBotStepText(lead)" dir="ltr">
+                                        <i class="fe fe-message-square me-1"></i>{{ getBotStepText(lead) }}
+                                    </small>
+                                </ng-container>
+                                <ng-template #noBot><span class="text-muted">—</span></ng-template>
                             </td>
 
                             <!-- Lead Status (Completed/Pending) -->

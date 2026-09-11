@@ -29,7 +29,15 @@ export interface LeadAnswers {
   v2HasTradingAccount?: string;
 }
 
-export type SalesStatus = 'new' | 'pre_meeting' | 'post_meeting' | 'follow_up' | 'closed' | 'not_interested';
+/**
+ * The CRM pipeline. v1 (Webinar) leads walk the five original steps; v2 (Free community) leads
+ * walk three — `bot_followup` → `follow_up` → `closed` — because they are handed to the Telegram
+ * bot instead of a webinar. `bot_followup` is therefore only ever written on a v2 lead, and the
+ * v1 steps below are untouched by that. See V1_SALES_PIPELINE / V2_SALES_PIPELINE.
+ */
+export type SalesStatus =
+  | 'new' | 'pre_meeting' | 'post_meeting' | 'follow_up' | 'closed' | 'not_interested'
+  | 'bot_followup';
 export type SalesPackage = 'starter' | 'pro' | 'ai';
 export type RenewalStatus = 'renewal_followup' | 'renew_later' | 'renewed' | 'not_renewed';
 /** @deprecated Use RenewalStatus. Kept for existing records and imports. */
@@ -41,8 +49,34 @@ export const SALES_STATUS_LABELS: Record<SalesStatus, string> = {
   post_meeting: 'Post-Meeting',
   follow_up: 'Follow-up',
   closed: 'Closed',
-  not_interested: 'Not Interested'
+  not_interested: 'Not Interested',
+  bot_followup: 'Bot Follow-up'
 };
+
+/** The five steps a v1 lead walks. Unchanged — v2's pipeline is a separate list. */
+export const V1_SALES_PIPELINE: SalesStatus[] = ['new', 'pre_meeting', 'post_meeting', 'follow_up', 'closed'];
+
+/** The three steps a v2 lead walks: chase them through the bot, then follow up, then close. */
+export const V2_SALES_PIPELINE: SalesStatus[] = ['bot_followup', 'follow_up', 'closed'];
+
+/** Which pipeline a lead belongs to. A missing `source` predates the field and reads as v1. */
+export function salesPipelineFor(source?: LeadSource): SalesStatus[] {
+  return (source || 'v1') === 'v2' ? V2_SALES_PIPELINE : V1_SALES_PIPELINE;
+}
+
+/**
+ * A v2 lead's resting status. v2 stamps `bot_followup` at creation, but leads created before
+ * this feature — and anything that ran through `assignSalesMemberToLead` — carry the shared
+ * default `new`, which is not a step on v2's pipeline. Read it as the first step instead of
+ * rendering a lead that sits outside its own pipeline.
+ */
+export function effectiveSalesStatus(lead: Pick<Lead, 'source' | 'sales_status'>): SalesStatus {
+  const status = lead.sales_status;
+  if ((lead.source || 'v1') === 'v2') {
+    return !status || status === 'new' ? 'bot_followup' : status;
+  }
+  return status || 'new';
+}
 
 export const SALES_PACKAGE_LABELS: Record<SalesPackage, string> = {
   starter: 'Starter',
@@ -79,6 +113,68 @@ export const LEAD_QUALIFICATION_LABELS: Record<LeadQualification, string> = {
   qualified_prep: 'Qualified — needs prep',
   not_qualified: 'Not qualified'
 };
+
+// ──────────────────────────────────────────────────────────────────────────────
+// v2 Telegram bot
+//
+// A qualified v2 lead is handed a six-digit subscription number and sent to
+// @elev8_club_community_bot. The lead types that number into the bot, which is how the bot's
+// backend (TMS_Backend, FreeBotSteps) finds this record and reports progress back into it.
+//
+// Everything below except `subscriptionNumber` is therefore WRITTEN BY THE BOT BACKEND, not by
+// the landing page or this dashboard. v2 creates them at their defaults so the record has a
+// stable shape; the dashboard shows them read-only. The one exception is
+// `accountVerificationStatus`, which the dashboard changes through the bot's own HTTP API
+// (BotAccountService) rather than by writing to Firebase — the bot has to message the lead when
+// it flips, so the write has to go through the backend that owns the conversation.
+// ──────────────────────────────────────────────────────────────────────────────
+
+/** The lead's tier inside the bot. Every lead starts on `free`; the backend promotes it. */
+export type LeadBotType = 'free' | 'start' | 'ai' | 'pro';
+
+export const LEAD_BOT_TYPE_LABELS: Record<LeadBotType, string> = {
+  free: 'Free',
+  start: 'Start',
+  ai: 'AI',
+  pro: 'Pro'
+};
+
+/**
+ * Where the lead's trading account stands with our verification:
+ *   not_submitted — added to the bot but has not sent a trading-account number yet
+ *   pending       — number sent, waiting on us
+ *   verified      — we accepted it
+ *   rejected      — we turned it down
+ */
+export type AccountVerificationStatus = 'not_submitted' | 'pending' | 'verified' | 'rejected';
+
+export const ACCOUNT_VERIFICATION_LABELS: Record<AccountVerificationStatus, string> = {
+  not_submitted: 'Not Submitted',
+  pending: 'Pending Review',
+  verified: 'Verified',
+  rejected: 'Rejected'
+};
+
+/** Only these two can be pushed to the bot's API; the other two are states it reports to us. */
+export type AccountVerificationDecision = Extract<AccountVerificationStatus, 'verified' | 'rejected'>;
+
+/** The bot's onboarding flow, mirroring TMS_Backend's FreeBotSteps. */
+export const BOT_TOTAL_STEPS = 7;
+
+export const BOT_STEP_LABELS: Record<number, string> = {
+  1: 'Trading intro',
+  2: 'Open trading account',
+  3: 'Verify trading account',
+  4: 'Deposit',
+  5: 'Send account number',
+  6: 'Account under review',
+  7: 'Join the community'
+};
+
+export function botStepLabel(stepNumber?: number): string {
+  if (!stepNumber) return '—';
+  return BOT_STEP_LABELS[stepNumber] || `Step ${stepNumber}`;
+}
 
 export interface RenewalCycle {
   key?: string;
@@ -134,6 +230,32 @@ export interface Lead {
     link: string;
     assigned_at: number;
   };
+  // ── v2 Telegram bot ────────────────────────────────────────────────────────
+  // See the block above the LeadBotType declaration. Only `subscriptionNumber` is ours; the
+  // rest are created at their defaults and then owned by the bot's backend.
+
+  /**
+   * v2 only — the six-digit code the lead copies out of the result screen and types into the
+   * bot, which is how the bot's backend identifies this record. Unique across all leads;
+   * claimed through the `subscription_codes/{code}` index so two people finishing the quiz at
+   * the same moment cannot land on the same number.
+   */
+  subscriptionNumber?: string;
+  /** v2 only — bot tier. Created as 'free'. */
+  type?: LeadBotType;
+  /** v2 only — set by the bot the first time the lead talks to it. Null until then. */
+  telegramChatId?: number | null;
+  /** v2 only — which of the bot's 7 steps the lead is on. Created as 1. */
+  currentStepNumber?: number;
+  /** v2 only — the trading account the lead sent the bot at step 5. Empty until then. */
+  tradingAccountNumber?: string;
+  /** v2 only — created as 'not_submitted'. Changed via the bot's API, not written directly. */
+  accountVerificationStatus?: AccountVerificationStatus;
+  /** v2 only — ISO timestamps written by the bot. Null until the bot reaches each point. */
+  botStartedAt?: string | null;
+  botCompletedAt?: string | null;
+  botLastInteractionAt?: string | null;
+
   // Sales tracking fields
   salesMemberKey?: string;
   sales_status?: SalesStatus;

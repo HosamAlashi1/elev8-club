@@ -5,7 +5,28 @@
   <meta charset="utf-8" />
   <title>Elev8 Club</title>
   <base href="/" />
-  <link rel="icon" type="image/jpeg" href="assets/images/elev8-tab-logo.jpeg" />
+  <!--
+    Favicons.
+
+    /favicon.ico first, and served from the site ROOT: that is the path Google's favicon
+    crawler requests before it ever reads this HTML, and it used to 404 — angular.json declared
+    src/favicon.ico as an asset but the file had never been created, so Google fell back to its
+    generic globe in search results.
+
+    The old declaration pointed at a 1585x1600 marketing JPEG in which the logo occupied under
+    11% of the frame. Browsers accept anything and shrink it, which is why the tab looked fine;
+    Google requires a square and rejects what it cannot read, which is why search did not. These
+    files are the same logo, cut square so it fills the tile.
+
+    Absolute paths on purpose — these are fetched independently of whatever route the visitor
+    is on, so a relative href is one <base> tag away from breaking.
+  -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon/icon-48.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon/icon-96.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <meta name="description" content="تحدي Elev8 Club المجاني لمساعدتك تبدأ دخل أونلاين من التداول بخطوات بسيطة وواضحة، بدون خبرة مسبقة." />
   <meta name="theme-color" content="#004eee" />
   <meta name="apple-mobile-web-app-title" content="Elev8 Club" />

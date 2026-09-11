@@ -609,6 +609,38 @@ export class FirebaseService {
       });
   }
 
+  /**
+   * Gives a lead an owner, if it does not already have one.
+   *
+   * Assignment happens at **registration** (step 1), not when the lead finishes the questions.
+   * It used to happen at completion, which meant anyone who registered and never came back was
+   * left ownerless and quietly fell out of the funnel — 23 leads had accumulated that way.
+   *
+   * Safe to call more than once: it reads the lead first and does nothing if an owner is already
+   * set. That is what lets the questions page call it again as a safety net, so a registration
+   * whose assignment failed still gets picked up rather than staying broken forever.
+   *
+   * Never throws — a failure here must not cost the visitor their registration.
+   */
+  public async assignSalesMemberIfUnassigned(leadKey: string, versionKey: string): Promise<void> {
+    try {
+      const existing = await this.db
+        .object<string>(`leads/${leadKey}/salesMemberKey`)
+        .valueChanges()
+        .pipe(take(1))
+        .toPromise();
+
+      if (existing) return;
+
+      const salesMemberKey = await this.assignNextSalesMember(versionKey);
+      if (salesMemberKey) {
+        await this.assignSalesMemberToLead(leadKey, salesMemberKey);
+      }
+    } catch (err) {
+      console.warn('Could not assign a sales member to this lead:', err);
+    }
+  }
+
   // ==========================================
   // Lead Sales Status
   // ==========================================

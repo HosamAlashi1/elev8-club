@@ -1,0 +1,7 @@
+# Everything is public. Stated explicitly rather than left to a 404: Google's favicon and image
+# crawlers check robots.txt before fetching, and an ambiguous answer is one more reason for them
+# to skip an asset.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.elev8club.com/sitemap.xml

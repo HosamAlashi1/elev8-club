@@ -538,3 +538,15 @@ export const deleteDashboardUser = publicHttps.onCall(async (
     throw new functions.https.HttpsError("internal", message);
   }
 });
+
+/**
+ * Bulk campaigns on Mailgun — see send-campaign.ts.
+ *
+ * Replaces `sendBulkEmail` above, which was written for SendGrid, was never
+ * deployed, and whose SENDGRID_API_KEY secret does not exist. Mailgun is
+ * what actually delivers mail for this project — the live welcome email
+ * uses it — so the domain is already warm and verified. `sendBulkEmail` is
+ * left untouched rather than deleted, so nothing referencing it breaks; it
+ * simply is not deployed.
+ */
+export {sendCampaignEmail} from "./send-campaign";

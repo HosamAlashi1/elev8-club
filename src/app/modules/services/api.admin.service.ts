@@ -191,6 +191,11 @@ export class ApiAdminService {
 	 * @param emailData - Personalized recipients with email and lead name.
 	 * @returns Observable with response
 	 */
+	/**
+	 * @deprecated Written for SendGrid and never deployed — its SENDGRID_API_KEY secret does not
+	 * exist. Use `sendCampaignEmail`, which goes through Mailgun like the rest of this project's
+	 * mail. Kept only so nothing that still references it fails to compile.
+	 */
 	sendBulkEmail(emailData: {
 		subject: string;
 		htmlContent: string;
@@ -198,5 +203,27 @@ export class ApiAdminService {
 	}): Observable<any> {
 		const callable = this.fns.httpsCallable('sendBulkEmail');
 		return callable(emailData);
+	}
+
+	/**
+	 * Bulk campaigns on Mailgun. The audience is resolved SERVER-side from `filters`, never sent
+	 * as a list of addresses: that keeps the previewed count and the sent set the same number,
+	 * and stops the browser being able to mail arbitrary addresses from the club's domain.
+	 *
+	 * Three modes on the same call, so all three agree about who matches:
+	 *   dryRun   → returns { matched } and sends nothing
+	 *   testEmail→ sends one copy to that address, ignoring the filters
+	 *   neither  → sends the campaign
+	 */
+	sendCampaignEmail(payload: {
+		subject: string;
+		bodyHtml: string;
+		preheader?: string;
+		filters: Record<string, unknown>;
+		dryRun?: boolean;
+		testEmail?: string;
+	}): Observable<any> {
+		const callable = this.fns.httpsCallable('sendCampaignEmail', { timeout: 540000 });
+		return callable(payload);
 	}
 }

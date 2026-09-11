@@ -31,8 +31,8 @@
       }
     },
     "leads": {
-      ".read": "auth != null",
-      ".indexOn": ["versionKey", "affiliateKey", "salesMemberKey", "step", "source"],
+      ".read": "auth != null || ((query.orderByChild == 'subscriptionNumber' || query.orderByChild == 'telegramChatId') && query.equalTo != null)",
+      ".indexOn": ["versionKey", "affiliateKey", "salesMemberKey", "step", "source", "subscriptionNumber", "telegramChatId"],
       "$leadId": {
         ".read": true,
         ".write": "auth != null || !data.exists() && newData.exists() && newData.child('versionKey').isString() && newData.child('fullName').isString() && newData.child('email').isString() && newData.child('phone').isString() && newData.child('step').val() == 1 || data.exists() && newData.exists() && newData.child('versionKey').val() == data.child('versionKey').val() && newData.child('fullName').val() == data.child('fullName').val() && newData.child('email').val() == data.child('email').val() && newData.child('phone').val() == data.child('phone').val() && newData.child('createdAt').val() == data.child('createdAt').val()"
@@ -43,6 +43,15 @@
       "$uid": {
         ".read": "auth != null && (auth.uid == $uid || root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin')",
         ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'"
+      }
+    },
+    "subscription_codes": {
+      ".read": false,
+      ".write": false,
+      "$code": {
+        ".read": true,
+        ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin' || !data.exists() && newData.exists()",
+        ".validate": "$code.matches(/^[1-9][0-9]{5}$/) && newData.hasChildren(['claimedAt']) && newData.child('claimedAt').isNumber()"
       }
     },
     "lead_calls": {

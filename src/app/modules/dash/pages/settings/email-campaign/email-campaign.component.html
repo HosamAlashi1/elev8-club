@@ -1,195 +1,226 @@
-<div class="email-campaign-container">
-  <div class="row g-4">
-    <!-- Left Column: Email Composer -->
-    <div class="col-lg-8">
-      <div class="card h-100">
-        <div class="card-body">
-          <h5 class="card-title mb-4">
-            <i class="fe fe-mail me-2"></i>
-            Compose Email Campaign
-          </h5>
+<div class="ec-wrap">
 
-          <!-- Subject -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold">
-              Email Subject <span class="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="emailSubject"
-              placeholder="Enter email subject..."
-              maxlength="100"
-            />
-            <small class="text-muted">{{ emailSubject.length }}/100 characters</small>
+  <!-- ── Compose ────────────────────────────────────────────────────── -->
+  <div class="ec-col ec-col--main">
+    <div class="ec-card">
+
+      <div class="ec-card__head">
+        <i class="fe fe-edit-3"></i>
+        <span>الرسالة</span>
+      </div>
+
+      <div class="ec-card__body">
+
+        <div class="ec-field">
+          <label class="ec-label">موضوع الرسالة</label>
+          <input class="ec-input" [(ngModel)]="emailSubject"
+                 placeholder="موضوع الإيميل" maxlength="200">
+        </div>
+
+        <div class="ec-field">
+          <label class="ec-label">
+            السطر تحت الشعار
+            <span class="ec-sub">يظهر داخل الشريط الأخضر أعلى الرسالة</span>
+          </label>
+          <input class="ec-input" [(ngModel)]="preheader"
+                 placeholder="Elev8 Club" maxlength="120">
+        </div>
+
+        <!-- Placeholders. Listed right where the writing happens: this is the moment the
+             syntax is needed, and a wrong guess reaches a customer. -->
+        <div class="ec-tokens">
+          <div class="ec-tokens__head">
+            <i class="fe fe-user"></i>
+            بيانات الليد — اضغط لإضافتها، وبتتبدل تلقائياً لكل شخص
           </div>
-
-          <!-- Rich Text Editor -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold">
-              Email Content <span class="text-danger">*</span>
-            </label>
-            <quill-editor
-              [(ngModel)]="emailContent"
-              [modules]="quillModules"
-              [styles]="{ height: '350px' }"
-              placeholder="Write your email content here..."
-            ></quill-editor>
-            <small class="text-muted d-block mt-2">
-              استخدم <code [textContent]="namePlaceholder"></code> لإضافة اسم كل مشترك تلقائيًا.
-            </small>
-          </div>
-
-          <!-- Preview Toggle -->
-          <div class="d-flex gap-2">
-            <button
-              class="btn btn-outline-secondary btn-sm"
-              (click)="togglePreview()"
-              [disabled]="!emailContent"
-            >
-              <i class="fe" [class.fe-eye]="!showPreview" [class.fe-eye-off]="showPreview"></i>
-              {{ showPreview ? 'Hide' : 'Show' }} Preview
+          <div class="ec-tokens__list">
+            <!-- mousedown, not click: by the time click fires the editor has already lost its
+                 selection, and the token would land at the end instead of at the cursor. -->
+            <button type="button" class="ec-token" *ngFor="let p of placeholders"
+                    (mousedown)="$event.preventDefault(); insertPlaceholder(p.token)"
+                    [title]="p.label + ' — مثال: ' + p.sample + ' · بتقدر تكتب ' + p.alias + ' كمان'">
+              <span>{{ p.label }}</span>
+              <code dir="ltr">{{ p.token }}</code>
             </button>
           </div>
-
-          <!-- Preview Section -->
-          <div class="preview-section mt-4" *ngIf="showPreview && emailContent">
-            <div class="card bg-light">
-              <div class="card-header bg-white">
-                <h6 class="mb-0">Email Preview</h6>
-              </div>
-              <div class="card-body">
-                <div class="mb-2">
-                  <strong>Subject:</strong> {{ emailSubject || '(No subject)' }}
-                </div>
-                <hr />
-                <div [innerHTML]="previewEmailContent" class="email-preview-content"></div>
-              </div>
-            </div>
-          </div>
+          <p class="ec-tokens__foot">
+            أسماء المتغيرات إنجليزي زي الحقول بالداتابيس تماماً. الصيغة العربية
+            (<code dir="ltr">{{ '{{الاسم}}' }}</code>) لسا بتشتغل لو كتبتها بإيدك.
+          </p>
         </div>
+
+        <div class="ec-field">
+          <label class="ec-label">محتوى الرسالة</label>
+          <quill-editor class="ec-editor" [(ngModel)]="emailContent"
+                        [modules]="quillModules" [styles]="{height: '300px'}"
+                        (onEditorCreated)="onEditorCreated($event)">
+          </quill-editor>
+        </div>
+
+        <p class="ec-note">
+          <i class="fe fe-info"></i>
+          اكتب المحتوى فقط — الهيدر الأخضر والشعار والفوتر ورابط إلغاء الاشتراك
+          بتنضاف تلقائياً بنفس شكل إيميل الترحيب.
+        </p>
+
+        <button class="ec-btn ec-btn--ghost" (click)="togglePreview()">
+          <i class="fe" [ngClass]="showPreview ? 'fe-eye-off' : 'fe-eye'"></i>
+          {{ showPreview ? 'إخفاء المعاينة' : 'معاينة الرسالة' }}
+        </button>
+
+        <!--
+          An iframe, not [innerHTML]. Angular strips `style` attributes from bound HTML, and an
+          email template is nothing but inline styles — so the old preview showed unstyled text
+          that looked nothing like the real thing. The iframe also walls the dashboard's own CSS
+          out, which would otherwise restyle the tables and typography and quietly lie too.
+          `sandbox` with nothing enabled: the preview must render, never run or navigate.
+        -->
+        <div class="ec-preview" *ngIf="showPreview">
+          <div class="ec-preview__bar">
+            <i class="fe fe-mail"></i> هيك رح تشوفها الناس
+          </div>
+          <iframe class="ec-preview__frame"
+                  [srcdoc]="previewDoc"
+                  sandbox
+                  title="معاينة الرسالة"></iframe>
+        </div>
+
       </div>
     </div>
+  </div>
 
-    <!-- Right Column: Campaign Details & Filters -->
-    <div class="col-lg-4">
-      <!-- Campaign Stats -->
-      <div class="card mb-4">
-        <div class="card-body">
-          <h5 class="card-title mb-3">
-            <i class="fe fe-bar-chart-2 me-2"></i>
-            Campaign Stats
-          </h5>
+  <!-- ── Audience ───────────────────────────────────────────────────── -->
+  <div class="ec-col ec-col--side">
+    <div class="ec-card ec-sticky">
 
-          <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-label">Total Leads</div>
-              <div class="stat-value" *ngIf="!isLoadingLeads">{{ allLeads.length }}</div>
-              <div class="stat-value" *ngIf="isLoadingLeads">
-                <div class="spinner-border spinner-border-sm" role="status"></div>
+      <!-- The count comes from the sending function in dry-run mode, so it is the same number
+           the send will use — not a second calculation that can drift from it. -->
+      <div class="ec-count" [class.ec-count--zero]="matchedCount === 0"
+           [class.ec-count--error]="countError">
+        <div class="ec-count__num">
+          <span *ngIf="isCounting" class="ec-spin"></span>
+          <ng-container *ngIf="!isCounting">{{ countError ? '!' : (matchedCount ?? '—') }}</ng-container>
+        </div>
+        <div class="ec-count__label">{{ countError ? 'تعذّر حساب العدد' : 'ليد رح توصله الرسالة' }}</div>
+        <div class="ec-count__err" *ngIf="countError">{{ countError }}</div>
+      </div>
+
+      <div class="ec-card__head ec-card__head--split">
+        <span><i class="fe fe-filter"></i> الفلاتر
+          <em class="ec-on" *ngIf="activeFilterCount">{{ activeFilterCount }}</em>
+        </span>
+        <button type="button" class="ec-clear" *ngIf="activeFilterCount"
+                (click)="clearFilters()">مسح الكل</button>
+      </div>
+
+      <div class="ec-card__body ec-card__body--tight">
+
+        <p class="ec-sub ec-sub--block">أي مجموعة ما تختار منها إشي = بتشمل الكل</p>
+
+        <!-- One collapsible section per group, driven by `groups`. Collapsed by default so the
+             panel is readable; the header carries the selected count so nothing is hidden. -->
+        <div class="ec-acc" *ngFor="let g of visibleGroups">
+          <button type="button" class="ec-acc__head" (click)="toggleGroup(g.key)"
+                  [class.ec-acc__head--open]="isOpen(g.key)">
+            <i class="fe" [ngClass]="isOpen(g.key) ? 'fe-chevron-down' : 'fe-chevron-left'"></i>
+            <span class="ec-acc__title">{{ g.title }}</span>
+            <em class="ec-v2" *ngIf="g.v2Only">نسخة 2</em>
+            <em class="ec-on" *ngIf="countIn(g.key)">{{ countIn(g.key) }}</em>
+          </button>
+
+          <div class="ec-chips" *ngIf="isOpen(g.key)">
+            <button type="button" class="ec-chip" *ngFor="let c of g.choices"
+                    [class.ec-chip--on]="isTicked(g.key, c.value)"
+                    [title]="g.key === 'botSteps' ? botStepNames[+c.value] : c.label"
+                    (click)="toggle(g.key, c.value)">
+              {{ c.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- The less-used dimensions, behind one more click so they stop crowding the rest. -->
+        <div class="ec-acc">
+          <button type="button" class="ec-acc__head" (click)="showAdvanced = !showAdvanced"
+                  [class.ec-acc__head--open]="showAdvanced">
+            <i class="fe" [ngClass]="showAdvanced ? 'fe-chevron-down' : 'fe-chevron-left'"></i>
+            <span class="ec-acc__title">خيارات إضافية</span>
+          </button>
+
+          <div class="ec-adv" *ngIf="showAdvanced">
+
+            <div class="ec-field" *ngIf="v2InPlay">
+              <label class="ec-mini">فتح البوت؟ <em class="ec-v2">نسخة 2</em></label>
+              <select class="ec-input ec-input--sm" [(ngModel)]="botStarted"
+                      (ngModelChange)="onFiltersChanged()">
+                <option value="">الكل</option>
+                <option value="yes">فتح البوت</option>
+                <option value="no">ما فتحه أبداً</option>
+              </select>
+            </div>
+
+            <div class="ec-field">
+              <label class="ec-mini">وصلته رسالة قبل؟</label>
+              <select class="ec-input ec-input--sm" [(ngModel)]="alreadyEmailed"
+                      (ngModelChange)="onFiltersChanged()">
+                <option value="">الكل</option>
+                <option value="no">ما وصلته ولا رسالة</option>
+                <option value="yes">وصلته رسالة سابقاً</option>
+              </select>
+            </div>
+
+            <div class="ec-field">
+              <label class="ec-mini">المندوب</label>
+              <select class="ec-input ec-input--sm" [(ngModel)]="salesMemberKey"
+                      (ngModelChange)="onFiltersChanged()">
+                <option value="">الكل</option>
+                <option *ngFor="let m of salesMembers" [value]="m.key">{{ m.name }}</option>
+              </select>
+            </div>
+
+            <div class="ec-field">
+              <label class="ec-mini">تاريخ التسجيل</label>
+              <div class="ec-dates">
+                <input type="date" class="ec-input ec-input--sm" [(ngModel)]="createdFrom"
+                       (ngModelChange)="onFiltersChanged()">
+                <input type="date" class="ec-input ec-input--sm" [(ngModel)]="createdTo"
+                       (ngModelChange)="onFiltersChanged()">
               </div>
             </div>
 
-            <div class="stat-item">
-              <div class="stat-label">Targeted Recipients</div>
-              <div class="stat-value text-primary">{{ targetedLeadsCount }}</div>
-            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Filter Recipients -->
-      <div class="card mb-4">
-        <div class="card-body">
-          <h5 class="card-title mb-3">
-            <i class="fe fe-filter me-2"></i>
-            Filter Recipients
-          </h5>
+        <!-- ── Send ─────────────────────────────────────────────────── -->
+        <div class="ec-send">
 
-          <!-- Test Mode Toggle -->
-          <div class="mb-3">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="testModeSwitch"
-                [(ngModel)]="testMode"
-                (ngModelChange)="updateTargetedCount()"
-              />
-              <label class="form-check-label" for="testModeSwitch">
-                <strong>Test Mode</strong>
-              </label>
-            </div>
-            <small class="text-muted" *ngIf="testMode">
-              Email will be sent only to: {{ testEmail }}
-            </small>
+          <label class="ec-mini">جرّب على إيميلك أولاً</label>
+          <div class="ec-test">
+            <input class="ec-input ec-input--sm" [(ngModel)]="testEmail"
+                   placeholder="your@email.com" dir="ltr">
+            <button class="ec-btn ec-btn--ghost ec-btn--sm" (click)="sendTest()"
+                    [disabled]="isTesting">
+              <span *ngIf="isTesting" class="ec-spin ec-spin--sm"></span>
+              <span *ngIf="!isTesting">تجربة</span>
+            </button>
           </div>
+          <p class="ec-sub ec-sub--block">بتتجاهل الفلاتر وبتبعت نسخة وحدة إلك</p>
 
-          <hr *ngIf="testMode" />
-
-          <div class="mb-3" *ngIf="!testMode">
-            <label class="form-label">Status Filter</label>
-            <select
-              class="form-select"
-              [(ngModel)]="filterStatus"
-              (ngModelChange)="updateTargetedCount()"
-            >
-              <option value="all">All Leads</option>
-              <option value="completed">Completed Only</option>
-              <option value="pending">Pending Only</option>
-            </select>
-          </div>
-
-          <div class="alert alert-info mb-0" *ngIf="testMode">
-            <i class="fe fe-info me-2"></i>
-            <small>Test mode: Email will be sent to {{ testEmail }} only</small>
-          </div>
-
-          <div class="alert alert-info mb-0" *ngIf="!testMode && targetedLeadsCount > 0">
-            <i class="fe fe-info me-2"></i>
-            <small>{{ targetedLeadsCount }} lead(s) will receive this email</small>
-          </div>
-
-          <div class="alert alert-warning mb-0" *ngIf="!testMode && targetedLeadsCount === 0 && !isLoadingLeads">
-            <i class="fe fe-alert-triangle me-2"></i>
-            <small>No leads match the selected criteria</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Send Button -->
-      <div class="card">
-        <div class="card-body">
-          <button
-            class="btn btn-custom w-100"
-            [disabled]="!canSend()"
-            (click)="sendCampaign()"
-          >
-            <span *ngIf="!isSending">
-              <i class="fe fe-send me-2"></i>
-              Send Campaign
-            </span>
-            <span *ngIf="isSending">
-              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-              Sending...
-            </span>
+          <button class="ec-btn ec-btn--gold" (click)="send()"
+                  [disabled]="isSending || isCounting || !matchedCount">
+            <span *ngIf="isSending" class="ec-spin ec-spin--sm"></span>
+            <i *ngIf="!isSending" class="fe fe-send"></i>
+            {{ isSending ? 'جاري الإرسال...' : 'إرسال الحملة' }}
           </button>
 
-          <button
-            class="btn btn-outline-secondary w-100 mt-2"
-            (click)="resetForm()"
-            [disabled]="isSending"
-          >
-            <i class="fe fe-x me-2"></i>
-            Reset Form
-          </button>
-
-          <div class="mt-3 text-muted small">
-            <i class="fe fe-info me-1"></i>
-            Emails will be sent using SendGrid API
+          <div class="ec-result" *ngIf="lastResult"
+               [class.ec-result--bad]="lastResult.failed > 0">
+            <span><strong>{{ lastResult.sent }}</strong> تم إرسالها</span>
+            <span *ngIf="lastResult.failed > 0"><strong>{{ lastResult.failed }}</strong> فشلت</span>
           </div>
+
         </div>
       </div>
     </div>
   </div>
+
 </div>

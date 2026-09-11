@@ -6,7 +6,7 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 import { FirebaseService } from '../../../../services/firebase.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
-import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType, Affiliate, SalesMember } from '../../../../../core/models';
+import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType, Affiliate, SalesMember, salesPipelineFor, effectiveSalesStatus } from '../../../../../core/models';
 
 interface LeadWithMeta extends Lead {
   affiliateName?: string;
@@ -36,13 +36,39 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  readonly salesSteps: { key: SalesStatus; label: string; icon: string }[] = [
-    { key: 'new',          label: 'New',          icon: 'fe-user' },
-    { key: 'pre_meeting',  label: 'Pre-Meeting',  icon: 'fe-calendar' },
-    { key: 'post_meeting', label: 'Post-Meeting', icon: 'fe-check-square' },
-    { key: 'follow_up',    label: 'Follow-up',    icon: 'fe-phone' },
-    { key: 'closed',       label: 'Closed',       icon: 'fe-award' },
-  ];
+  /**
+   * All known steps; `salesSteps` picks the ones this lead's own pipeline uses. The full bot
+   * panel lives in LeadSalesPanelComponent (the slide-over the leads table opens) — this routed
+   * page has no route into it today, so it only needs to stop drawing v1's five steps for a v2
+   * lead, not grow a second copy of the bot UI.
+   */
+  private readonly stepDefinitions: Record<SalesStatus, { label: string; icon: string }> = {
+    new:          { label: 'New',           icon: 'fe-user' },
+    pre_meeting:  { label: 'Pre-Meeting',   icon: 'fe-calendar' },
+    post_meeting: { label: 'Post-Meeting',  icon: 'fe-check-square' },
+    follow_up:    { label: 'Follow-up',     icon: 'fe-phone' },
+    closed:       { label: 'Closed',        icon: 'fe-award' },
+    not_interested: { label: 'Not Interested', icon: 'fe-slash' },
+    bot_followup: { label: 'Bot Follow-up', icon: 'fe-message-square' },
+  };
+
+  private pipelineSource?: string;
+  private pipelineSteps: { key: SalesStatus; label: string; icon: string }[] = [];
+
+  /**
+   * Cached against the source. `*ngFor` compares by identity, so returning a fresh array on
+   * every read makes Angular rebuild the whole stepper on each change-detection pass and the
+   * page locks up.
+   */
+  get salesSteps(): { key: SalesStatus; label: string; icon: string }[] {
+    const source = this.lead?.source || 'v1';
+    if (source !== this.pipelineSource) {
+      this.pipelineSource = source;
+      this.pipelineSteps = salesPipelineFor(source)
+        .map(key => ({ key, ...this.stepDefinitions[key] }));
+    }
+    return this.pipelineSteps;
+  }
 
   readonly salesPackages: { value: SalesPackage; label: string }[] = [
     { value: 'starter', label: SALES_PACKAGE_LABELS.starter },
@@ -50,13 +76,23 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
     { value: 'ai', label: SALES_PACKAGE_LABELS.ai },
   ];
 
-  readonly callTypeOptions: { value: CallType; label: string }[] = [
+  private readonly v1CallTypes: { value: CallType; label: string }[] = [
     { value: 'invitation',               label: 'Invitation Call' },
     { value: 'presentation_confirmation', label: 'Presentation Confirmation' },
     { value: 'presentation_followup',    label: 'Presentation Follow-up' },
     { value: 'offer',                    label: 'Offer Call' },
     { value: 'followup',                 label: 'Follow-up Call' },
   ];
+
+  /** v2 has no webinar, so the invitation/presentation types do not apply to it. */
+  private readonly v2CallTypes: { value: CallType; label: string }[] = [
+    { value: 'bot_followup', label: 'Bot Follow-up Call' },
+    { value: 'followup',     label: 'Follow-up Call' },
+  ];
+
+  get callTypeOptions(): { value: CallType; label: string }[] {
+    return (this.lead?.source || 'v1') === 'v2' ? this.v2CallTypes : this.v1CallTypes;
+  }
 
   readonly callStatusOptions = [
     { value: 'answered',  label: 'Answered',  icon: 'fe-check-circle', cls: 'cs-answered' },
@@ -95,6 +131,9 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
       next: (lead) => {
         if (!lead) { this.router.navigate(['/dashboard/leads']); return; }
         this.lead = lead;
+        // ngOnInit builds the form before the lead resolves, so its default call type was
+        // picked from v1's list. Rebuild now that the source is known.
+        this.buildCallForm();
         this.enrichLead(lead);
         this.isLoading = false;
         this.loadCallLogs(key);
@@ -133,7 +172,7 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
     const today = new Date().toISOString().split('T')[0];
     const now = new Date().toTimeString().slice(0, 5);
     this.callForm = this.fb.group({
-      callType: ['invitation', Validators.required],
+      callType: [this.callTypeOptions[0].value, Validators.required],
       callDate: [today, Validators.required],
       callTime: [now, Validators.required],
       status: ['answered', Validators.required],
@@ -143,11 +182,11 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
 
   // ─── Status ───────────────────────────────────────
   get currentSalesStatus(): SalesStatus {
-    return (this.lead?.sales_status as SalesStatus) || 'new';
+    return this.lead ? effectiveSalesStatus(this.lead) : 'new';
   }
 
   getStepState(stepKey: SalesStatus): 'done' | 'active' | 'pending' {
-    const order: SalesStatus[] = ['new', 'pre_meeting', 'post_meeting', 'follow_up', 'closed'];
+    const order = salesPipelineFor(this.lead?.source);
     const curr = order.indexOf(this.currentSalesStatus);
     const idx  = order.indexOf(stepKey);
     if (idx < curr)  return 'done';
@@ -200,10 +239,12 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
 
   resetStatus(): void {
     if (!this.lead?.key) return;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'new').then(() => {
-      this.lead!.sales_status = 'new';
+    // Back to the FIRST step of this lead's own pipeline — not 'new' for a v2 lead.
+    const first = salesPipelineFor(this.lead.source)[0];
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, first).then(() => {
+      this.lead!.sales_status = first;
       this.lead!.sales_package = undefined;
-      this.toastr.showSuccess('Status reset to New');
+      this.toastr.showSuccess(`Status reset to ${SALES_STATUS_LABELS[first]}`);
     });
   }
 

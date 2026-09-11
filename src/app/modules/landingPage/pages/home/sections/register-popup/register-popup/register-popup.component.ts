@@ -393,6 +393,16 @@ export class RegisterPopupComponent implements OnInit {
     this.firebaseService.addLead(leadData)
       .then(leadKey => {
 
+        // Give the lead an owner right here, at registration, rather than waiting for them to
+        // finish the questions. Anyone who registers and never comes back is still a lead
+        // somebody has to chase; leaving them ownerless is how 23 of them went unworked.
+        // Fire-and-forget on purpose — the visitor is being routed to the questions page and
+        // must never wait on, or be blocked by, an internal CRM concern.
+        //
+        // `versionKey` is read from the lead we just built, not from `this.currentVersion`: this
+        // runs asynchronously, and the version subscription can null that field out in between.
+        void this.firebaseService.assignSalesMemberIfUnassigned(leadKey, leadData.versionKey);
+
         // Stage 4: Track Lead Submission
         this.gtm.trackLeadSubmission(leadKey, this.affiliateCode || undefined, {
           full_name: this.formData.fullName,

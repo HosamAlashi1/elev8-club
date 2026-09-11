@@ -40,14 +40,17 @@
         Account Managers
       </button>
 
-      <!-- <button
+      <!-- Was commented out while the campaign had no working backend: `sendBulkEmail` was
+           written for SendGrid, never deployed, and its secret did not exist. It now runs on
+           Mailgun (functions/src/send-campaign.ts), so the tab is back. -->
+      <button
         #tabBtn
         class="tab-btn"
         [class.active]="activeTab === 'email-campaign'"
         (click)="setTab('email-campaign')"
-        data-aos="fade-up" data-aos-delay="400">
+        data-aos="fade-up" data-aos-delay="500">
         Email Campaign
-      </button> -->
+      </button>
 
       <!-- Underline المتحرك -->
       <div

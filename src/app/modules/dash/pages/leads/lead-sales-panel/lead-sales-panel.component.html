@@ -76,6 +76,110 @@
   </button>
 </div>
 
+<!--
+  ── Bot Progress (v2 leads only) ─────────────────
+  Where this lead has got to with @elev8_club_community_bot. Read-only: the bot's backend owns
+  every field here. The one thing the sales member can change is the account decision, and that
+  goes through the bot's API (BotAccountService) so the bot can message the lead and move them
+  off its "under review" step — a Firebase write would change this panel and leave the lead
+  stuck in a conversation that never advances.
+-->
+<div class="sp-section sp-bot-section" *ngIf="isV2">
+
+  <div class="sp-section-title">
+    <i class="fe fe-message-square me-1"></i>
+    Bot Progress
+    <span class="sp-pill sp-pill--tier">{{ botTypeLabel }}</span>
+  </div>
+
+  <!-- The lead never opened the bot, so there is nothing to report and nothing to decide.
+       This is the state a bot follow-up call exists to fix. -->
+  <div class="sp-bot-empty" *ngIf="!hasBotConversation">
+    <i class="fe fe-alert-circle"></i>
+    <div>
+      <div class="sp-bot-empty-title">Has not opened the bot yet</div>
+      <div class="sp-bot-empty-sub">
+        No chat has started, so there is no progress to show. Their subscription number is below —
+        chase it with a bot follow-up call.
+      </div>
+    </div>
+  </div>
+
+  <div class="sp-bot-grid">
+    <div class="sp-bot-field">
+      <div class="sp-bot-label">Subscription number</div>
+      <!-- dir=ltr: a bare numeral run is bidi-neutral at its edges. -->
+      <div class="sp-bot-value sp-bot-value--code" dir="ltr">{{ lead.subscriptionNumber || '—' }}</div>
+    </div>
+
+    <div class="sp-bot-field">
+      <div class="sp-bot-label">Trading account</div>
+      <div class="sp-bot-value" dir="ltr">{{ lead.tradingAccountNumber || '—' }}</div>
+    </div>
+
+    <div class="sp-bot-field">
+      <div class="sp-bot-label">Telegram chat ID</div>
+      <div class="sp-bot-value" dir="ltr">{{ lead.telegramChatId || '—' }}</div>
+    </div>
+
+    <div class="sp-bot-field">
+      <div class="sp-bot-label">Account verification</div>
+      <div class="sp-bot-value">
+        <span class="sp-pill" [ngClass]="getVerificationClass(verificationStatus)">{{ verificationLabel }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step X of 7, with the bar showing how far through the bot's flow they are. -->
+  <div class="sp-bot-progress" *ngIf="hasBotConversation">
+    <div class="sp-bot-progress-head">
+      <span class="sp-bot-label">Bot step</span>
+      <span class="sp-bot-step-text">
+        <span dir="ltr">{{ botStepNumber }}/{{ botTotalSteps }}</span> — {{ botStepLabel }}
+      </span>
+    </div>
+    <div class="sp-bot-bar">
+      <div class="sp-bot-bar-fill" [style.width.%]="botProgressPercent"></div>
+    </div>
+  </div>
+
+  <div class="sp-bot-times" *ngIf="hasBotConversation">
+    <span *ngIf="lead.botStartedAt">Started {{ lead.botStartedAt | date:'medium' }}</span>
+    <span *ngIf="lead.botLastInteractionAt">Last seen {{ lead.botLastInteractionAt | date:'medium' }}</span>
+    <span *ngIf="lead.botCompletedAt" class="sp-bot-times--done">Completed {{ lead.botCompletedAt | date:'medium' }}</span>
+  </div>
+
+  <!--
+    The decision. Available whenever there is a conversation to act on — not only while
+    `pending` — so a mistaken verify or reject can be corrected; `awaitingVerification` only
+    drives the highlight that says this one is waiting on you.
+  -->
+  <div class="sp-bot-decision" *ngIf="hasBotConversation" [class.sp-bot-decision--waiting]="awaitingVerification">
+    <div class="sp-bot-decision-title" *ngIf="awaitingVerification">
+      <i class="fe fe-clock me-1"></i>Waiting on your review
+    </div>
+
+    <div class="sp-bot-decision-actions">
+      <button
+        type="button"
+        class="sp-bot-verify"
+        [disabled]="isSavingVerification || verificationStatus === 'verified'"
+        (click)="setVerification('verified')">
+        <span *ngIf="isSavingVerification" class="spinner-border spinner-border-sm me-1"></span>
+        <i class="fe fe-check-circle me-1" *ngIf="!isSavingVerification"></i>Verify
+      </button>
+
+      <button
+        type="button"
+        class="sp-bot-reject"
+        [disabled]="isSavingVerification || verificationStatus === 'rejected'"
+        (click)="setVerification('rejected')">
+        <i class="fe fe-x-circle me-1"></i>Reject
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Call Log ───────────────────────────────────── -->
 <div class="sp-section sp-calls-section">
 

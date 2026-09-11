@@ -29,5 +29,12 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
+    // Off because this repo is developed on Windows: git checks the
+    // sources out with CRLF, so Google's default LF rule flagged every
+    // single line of every file (540 in index.ts alone) and `npm run lint`
+    // could never pass. That matters beyond tidiness — firebase.json runs
+    // lint as a functions predeploy hook, so it blocked deploying at all.
+    // Line endings are a checkout artifact, not something to enforce here.
+    "linebreak-style": 0,
   },
 };

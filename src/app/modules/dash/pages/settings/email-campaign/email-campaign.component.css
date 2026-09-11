@@ -1,194 +1,418 @@
-.email-campaign-container {
-  padding: 0;
+/*
+  Email Campaign.
+
+  Built on the dashboard's own palette — gold #CFAE58 on white cards with #f0f0f0 borders —
+  rather than Bootstrap's defaults, which is what made the first pass look like a different
+  product. Everything is `ec-` prefixed so nothing leaks into the other settings tabs.
+
+  The filter panel is an accordion of chips, not a column of checkboxes. Nine groups of
+  checkboxes came to roughly 1500px of scrolling; the same nine groups collapse to one screen,
+  and each header carries its own selected count so collapsing hides nothing.
+*/
+
+:host {
+  --ec-gold: #CFAE58;
+  --ec-gold-soft: #FBF3E0;
+  --ec-gold-line: #EBD9A8;
+  --ec-ink: #1f2937;
+  --ec-muted: #9ca3af;
+  --ec-line: #f0f0f0;
+  --ec-line-strong: #e5e7eb;
 }
 
-.card {
-  border: 1px solid #e3e6f0;
-  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
-  border-radius: 0.5rem;
+.ec-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
 }
 
-.card-title {
-  color: #2c3e50;
+.ec-col--main { flex: 1 1 auto; min-width: 0; }
+.ec-col--side { flex: 0 0 340px; max-width: 340px; }
+
+@media (max-width: 1100px) {
+  .ec-wrap { flex-direction: column; }
+  .ec-col--side { flex: 1 1 auto; max-width: none; width: 100%; }
+}
+
+/* ── Cards ─────────────────────────────────────────────────────── */
+.ec-card {
+  background: #fff;
+  border: 1px solid var(--ec-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ec-sticky { position: sticky; top: 16px; }
+
+.ec-card__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ec-line);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ec-ink);
+}
+
+.ec-card__head--split { justify-content: space-between; }
+.ec-card__head i { color: var(--ec-gold); }
+
+.ec-card__body { padding: 18px; }
+.ec-card__body--tight { padding: 14px 16px; }
+
+/* ── Fields ────────────────────────────────────────────────────── */
+.ec-field { margin-bottom: 16px; }
+
+.ec-label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.ec-mini {
+  display: block;
+  font-size: 0.72rem;
   font-weight: 600;
-  font-size: 1.1rem;
+  color: #6b7280;
+  margin-bottom: 5px;
 }
 
-.form-label {
-  color: #5a5c69;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+.ec-sub {
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: var(--ec-muted);
 }
 
-.form-control,
-.form-select {
-  border: 1px solid #d1d3e2;
-  border-radius: 0.35rem;
-  padding: 0.625rem 0.75rem;
-  font-size: 0.9rem;
+.ec-sub--block { display: block; margin: 0 0 12px; }
+
+.ec-input {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--ec-line-strong);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--ec-ink);
+  background: #fff;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.form-control:focus,
-.form-select:focus {
-  border-color: #4e73df;
-  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+.ec-input--sm { padding: 7px 10px; font-size: 0.8rem; }
+
+.ec-input:focus {
+  outline: none;
+  border-color: var(--ec-gold);
+  box-shadow: 0 0 0 3px rgba(207, 174, 88, 0.15);
 }
 
-/* Quill Editor Styling */
-::ng-deep .ql-container {
-  font-size: 0.95rem;
-  font-family: inherit;
+.ec-dates { display: flex; gap: 8px; }
+.ec-dates .ec-input { min-width: 0; }
+
+/* ── Placeholder chips ─────────────────────────────────────────── */
+.ec-tokens {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--ec-gold-line);
+  border-radius: 10px;
+  background: var(--ec-gold-soft);
 }
 
-::ng-deep .ql-toolbar {
-  border: 1px solid #d1d3e2;
-  border-radius: 0.35rem 0.35rem 0 0;
-  background-color: #f8f9fc;
+.ec-tokens__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #8a6d1f;
+  margin-bottom: 9px;
 }
 
-::ng-deep .ql-container {
-  border: 1px solid #d1d3e2;
-  border-top: none;
-  border-radius: 0 0 0.35rem 0.35rem;
+.ec-tokens__list { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.ec-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--ec-gold-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.72rem;
+  color: #4b5563;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
 }
 
-::ng-deep .ql-editor {
-  min-height: 350px;
+.ec-token:hover { border-color: var(--ec-gold); background: #fffdf6; }
+.ec-token code { color: var(--ec-gold); font-size: 0.72rem; }
+
+.ec-editor { display: block; }
+
+.ec-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 12px 0 14px;
+  font-size: 0.74rem;
+  line-height: 1.7;
+  color: var(--ec-muted);
 }
 
-::ng-deep .ql-editor.ql-blank::before {
-  color: #a8adb5;
+.ec-note i { margin-top: 3px; flex-shrink: 0; }
+
+/* ── Buttons ───────────────────────────────────────────────────── */
+.ec-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+.ec-btn--sm { padding: 7px 12px; font-size: 0.78rem; }
+
+.ec-btn--ghost {
+  background: #fff;
+  border-color: var(--ec-line-strong);
+  color: #4b5563;
+}
+
+.ec-btn--ghost:hover:not(:disabled) { border-color: var(--ec-gold); color: #8a6d1f; }
+
+/* The send button is the page's one primary action, so it carries the brand gold. */
+.ec-btn--gold {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--ec-gold);
+  color: #fff;
+  padding: 12px 16px;
+}
+
+.ec-btn--gold:hover:not(:disabled) { background: #bb9c49; }
+
+/* Disabled means "nothing matches the filters yet", so it should read as waiting rather than
+   broken — flat grey, no colour. */
+.ec-btn:disabled {
+  background: #f3f4f6;
+  border-color: var(--ec-line-strong);
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ── Preview ───────────────────────────────────────────────────── */
+.ec-preview {
+  margin-top: 14px;
+  border: 1px solid var(--ec-line-strong);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ec-preview__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: #fafafa;
+  border-bottom: 1px solid var(--ec-line-strong);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Fixed height with its own scroll: the email is 600px wide and can be any length, and an
+   auto-growing iframe would push the whole page around every keystroke. */
+.ec-preview__frame {
+  display: block;
+  width: 100%;
+  height: 620px;
+  border: 0;
+  background: #F1EEE7;
+}
+
+/* ── Resolved audience size ────────────────────────────────────── */
+.ec-count {
+  margin: 16px 16px 4px;
+  padding: 16px;
+  border: 1px solid var(--ec-gold-line);
+  border-radius: 10px;
+  background: var(--ec-gold-soft);
+  text-align: center;
+}
+
+.ec-count__num {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #8a6d1f;
+}
+
+.ec-count__label { font-size: 0.74rem; color: #6b7280; margin-top: 2px; }
+
+.ec-count--zero { border-color: #fcd34d; background: #fffbeb; }
+.ec-count--zero .ec-count__num { color: #b45309; }
+
+.ec-count--error { border-color: #fca5a5; background: #fef2f2; }
+.ec-count--error .ec-count__num { color: #dc2626; }
+.ec-count__err { font-size: 0.7rem; color: #dc2626; margin-top: 6px; word-break: break-word; }
+
+/* ── Filter accordion ──────────────────────────────────────────── */
+.ec-clear {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ec-gold);
+  cursor: pointer;
+}
+
+.ec-acc { border-bottom: 1px solid var(--ec-line); }
+.ec-acc:last-of-type { border-bottom: 0; }
+
+.ec-acc__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 2px;
+  border: 0;
+  background: none;
+  text-align: start;
+  cursor: pointer;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ec-acc__head i { color: var(--ec-muted); font-size: 0.8rem; }
+.ec-acc__head--open { color: var(--ec-ink); }
+.ec-acc__head--open i { color: var(--ec-gold); }
+.ec-acc__title { flex: 1 1 auto; }
+
+/* Count of what is selected inside a collapsed section. */
+.ec-on {
+  flex: 0 0 auto;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--ec-gold);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  font-style: normal;
+  text-align: center;
+}
+
+.ec-v2 {
+  flex: 0 0 auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 0.62rem;
+  font-weight: 700;
   font-style: normal;
 }
 
-/* Preview Section */
-.preview-section {
-  animation: fadeIn 0.3s ease-in;
+/* Chips rather than a stacked checkbox list: seven bot steps fit on two rows instead of
+   seven lines, which is most of why this panel is now one screen instead of three. */
+.ec-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 0 13px;
 }
 
-.email-preview-content {
-  padding: 1rem;
-  background: white;
-  border-radius: 0.35rem;
-  min-height: 100px;
-  word-wrap: break-word;
-}
-
-/* Stats Grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 1rem;
-  background: #f8f9fc;
-  border-radius: 0.5rem;
-  border: 1px solid #e3e6f0;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: #858796;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-}
-
-/* Buttons */
-.btn-custom {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.btn-custom:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  color: white;
-}
-
-.btn-custom:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.btn-outline-secondary {
-  border-color: #d1d3e2;
-  color: #5a5c69;
-}
-
-.btn-outline-secondary:hover {
-  background-color: #f8f9fc;
-  border-color: #d1d3e2;
-  color: #5a5c69;
-}
-
-/* Alerts */
-.alert {
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.alert-info {
-  background-color: #d1ecf1;
-  border-color: #bee5eb;
-  color: #0c5460;
-}
-
-.alert-warning {
-  background-color: #fff3cd;
-  border-color: #ffeaa7;
-  color: #856404;
-}
-
-/* Test Mode Toggle */
-.form-check-input {
+.ec-chip {
+  padding: 6px 12px;
+  border: 1px solid var(--ec-line-strong);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.76rem;
+  color: #4b5563;
   cursor: pointer;
-  width: 3rem;
-  height: 1.5rem;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
-.form-check-input:checked {
-  background-color: #667eea;
-  border-color: #667eea;
+.ec-chip:hover { border-color: var(--ec-gold); }
+
+.ec-chip--on {
+  background: var(--ec-gold);
+  border-color: var(--ec-gold);
+  color: #fff;
+  font-weight: 600;
 }
 
-.form-check-label {
-  cursor: pointer;
-  margin-left: 0.5rem;
+.ec-adv { padding: 2px 0 10px; }
+
+/* ── Send block ────────────────────────────────────────────────── */
+.ec-send {
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ec-line);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.ec-test { display: flex; gap: 7px; }
+.ec-test .ec-input { flex: 1 1 auto; min-width: 0; }
+.ec-test .ec-btn { flex: 0 0 auto; }
+
+.ec-result {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.8rem;
 }
 
-/* Responsive */
-@media (max-width: 991.98px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+.ec-result--bad { background: #fef3c7; color: #b45309; }
+
+/* ── Spinner ───────────────────────────────────────────────────── */
+.ec-spin {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(207, 174, 88, 0.3);
+  border-top-color: var(--ec-gold);
+  border-radius: 50%;
+  animation: ec-spin 700ms linear infinite;
+}
+
+.ec-spin--sm { width: 13px; height: 13px; border-width: 2px; }
+
+@keyframes ec-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-spin { animation-duration: 2s; }
+}
+
+/* Label first, token second: the label is what you scan for, the token is confirmation. */
+.ec-token span { order: 0; }
+.ec-token code { order: 1; }
+
+.ec-tokens__foot {
+  margin: 9px 0 0;
+  font-size: 0.68rem;
+  line-height: 1.7;
+  color: #9a8342;
+}
+
+.ec-tokens__foot code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ec-gold);
+  font-size: 0.66rem;
 }

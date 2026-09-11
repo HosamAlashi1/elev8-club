@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import * as AOS from 'aos';
-import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType, LeadSource, LEAD_SOURCE_LABELS, LEAD_QUALIFICATION_LABELS } from '../../../../../core/models';
+import { Lead, SalesStatus, SalesPackage, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, CallLog, CALL_TYPE_LABELS, CALL_STATUS_LABELS, CallType, LeadSource, LEAD_SOURCE_LABELS, LEAD_QUALIFICATION_LABELS, AccountVerificationStatus, ACCOUNT_VERIFICATION_LABELS, LEAD_BOT_TYPE_LABELS, LeadBotType, BOT_TOTAL_STEPS, botStepLabel, salesPipelineFor, effectiveSalesStatus } from '../../../../../core/models';
 import { FirebaseService } from '../../../../services/firebase.service';
 import { PublicService } from '../../../../services/public.service';
 import { ToastrsService } from '../../../../services/toater.service';
@@ -57,13 +57,25 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   callForm!: FormGroup;
   private destroy$ = new Subject<void>();
 
-  readonly salesSteps: { key: SalesStatus; label: string }[] = [
-    { key: 'new', label: 'New' },
-    { key: 'pre_meeting', label: 'Pre-Meeting' },
-    { key: 'post_meeting', label: 'Post-Meeting' },
-    { key: 'follow_up', label: 'Follow-up' },
-    { key: 'closed', label: 'Closed' },
-  ];
+  private pipelineSource?: string;
+  private pipelineSteps: { key: SalesStatus; label: string }[] = [];
+
+  /**
+   * Three steps for a v2 lead, the original five for v1 — see V2_SALES_PIPELINE.
+   *
+   * Cached against the source. `*ngFor` compares by identity, so a getter that returns a fresh
+   * array on every read makes Angular rebuild the stepper on every change-detection pass, which
+   * hangs the modal.
+   */
+  get salesSteps(): { key: SalesStatus; label: string }[] {
+    const source = this.lead?.source || 'v1';
+    if (source !== this.pipelineSource) {
+      this.pipelineSource = source;
+      this.pipelineSteps = salesPipelineFor(source)
+        .map(key => ({ key, label: SALES_STATUS_LABELS[key] }));
+    }
+    return this.pipelineSteps;
+  }
 
   readonly salesPackages: { value: SalesPackage; label: string }[] = [
     { value: 'starter', label: SALES_PACKAGE_LABELS.starter },
@@ -71,13 +83,23 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'ai', label: SALES_PACKAGE_LABELS.ai },
   ];
 
-  readonly callTypeOptions: { value: CallType; label: string }[] = [
+  private readonly v1CallTypes: { value: CallType; label: string }[] = [
     { value: 'invitation', label: 'Invitation Call' },
     { value: 'presentation_confirmation', label: 'Presentation Confirmation' },
     { value: 'presentation_followup', label: 'Presentation Follow-up' },
     { value: 'offer', label: 'Offer Call' },
     { value: 'followup', label: 'Follow-up Call' },
   ];
+
+  /** v2 has no webinar, so the invitation/presentation types do not apply to it. */
+  private readonly v2CallTypes: { value: CallType; label: string }[] = [
+    { value: 'bot_followup', label: 'Bot Follow-up Call' },
+    { value: 'followup', label: 'Follow-up Call' },
+  ];
+
+  get callTypeOptions(): { value: CallType; label: string }[] {
+    return this.isV2 ? this.v2CallTypes : this.v1CallTypes;
+  }
 
   readonly callStatusOptions = [
     { value: 'answered', label: 'Answered' },
@@ -133,7 +155,7 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
     const today = new Date().toISOString().split('T')[0];
     const now = new Date().toTimeString().slice(0, 5);
     this.callForm = this.fb.group({
-      callType: ['invitation', Validators.required],
+      callType: [this.callTypeOptions[0].value, Validators.required],
       callDate: [today, Validators.required],
       callTime: [now, Validators.required],
       status: ['answered', Validators.required],
@@ -154,11 +176,11 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   // ─── Sales Status ────────────────────────────────
 
   get currentSalesStatus(): SalesStatus {
-    return (this.lead.sales_status as SalesStatus) || 'new';
+    return this.lead ? effectiveSalesStatus(this.lead) : 'new';
   }
 
   getStepClass(stepKey: SalesStatus): string {
-    const order = ['new', 'pre_meeting', 'post_meeting', 'follow_up', 'closed'];
+    const order = salesPipelineFor(this.lead?.source);
     const current = order.indexOf(this.currentSalesStatus);
     const target = order.indexOf(stepKey);
     if (target < current) return 'step-done';
@@ -338,6 +360,30 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   /** v2 only — leads from v1 have no qualification result. */
   getQualificationLabel(): string {
     return this.lead?.qualification ? LEAD_QUALIFICATION_LABELS[this.lead.qualification] : '';
+  }
+
+  // ── Telegram bot (v2 only) ───────────────────────
+  // Display only. Everything here is written by the bot's backend; changing the account
+  // decision is done from the sales panel, which has the API call.
+
+  get isV2(): boolean {
+    return (this.lead?.source || 'v1') === 'v2';
+  }
+
+  get botTypeLabel(): string {
+    return LEAD_BOT_TYPE_LABELS[(this.lead?.type as LeadBotType) || 'free'];
+  }
+
+  get verificationLabel(): string {
+    return ACCOUNT_VERIFICATION_LABELS[
+      (this.lead?.accountVerificationStatus as AccountVerificationStatus) || 'not_submitted'
+    ];
+  }
+
+  /** "4/7 — Deposit", or a dash while the lead has not opened the bot. */
+  get botStepText(): string {
+    if (!this.lead?.telegramChatId || !this.lead?.currentStepNumber) return '—';
+    return `${this.lead.currentStepNumber}/${BOT_TOTAL_STEPS} — ${botStepLabel(this.lead.currentStepNumber)}`;
   }
 
   getStatusLabel(): string {

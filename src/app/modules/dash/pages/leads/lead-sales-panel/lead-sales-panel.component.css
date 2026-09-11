@@ -392,3 +392,175 @@
 .sp-cancel-btn:hover { border-color: #d1d5db; color: #374151; }
 
 .sp-save-btn--sm { padding: 7px 14px; font-size: 0.8rem; }
+
+/* ── Bot Progress (v2 leads only) ───────────────────────────────
+   Where the lead has got to with @elev8_club_community_bot. Read-only apart from the
+   verify/reject decision, which is the one thing here the sales member can act on. */
+.sp-bot-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sp-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.sp-pill--tier    { margin-inline-start: auto; background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+.sp-pill--idle    { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+.sp-pill--waiting { background: #fef3c7; color: #d97706; border-color: #fcd34d; }
+.sp-pill--ok      { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+.sp-pill--bad     { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+
+/* The lead never opened the bot. Stated plainly rather than shown as an empty progress bar,
+   which reads as "step 0 of 7" and looks like a data problem. */
+.sp-bot-empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.sp-bot-empty > i { margin-top: 2px; flex-shrink: 0; }
+.sp-bot-empty-title { font-size: 0.82rem; font-weight: 700; }
+.sp-bot-empty-sub   { font-size: 0.76rem; opacity: 0.85; line-height: 1.45; }
+
+.sp-bot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sp-bot-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+}
+
+.sp-bot-value {
+  margin-top: 3px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  /* An account number or chat id can be long enough to blow the grid track out. */
+  overflow-wrap: anywhere;
+}
+
+/* The subscription number is the thing a sales member reads aloud on a call, so it gets the
+   spacing that makes six digits legible in one glance. */
+.sp-bot-value--code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: #cfae58;
+}
+
+.sp-bot-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.sp-bot-step-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.sp-bot-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.sp-bot-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #cfae58;
+  transition: width 320ms ease;
+}
+
+.sp-bot-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+.sp-bot-times--done { color: #16a34a; font-weight: 600; }
+
+.sp-bot-decision {
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+/* This lead is waiting on a human. Worth pulling the eye. */
+.sp-bot-decision--waiting {
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
+.sp-bot-decision-title {
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.sp-bot-decision-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sp-bot-verify,
+.sp-bot-reject {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.sp-bot-verify { background: #dcfce7; border-color: #86efac; color: #15803d; }
+.sp-bot-verify:hover:not(:disabled) { background: #bbf7d0; }
+
+.sp-bot-reject { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.sp-bot-reject:hover:not(:disabled) { background: #fecaca; }
+
+/* Disabled here mostly means "already in this state", so it should read as settled rather
+   than broken. */
+.sp-bot-verify:disabled,
+.sp-bot-reject:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 420px) {
+  .sp-bot-grid { grid-template-columns: minmax(0, 1fr); }
+}

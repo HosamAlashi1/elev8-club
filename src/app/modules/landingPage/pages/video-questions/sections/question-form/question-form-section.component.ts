@@ -541,14 +541,10 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
       }
     });
 
-    try {
-      const salesMemberKey = await this.firebaseService.assignNextSalesMember(versionKey);
-      if (salesMemberKey) {
-        await this.firebaseService.assignSalesMemberToLead(this.leadKey, salesMemberKey);
-      }
-    } catch (salesErr) {
-      console.warn('Could not assign sales member:', salesErr);
-    }
+    // The owner is normally set back at registration (register-popup). This is the safety net for
+    // a lead whose assignment failed there — it reads first and does nothing if one is already
+    // set, so finishing the questions never moves a lead to a second sales member.
+    await this.firebaseService.assignSalesMemberIfUnassigned(this.leadKey, versionKey);
   }
 
   private openWhatsAppGroup(groupUrl: string, group: any, pendingWindow: Window | null = null): void {

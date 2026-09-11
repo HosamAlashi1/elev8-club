@@ -3,6 +3,10 @@ export const environment = {
   // Stamped on every lead created from this landing page — see core/models/lead.model.ts's LeadSource.
   leadSource: 'v1' as const,
   apiUrl: 'https://Elev8 Club-new-backend.nstechs.net/api',
+  // The Telegram onboarding bot for v2 leads (TMS_Backend). A different service from apiUrl
+  // above: the bot owns the conversation with the lead, so an account decision has to go
+  // through it rather than straight into Firebase — see BotAccountService.
+  botApiUrl: 'https://backend.nstechs.co/api',
   prefix: 'Elev8 Club-local',
   cryptoKey: 'Elev8 ClubSuperSecretKey123',
   // ng serve serves .video-build/hls at this path (see angular.json development/local assets),
