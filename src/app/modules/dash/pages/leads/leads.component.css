@@ -83,56 +83,118 @@
   cursor: pointer;
 }
 
-/* ── Filter bar ──────────────────────────────────────────────────────────
-   Previously `d-none d-md-flex`, so nothing here existed below 768px and the six controls
-   were crammed into one row above it — about 1150px of content in a tablet's 768.
+/* Size the toolbar from the dashboard's available content width so it also responds when the
+   sidebar opens and closes. */
+.content {
+  container-type: inline-size;
+  min-width: 0;
+}
 
-   Now every control is always present and carries its own minimum, so the row wraps in whole
-   controls instead of squashing them. `--lead-ctl` is the shared minimum; the search takes the
-   leftover space down to its own floor. */
+.lead-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  height: auto;
+  min-height: 60px;
+  gap: 12px 16px;
+}
+
 .lead-filters {
-  --lead-ctl: 155px;
-  row-gap: 10px !important;
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) repeat(5, minmax(130px, auto));
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
-/* The modern-select components carry inline widths from the template; these stop those inline
-   values forcing overflow on a narrow screen, without changing them on a wide one. */
+.lead-filters .search-wrap,
 .lead-filters app-modern-select {
-  flex: 0 1 auto;
-  min-width: var(--lead-ctl);
-  max-width: 100%;
+  display: block;
+  width: 100%;
+  min-width: 0;
 }
 
-.lead-filters .search-wrap {
-  flex: 1 1 220px;
-  min-width: 180px;
+.search-wrap .fe-search {
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  z-index: 1;
 }
 
-@media (max-width: 1200px) {
-  /* Two controls per row on a tablet, rather than five squeezed into one. */
-  .lead-filters { --lead-ctl: 46%; }
-  .lead-filters .search-wrap { flex-basis: 100%; max-width: none !important; }
+/* ModernSelect has inline dimensions and a Bootstrap mobile-hiding class internally. These
+   page-level filters must stay visible and fill their grid cells at every size. */
+:host ::ng-deep .lead-filters .modern-select-container {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
-@media (max-width: 575.98px) {
-  /* One per row: at this width two controls leave no room for their own labels. */
-  .lead-filters { --lead-ctl: 100%; }
-  .lead-filters app-modern-select { flex: 1 1 100%; }
-  .lead-export { width: 100%; }
-  .lead-export .btn { width: 100%; justify-content: center; }
+.lead-export {
+  justify-self: end;
 }
 
-/* The header itself: `justify-content-between` pushes Export far from the filters once they
-   wrap, which reads as two unrelated blocks. Keep them together on small screens. */
-@media (max-width: 991.98px) {
-  .content > .card-header {
-    justify-content: flex-start !important;
-    gap: 12px !important;
+.lead-export .btn {
+  white-space: nowrap;
+}
+
+@container (max-width: 1100px) {
+  .lead-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lead-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lead-filters .search-wrap {
+    grid-column: 1 / -1;
   }
 }
 
-/* A wide data table on a narrow screen scrolls sideways — that is correct for a table, but it
-   must be the TABLE that scrolls and never the page. */
+@container (max-width: 700px) {
+  .lead-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lead-filters .search-wrap {
+    grid-column: 1 / -1;
+  }
+
+  .card-footer {
+    align-items: flex-start !important;
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .card-footer app-pagination,
+  :host ::ng-deep .card-footer app-pagination nav {
+    max-width: 100%;
+  }
+
+  :host ::ng-deep .card-footer app-pagination nav {
+    margin-inline: 0 !important;
+    overflow-x: auto;
+  }
+}
+
+@container (max-width: 460px) {
+  .lead-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lead-filters .search-wrap {
+    grid-column: auto;
+  }
+
+  .lead-export,
+  .lead-export .btn {
+    width: 100%;
+  }
+
+  .lead-export .btn {
+    justify-content: center;
+  }
+}
+
 .table-responsive {
   -webkit-overflow-scrolling: touch;
   max-width: 100%;

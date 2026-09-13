@@ -4,17 +4,10 @@
     </h2>
 
     <div class="content" data-aos="fade-up" data-aos-delay="200">
-        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-4 border-0 my-3"
-            >
-
-            <!--
-              `d-none d-md-flex` used to sit here, which hid the search AND every filter below
-              768px — a phone got a bare table with no way to find anything. They are always
-              rendered now and wrap instead, sized by `lead-filters` in the stylesheet.
-            -->
-            <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 lead-filters">
+        <div class="card-header lead-toolbar border-0 my-3">
+            <div class="lead-filters">
                 <!-- Search -->
-                <div class="search-wrap position-relative flex-grow-1" style="max-width: 260px;">
+                <div class="search-wrap position-relative">
                     <i class="fe fe-search text-muted position-absolute"></i>
                     <input [(ngModel)]="searchText" class="form-control ps-5"
                         placeholder="Search by name, email, phone or subscription no..." (ngModelChange)="applyFilters()" />
@@ -22,38 +15,37 @@
 
                 <!-- WhatsApp Group Filter (admin only) -->
                 <app-modern-select *ngIf="isAdmin" [(ngModel)]="selectedSalesId" [options]="salesOptions" placeholder2="Group"
-                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'140px'" [icon]="'fe fe-users'"
-                    [customWidth]="'160px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'0'" [icon]="'fe fe-users'"
+                    [customWidth]="'100%'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
                 </app-modern-select>
 
                 <!-- Source Filter: Webinar (v1) / Free community (v2) -->
                 <app-modern-select [(ngModel)]="selectedSource" [options]="sourceOptions" placeholder2="Source"
-                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'150px'" [icon]="'fe fe-globe'"
-                    [customWidth]="'165px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'0'" [icon]="'fe fe-globe'"
+                    [customWidth]="'100%'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
                 </app-modern-select>
 
                 <!-- Unified Status Filter -->
                 <app-modern-select [(ngModel)]="selectedStatus" [options]="statusOptions" placeholder2="All Statuses"
-                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'150px'" [icon]="'fe fe-sliders'"
-                    [customWidth]="'175px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'0'" [icon]="'fe fe-sliders'"
+                    [customWidth]="'100%'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
                 </app-modern-select>
 
                 <!-- Trading-account verification (v2 leads only — picking a value also narrows
                      the table to v2, since v1 leads have no such field) -->
                 <app-modern-select [(ngModel)]="selectedVerification" [options]="verificationOptions"
                     placeholder2="All Verification"
-                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'160px'" [icon]="'fe fe-shield'"
-                    [customWidth]="'185px'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                    size="sm" (selectionChange)="applyFilters()" [minWidth]="'0'" [icon]="'fe fe-shield'"
+                    [customWidth]="'100%'" [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
                 </app-modern-select>
 
                 <!-- Size Selector -->
                 <app-modern-select [(ngModel)]="size" [options]="sizeOptions" placeholder2="Rows" size="sm"
-                    (selectionChange)="onSizeChange()" [minWidth]="'120px'" [icon]="'fe fe-grid'" [customWidth]="'130px'"
+                    (selectionChange)="onSizeChange()" [minWidth]="'0'" [icon]="'fe fe-grid'" [customWidth]="'100%'"
                     [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'">
                 </app-modern-select>
             </div>
 
-            <!-- Right side (Export button) -->
             <div data-aos="fade-left" data-aos-delay="500" class="lead-export">
                 <button class="btn btn-custom d-flex align-items-center gap-2"
                     (click)="exportToExcel()" [disabled]="isExporting">

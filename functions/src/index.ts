@@ -550,3 +550,12 @@ export const deleteDashboardUser = publicHttps.onCall(async (
  * simply is not deployed.
  */
 export {sendCampaignEmail} from "./send-campaign";
+
+/**
+ * Registration with de-duplication by email — see register-lead.ts.
+ *
+ * The landing pages call this instead of writing to `leads` themselves:
+ * finding an existing lead by email, and correcting its name and phone, are
+ * both things the security rules rightly refuse to an anonymous browser.
+ */
+export {registerLead} from "./register-lead";
