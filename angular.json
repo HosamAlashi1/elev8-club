@@ -76,7 +76,8 @@
               "src/web.config",
               "src/firebase-messaging-sw.js",
               "src/robots.txt",
-              "src/site.webmanifest"
+              "src/site.webmanifest",
+              "src/sitemap.xml"
             ],
             "styles": [
               "src/styles.css",

@@ -7,8 +7,12 @@
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-4 border-0 my-3"
             >
 
-            <!-- Left side (search) -->
-            <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 d-none d-md-flex">
+            <!--
+              `d-none d-md-flex` used to sit here, which hid the search AND every filter below
+              768px — a phone got a bare table with no way to find anything. They are always
+              rendered now and wrap instead, sized by `lead-filters` in the stylesheet.
+            -->
+            <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1 lead-filters">
                 <!-- Search -->
                 <div class="search-wrap position-relative flex-grow-1" style="max-width: 260px;">
                     <i class="fe fe-search text-muted position-absolute"></i>
@@ -50,7 +54,7 @@
             </div>
 
             <!-- Right side (Export button) -->
-            <div data-aos="fade-left" data-aos-delay="500">
+            <div data-aos="fade-left" data-aos-delay="500" class="lead-export">
                 <button class="btn btn-custom d-flex align-items-center gap-2"
                     (click)="exportToExcel()" [disabled]="isExporting">
                     <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
@@ -58,6 +62,18 @@
                     {{ isExporting ? 'Exporting...' : 'Export Excel' }}
                 </button>
             </div>
+        </div>
+
+        <!-- Read-only notice. Nothing is merged or deleted; this only reports what is already
+             in the data, so it links to the filter rather than offering a "fix" button. -->
+        <div class="dup-notice" *ngIf="duplicateEmailCount > 0 && selectedStatus !== 'duplicate'">
+            <i class="fe fe-copy"></i>
+            <span>
+                في <strong>{{ duplicateEmailCount }}</strong> إيميل مسجّل أكتر من مرة بنفس النسخة.
+            </span>
+            <button type="button" class="dup-notice__link" (click)="selectedStatus = 'duplicate'; applyFilters()">
+                اعرضهم
+            </button>
         </div>
 
         <div class="card mb-0">
@@ -103,7 +119,17 @@
                                 <div class="fw-semibold text-dark">{{ lead.fullName }}</div>
                             </td>
 
-                            <td class="text-muted">{{ lead.email }}</td>
+                            <!-- The duplicate badge is display-only: nothing is merged or
+                                 removed, it just says this email appears more than once within
+                                 its own version and source. "2 / 3" is which registration this
+                                 row is, oldest first. -->
+                            <td class="text-muted">
+                                <span class="lead-email">{{ lead.email }}</span>
+                                <span class="dup-badge" *ngIf="isDuplicate(lead)"
+                                      [title]="'هذا الإيميل مسجّل ' + lead.duplicateCount + ' مرات في نفس النسخة'">
+                                    <i class="fe fe-copy"></i>{{ duplicateLabel(lead) }}
+                                </span>
+                            </td>
                             <td class="text-muted">{{ lead.phone || '-' }}</td>
                             <td class="text-muted">
                                 <span *ngIf="lead.city">{{ lead.city }}</span>

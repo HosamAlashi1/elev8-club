@@ -32,6 +32,10 @@ interface LeadWithAffiliate extends Lead {
   salesName?: string;
   salesMemberName?: string;
   sourceLabel?: string;
+  /** How many records share this lead's email within its own version and source. 1 = unique. */
+  duplicateCount?: number;
+  /** 1 for the earliest of a duplicated set, 2 for the next, and so on. */
+  duplicateIndex?: number;
 }
 
 @Component({
@@ -107,6 +111,10 @@ export class LeadsComponent implements OnInit, OnDestroy {
     { value: 'follow_up',   label: 'Follow-up' },
     { value: 'closed',      label: 'Closed' },
     { value: 'not_interested', label: 'Not Interested' },
+    { value: '__data__',    label: 'Data', disabled: true },
+    // Not a status the lead holds — a property of the table. Grouped here so it is one control
+    // rather than a sixth dropdown on an already crowded bar.
+    { value: 'duplicate',   label: 'Duplicated email' },
   ];
 
   isExporting = false;
@@ -200,6 +208,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
           };
         }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+        this.markDuplicates();
         this.buildGroupOptions();
         const firstLoad = !this.leadsLoaded;
         this.leadsLoaded = true;
@@ -211,6 +220,72 @@ export class LeadsComponent implements OnInit, OnDestroy {
         this.isLoading$.next(false);
       }
     });
+  }
+
+  /**
+   * Flags leads that share an email with another lead. Read-only — it stamps two fields on the
+   * in-memory rows and never writes to the database.
+   *
+   * Scope is **version + source + email**, not email alone:
+   *
+   *  - `source`, because a v2 lead carries a different field set and a different pipeline
+   *    (bot steps, qualification, subscription number). A v1 and a v2 record for the same person
+   *    are two legitimate records in two funnels, not a mistake.
+   *  - `versionKey`, because a new campaign version is a new funnel. Someone returning for the
+   *    next season is a new lead, not a duplicate of last season's.
+   *
+   * Today every lead sits on one version and almost all are v1, so all three scopings happen to
+   * agree; they stop agreeing the moment a second version is opened.
+   *
+   * Email is compared lower-cased and trimmed — the same address typed with different casing is
+   * the same mailbox.
+   */
+  private markDuplicates(): void {
+    const groups = new Map<string, LeadWithAffiliate[]>();
+
+    this.allLeads.forEach(lead => {
+      const email = (lead.email || '').trim().toLowerCase();
+      if (!email) return;
+      const key = `${lead.versionKey}|${lead.source || 'v1'}|${email}`;
+      const bucket = groups.get(key);
+      if (bucket) bucket.push(lead);
+      else groups.set(key, [lead]);
+    });
+
+    groups.forEach(bucket => {
+      if (bucket.length < 2) {
+        bucket[0].duplicateCount = 1;
+        return;
+      }
+      // Oldest first, so "1 of 3" is the original registration rather than an arbitrary one.
+      const ordered = [...bucket].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      ordered.forEach((lead, i) => {
+        lead.duplicateCount = ordered.length;
+        lead.duplicateIndex = i + 1;
+      });
+    });
+  }
+
+  isDuplicate(lead: LeadWithAffiliate): boolean {
+    return (lead.duplicateCount || 1) > 1;
+  }
+
+  /** "2 / 3" — which registration this is, out of how many for that email. */
+  duplicateLabel(lead: LeadWithAffiliate): string {
+    return `${lead.duplicateIndex} / ${lead.duplicateCount}`;
+  }
+
+  /** How many emails (not records) are duplicated, for the banner above the table. */
+  get duplicateEmailCount(): number {
+    const seen = new Set<string>();
+    this.allLeads.forEach(l => {
+      if (this.isDuplicate(l)) {
+        seen.add(`${l.versionKey}|${l.source || 'v1'}|${(l.email || '').trim().toLowerCase()}`);
+      }
+    });
+    return seen.size;
   }
 
   private buildGroupOptions(): void {
@@ -272,6 +347,8 @@ export class LeadsComponent implements OnInit, OnDestroy {
           filtered = filtered.filter(l => l.step === 2);
         } else if (this.selectedStatus === 'pending') {
           filtered = filtered.filter(l => l.step !== 2);
+        } else if (this.selectedStatus === 'duplicate') {
+          filtered = filtered.filter(l => this.isDuplicate(l));
         } else {
           // effectiveSalesStatus, not the raw field: a v2 lead sitting on the shared default
           // 'new' belongs under "Bot Follow-up", which is the first step of its own pipeline.

@@ -36,3 +36,104 @@
 @media (max-width: 480px) {
   .sp-panel-wrapper { width: 100%; border-radius: 0; }
 }
+
+/* ── Duplicate email flag (display only) ─────────── */
+.lead-email { display: inline-block; vertical-align: middle; }
+
+.dup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 8px;
+  padding: 1px 8px;
+  border: 1px solid #fcd34d;
+  border-radius: 999px;
+  background: #fffbeb;
+  color: #b45309;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.dup-badge i { font-size: 0.72rem; }
+
+.dup-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.82rem;
+}
+
+.dup-notice__link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #b45309;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Filter bar ──────────────────────────────────────────────────────────
+   Previously `d-none d-md-flex`, so nothing here existed below 768px and the six controls
+   were crammed into one row above it — about 1150px of content in a tablet's 768.
+
+   Now every control is always present and carries its own minimum, so the row wraps in whole
+   controls instead of squashing them. `--lead-ctl` is the shared minimum; the search takes the
+   leftover space down to its own floor. */
+.lead-filters {
+  --lead-ctl: 155px;
+  row-gap: 10px !important;
+}
+
+/* The modern-select components carry inline widths from the template; these stop those inline
+   values forcing overflow on a narrow screen, without changing them on a wide one. */
+.lead-filters app-modern-select {
+  flex: 0 1 auto;
+  min-width: var(--lead-ctl);
+  max-width: 100%;
+}
+
+.lead-filters .search-wrap {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+@media (max-width: 1200px) {
+  /* Two controls per row on a tablet, rather than five squeezed into one. */
+  .lead-filters { --lead-ctl: 46%; }
+  .lead-filters .search-wrap { flex-basis: 100%; max-width: none !important; }
+}
+
+@media (max-width: 575.98px) {
+  /* One per row: at this width two controls leave no room for their own labels. */
+  .lead-filters { --lead-ctl: 100%; }
+  .lead-filters app-modern-select { flex: 1 1 100%; }
+  .lead-export { width: 100%; }
+  .lead-export .btn { width: 100%; justify-content: center; }
+}
+
+/* The header itself: `justify-content-between` pushes Export far from the filters once they
+   wrap, which reads as two unrelated blocks. Keep them together on small screens. */
+@media (max-width: 991.98px) {
+  .content > .card-header {
+    justify-content: flex-start !important;
+    gap: 12px !important;
+  }
+}
+
+/* A wide data table on a narrow screen scrolls sideways — that is correct for a table, but it
+   must be the TABLE that scrolls and never the page. */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
