@@ -367,16 +367,13 @@ export class RegisterPopupComponent implements OnInit {
     // دمج مقدمة الدولة مع رقم الجوال
     const fullPhoneNumber = this.selectedCountryCode + this.formData.whatsapp;
 
-    // إنشاء كائن Lead
+    // بيانات التسجيل
     const leadData: any = {
       versionKey: this.currentVersion.key,
       fullName: this.formData.fullName,
       email: this.formData.email,
       phone: fullPhoneNumber,
-      step: 1,
-      consent: true,
-      source: environment.leadSource,
-      createdAt: new Date().toISOString()
+      source: environment.leadSource
     };
 
     // ضيف affiliateKey فقط لو موجود
@@ -389,9 +386,18 @@ export class RegisterPopupComponent implements OnInit {
       leadData.affiliateCode = this.affiliateCode;
     }
 
-    // حفظ البيانات في Firebase
-    this.firebaseService.addLead(leadData)
-      .then(leadKey => {
+    // registerLead, not addLead.
+    //
+    // addLead pushed a new record every time, so anyone registering twice — a second device, a
+    // lost tab, simply trying again — left two leads behind. This matches on
+    // version + source + email and UPDATES the existing record instead: name and phone are
+    // corrected to whatever was just typed, `createdAt` is kept, and a lead who already
+    // finished the questions is never knocked back to pending.
+    //
+    // `step` and `createdAt` are no longer sent from here — the function decides both, because
+    // only it knows whether this is a new registration or a returning one.
+    this.firebaseService.registerLead(leadData)
+      .then(({ leadKey }) => {
 
         // Give the lead an owner right here, at registration, rather than waiting for them to
         // finish the questions. Anyone who registers and never comes back is still a lead

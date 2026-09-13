@@ -43,9 +43,9 @@ const DEFAULT_BODY = `<p>مرحباً {{name}} 👋</p>
  * sends a list of addresses. That is what keeps the count shown next to the Send button honest:
  * it comes from the same function, in dry-run mode, that will do the sending.
  *
- * The email itself is only the body. The branded shell (green header, gold wordmark, footer,
- * unsubscribe link) is added by the function so every campaign matches the welcome email;
- * `email-shell.ts` mirrors it for the preview.
+ * The email itself is only the body. The branded shell (green header, gold wordmark, footer) is
+ * added by the function so every campaign matches the welcome email; `email-shell.ts` mirrors it
+ * for the preview, and `npm run check:email-parity` proves the two still render identically.
  */
 @Component({
   selector: 'app-email-campaign',

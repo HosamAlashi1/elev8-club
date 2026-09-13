@@ -18,7 +18,8 @@
     "prestart": "node tools/video-hls.mjs ensure",
     "prebuild": "node tools/video-hls.mjs ensure",
     "prewatch": "node tools/video-hls.mjs ensure",
-    "backfill:lead-source": "node scripts/backfill-lead-source.mjs"
+    "backfill:lead-source": "node scripts/backfill-lead-source.mjs",
+    "check:email-parity": "node scripts/check-email-parity.mjs"
   },
   "private": true,
   "dependencies": {

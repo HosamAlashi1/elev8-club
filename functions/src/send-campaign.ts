@@ -15,18 +15,15 @@ const MAILGUN_BASE =
   `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`;
 const FROM = `Elev8 Club <info@${MAILGUN_DOMAIN}>`;
 
+
 /**
- * Mailgun accepts up to 1000 recipients in one call. We use 250.
+ * How many sends are in flight at once.
  *
- * The whole point of batch sending is that one HTTP request produces N
- * individually addressed, individually personalized emails — so 1000 leads
- * is four requests and a couple of seconds, not a thousand requests that
- * overrun the timeout halfway through with no record of where they stopped.
- * Staying at 250 rather than the full 1000 means a failed batch takes 250
- * recipients down with it instead of a thousand, and each batch is recorded
- * separately so the campaign can be resumed rather than restarted.
+ * Eight keeps a few hundred recipients inside a handful of seconds without
+ * tripping Mailgun's rate limiting — which would surface as failures that
+ * look like a broken campaign rather than a throttle.
  */
-const BATCH_SIZE = 250;
+const CONCURRENCY = 8;
 
 /** Hard ceiling, so a mis-set filter cannot mail the database by accident. */
 const MAX_RECIPIENTS = 5000;
@@ -54,33 +51,47 @@ export interface SendCampaignRequest {
 }
 
 /**
- * One Mailgun call, many individual emails.
+ * ONE email to ONE recipient.
  *
- * `recipient-variables` is what makes this a batch rather than a group
- * mail: Mailgun splits the list into separate messages, substitutes each
- * person's own values, and — critically — no recipient can see any other
- * recipient's address.
+ * This used to put the whole list into a single call with `recipient-variables`
+ * — Mailgun's batch sending, one request for up to a thousand personalized
+ * messages. Mailgun refuses it on this domain:
+ *
+ *     403 "Domain elev8club.com is not allowed to send large batches yet"
+ *
+ * It is an account permission, not something the code can work around, and
+ * every campaign failed whole because of it. The single-recipient test passed
+ * precisely because one recipient is not a batch.
+ *
+ * Sending one at a time is slower, and better in the way that matters here:
+ * a failure is attributable to a person instead of taking 250 others down
+ * with it, so "did everyone get it?" has a real answer without webhooks.
+ *
+ * If Mailgun later approves the domain for batch sending, the fast path can
+ * come back — but this must stay as the fallback.
  *
  * @param {string} apiKey The Mailgun key.
  * @param {string} subject The email subject.
  * @param {string} html The rendered email.
- * @param {Recipient[]} batch Up to BATCH_SIZE recipients.
+ * @param {Recipient} to The single recipient.
  * @param {string} campaignId Used as the Mailgun tag.
- * @return {Promise<string>} Mailgun's message id for the batch.
+ * @return {Promise<string>} Mailgun's message id.
  */
-async function sendBatch(
+async function sendOne(
   apiKey: string,
   subject: string,
   html: string,
-  batch: Recipient[],
+  to: Recipient,
   campaignId: string
 ): Promise<string> {
   const form = new URLSearchParams();
   form.append("from", FROM);
-  batch.forEach((r) => form.append("to", r.email));
+  form.append("to", to.email);
   form.append("subject", subject);
   form.append("html", html);
-  form.append("recipient-variables", recipientVariables(batch));
+  // Still recipient-variables, even for one: the body carries %recipient.x%
+  // placeholders and Mailgun only substitutes them from this map.
+  form.append("recipient-variables", recipientVariables([to]));
   // Tagged so this campaign's delivery, bounce and complaint rates show in
   // Mailgun separately from the transactional welcome email — a bad campaign
   // must not look like a problem with the mail that actually matters.
@@ -177,10 +188,9 @@ export const sendCampaignEmail = functions
       const testHtml = renderEmail({
         preheader: data?.preheader,
         bodyHtml: toMailgunTemplate(bodyHtml),
-        unsubscribeUrl: "%unsubscribe_url%",
       });
-      const id = await sendBatch(
-        apiKeyEarly, `[TEST] ${subject}`, testHtml, [sample], "test"
+      const id = await sendOne(
+        apiKeyEarly, `[TEST] ${subject}`, testHtml, sample, "test"
       );
       return {test: true, sentTo: testEmail, messageId: id};
     }
@@ -237,43 +247,50 @@ export const sendCampaignEmail = functions
     const html = renderEmail({
       preheader: data?.preheader,
       bodyHtml: toMailgunTemplate(bodyHtml),
-      unsubscribeUrl: "%unsubscribe_url%",
     });
 
     let sent = 0;
     let failed = 0;
     const errors: string[] = [];
 
-    for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
-      const batch = recipients.slice(i, i + BATCH_SIZE);
-      const batchIndex = Math.floor(i / BATCH_SIZE);
+    // Who actually failed, so a retry can target exactly them.
+    const failures: { email: string; error: string }[] = [];
 
-      try {
-        const messageId =
-          await sendBatch(apiKey, subject, html, batch, campaignId);
-        sent += batch.length;
-        await campaignRef.child(`batches/${batchIndex}`).set({
-          count: batch.length,
-          status: "sent",
-          messageId,
-          at: new Date().toISOString(),
-        });
-      } catch (err) {
-        failed += batch.length;
-        const message = err instanceof Error ? err.message : String(err);
-        errors.push(`batch ${batchIndex}: ${message}`);
-        // Recorded, not thrown: a later batch may still succeed, and the
-        // admin needs to see which slice missed out, not one opaque failure.
-        await campaignRef.child(`batches/${batchIndex}`).set({
-          count: batch.length,
-          status: "failed",
-          error: message.slice(0, 500),
-          // Kept so a retry can target this slice, not the whole campaign.
-          from: i,
-          to: i + batch.length,
-          at: new Date().toISOString(),
-        });
-      }
+    // Sent in small waves rather than one at a time or all at once: serial
+    // would take minutes for a few hundred, and firing every request together
+    // would have Mailgun rate-limit us into failures that look like bugs.
+    for (let i = 0; i < recipients.length; i += CONCURRENCY) {
+      const wave = recipients.slice(i, i + CONCURRENCY);
+
+      const results = await Promise.all(wave.map(async (r) => {
+        try {
+          await sendOne(apiKey, subject, html, r, campaignId);
+          return {ok: true, email: r.email, error: ""};
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          return {ok: false, email: r.email, error: message};
+        }
+      }));
+
+      results.forEach((res) => {
+        if (res.ok) {
+          sent++;
+        } else {
+          failed++;
+          failures.push({email: res.email, error: res.error.slice(0, 300)});
+          if (errors.length < 5) errors.push(`${res.email}: ${res.error}`);
+        }
+      });
+
+      // Progress is written as it goes, so a campaign that dies halfway still
+      // says how far it got instead of leaving the admin guessing.
+      await campaignRef.update({sent, failed});
+    }
+
+    // Recorded rather than thrown: the admin needs the list of who missed out,
+    // not one opaque failure for the whole run.
+    if (failures.length) {
+      await campaignRef.child("failures").set(failures.slice(0, 200));
     }
 
     let status = "sent";

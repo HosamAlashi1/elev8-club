@@ -1,37 +1,63 @@
 /**
  * The Elev8 Club email shell.
  *
- * Rebuilt to match the live welcome email (`sendWelcomeEmail`, whose source
- * lives only on GCP) so a campaign lands in the inbox looking like it came
- * from the same place: deep-green header band, gold wordmark, cream body,
- * dark-green call to action.
+ * Every value here is COPIED FROM THE LIVE WELCOME EMAIL, read out of its
+ * raw MIME source (Gmail → Show original). Nothing in this file was judged
+ * by eye against a screenshot — an earlier attempt did exactly that and got
+ * the header green wrong by a wide margin (#0E4A3C guessed against #0d3233
+ * actual), because a gradient behind gold text reads much lighter than it
+ * is. If the design changes, take the new source the same way rather than
+ * sampling a rendered image.
  *
- * ⚠️ A near-copy of this lives in the dashboard, at
- * src/app/modules/dash/pages/settings/email-campaign/email-shell.ts, used
- * only to render the preview. Change the design here and change it there too
- * or the preview stops telling the truth. This copy is the one that sends.
+ * ⚠️ A copy of `renderEmail`'s output lives in the dashboard, at
+ * src/app/modules/dash/pages/settings/email-campaign/email-shell.ts, which
+ * renders the preview. They are duplicated rather than shared because the
+ * Cloud Functions package compiles separately from the Angular app and
+ * neither can import across that boundary. `npm run check:email-parity`
+ * (from the repo root) renders both and diffs them byte for byte, so the
+ * duplication is verified rather than trusted. Change the design here,
+ * change it there, and run that.
  *
  * Written with tables and inline styles on purpose. Gmail strips <style>
  * blocks and Outlook ignores most modern CSS — this is the one place where
  * 2005-era HTML is the correct answer.
  */
 
+/** Sampled from the welcome email's MIME source, not from a screenshot. */
 export const BRAND = {
-  green: "#0E4A3C",
-  greenDark: "#0A3429",
-  gold: "#D9B96A",
-  goldText: "#B8912F",
-  cream: "#FBF6EC",
-  panel: "#FDF3DF",
-  panelBorder: "#EADFC0",
-  warn: "#FEF6E0",
-  warnBorder: "#F0DFA8",
-  text: "#1F2D2A",
-  muted: "#7A8784",
-  page: "#F1EEE7",
+  /** Header band base, headings, and the CTA. */
+  green: "#0d3233",
+  /** The lighter end of the 135deg header gradient. */
+  greenLight: "#125254",
+  /** The ELEV8 CLUB wordmark. */
+  gold: "#EFCB63",
+  /** The rule under the wordmark, and the panel's right edge. */
+  goldRule: "#D7A747",
+  /** The pale highlight in the middle of that rule's own gradient. */
+  goldShine: "#FDF28E",
+  /** <strong> inside body copy. */
+  goldText: "#B8892E",
+  /** The CARD is white; the PAGE behind it is cream. Not the reverse. */
+  card: "#FFFFFF",
+  cardBorder: "#ECE0C4",
+  page: "#F6F1E4",
+  /** Detail panel and footer fill. */
+  panel: "#FBF6E8",
+  warn: "#FFF8E5",
+  warnBorder: "#F0D991",
+  warnText: "#66500F",
+  heading: "#0d3233",
+  body: "#3a4a4a",
+  muted: "#9a9284",
 };
 
-const FONT = "'Segoe UI',Tahoma,Arial,sans-serif";
+/**
+ * The welcome email's font stack. Tajawal and Noto Kufi Arabic are web fonts
+ * that almost no desktop has installed, so in practice this renders as
+ * Tahoma — but carrying the full list means it picks up the real face
+ * wherever the welcome email does.
+ */
+const FONT = "Tajawal, 'Noto Kufi Arabic', Tahoma, Arial, sans-serif";
 
 /** Inputs for the branded wrapper. */
 export interface ShellOptions {
@@ -39,8 +65,6 @@ export interface ShellOptions {
   preheader?: string;
   /** The campaign body, already personalized. Trusted admin-authored HTML. */
   bodyHtml: string;
-  /** Mailgun swaps this per recipient; omitted for the preview. */
-  unsubscribeUrl?: string;
 }
 
 /**
@@ -65,66 +89,73 @@ export function escapeHtml(value: string): string {
  * same standard as any other admin-authored content. Recipient *data*
  * interpolated into it is escaped at the point of substitution instead.
  *
- * @param {ShellOptions} options The preheader, body and unsubscribe link.
+ * @param {ShellOptions} options The preheader and the body.
  * @return {string} A complete HTML document ready to send.
  */
 export function renderEmail(options: ShellOptions): string {
-  const {preheader, bodyHtml, unsubscribeUrl} = options;
+  const {preheader, bodyHtml} = options;
   const year = new Date().getFullYear();
   const subtitle = escapeHtml(preheader || "Elev8 Club");
 
-  const unsubscribe = unsubscribeUrl ? `
-            <div style="font-family:${FONT}; font-size:12px; padding-top:8px;">
-              <a href="${unsubscribeUrl}" style="color:${BRAND.muted};
-                 text-decoration:underline;">إلغاء الاشتراك من هذه الرسائل</a>
-            </div>` : "";
+  // No unsubscribe link: removed at the client's request.
+  //
+  // Worth knowing what that costs. Bulk mail without one draws spam
+  // complaints instead of quiet opt-outs, and complaints are scored against
+  // the SENDING DOMAIN — the same elev8club.com that carries the welcome
+  // email. A bad campaign can therefore push transactional mail into Spam.
+  // Mailgun still honours its own unsubscribe headers where it adds them.
 
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Elev8 Club</title>
 </head>
-<body style="margin:0; padding:0; background:${BRAND.page};
-             -webkit-text-size-adjust:100%;">
+<body dir="rtl" style="margin:0; padding:0;
+      background-color:${BRAND.page}; font-family:${FONT};">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-       border="0" style="background:${BRAND.page};">
+       border="0" style="background-color:${BRAND.page};">
   <tr>
-    <td align="center" style="padding:24px 12px;">
+    <td align="center" style="padding:36px 15px;">
 
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0"
-             border="0" style="width:600px; max-width:100%;
-             border-collapse:separate; border-radius:14px; overflow:hidden;
-             background:${BRAND.cream};">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+             border="0" style="max-width:640px;
+             background-color:${BRAND.card}; border-radius:18px;
+             overflow:hidden; border:1px solid ${BRAND.cardBorder};
+             box-shadow:0 16px 40px rgba(19,49,51,0.10);">
 
         <tr>
-          <td align="center" style="background:${BRAND.green};
-              padding:30px 24px 26px 24px;">
-            <div style="font-family:${FONT}; font-size:26px; font-weight:bold;
-                 letter-spacing:3px; color:${BRAND.gold};">ELEV8 CLUB</div>
-            <div style="width:54px; height:3px; background:${BRAND.gold};
-                 margin:10px auto 0 auto; border-radius:2px;">&nbsp;</div>
-            <div style="font-family:${FONT}; font-size:14px; color:#FFFFFF;
-                 padding-top:12px;">${subtitle}</div>
+          <td align="center" style="padding:34px 20px 26px;
+              background-color:${BRAND.green};
+              background-image:linear-gradient(135deg, ${BRAND.green} 0%,
+              ${BRAND.greenLight} 100%);">
+            <div style="color:${BRAND.gold}; font-size:30px; line-height:38px;
+                 font-weight:900; letter-spacing:2px;">ELEV8 CLUB</div>
+            <div style="margin:10px auto 0; width:64px; height:3px;
+                 border-radius:3px; background-color:${BRAND.goldRule};
+                 background-image:linear-gradient(90deg, ${BRAND.goldRule},
+                 ${BRAND.goldShine}, ${BRAND.goldRule}); font-size:0;
+                 line-height:0;">&nbsp;</div>
+            <div style="margin-top:16px; color:#ffffff; font-size:17px;
+                 line-height:24px; font-weight:700;">${subtitle}</div>
           </td>
         </tr>
 
         <tr>
-          <td dir="rtl" align="right" style="padding:30px 30px 8px 30px;
-              font-family:${FONT}; font-size:15px; line-height:1.9;
-              color:${BRAND.text};">
+          <td dir="rtl" align="right" style="padding:30px 26px 8px;
+              font-family:${FONT}; color:${BRAND.body}; font-size:16px;
+              line-height:1.9;">
             ${bodyHtml}
           </td>
         </tr>
 
         <tr>
-          <td align="center" style="padding:22px 24px 26px 24px;
-              border-top:1px solid ${BRAND.panelBorder};">
-            <div style="font-family:${FONT}; font-size:12px;
-                 color:${BRAND.muted};">
-              &copy; ${year} Elev8 Club، جميع الحقوق محفوظة.
-            </div>${unsubscribe}
+          <td align="center" style="padding:18px 20px 26px;
+              background-color:${BRAND.panel}; font-family:${FONT};
+              color:${BRAND.muted}; font-size:12px; line-height:18px;
+              border-top:1px solid ${BRAND.cardBorder};">
+            &copy; ${year} Elev8 Club. جميع الحقوق محفوظة.
           </td>
         </tr>
 
@@ -143,12 +174,15 @@ export function renderEmail(options: ShellOptions): string {
  * @return {string} The panel markup.
  */
 export function panel(innerHtml: string): string {
+  // The gold rule is on the RIGHT only, which in this RTL layout is the edge
+  // reading starts from — the welcome email draws it the same way. A box
+  // outlined on all four sides is the thing that made these look unrelated.
   return `<table role="presentation" width="100%" cellpadding="0"
-    cellspacing="0" border="0" style="margin:16px 0;"><tr>
-    <td style="background:${BRAND.panel}; border:1px solid
-    ${BRAND.panelBorder}; border-radius:10px; padding:16px 18px;
-    font-family:${FONT}; font-size:14px; line-height:1.9;
-    color:${BRAND.text};">${innerHtml}</td></tr></table>`;
+    cellspacing="0" border="0" style="margin:24px 0;
+    background-color:${BRAND.panel}; border-right:4px solid
+    ${BRAND.goldRule}; border-radius:10px;"><tr>
+    <td style="padding:18px 20px; color:${BRAND.heading}; font-size:16px;
+    line-height:2;">${innerHtml}</td></tr></table>`;
 }
 
 /**
@@ -157,12 +191,10 @@ export function panel(innerHtml: string): string {
  * @return {string} The box markup.
  */
 export function warn(innerHtml: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0"
-    cellspacing="0" border="0" style="margin:16px 0;"><tr>
-    <td style="background:${BRAND.warn}; border:1px solid
-    ${BRAND.warnBorder}; border-radius:10px; padding:14px 16px;
-    font-family:${FONT}; font-size:13px; line-height:1.8;
-    color:${BRAND.text};">${innerHtml}</td></tr></table>`;
+  return `<div style="margin-top:26px; padding:16px 18px;
+    background-color:${BRAND.warn}; border:1px solid ${BRAND.warnBorder};
+    border-radius:10px; color:${BRAND.warnText}; font-size:15px;
+    line-height:1.8;">${innerHtml}</div>`;
 }
 
 /**
@@ -173,9 +205,12 @@ export function warn(innerHtml: string): string {
  */
 export function button(label: string, href: string): string {
   return `<table role="presentation" width="100%" cellpadding="0"
-    cellspacing="0" border="0" style="margin:22px 0;"><tr><td align="center">
-    <a href="${href}" style="display:inline-block; background:${BRAND.green};
-    color:#FFFFFF; font-family:${FONT}; font-size:15px; font-weight:bold;
-    text-decoration:none; padding:14px 30px; border-radius:8px;">
-    ${escapeHtml(label)}</a></td></tr></table>`;
+    cellspacing="0" border="0" style="margin:30px 0 8px;"><tr>
+    <td align="center"><a href="${href}" target="_blank"
+    style="display:inline-block; padding:15px 34px;
+    background-color:${BRAND.green};
+    background-image:linear-gradient(135deg, ${BRAND.green} 0%,
+    ${BRAND.greenLight} 100%); color:#ffffff; font-size:17px;
+    font-weight:800; line-height:24px; text-decoration:none;
+    border-radius:12px;">${escapeHtml(label)}</a></td></tr></table>`;
 }

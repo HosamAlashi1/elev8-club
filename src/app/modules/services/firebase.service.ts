@@ -281,10 +281,54 @@ export class FirebaseService {
   // ==========================================
 
   /** إضافة Lead جديد (الخطوة الأولى) */
+  /**
+   * @deprecated Writes a new record unconditionally, so registering twice with the same address
+   * leaves two leads. Use `registerLead`, which de-duplicates. Kept only for any caller that
+   * genuinely wants a raw insert.
+   */
   public addLead(lead: any): Promise<string> {
     return this.db.list('leads').push(lead).then(ref => {
       const leadKey = ref.key || '';
       return this.db.object(`leads/${leadKey}`).update({ key: leadKey }).then(() => leadKey);
+    });
+  }
+
+  /**
+   * Registration, de-duplicated by email.
+   *
+   * Goes through the `registerLead` Cloud Function rather than writing here, because the two
+   * things de-duplication needs are both refused to the browser on purpose:
+   *
+   *  - finding the existing lead requires a query on `leads` by email, which would let anyone
+   *    type an address and read back that person's name, phone and answers;
+   *  - updating it requires changing `fullName` and `phone`, which the anonymous write rule
+   *    freezes.
+   *
+   * Registering again with an address already used in this version and source UPDATES that
+   * lead — correcting name and phone, keeping `createdAt`, reusing the subscription number, and
+   * never knocking a completed lead back to pending. See functions/src/register-lead.ts.
+   *
+   * @returns the lead key, whether it was newly created or matched an existing record.
+   */
+  public registerLead(input: {
+    versionKey: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    source: string;
+    affiliateKey?: string;
+    affiliateCode?: string;
+  }): Promise<{ leadKey: string; isReturning: boolean; subscriptionNumber: string | null }> {
+    const callable = this.fns.httpsCallable('registerLead');
+    return firstValueFrom(callable(input)).then((res: any) => {
+      if (!res?.leadKey) {
+        throw new Error('registerLead returned no lead key');
+      }
+      return {
+        leadKey: res.leadKey,
+        isReturning: !!res.isReturning,
+        subscriptionNumber: res.subscriptionNumber ?? null
+      };
     });
   }
 

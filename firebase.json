@@ -34,6 +34,7 @@
         "*.local"
       ],
       "predeploy": [
+        "node \"$RESOURCE_DIR/../scripts/check-email-parity.mjs\"",
         "npm --prefix \"$RESOURCE_DIR\" run lint",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
