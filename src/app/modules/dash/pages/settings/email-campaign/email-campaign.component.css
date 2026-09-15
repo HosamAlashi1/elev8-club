@@ -379,6 +379,97 @@
 
 .ec-result--bad { background: #fef3c7; color: #b45309; }
 
+/* ── Campaign history / safe retry ────────────────────────────── */
+.ec-history {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ec-line);
+}
+
+.ec-history__head,
+.ec-campaign__top,
+.ec-campaign__counts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ec-history__head {
+  margin-bottom: 9px;
+  color: var(--ec-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ec-history__head i { color: var(--ec-gold); margin-inline-end: 4px; }
+.ec-history__loading { padding: 10px 0; color: var(--ec-muted); font-size: 0.74rem; }
+
+.ec-campaign__load-error {
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 6px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.ec-campaign {
+  padding: 10px 0;
+  border-top: 1px solid var(--ec-line);
+}
+
+.ec-campaign__top strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #374151;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ec-campaign__top small { flex: 0 0 auto; color: var(--ec-muted); font-size: 0.62rem; }
+.ec-campaign__counts { justify-content: flex-start; margin-top: 5px; font-size: 0.68rem; }
+.ec-campaign__sent { color: #15803d; }
+.ec-campaign__failed { color: #b45309; font-weight: 700; }
+
+.ec-campaign__legacy,
+.ec-campaign__incomplete {
+  margin: 7px 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.ec-campaign__incomplete { background: #fef2f2; color: #b91c1c; }
+
+.ec-campaign__error {
+  margin: 6px 0;
+  overflow: hidden;
+  color: #6b7280;
+  font-size: 0.62rem;
+  line-height: 1.45;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.ec-btn--retry {
+  width: 100%;
+  margin-top: 7px;
+  padding: 7px 10px;
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.7rem;
+}
+
+.ec-btn--retry:hover:not(:disabled) { background: #fef3c7; }
+
 /* ── Spinner ───────────────────────────────────────────────────── */
 .ec-spin {
   display: inline-block;

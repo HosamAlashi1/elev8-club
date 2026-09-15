@@ -288,6 +288,23 @@ export class LeadsComponent implements OnInit, OnDestroy {
     return seen.size;
   }
 
+  /** v2 trading accounts currently waiting for a manual decision. */
+  get pendingVerificationCount(): number {
+    return this.allLeads.filter(lead =>
+      this.isV2(lead) && this.verificationStatusOf(lead) === 'pending'
+    ).length;
+  }
+
+  /** Show every pending account, clearing filters that could hide one of them. */
+  showPendingVerifications(): void {
+    this.searchText = '';
+    this.selectedSalesId = '';
+    this.selectedStatus = '';
+    this.selectedSource = 'v2';
+    this.selectedVerification = 'pending';
+    this.applyFilters();
+  }
+
   private buildGroupOptions(): void {
     const seen = new Set<string>();
     const groups: { value: string; label: string }[] = [];

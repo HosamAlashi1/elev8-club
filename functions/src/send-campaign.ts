@@ -17,13 +17,15 @@ const FROM = `Elev8 Club <info@${MAILGUN_DOMAIN}>`;
 
 
 /**
- * How many sends are in flight at once.
+ * Gap between message submissions.
  *
- * Eight keeps a few hundred recipients inside a handful of seconds without
- * tripping Mailgun's rate limiting — which would surface as failures that
- * look like a broken campaign rather than a throttle.
+ * A new/restricted domain benefits more from a calm, predictable queue than
+ * from finishing a few minutes earlier and losing most of the audience.
  */
-const CONCURRENCY = 8;
+const SEND_INTERVAL_MS = 1000;
+const MAX_SEND_ATTEMPTS = 5;
+const RETRY_LOCK_MS = 10 * 60 * 1000;
+const SEND_BUDGET_MS = 8 * 60 * 1000;
 
 /** Hard ceiling, so a mis-set filter cannot mail the database by accident. */
 const MAX_RECIPIENTS = 5000;
@@ -48,6 +50,100 @@ export interface SendCampaignRequest {
    * a preview pane cannot tell you how Gmail will actually render it.
    */
   testEmail?: string;
+  /** Return recent campaign metadata without sending anything. */
+  listRecent?: boolean;
+  /** Retry only the recipients still recorded as failed on this campaign. */
+  retryCampaignId?: string;
+  /** Explicit opt-in for old campaigns created before their body was stored. */
+  useCurrentBodyForLegacyRetry?: boolean;
+}
+
+interface CampaignFailure {
+  email: string;
+  error: string;
+}
+
+interface StoredCampaign {
+  subject?: string;
+  bodyHtml?: string;
+  preheader?: string;
+  filters?: CampaignFilters;
+  totalRecipients?: number;
+  sent?: number;
+  failed?: number;
+  status?: string;
+  startedAt?: string;
+  finishedAt?: string;
+  failures?: CampaignFailure[] | Record<string, CampaignFailure>;
+  retryLock?: {owner?: string; acquiredAt?: number};
+}
+
+/** An HTTP failure with Mailgun's retry information attached. */
+class MailgunRequestError extends Error {
+  /**
+   * @param {string} message Safe error summary.
+   * @param {number} status HTTP status.
+   * @param {number} retryAfterMs Server-requested pause.
+   */
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly retryAfterMs: number
+  ) {
+    super(message);
+    this.name = "MailgunRequestError";
+  }
+}
+
+/**
+ * @param {number} ms Duration in milliseconds.
+ * @return {Promise<void>} Resolves after the duration.
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Mailgun returns the reset time in headers for 429, but its domain recipient
+ * limit uses status 420 and puts `try again after ... UTC` in the JSON body.
+ * @param {Response} response Mailgun response.
+ * @param {string} responseText Mailgun response body.
+ * @return {number} Safe wait duration in milliseconds.
+ */
+function retryDelay(response: Response, responseText: string): number {
+  const maxDelay = 24 * 60 * 60 * 1000;
+  const reset = Number(response.headers.get("x-ratelimit-reset"));
+  if (Number.isFinite(reset) && reset > Date.now()) {
+    return Math.min(reset - Date.now() + 250, maxDelay);
+  }
+
+  const retryAfter = response.headers.get("retry-after");
+  if (retryAfter) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds)) {
+      return Math.min(seconds * 1000, maxDelay);
+    }
+    const date = Date.parse(retryAfter);
+    if (Number.isFinite(date)) {
+      return Math.min(Math.max(0, date - Date.now()), maxDelay);
+    }
+  }
+
+  const bodyMatch = responseText.match(/try again after\s+([^"}]+)/i);
+  if (!bodyMatch) return 0;
+  const bodyDate = Date.parse(bodyMatch[1].trim());
+  return Number.isFinite(bodyDate) ?
+    Math.min(Math.max(0, bodyDate - Date.now() + 250), maxDelay) : 0;
+}
+
+/**
+ * @param {unknown} error Send failure.
+ * @return {boolean} Whether another API attempt can help.
+ */
+function isRetryable(error: unknown): boolean {
+  if (!(error instanceof MailgunRequestError)) return true;
+  return error.status === 408 || error.status === 409 || error.status === 420 ||
+    error.status === 425 || error.status === 429 || error.status >= 500;
 }
 
 /**
@@ -106,11 +202,16 @@ async function sendOne(
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: form.toString(),
+    signal: AbortSignal.timeout(30000),
   });
 
   const text = await response.text();
   if (!response.ok) {
-    throw new Error(`Mailgun ${response.status}: ${text.slice(0, 300)}`);
+    throw new MailgunRequestError(
+      `Mailgun ${response.status}: ${text.slice(0, 300)}`,
+      response.status,
+      retryDelay(response, text)
+    );
   }
 
   try {
@@ -118,6 +219,152 @@ async function sendOne(
   } catch {
     return "";
   }
+}
+
+/**
+ * Retry only failures which can be temporary; a bad address or 403 is final.
+ * @param {string} apiKey Mailgun key.
+ * @param {string} subject Message subject.
+ * @param {string} html Rendered HTML.
+ * @param {Recipient} recipient One recipient.
+ * @param {string} campaignId Mailgun campaign tag.
+ * @param {number} deadline Stop before the Cloud Function hard timeout.
+ * @return {Promise<string>} Mailgun message id.
+ */
+async function sendOneWithRetry(
+  apiKey: string,
+  subject: string,
+  html: string,
+  recipient: Recipient,
+  campaignId: string,
+  deadline: number
+): Promise<string> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= MAX_SEND_ATTEMPTS; attempt++) {
+    if (Date.now() + 5000 >= deadline) {
+      throw new MailgunRequestError(
+        "Deferred safely before the function timeout; use retry.", 400, 0
+      );
+    }
+    try {
+      return await sendOne(apiKey, subject, html, recipient, campaignId);
+    } catch (error) {
+      lastError = error;
+      if (!isRetryable(error) || attempt === MAX_SEND_ATTEMPTS) throw error;
+
+      const serverDelay = error instanceof MailgunRequestError ?
+        error.retryAfterMs : 0;
+      const exponential = Math.min(1000 * Math.pow(2, attempt - 1), 15000);
+      const jitter = Math.floor(Math.random() * 400);
+      const delay = Math.max(serverDelay, exponential + jitter);
+      if (Date.now() + delay + 5000 >= deadline) {
+        throw new MailgunRequestError(
+          "Deferred safely before the function timeout; use retry.", 400, 0
+        );
+      }
+      await sleep(delay);
+    }
+  }
+  throw lastError;
+}
+
+/**
+ * @param {*} value Firebase array or keyed object.
+ * @return {CampaignFailure[]} Normalized failures.
+ */
+function normalizeFailures(
+  value: StoredCampaign["failures"]
+): CampaignFailure[] {
+  if (!value) return [];
+  return (Array.isArray(value) ? value : Object.values(value))
+    .filter((failure): failure is CampaignFailure =>
+      Boolean(failure && typeof failure.email === "string"))
+    .map((failure) => ({
+      email: failure.email.trim().toLowerCase(),
+      error: String(failure.error || "Unknown error").slice(0, 300),
+    }));
+}
+
+/**
+ * Older campaigns capped the stored failure list at 200. Recover the missing
+ * addresses only when Mailgun's accepted events and today's audience produce
+ * exactly the counts recorded at send time. Any mismatch aborts the recovery
+ * rather than risking a duplicate.
+ * @param {string} apiKey Mailgun key.
+ * @param {string} campaignId Campaign id and tag.
+ * @param {StoredCampaign} campaign Stored campaign metadata.
+ * @param {Recipient[]} audience Audience resolved from the original filters.
+ * @param {CampaignFailure[]} knownFailures Failures retained by old code.
+ * @return {Promise<CampaignFailure[]>} Exact reconstructed failure set.
+ */
+async function recoverLegacyFailures(
+  apiKey: string,
+  campaignId: string,
+  campaign: StoredCampaign,
+  audience: Recipient[],
+  knownFailures: CampaignFailure[]
+): Promise<CampaignFailure[]> {
+  const expectedTotal = Number(campaign.totalRecipients || 0);
+  const expectedSent = Number(campaign.sent || 0);
+  const expectedFailed = Number(campaign.failed || 0);
+  if (audience.length !== expectedTotal || !campaign.startedAt) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The old campaign audience has changed, so the missing failures cannot " +
+      "be recovered safely. Retry the recorded addresses only."
+    );
+  }
+
+  const query = new URLSearchParams({
+    begin: String(Math.floor(Date.parse(campaign.startedAt) / 1000) - 300),
+    ascending: "no",
+    limit: "300",
+    event: "accepted",
+    tags: `campaign-${campaignId}`,
+  });
+  const auth = Buffer.from(`api:${apiKey}`).toString("base64");
+  const response = await fetch(
+    `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/events?${query.toString()}`,
+    {
+      headers: {"Authorization": `Basic ${auth}`},
+      signal: AbortSignal.timeout(30000),
+    }
+  );
+  const text = await response.text();
+  if (!response.ok) {
+    throw new functions.https.HttpsError(
+      "unavailable",
+      `Could not verify old Mailgun events (${response.status}).`
+    );
+  }
+
+  const parsed = JSON.parse(text) as {
+    items?: Array<{recipient?: string}>;
+  };
+  const accepted = new Set((parsed.items || [])
+    .map((item) => String(item.recipient || "").trim().toLowerCase())
+    .filter(Boolean));
+  const audienceEmails = new Set(
+    audience.map((item) => item.email.toLowerCase())
+  );
+  const recovered = audience
+    .filter((item) => !accepted.has(item.email.toLowerCase()))
+    .map((item) => ({
+      email: item.email.toLowerCase(),
+      error: "Recovered from old campaign",
+    }));
+  const knownArePresent = knownFailures.every((failure) =>
+    audienceEmails.has(failure.email) && !accepted.has(failure.email));
+
+  if (accepted.size !== expectedSent || recovered.length !== expectedFailed ||
+      !knownArePresent) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "Mailgun history does not exactly match the old campaign totals; " +
+      "automatic recovery was stopped to prevent duplicate email."
+    );
+  }
+  return recovered;
 }
 
 export const sendCampaignEmail = functions
@@ -142,6 +389,217 @@ export const sendCampaignEmail = functions
       throw new functions.https.HttpsError(
         "permission-denied", "Only admins can send campaigns."
       );
+    }
+
+    // Metadata only. The saved HTML never leaves the function.
+    if (data?.listRecent === true) {
+      const recent = await admin.database().ref("email_campaigns")
+        .limitToLast(10).once("value");
+      const campaigns = Object.entries(
+        (recent.val() || {}) as Record<string, StoredCampaign>
+      ).map(([id, campaign]) => {
+        const failures = normalizeFailures(campaign.failures);
+        return {
+          id,
+          subject: String(campaign.subject || ""),
+          startedAt: String(campaign.startedAt || ""),
+          status: String(campaign.status || ""),
+          totalRecipients: Number(campaign.totalRecipients || 0),
+          sent: Number(campaign.sent || 0),
+          failed: Number(campaign.failed || 0),
+          bodyStored: typeof campaign.bodyHtml === "string",
+          recordedFailures: failures.length,
+          failureExamples: failures.slice(0, 3),
+        };
+      }).sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+      return {campaigns};
+    }
+
+    const retryCampaignId = String(data?.retryCampaignId || "").trim();
+    if (retryCampaignId) {
+      if (!/^[A-Za-z0-9_-]+$/.test(retryCampaignId)) {
+        throw new functions.https.HttpsError(
+          "invalid-argument", "Invalid campaign id."
+        );
+      }
+      const apiKey = process.env.MAILGUN_API_KEY;
+      if (!apiKey) {
+        throw new functions.https.HttpsError(
+          "failed-precondition", "MAILGUN_API_KEY is not set."
+        );
+      }
+
+      const campaignRef = admin.database()
+        .ref(`email_campaigns/${retryCampaignId}`);
+      const campaignSnapshot = await campaignRef.once("value");
+      const campaign = campaignSnapshot.val() as StoredCampaign | null;
+      if (!campaign) {
+        throw new functions.https.HttpsError(
+          "not-found", "Campaign was not found."
+        );
+      }
+
+      const lockRef = campaignRef.child("retryLock");
+      const now = Date.now();
+      const lock = await lockRef.transaction((current) => {
+        const acquiredAt = Number(current?.acquiredAt || 0);
+        if (current && now - acquiredAt < RETRY_LOCK_MS) return;
+        return {owner: context.auth?.uid, acquiredAt: now};
+      }, undefined, false);
+      if (!lock.committed) {
+        throw new functions.https.HttpsError(
+          "already-exists", "A retry for this campaign is already running."
+        );
+      }
+
+      const previousStatus = String(campaign.status || "partial");
+      try {
+        let failures = normalizeFailures(campaign.failures);
+        const expectedFailed = Number(campaign.failed || failures.length);
+        if (!expectedFailed) {
+          return {
+            campaignId: retryCampaignId,
+            retried: true,
+            attempted: 0,
+            sent: 0,
+            failed: 0,
+            totalSent: Number(campaign.sent || 0),
+          };
+        }
+
+        const leadsSnapshot = await admin.database().ref("leads").once("value");
+        const leads = (leadsSnapshot.val() || {}) as Record<string, LeadRecord>;
+        const allRecipients = selectRecipients(leads, {});
+
+        // The old implementation stored at most 200 failures. Recover the
+        // omitted tail from Mailgun only after strict count checks.
+        if (failures.length < expectedFailed) {
+          const originalAudience = selectRecipients(
+            leads, campaign.filters || {}
+          );
+          failures = await recoverLegacyFailures(
+            apiKey, retryCampaignId, campaign, originalAudience, failures
+          );
+        }
+
+        let bodyHtml = typeof campaign.bodyHtml === "string" ?
+          campaign.bodyHtml : "";
+        if (!bodyHtml && data?.useCurrentBodyForLegacyRetry === true) {
+          bodyHtml = String(data?.bodyHtml || "");
+        }
+        if (!bodyHtml.trim()) {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "This old campaign did not save its message body. Put the exact " +
+            "original message in the editor before retrying."
+          );
+        }
+        if (bodyHtml.length > MAX_BODY) {
+          throw new functions.https.HttpsError(
+            "invalid-argument", "The email body is too large."
+          );
+        }
+
+        const subject = String(campaign.subject || data?.subject || "").trim();
+        const html = renderEmail({
+          preheader: campaign.preheader,
+          bodyHtml: toMailgunTemplate(bodyHtml),
+        });
+        const byEmail = new Map(allRecipients.map((recipient) =>
+          [recipient.email.toLowerCase(), recipient]));
+        const remaining = new Map(failures.map((failure) =>
+          [failure.email, failure]));
+        let sentThisAttempt = 0;
+        let attempted = 0;
+        const sendDeadline = Date.now() + SEND_BUDGET_MS;
+        const retryRef = campaignRef.child("retryAttempts").push();
+        await Promise.all([
+          campaignRef.update({
+            status: "retrying",
+            bodyHtml,
+            failures,
+            failed: failures.length,
+          }),
+          retryRef.set({
+            startedAt: new Date().toISOString(),
+            startedBy: context.auth.uid,
+            requested: failures.length,
+            status: "sending",
+          }),
+        ]);
+
+        for (const failure of failures) {
+          if (Date.now() >= sendDeadline) break;
+          if (attempted > 0) await sleep(SEND_INTERVAL_MS);
+          const recipient = byEmail.get(failure.email);
+          attempted++;
+          if (!recipient) {
+            remaining.set(failure.email, {
+              email: failure.email,
+              error: "Lead no longer exists in the database.",
+            });
+          } else {
+            try {
+              await sendOneWithRetry(
+                apiKey, subject, html, recipient, retryCampaignId, sendDeadline
+              );
+              remaining.delete(failure.email);
+              sentThisAttempt++;
+            } catch (error) {
+              const message = error instanceof Error ?
+                error.message : String(error);
+              remaining.set(failure.email, {
+                email: failure.email,
+                error: message.slice(0, 300),
+              });
+            }
+          }
+
+          const remainingFailures = Array.from(remaining.values());
+          await campaignRef.update({
+            failures: remainingFailures.length ? remainingFailures : null,
+            failed: remainingFailures.length,
+            sent: Number(campaign.sent || 0) + sentThisAttempt,
+            retryProgress: {attempted, sent: sentThisAttempt},
+          });
+        }
+
+        const finalFailures = Array.from(remaining.values());
+        const totalSent = Number(campaign.sent || 0) + sentThisAttempt;
+        const status = finalFailures.length ?
+          (totalSent ? "partial" : "failed") : "sent";
+        await Promise.all([
+          campaignRef.update({
+            status,
+            sent: totalSent,
+            failed: finalFailures.length,
+            failures: finalFailures.length ? finalFailures : null,
+            retryProgress: null,
+            lastRetriedAt: new Date().toISOString(),
+          }),
+          retryRef.update({
+            status,
+            attempted,
+            sent: sentThisAttempt,
+            failed: finalFailures.length,
+            finishedAt: new Date().toISOString(),
+          }),
+        ]);
+        return {
+          campaignId: retryCampaignId,
+          retried: true,
+          attempted,
+          sent: sentThisAttempt,
+          failed: finalFailures.length,
+          totalSent,
+          errors: finalFailures.slice(0, 5),
+        };
+      } catch (error) {
+        await campaignRef.update({status: previousStatus});
+        throw error;
+      } finally {
+        await lockRef.remove();
+      }
     }
 
     // ── What they are asking for ──────────────────────────────────────────
@@ -234,6 +692,7 @@ export const sendCampaignEmail = functions
 
     await campaignRef.set({
       subject,
+      bodyHtml,
       preheader: data?.preheader || "",
       filters,
       totalRecipients: recipients.length,
@@ -252,45 +711,52 @@ export const sendCampaignEmail = functions
     let sent = 0;
     let failed = 0;
     const errors: string[] = [];
+    const sendDeadline = Date.now() + SEND_BUDGET_MS;
 
     // Who actually failed, so a retry can target exactly them.
     const failures: { email: string; error: string }[] = [];
 
-    // Sent in small waves rather than one at a time or all at once: serial
-    // would take minutes for a few hundred, and firing every request together
-    // would have Mailgun rate-limit us into failures that look like bugs.
-    for (let i = 0; i < recipients.length; i += CONCURRENCY) {
-      const wave = recipients.slice(i, i + CONCURRENCY);
-
-      const results = await Promise.all(wave.map(async (r) => {
-        try {
-          await sendOne(apiKey, subject, html, r, campaignId);
-          return {ok: true, email: r.email, error: ""};
-        } catch (err) {
-          const message = err instanceof Error ? err.message : String(err);
-          return {ok: false, email: r.email, error: message};
-        }
-      }));
-
-      results.forEach((res) => {
-        if (res.ok) {
-          sent++;
-        } else {
-          failed++;
-          failures.push({email: res.email, error: res.error.slice(0, 300)});
-          if (errors.length < 5) errors.push(`${res.email}: ${res.error}`);
-        }
-      });
+    // One paced queue avoids a burst on restricted/new domains. Each
+    // temporary 429/5xx/network failure is retried with Mailgun's reset header
+    // or exponential backoff before it is recorded as a final failure.
+    for (let i = 0; i < recipients.length; i++) {
+      if (Date.now() >= sendDeadline) {
+        const deferred = recipients.slice(i).map((recipient) => ({
+          email: recipient.email,
+          error: "Deferred safely before the function timeout; use retry.",
+        }));
+        failures.push(...deferred);
+        failed += deferred.length;
+        await campaignRef.update({sent, failed});
+        break;
+      }
+      if (i > 0) await sleep(SEND_INTERVAL_MS);
+      const recipient = recipients[i];
+      try {
+        await sendOneWithRetry(
+          apiKey, subject, html, recipient, campaignId, sendDeadline
+        );
+        sent++;
+      } catch (error) {
+        failed++;
+        const message = error instanceof Error ? error.message : String(error);
+        failures.push({email: recipient.email, error: message.slice(0, 300)});
+        if (errors.length < 5) errors.push(`${recipient.email}: ${message}`);
+      }
 
       // Progress is written as it goes, so a campaign that dies halfway still
       // says how far it got instead of leaving the admin guessing.
-      await campaignRef.update({sent, failed});
+      await campaignRef.update({
+        sent,
+        failed,
+        failures: failures.length ? failures : null,
+      });
     }
 
     // Recorded rather than thrown: the admin needs the list of who missed out,
     // not one opaque failure for the whole run.
     if (failures.length) {
-      await campaignRef.child("failures").set(failures.slice(0, 200));
+      await campaignRef.child("failures").set(failures);
     }
 
     let status = "sent";

@@ -72,6 +72,33 @@
   font-size: 0.82rem;
 }
 
+/* Pending account reviews are actionable, so keep them visually distinct from duplicate data. */
+.verification-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid #93c5fd;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.82rem;
+}
+
+.verification-notice__link {
+  margin-inline-start: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .dup-notice__link {
   border: 0;
   background: none;

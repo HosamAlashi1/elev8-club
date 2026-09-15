@@ -150,12 +150,10 @@
   </div>
 
   <!--
-    The decision. Available whenever there is a conversation to act on — not only while
-    `pending` — so a mistaken verify or reject can be corrected; `awaitingVerification` only
-    drives the highlight that says this one is waiting on you.
+    The bot can only be accepted or rejected while it is waiting for a manual review.
   -->
-  <div class="sp-bot-decision" *ngIf="hasBotConversation" [class.sp-bot-decision--waiting]="awaitingVerification">
-    <div class="sp-bot-decision-title" *ngIf="awaitingVerification">
+  <div class="sp-bot-decision sp-bot-decision--waiting" *ngIf="hasBotConversation && awaitingVerification">
+    <div class="sp-bot-decision-title">
       <i class="fe fe-clock me-1"></i>Waiting on your review
     </div>
 

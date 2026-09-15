@@ -383,7 +383,7 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setVerification(status: AccountVerificationDecision): void {
-    if (!this.lead?.telegramChatId || this.isSavingVerification) return;
+    if (!this.lead?.telegramChatId || !this.awaitingVerification || this.isSavingVerification) return;
     if (status === this.verificationStatus) return;
 
     const question = status === 'verified'

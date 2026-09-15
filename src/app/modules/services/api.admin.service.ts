@@ -226,4 +226,24 @@ export class ApiAdminService {
 		const callable = this.fns.httpsCallable('sendCampaignEmail', { timeout: 540000 });
 		return callable(payload);
 	}
+
+	/** Recent campaign metadata, including failures, without exposing saved HTML. */
+	getRecentEmailCampaigns(): Observable<any> {
+		const callable = this.fns.httpsCallable('sendCampaignEmail', { timeout: 540000 });
+		return callable({ listRecent: true });
+	}
+
+	/** Retry only the recipients which are still failed on one campaign. */
+	retryEmailCampaignFailures(payload: {
+		campaignId: string;
+		bodyHtml?: string;
+		useCurrentBodyForLegacyRetry?: boolean;
+	}): Observable<any> {
+		const callable = this.fns.httpsCallable('sendCampaignEmail', { timeout: 540000 });
+		return callable({
+			retryCampaignId: payload.campaignId,
+			bodyHtml: payload.bodyHtml || '',
+			useCurrentBodyForLegacyRetry: payload.useCurrentBodyForLegacyRetry === true,
+		});
+	}
 }

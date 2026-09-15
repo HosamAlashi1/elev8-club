@@ -219,6 +219,64 @@
           </div>
 
         </div>
+
+        <div class="ec-history">
+          <div class="ec-history__head">
+            <span><i class="fe fe-clock"></i> آخر الحملات</span>
+            <button type="button" class="ec-clear" (click)="loadRecentCampaigns()"
+                    [disabled]="isLoadingCampaigns || !!retryingCampaignId">
+              تحديث
+            </button>
+          </div>
+
+          <div class="ec-history__loading" *ngIf="isLoadingCampaigns">
+            <span class="ec-spin ec-spin--sm"></span> جاري التحميل...
+          </div>
+
+          <p class="ec-campaign__load-error" *ngIf="campaignsError">
+            {{ campaignsError }}
+          </p>
+
+          <div class="ec-campaign" *ngFor="let campaign of recentCampaigns">
+            <div class="ec-campaign__top">
+              <strong [title]="campaign.subject">{{ campaign.subject || 'بدون عنوان' }}</strong>
+              <small>{{ campaign.startedAt | date:'short' }}</small>
+            </div>
+            <div class="ec-campaign__counts">
+              <span class="ec-campaign__sent">{{ campaign.sent }} نجحت</span>
+              <span *ngIf="campaign.failed" class="ec-campaign__failed">
+                {{ campaign.failed }} فشلت
+              </span>
+            </div>
+            <p class="ec-campaign__legacy" *ngIf="campaign.failed && !campaign.bodyStored">
+              حملة قديمة: قبل الإعادة ضع نص الرسالة الأصلي في المحرر.
+            </p>
+            <p class="ec-campaign__incomplete"
+               *ngIf="campaign.failed > campaign.recordedFailures">
+              سيُتحقق من سجل Mailgun لاسترجاع
+              {{ campaign.failed - campaign.recordedFailures }} عنواناً لم يحفظهم النظام القديم.
+            </p>
+            <p class="ec-campaign__error" *ngIf="campaign.failureExamples?.length" dir="ltr">
+              {{ campaign.failureExamples[0].error }}
+            </p>
+            <button type="button" class="ec-btn ec-btn--retry"
+                    *ngIf="campaign.failed > 0"
+                    (click)="retryFailures(campaign)"
+                    [disabled]="!!retryingCampaignId || isSending">
+              <span *ngIf="retryingCampaignId === campaign.id"
+                    class="ec-spin ec-spin--sm"></span>
+              <i *ngIf="retryingCampaignId !== campaign.id" class="fe fe-refresh-cw"></i>
+              {{ retryingCampaignId === campaign.id
+                ? 'جاري إعادة الفاشلين...'
+                : 'إعادة الإرسال للفاشلين فقط' }}
+            </button>
+          </div>
+
+          <p class="ec-sub ec-sub--block"
+             *ngIf="!isLoadingCampaigns && !campaignsError && !recentCampaigns.length">
+            لا توجد حملات مسجلة بعد.
+          </p>
+        </div>
       </div>
     </div>
   </div>

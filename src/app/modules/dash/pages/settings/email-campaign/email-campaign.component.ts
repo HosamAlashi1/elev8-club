@@ -30,6 +30,19 @@ interface FilterGroup {
   v2Only?: boolean;
 }
 
+interface CampaignSummary {
+  id: string;
+  subject: string;
+  startedAt: string;
+  status: string;
+  totalRecipients: number;
+  sent: number;
+  failed: number;
+  bodyStored: boolean;
+  recordedFailures: number;
+  failureExamples: Array<{ email: string; error: string }>;
+}
+
 const DEFAULT_SUBJECT = 'رسالة من Elev8 Club';
 
 const DEFAULT_BODY = `<p>مرحباً {{name}} 👋</p>
@@ -197,6 +210,10 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
   previewDoc: SafeHtml | null = null;
 
   lastResult: { sent: number; failed: number; campaignId: string } | null = null;
+  recentCampaigns: CampaignSummary[] = [];
+  isLoadingCampaigns = false;
+  campaignsError = '';
+  retryingCampaignId = '';
 
   private countTimer: ReturnType<typeof setTimeout> | null = null;
   /** The Quill instance, handed over by (onEditorCreated). */
@@ -220,6 +237,7 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
       });
 
     this.refreshCount();
+    this.loadRecentCampaigns();
   }
 
   ngOnDestroy(): void {
@@ -377,6 +395,60 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
   }
 
   // ── Sending ──────────────────────────────────────────────────────────────
+  loadRecentCampaigns(): void {
+    this.isLoadingCampaigns = true;
+    this.campaignsError = '';
+    this.apiAdminService.getRecentEmailCampaigns()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: res => {
+          this.recentCampaigns = res?.campaigns || [];
+          this.isLoadingCampaigns = false;
+        },
+        error: err => {
+          this.isLoadingCampaigns = false;
+          this.campaignsError = err?.message || 'تعذّر تحميل الحملات السابقة';
+        }
+      });
+  }
+
+  retryFailures(campaign: CampaignSummary): void {
+    if (!campaign.failed || this.retryingCampaignId) return;
+
+    let warning = `سيُعاد إرسال حملة «${campaign.subject}» إلى ${campaign.failed} ` +
+      'شخصاً فشل إرسالها لهم فقط. لن تُرسل للناجحين. هل أنت متأكد؟';
+    if (!campaign.bodyStored) {
+      warning = 'هذه حملة قديمة ولم يكن نص الرسالة يُحفظ وقتها. سيتم استخدام النص ' +
+        'الموجود الآن في المحرر مع موضوع الحملة الأصلي. تأكد أن المحرر يحتوي نفس ' +
+        `الرسالة تماماً قبل المتابعة إلى ${campaign.failed} شخصاً. هل أنت متأكد؟`;
+    }
+    if (!confirm(warning)) return;
+
+    this.retryingCampaignId = campaign.id;
+    this.apiAdminService.retryEmailCampaignFailures({
+      campaignId: campaign.id,
+      bodyHtml: campaign.bodyStored ? undefined : this.emailContent,
+      useCurrentBodyForLegacyRetry: !campaign.bodyStored,
+    }).subscribe({
+      next: res => {
+        this.retryingCampaignId = '';
+        const sent = res?.sent ?? 0;
+        const failed = res?.failed ?? 0;
+        if (failed) {
+          this.toastr.showWarning(`نجحت إعادة ${sent} وبقي ${failed} فشل`);
+        } else {
+          this.toastr.showSuccess(`تم إرسال الرسالة إلى كل الفاشلين (${sent})`);
+        }
+        this.loadRecentCampaigns();
+      },
+      error: err => {
+        this.retryingCampaignId = '';
+        this.toastr.showError(err?.message || 'فشلت إعادة الإرسال');
+        this.loadRecentCampaigns();
+      }
+    });
+  }
+
   /**
    * One copy to one address. Worth doing every time: a preview pane renders in Chrome, and
    * Gmail's renderer is not Chrome's.
@@ -444,6 +516,7 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
         } else {
           this.toastr.showSuccess(`تم الإرسال إلى ${this.lastResult.sent} ليد`);
         }
+        this.loadRecentCampaigns();
       },
       error: err => {
         this.isSending = false;

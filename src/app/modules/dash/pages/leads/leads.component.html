@@ -56,6 +56,19 @@
             </div>
         </div>
 
+        <!-- Actionable v2 accounts waiting for a manual verification decision. -->
+        <div class="verification-notice"
+             *ngIf="pendingVerificationCount > 0 && selectedVerification !== 'pending'">
+            <i class="fe fe-shield"></i>
+            <span>
+                في <strong>{{ pendingVerificationCount }}</strong>
+                {{ pendingVerificationCount === 1 ? 'حساب تداول بانتظار المراجعة' : 'حسابات تداول بانتظار المراجعة' }}.
+            </span>
+            <button type="button" class="verification-notice__link" (click)="showPendingVerifications()">
+                راجعهم
+            </button>
+        </div>
+
         <!-- Read-only notice. Nothing is merged or deleted; this only reports what is already
              in the data, so it links to the filter rather than offering a "fix" button. -->
         <div class="dup-notice" *ngIf="duplicateEmailCount > 0 && selectedStatus !== 'duplicate'">
