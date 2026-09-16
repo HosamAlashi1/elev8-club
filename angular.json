@@ -77,7 +77,12 @@
               "src/firebase-messaging-sw.js",
               "src/robots.txt",
               "src/site.webmanifest",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              {
+                "glob": "**/*",
+                "input": "src/bimi",
+                "output": "/bimi"
+              }
             ],
             "styles": [
               "src/styles.css",
