@@ -219,6 +219,7 @@ export class ApiAdminService {
 		subject: string;
 		bodyHtml: string;
 		preheader?: string;
+		wordmark?: string;
 		filters: Record<string, unknown>;
 		dryRun?: boolean;
 		testEmail?: string;

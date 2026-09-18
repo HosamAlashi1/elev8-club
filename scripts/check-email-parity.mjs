@@ -86,6 +86,24 @@ const CASES = [
     body: '<p>نص</p>',
     preheader: 'Tom & Jerry <b>x</b> "q" \'p\'',
   },
+  {
+    name: 'custom wordmark',
+    body: '<p>نص</p>',
+    preheader: '',
+    wordmark: 'Elev8 VIP',
+  },
+  {
+    name: 'empty wordmark falls back to the default',
+    body: '<p>نص</p>',
+    preheader: '',
+    wordmark: '   ',
+  },
+  {
+    name: 'wordmark needing HTML escaping',
+    body: '<p>نص</p>',
+    preheader: '',
+    wordmark: 'Tom & Jerry <b>x</b>',
+  },
 ];
 
 const sending = loadTs(SENDING);
@@ -94,8 +112,8 @@ const preview = loadTs(PREVIEW);
 let failed = 0;
 
 for (const c of CASES) {
-  const sent = sending.renderEmail({ bodyHtml: c.body, preheader: c.preheader });
-  const shown = preview.renderPreview(c.body, c.preheader);
+  const sent = sending.renderEmail({ bodyHtml: c.body, preheader: c.preheader, wordmark: c.wordmark });
+  const shown = preview.renderPreview(c.body, c.preheader, c.wordmark);
 
   if (sent === shown) {
     console.log(`  ok   ${c.name}`);

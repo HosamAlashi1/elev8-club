@@ -59,10 +59,15 @@ export const BRAND = {
  */
 const FONT = "Tajawal, 'Noto Kufi Arabic', Tahoma, Arial, sans-serif";
 
+/** Falls back to this when the admin leaves the wordmark field empty. */
+export const DEFAULT_WORDMARK = "ELEV8 CLUB";
+
 /** Inputs for the branded wrapper. */
 export interface ShellOptions {
   /** Small line under the wordmark. Falls back to the club name. */
   preheader?: string;
+  /** The gold header text. Falls back to DEFAULT_WORDMARK. */
+  wordmark?: string;
   /** The campaign body, already personalized. Trusted admin-authored HTML. */
   bodyHtml: string;
 }
@@ -93,9 +98,10 @@ export function escapeHtml(value: string): string {
  * @return {string} A complete HTML document ready to send.
  */
 export function renderEmail(options: ShellOptions): string {
-  const {preheader, bodyHtml} = options;
+  const {preheader, wordmark, bodyHtml} = options;
   const year = new Date().getFullYear();
   const subtitle = escapeHtml(preheader || "Elev8 Club");
+  const heading = escapeHtml(wordmark?.trim() || DEFAULT_WORDMARK);
 
   // No unsubscribe link: removed at the client's request.
   //
@@ -131,7 +137,7 @@ export function renderEmail(options: ShellOptions): string {
               background-image:linear-gradient(135deg, ${BRAND.green} 0%,
               ${BRAND.greenLight} 100%);">
             <div style="color:${BRAND.gold}; font-size:30px; line-height:38px;
-                 font-weight:900; letter-spacing:2px;">ELEV8 CLUB</div>
+                 font-weight:900; letter-spacing:2px;">${heading}</div>
             <div style="margin:10px auto 0; width:64px; height:3px;
                  border-radius:3px; background-color:${BRAND.goldRule};
                  background-image:linear-gradient(90deg, ${BRAND.goldRule},

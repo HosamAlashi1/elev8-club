@@ -42,6 +42,9 @@ export const BRAND = {
 
 const FONT = "Tajawal, 'Noto Kufi Arabic', Tahoma, Arial, sans-serif";
 
+/** Mirrors DEFAULT_WORDMARK in functions/src/email-template.ts. */
+export const DEFAULT_WORDMARK = 'ELEV8 CLUB';
+
 /** What an admin may type into the editor, and what it becomes. */
 export interface PlaceholderHint {
   /** Inserted on click. */
@@ -134,9 +137,10 @@ export function fillSampleData(html: string): string {
  *     `table`, `p`, `a` and more; a preview wearing the dashboard's typography is still lying,
  *     just more subtly. An iframe is its own document, so nothing outside reaches in.
  */
-export function renderPreview(bodyHtml: string, preheader?: string): string {
+export function renderPreview(bodyHtml: string, preheader?: string, wordmark?: string): string {
   const year = new Date().getFullYear();
   const subtitle = escapeHtml(preheader || 'Elev8 Club');
+  const heading = escapeHtml(wordmark?.trim() || DEFAULT_WORDMARK);
   const body = fillSampleData(bodyHtml);
 
   return `<!DOCTYPE html>
@@ -165,7 +169,7 @@ export function renderPreview(bodyHtml: string, preheader?: string): string {
               background-image:linear-gradient(135deg, ${BRAND.green} 0%,
               ${BRAND.greenLight} 100%);">
             <div style="color:${BRAND.gold}; font-size:30px; line-height:38px;
-                 font-weight:900; letter-spacing:2px;">ELEV8 CLUB</div>
+                 font-weight:900; letter-spacing:2px;">${heading}</div>
             <div style="margin:10px auto 0; width:64px; height:3px;
                  border-radius:3px; background-color:${BRAND.goldRule};
                  background-image:linear-gradient(90deg, ${BRAND.goldRule},

@@ -19,6 +19,15 @@
 
         <div class="ec-field">
           <label class="ec-label">
+            الشعار العلوي
+            <span class="ec-sub">النص الذهبي أعلى الرسالة — اتركه فارغاً لاستخدام {{ defaultWordmark }}</span>
+          </label>
+          <input class="ec-input" [(ngModel)]="wordmark"
+                 [placeholder]="defaultWordmark" maxlength="40">
+        </div>
+
+        <div class="ec-field">
+          <label class="ec-label">
             السطر تحت الشعار
             <span class="ec-sub">يظهر داخل الشريط الأخضر أعلى الرسالة</span>
           </label>

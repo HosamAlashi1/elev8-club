@@ -6,7 +6,7 @@ import { ApiAdminService } from 'src/app/modules/services/api.admin.service';
 import { FirebaseService } from 'src/app/modules/services/firebase.service';
 import { ToastrsService } from 'src/app/modules/services/toater.service';
 import { SalesMember } from 'src/app/core/models';
-import { PLACEHOLDER_HINTS, renderPreview } from './email-shell';
+import { DEFAULT_WORDMARK, PLACEHOLDER_HINTS, renderPreview } from './email-shell';
 
 /** One selectable chip in a filter group. */
 interface Choice {
@@ -72,6 +72,9 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
   emailSubject = DEFAULT_SUBJECT;
   emailContent = DEFAULT_BODY;
   preheader = '';
+  /** The gold header text. Empty means "use the default" — the placeholder shows it. */
+  wordmark = '';
+  readonly defaultWordmark = DEFAULT_WORDMARK;
 
   readonly placeholders = PLACEHOLDER_HINTS;
 
@@ -353,7 +356,7 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
     this.showPreview = !this.showPreview;
     if (this.showPreview) {
       this.previewDoc = this.sanitizer.bypassSecurityTrustHtml(
-        renderPreview(this.emailContent, this.preheader)
+        renderPreview(this.emailContent, this.preheader, this.wordmark)
       );
     }
   }
@@ -464,6 +467,7 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
       subject: this.emailSubject,
       bodyHtml: this.emailContent,
       preheader: this.preheader,
+      wordmark: this.wordmark,
       filters: {},
       testEmail: to,
     }).subscribe({
@@ -500,6 +504,7 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
       subject: this.emailSubject,
       bodyHtml: this.emailContent,
       preheader: this.preheader,
+      wordmark: this.wordmark,
       filters: this.buildFilters(),
     }).subscribe({
       next: res => {

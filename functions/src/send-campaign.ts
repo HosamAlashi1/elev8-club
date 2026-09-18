@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {
   CampaignFilters,
+  isValidRecipientEmail,
   LeadRecord,
   Recipient,
   recipientVariables,
@@ -50,6 +51,8 @@ export interface SendCampaignRequest {
   bodyHtml: string;
   /** Small line under the wordmark in the header band. */
   preheader?: string;
+  /** The gold header text. Empty/omitted falls back to DEFAULT_WORDMARK. */
+  wordmark?: string;
   filters: CampaignFilters;
   /** Resolve the audience and return the count WITHOUT sending. */
   dryRun?: boolean;
@@ -77,6 +80,7 @@ interface StoredCampaign {
   subject?: string;
   bodyHtml?: string;
   preheader?: string;
+  wordmark?: string;
   filters?: CampaignFilters;
   totalRecipients?: number;
   sent?: number;
@@ -154,6 +158,33 @@ function isRetryable(error: unknown): boolean {
   if (!(error instanceof MailgunRequestError)) return true;
   return error.status === 408 || error.status === 409 || error.status === 420 ||
     error.status === 425 || error.status === 429 || error.status >= 500;
+}
+
+/**
+ * Pulls out any recipient whose address could break the batch "to" field,
+ * so one bad record fails only itself instead of the whole chunk it landed
+ * in. `selectRecipients` already filters these out going forward — this is
+ * the last line of defense for anything that reaches here anyway (an old
+ * stored failure from before that filter existed, for instance).
+ * @param {Recipient[]} chunk Candidates for one batch call.
+ * @return {object} The split, as `{valid, invalid}`.
+ */
+function splitValidRecipients(
+  chunk: Recipient[]
+): { valid: Recipient[]; invalid: CampaignFailure[] } {
+  const valid: Recipient[] = [];
+  const invalid: CampaignFailure[] = [];
+  chunk.forEach((recipient) => {
+    if (isValidRecipientEmail(recipient.email)) {
+      valid.push(recipient);
+    } else {
+      invalid.push({
+        email: recipient.email,
+        error: "Address is not valid for sending; skipped.",
+      });
+    }
+  });
+  return {valid, invalid};
 }
 
 /**
@@ -512,6 +543,7 @@ export const sendCampaignEmail = functions
         const subject = String(campaign.subject || data?.subject || "").trim();
         const html = renderEmail({
           preheader: campaign.preheader,
+          wordmark: campaign.wordmark,
           bodyHtml: toMailgunTemplate(bodyHtml),
         });
         const byEmail = new Map(allRecipients.map((recipient) =>
@@ -548,6 +580,11 @@ export const sendCampaignEmail = functions
               remaining.set(failure.email, {
                 email: failure.email,
                 error: "Lead no longer exists in the database.",
+              });
+            } else if (!isValidRecipientEmail(recipient.email)) {
+              remaining.set(failure.email, {
+                email: failure.email,
+                error: "Address is not valid for sending; skipped.",
               });
             } else {
               chunkRecipients.push(recipient);
@@ -667,6 +704,7 @@ export const sendCampaignEmail = functions
       };
       const testHtml = renderEmail({
         preheader: data?.preheader,
+        wordmark: data?.wordmark,
         bodyHtml: toMailgunTemplate(bodyHtml),
       });
       const id = await sendBatch(
@@ -716,6 +754,7 @@ export const sendCampaignEmail = functions
       subject,
       bodyHtml,
       preheader: data?.preheader || "",
+      wordmark: data?.wordmark || "",
       filters,
       totalRecipients: recipients.length,
       status: "sending",
@@ -727,6 +766,7 @@ export const sendCampaignEmail = functions
     // the per-recipient variables differ.
     const html = renderEmail({
       preheader: data?.preheader,
+      wordmark: data?.wordmark,
       bodyHtml: toMailgunTemplate(bodyHtml),
     });
 
@@ -754,20 +794,28 @@ export const sendCampaignEmail = functions
       }
       if (i > 0) await sleep(SEND_INTERVAL_MS);
       const chunk = recipients.slice(i, i + BATCH_SIZE);
-      try {
-        await sendBatchWithRetry(
-          apiKey, subject, html, chunk, campaignId, sendDeadline
-        );
-        sent += chunk.length;
-      } catch (error) {
-        failed += chunk.length;
-        const message = error instanceof Error ? error.message : String(error);
-        chunk.forEach((recipient) => failures.push({
-          email: recipient.email, error: message.slice(0, 300),
-        }));
-        if (errors.length < 5) {
-          errors.push(`Batch of ${chunk.length} starting at ` +
-            `${chunk[0].email}: ${message}`);
+      const {valid, invalid} = splitValidRecipients(chunk);
+      if (invalid.length) {
+        failed += invalid.length;
+        failures.push(...invalid);
+      }
+      if (valid.length) {
+        try {
+          await sendBatchWithRetry(
+            apiKey, subject, html, valid, campaignId, sendDeadline
+          );
+          sent += valid.length;
+        } catch (error) {
+          failed += valid.length;
+          const message = error instanceof Error ?
+            error.message : String(error);
+          valid.forEach((recipient) => failures.push({
+            email: recipient.email, error: message.slice(0, 300),
+          }));
+          if (errors.length < 5) {
+            errors.push(`Batch of ${valid.length} starting at ` +
+              `${valid[0].email}: ${message}`);
+          }
         }
       }
 

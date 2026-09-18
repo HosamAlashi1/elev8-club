@@ -65,7 +65,25 @@ export interface Recipient {
   subscriptionNumber: string;
 }
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Batch sending joins every recipient in a chunk into one comma-separated
+// Mailgun "to" field, so a character this pattern lets through but Mailgun
+// or a "to" join rejects — a comma, `<>`, quotes — invalidates every other
+// address sharing that chunk, not just the bad one. Restricted to the safe,
+// unquoted address characters used by the HTML5 email input pattern.
+const EMAIL_PATTERN =
+  /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/;
+
+/**
+ * Exported so the sender can re-check a chunk right before batching it —
+ * a defensive last line against exactly the failure this pattern exists to
+ * prevent, in case a record ever reaches that point some other way (an old
+ * stored failure from before this check existed, for one).
+ * @param {string} email Address to check.
+ * @return {boolean} Whether it is safe to put in a batch "to" field.
+ */
+export function isValidRecipientEmail(email: string): boolean {
+  return EMAIL_PATTERN.test(email);
+}
 
 /**
  * A lead with no `source` predates the field — it is a v1 lead.
