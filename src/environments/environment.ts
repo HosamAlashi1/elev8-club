@@ -6,7 +6,7 @@ export const environment = {
   // The Telegram onboarding bot for v2 leads (TMS_Backend). A different service from apiUrl
   // above: the bot owns the conversation with the lead, so an account decision has to go
   // through it rather than straight into Firebase — see BotAccountService.
-  botApiUrl: 'https://backend.nstechs.co/api',
+  botApiUrl: 'https://backend.tahersamara.com/api',
   prefix: 'Elev8 Club-dev',
   cryptoKey: 'Elev8 ClubSuperSecretKey123',
   // ng serve serves .video-build/hls at this path (see angular.json development/local assets),

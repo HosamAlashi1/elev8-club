@@ -17,12 +17,22 @@ const FROM = `Elev8 Club <info@${MAILGUN_DOMAIN}>`;
 
 
 /**
- * Gap between message submissions.
+ * Gap between batch submissions.
  *
- * A new/restricted domain benefits more from a calm, predictable queue than
- * from finishing a few minutes earlier and losing most of the audience.
+ * The domain is newly approved for batch sending and still building
+ * reputation, so chunks go out a slow, deliberate pace apart rather than
+ * back-to-back — a few minutes for a full campaign costs nothing here, since
+ * the current audience (~400 leads) is small either way.
  */
-const SEND_INTERVAL_MS = 1000;
+const SEND_INTERVAL_MS = 45 * 1000;
+
+/**
+ * Recipients per Mailgun batch call. Mailgun allows up to 1000 recipients in
+ * one `recipient-variables` batch; this stays well under that. A moderate
+ * size (not the whole audience in one call, not one-by-one either) keeps a
+ * single chunk failure from costing more than a fraction of the run.
+ */
+const BATCH_SIZE = 100;
 const MAX_SEND_ATTEMPTS = 5;
 const RETRY_LOCK_MS = 10 * 60 * 1000;
 const SEND_BUDGET_MS = 8 * 60 * 1000;
@@ -147,47 +157,45 @@ function isRetryable(error: unknown): boolean {
 }
 
 /**
- * ONE email to ONE recipient.
+ * One Mailgun batch call: up to `BATCH_SIZE` personalized emails in a single
+ * request via `recipient-variables`.
  *
- * This used to put the whole list into a single call with `recipient-variables`
- * — Mailgun's batch sending, one request for up to a thousand personalized
- * messages. Mailgun refuses it on this domain:
+ * This domain used to reject batches outright:
  *
  *     403 "Domain elev8club.com is not allowed to send large batches yet"
  *
- * It is an account permission, not something the code can work around, and
- * every campaign failed whole because of it. The single-recipient test passed
- * precisely because one recipient is not a batch.
+ * Mailgun support has since lifted that restriction on elev8club.com, so
+ * chunked batch sending is back as the normal path. A single recipient is
+ * just a batch of one, which is also how the test send and single-address
+ * retries use this function.
  *
- * Sending one at a time is slower, and better in the way that matters here:
- * a failure is attributable to a person instead of taking 250 others down
- * with it, so "did everyone get it?" has a real answer without webhooks.
- *
- * If Mailgun later approves the domain for batch sending, the fast path can
- * come back — but this must stay as the fallback.
+ * A failure here is a whole-chunk failure (auth, rate limit, malformed
+ * request) — Mailgun accepting the batch means it queued mail to everyone in
+ * it, so per-recipient bounces surface later via Mailgun's own delivery
+ * events, not in this response.
  *
  * @param {string} apiKey The Mailgun key.
  * @param {string} subject The email subject.
  * @param {string} html The rendered email.
- * @param {Recipient} to The single recipient.
+ * @param {Recipient[]} to Up to `BATCH_SIZE` recipients.
  * @param {string} campaignId Used as the Mailgun tag.
- * @return {Promise<string>} Mailgun's message id.
+ * @return {Promise<string>} Mailgun's message id for the batch.
  */
-async function sendOne(
+async function sendBatch(
   apiKey: string,
   subject: string,
   html: string,
-  to: Recipient,
+  to: Recipient[],
   campaignId: string
 ): Promise<string> {
   const form = new URLSearchParams();
   form.append("from", FROM);
-  form.append("to", to.email);
+  form.append("to", to.map((recipient) => recipient.email).join(","));
   form.append("subject", subject);
   form.append("html", html);
-  // Still recipient-variables, even for one: the body carries %recipient.x%
-  // placeholders and Mailgun only substitutes them from this map.
-  form.append("recipient-variables", recipientVariables([to]));
+  // The body carries %recipient.x% placeholders; Mailgun substitutes them
+  // per-address from this map, one merge per recipient in "to".
+  form.append("recipient-variables", recipientVariables(to));
   // Tagged so this campaign's delivery, bounce and complaint rates show in
   // Mailgun separately from the transactional welcome email — a bad campaign
   // must not look like a problem with the mail that actually matters.
@@ -222,20 +230,21 @@ async function sendOne(
 }
 
 /**
- * Retry only failures which can be temporary; a bad address or 403 is final.
+ * Retry a batch only for failures which can be temporary; a bad request or
+ * 403 is final for that chunk.
  * @param {string} apiKey Mailgun key.
  * @param {string} subject Message subject.
  * @param {string} html Rendered HTML.
- * @param {Recipient} recipient One recipient.
+ * @param {Recipient[]} recipients This chunk.
  * @param {string} campaignId Mailgun campaign tag.
  * @param {number} deadline Stop before the Cloud Function hard timeout.
  * @return {Promise<string>} Mailgun message id.
  */
-async function sendOneWithRetry(
+async function sendBatchWithRetry(
   apiKey: string,
   subject: string,
   html: string,
-  recipient: Recipient,
+  recipients: Recipient[],
   campaignId: string,
   deadline: number
 ): Promise<string> {
@@ -247,7 +256,7 @@ async function sendOneWithRetry(
       );
     }
     try {
-      return await sendOne(apiKey, subject, html, recipient, campaignId);
+      return await sendBatch(apiKey, subject, html, recipients, campaignId);
     } catch (error) {
       lastError = error;
       if (!isRetryable(error) || attempt === MAX_SEND_ATTEMPTS) throw error;
@@ -528,30 +537,43 @@ export const sendCampaignEmail = functions
           }),
         ]);
 
-        for (const failure of failures) {
+        for (let i = 0; i < failures.length; i += BATCH_SIZE) {
           if (Date.now() >= sendDeadline) break;
           if (attempted > 0) await sleep(SEND_INTERVAL_MS);
-          const recipient = byEmail.get(failure.email);
-          attempted++;
-          if (!recipient) {
-            remaining.set(failure.email, {
-              email: failure.email,
-              error: "Lead no longer exists in the database.",
-            });
-          } else {
+          const chunk = failures.slice(i, i + BATCH_SIZE);
+          const chunkRecipients: Recipient[] = [];
+          chunk.forEach((failure) => {
+            const recipient = byEmail.get(failure.email);
+            if (!recipient) {
+              remaining.set(failure.email, {
+                email: failure.email,
+                error: "Lead no longer exists in the database.",
+              });
+            } else {
+              chunkRecipients.push(recipient);
+            }
+          });
+          attempted += chunk.length;
+
+          if (chunkRecipients.length) {
             try {
-              await sendOneWithRetry(
-                apiKey, subject, html, recipient, retryCampaignId, sendDeadline
+              await sendBatchWithRetry(
+                apiKey, subject, html, chunkRecipients, retryCampaignId,
+                sendDeadline
               );
-              remaining.delete(failure.email);
-              sentThisAttempt++;
+              chunkRecipients.forEach((recipient) =>
+                remaining.delete(recipient.email.toLowerCase()));
+              sentThisAttempt += chunkRecipients.length;
             } catch (error) {
               const message = error instanceof Error ?
                 error.message : String(error);
-              remaining.set(failure.email, {
-                email: failure.email,
-                error: message.slice(0, 300),
-              });
+              chunkRecipients.forEach((recipient) => remaining.set(
+                recipient.email.toLowerCase(),
+                {
+                  email: recipient.email.toLowerCase(),
+                  error: message.slice(0, 300),
+                }
+              ));
             }
           }
 
@@ -647,8 +669,8 @@ export const sendCampaignEmail = functions
         preheader: data?.preheader,
         bodyHtml: toMailgunTemplate(bodyHtml),
       });
-      const id = await sendOne(
-        apiKeyEarly, `[TEST] ${subject}`, testHtml, sample, "test"
+      const id = await sendBatch(
+        apiKeyEarly, `[TEST] ${subject}`, testHtml, [sample], "test"
       );
       return {test: true, sentTo: testEmail, messageId: id};
     }
@@ -716,10 +738,10 @@ export const sendCampaignEmail = functions
     // Who actually failed, so a retry can target exactly them.
     const failures: { email: string; error: string }[] = [];
 
-    // One paced queue avoids a burst on restricted/new domains. Each
-    // temporary 429/5xx/network failure is retried with Mailgun's reset header
-    // or exponential backoff before it is recorded as a final failure.
-    for (let i = 0; i < recipients.length; i++) {
+    // Chunks of BATCH_SIZE, paced with a gap between them. Each temporary
+    // 429/5xx/network failure is retried with Mailgun's reset header or
+    // exponential backoff before the whole chunk is recorded as failed.
+    for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
       if (Date.now() >= sendDeadline) {
         const deferred = recipients.slice(i).map((recipient) => ({
           email: recipient.email,
@@ -731,17 +753,22 @@ export const sendCampaignEmail = functions
         break;
       }
       if (i > 0) await sleep(SEND_INTERVAL_MS);
-      const recipient = recipients[i];
+      const chunk = recipients.slice(i, i + BATCH_SIZE);
       try {
-        await sendOneWithRetry(
-          apiKey, subject, html, recipient, campaignId, sendDeadline
+        await sendBatchWithRetry(
+          apiKey, subject, html, chunk, campaignId, sendDeadline
         );
-        sent++;
+        sent += chunk.length;
       } catch (error) {
-        failed++;
+        failed += chunk.length;
         const message = error instanceof Error ? error.message : String(error);
-        failures.push({email: recipient.email, error: message.slice(0, 300)});
-        if (errors.length < 5) errors.push(`${recipient.email}: ${message}`);
+        chunk.forEach((recipient) => failures.push({
+          email: recipient.email, error: message.slice(0, 300),
+        }));
+        if (errors.length < 5) {
+          errors.push(`Batch of ${chunk.length} starting at ` +
+            `${chunk[0].email}: ${message}`);
+        }
       }
 
       // Progress is written as it goes, so a campaign that dies halfway still
