@@ -77,7 +77,8 @@ All unauthenticated, against the live database:
 
 | | Expected | Result |
 |---|---|---|
-| Create a lead the way v1's landing page does | allow | 200 |
+| Create a lead directly from an unauthenticated client | deny | 401 |
+| Register through the public `registerLead` function | allow | Cloud Function/Admin SDK |
 | Read one lead by key (v2 questions page) | allow | 200 |
 | Query by `subscriptionNumber` + `equalTo` | allow | 200 |
 | Query by `telegramChatId` + `equalTo` | allow | 200 |

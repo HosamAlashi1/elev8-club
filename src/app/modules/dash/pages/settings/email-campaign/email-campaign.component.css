@@ -1,7 +1,7 @@
 /*
   Email Campaign.
 
-  Built on the dashboard's own palette — gold #CFAE58 on white cards with #f0f0f0 borders —
+  Built on the dashboard's own palette — gold #9a2b3e on white cards with #f0f0f0 borders —
   rather than Bootstrap's defaults, which is what made the first pass look like a different
   product. Everything is `ec-` prefixed so nothing leaks into the other settings tabs.
 
@@ -11,9 +11,9 @@
 */
 
 :host {
-  --ec-gold: #CFAE58;
-  --ec-gold-soft: #FBF3E0;
-  --ec-gold-line: #EBD9A8;
+  --ec-gold: #9a2b3e;
+  --ec-gold-soft: #21181a;
+  --ec-gold-line: #44272d;
   --ec-ink: #1f2937;
   --ec-muted: #9ca3af;
   --ec-line: #f0f0f0;
@@ -105,7 +105,7 @@
 .ec-input:focus {
   outline: none;
   border-color: var(--ec-gold);
-  box-shadow: 0 0 0 3px rgba(207, 174, 88, 0.15);
+  box-shadow: 0 0 0 3px rgba(154, 43, 62, 0.15);
 }
 
 .ec-dates { display: flex; gap: 8px; }
@@ -126,7 +126,7 @@
   gap: 6px;
   font-size: 0.74rem;
   font-weight: 600;
-  color: #8a6d1f;
+  color: #762233;
   margin-bottom: 9px;
 }
 
@@ -186,7 +186,7 @@
   color: #4b5563;
 }
 
-.ec-btn--ghost:hover:not(:disabled) { border-color: var(--ec-gold); color: #8a6d1f; }
+.ec-btn--ghost:hover:not(:disabled) { border-color: var(--ec-gold); color: #762233; }
 
 /* The send button is the page's one primary action, so it carries the brand gold. */
 .ec-btn--gold {
@@ -197,7 +197,7 @@
   padding: 12px 16px;
 }
 
-.ec-btn--gold:hover:not(:disabled) { background: #bb9c49; }
+.ec-btn--gold:hover:not(:disabled) { background: #762233; }
 
 /* Disabled means "nothing matches the filters yet", so it should read as waiting rather than
    broken — flat grey, no colour. */
@@ -252,7 +252,7 @@
   font-size: 2rem;
   font-weight: 700;
   line-height: 1.1;
-  color: #8a6d1f;
+  color: #762233;
 }
 
 .ec-count__label { font-size: 0.74rem; color: #6b7280; margin-top: 2px; }
@@ -475,7 +475,7 @@
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(207, 174, 88, 0.3);
+  border: 2px solid rgba(154, 43, 62, 0.3);
   border-top-color: var(--ec-gold);
   border-radius: 50%;
   animation: ec-spin 700ms linear infinite;

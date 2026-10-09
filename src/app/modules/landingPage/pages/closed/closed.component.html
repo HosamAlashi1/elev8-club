@@ -1,0 +1,23 @@
+<!-- Figma "Closed" 420:1242 / 420:1462. Classes are `cs-` prefixed (docs/08 §2). -->
+<main class="cs-page">
+  <div class="cs-stage">
+
+    <!-- nodes 420:1244 / 420:1419 — a red glow (the standard glow, recoloured) and the overlay lettering. -->
+    <span class="cs-glow" aria-hidden="true"><i></i><i></i><i></i></span>
+    <img class="cs-lettering cs-lettering--desktop" src="assets/images/closed/union-desktop.svg" width="715" height="315" alt="" aria-hidden="true">
+    <img class="cs-lettering cs-lettering--mobile" src="assets/images/closed/union-mobile.svg" width="480" height="210" alt="" aria-hidden="true">
+
+    <!-- node 420:1255 / 420:1478 — kept in English, as designed. -->
+    <h1 class="cs-title" dir="ltr" data-aos="fade-up" data-aos-duration="800">REGISTRATION IS CURRENTLY CLOSED</h1>
+
+    <!-- node 420:1460 / 420:1480 -->
+    <div class="cs-stack">
+      <p class="cs-chip" data-aos="fade-down" data-aos-delay="120">التسجيل مغلق حاليًا</p>
+      <p class="cs-text" data-aos="fade-up" data-aos-delay="160">التسجيل لهذه الفرصة مغلق في الوقت الحالي إذا كنت مهتمًا بالانضمام في المرة القادمة اترك بياناتك في الـ<bdi dir="ltr">Waitlist</bdi> وسنخبرك أول ما يفتح التسجيل من جديد</p>
+      <div class="cs-cta" data-aos="zoom-in" data-aos-delay="220">
+        <a class="cs-cta__btn" [attr.href]="waitlistUrl || null" [attr.aria-disabled]="waitlistUrl ? null : 'true'"><span class="cs-cta__label" dir="ltr">JOIN THE WAITLIST</span></a>
+      </div>
+      <p class="cs-note" data-aos="fade-up" data-aos-delay="280">ابقَ على اطلاع لأن الأماكن أو التسجيل قد يفتح مرة أخرى في وقت لاحق</p>
+    </div>
+  </div>
+</main>

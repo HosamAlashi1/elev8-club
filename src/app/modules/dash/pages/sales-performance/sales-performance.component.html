@@ -1,0 +1,123 @@
+<div class="page-container">
+    <h2 class="page-title" data-aos="fade-right" data-aos-delay="100">
+        Sales Performance
+    </h2>
+
+    <div class="content" data-aos="fade-up" data-aos-delay="200">
+
+        <!-- ── Filter ─────────────────────────────────────────── -->
+        <div class="sp-filters">
+            <app-modern-select [(ngModel)]="selectedPeriod" [options]="periodOptions"
+                (selectionChange)="onFilterChange()" size="sm" [icon]="'fe fe-calendar'"
+                [minWidth]="'0'" [customWidth]="'180px'">
+            </app-modern-select>
+
+            <div class="sp-custom-range" *ngIf="selectedPeriod === 'custom'">
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="customStart" (change)="onFilterChange()">
+                <span>to</span>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="customEnd" (change)="onFilterChange()">
+            </div>
+        </div>
+
+        <!-- ── Team summary strip ────────────────────────────────── -->
+        <div class="sp-summary" *ngIf="!isLoading">
+            <div class="sp-summary__card">
+                <div class="sp-summary__icon sp-summary__icon--total"><i class="fe fe-phone-call"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.total }}</div>
+                    <div class="sp-summary__label">Total Calls</div>
+                </div>
+            </div>
+            <div class="sp-summary__card">
+                <div class="sp-summary__icon sp-summary__icon--answered"><i class="fe fe-check-circle"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.answered }}</div>
+                    <div class="sp-summary__label">Answered</div>
+                </div>
+            </div>
+            <div class="sp-summary__card">
+                <div class="sp-summary__icon sp-summary__icon--no-answer"><i class="fe fe-phone-missed"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.noAnswer }}</div>
+                    <div class="sp-summary__label">No Answer</div>
+                </div>
+            </div>
+            <div class="sp-summary__card">
+                <div class="sp-summary__icon sp-summary__icon--busy"><i class="fe fe-clock"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.busy }}</div>
+                    <div class="sp-summary__label">Busy</div>
+                </div>
+            </div>
+            <div class="sp-summary__card">
+                <div class="sp-summary__icon sp-summary__icon--reps"><i class="fe fe-users"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.activeMembers }} / {{ rows.length }}</div>
+                    <div class="sp-summary__label">Active Reps</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="sp-loading">
+            <ngx-skeleton-loader count="4" [theme]="{ height: '150px', 'border-radius': '16px', 'margin-bottom': '14px' }"></ngx-skeleton-loader>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="!isLoading && rows.length === 0" class="sp-empty">
+            No sales members found for the current version.
+        </div>
+
+        <!-- ── One clickable card per sales member ───────────────── -->
+        <div class="sp-grid" *ngIf="!isLoading">
+            <div class="sp-card" *ngFor="let row of rows; trackBy: trackByKey" (click)="openMember(row)">
+
+                <div class="sp-card__top">
+                    <div class="sp-card__identity">
+                        <div class="sp-avatar">{{ row.name.charAt(0).toUpperCase() }}</div>
+                        <div class="sp-card__id-text">
+                            <div class="sp-name">{{ row.name }}</div>
+                            <div class="sp-email">{{ row.email }}</div>
+                        </div>
+                    </div>
+                    <span class="pill" [ngClass]="row.isActive ? 'pill-success' : 'pill-muted'">
+                        {{ row.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+
+                <div class="sp-card__body">
+                    <div class="sp-donut">
+                        <apx-chart [series]="row.donutChart.series" [chart]="row.donutChart.chart"
+                            [colors]="row.donutChart.colors" [stroke]="row.donutChart.stroke"
+                            [dataLabels]="row.donutChart.dataLabels" [legend]="row.donutChart.legend"
+                            [tooltip]="row.donutChart.tooltip">
+                        </apx-chart>
+                        <div class="sp-donut__total">
+                            <span>{{ row.totalCalls }}</span>
+                            calls
+                        </div>
+                    </div>
+
+                    <div class="sp-card__stats">
+                        <div class="sp-stat-row">
+                            <span class="sp-dot sp-dot--answered"></span> {{ row.answered }} Answered
+                        </div>
+                        <div class="sp-stat-row">
+                            <span class="sp-dot sp-dot--no-answer"></span> {{ row.noAnswer }} No Answer
+                        </div>
+                        <div class="sp-stat-row">
+                            <span class="sp-dot sp-dot--busy"></span> {{ row.busy }} Busy
+                        </div>
+                        <div class="sp-stat-row sp-stat-row--muted">
+                            {{ row.assignedLeadsCount }} assigned &middot; {{ row.closedLeadsCount }} closed
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sp-card__footer">
+                    View full activity <i class="fe fe-arrow-left"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

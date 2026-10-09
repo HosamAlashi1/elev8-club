@@ -8,7 +8,6 @@ import { LoginComponent } from './components/login/login.component';
 import { ForgetComponent } from './components/forget/forget.component';
 import { ResetComponent } from './components/reset/reset.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { LottieModule } from 'ngx-lottie';
 
 @NgModule({
   declarations: [
@@ -23,8 +22,7 @@ import { LottieModule } from 'ngx-lottie';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgbModule,
-    LottieModule
+    NgbModule
   ],
 })
 export class AuthModule {}

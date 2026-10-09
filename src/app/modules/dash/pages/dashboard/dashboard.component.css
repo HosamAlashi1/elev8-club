@@ -108,3 +108,28 @@
 .chart-section .card {
   flex-grow: 1;
 }
+
+.stat-card {
+  border-color: #2a2e32;
+  border-radius: 4px;
+  background: #15181b;
+  box-shadow: none;
+}
+
+.stat-card:hover {
+  border-color: #3a3f44;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+}
+
+.stat-label { color: #8f969d; }
+.stat-value { color: #f1eee8; }
+
+.stat-icon {
+  border: 1px solid #30353a;
+  background: #1c2023;
+}
+
+.icon-sales { color: #bd4055; }
+.icon-orders { color: #7f9a86; }
+.icon-books { color: #a9a195; }
+.icon-customers { color: #87929b; }

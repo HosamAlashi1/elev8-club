@@ -1,42 +1,55 @@
+nav.pagination-nav {
+  max-width: 100%;
+  margin: 0;
+}
+
 ul.pagination {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   padding: 0;
-  margin: 1rem 0;
+  margin: 0;
 }
 
 ul.pagination li.page-item { list-style: none; }
 
 ul.pagination .page-link {
-  background-color: #fff;
-  color: #64748B;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  min-width: 38px;
+  background-color: #202529;
+  color: #c2c9cd;
+  border: 1px solid #3b4247;
+  border-radius: 6px;
+  min-width: 36px;
   height: 36px;
   padding: 0 12px;
-  font-size: 14px;
+  font-size: 13px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   line-height: 1;
   gap: .4rem;
 }
 
-ul.pagination .page-link:hover { background-color: #f3f4f6; }
+ul.pagination .page-link:hover:not(:disabled):not(.active):not(.dots) {
+  background-color: #2b3135;
+  border-color: #687077;
+  color: #f2eee8;
+}
+ul.pagination .page-link:focus-visible {
+  outline: 2px solid #d8798b;
+  outline-offset: 2px;
+}
 ul.pagination .page-link.active {
-  background-color: #CFAE58 !important;
-  border-color: #CFAE58 !important;
+  background-color: #963549 !important;
+  border-color: #b55066 !important;
   color: #fff !important;
   font-weight: 600;
   cursor: default;
 }
 ul.pagination .page-link:disabled {
-  background-color: #f3f4f6;
-  border-color: #e5e7eb;
-  color: #9ca3af;
+  background-color: #1b1f22;
+  border-color: #30363a;
+  color: #747d83;
   cursor: not-allowed;
 }
 ul.pagination.disabled .page-link { opacity: 0.6; pointer-events: none; }
@@ -46,6 +59,9 @@ ul.pagination .page-link.dots {
   pointer-events: none;
   min-width: 32px;
   padding: 0 6px;
+  border-color: transparent;
+  background: transparent;
+  color: #858d93;
 }
 
 /* تبديل نص/أيقونة للموبايل */
@@ -53,7 +69,8 @@ ul.pagination .page-link.dots {
 .page-link .label { display: inline; }
 
 @media (max-width: 768px) {
-  ul.pagination { gap: 0.2rem; }
+  nav.pagination-nav { overflow-x: auto; }
+  ul.pagination { width: max-content; gap: 0.2rem; }
   ul.pagination .page-link {
     min-width: 34px;
     height: 34px;

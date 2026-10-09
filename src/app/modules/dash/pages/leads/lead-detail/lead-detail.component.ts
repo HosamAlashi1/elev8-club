@@ -33,6 +33,7 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
   showPackageSelector = false;
   selectedSalesPackage: SalesPackage | null = null;
   isSavingStatus = false;
+  questionnaireAnswers: { label: string; value: string }[] = [];
 
   private destroy$ = new Subject<void>();
 
@@ -131,6 +132,7 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
       next: (lead) => {
         if (!lead) { this.router.navigate(['/dashboard/leads']); return; }
         this.lead = lead;
+        this.questionnaireAnswers = this.buildQuestionnaireAnswers(lead);
         // ngOnInit builds the form before the lead resolves, so its default call type was
         // picked from v1's list. Rebuild now that the source is known.
         this.buildCallForm();
@@ -217,7 +219,11 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
   private persistStatus(status: SalesStatus, salesPackage?: SalesPackage): void {
     if (!this.lead?.key) return;
     this.isSavingStatus = true;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage).then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead!.sales_status = status;
       this.lead!.sales_package = status === 'closed' ? salesPackage : undefined;
       this.showPackageSelector = false;
@@ -230,7 +236,11 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
 
   markNotInterested(): void {
     if (!this.lead?.key || !confirm('Mark this lead as Not Interested?')) return;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested').then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested', undefined, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead!.sales_status = 'not_interested';
       this.lead!.sales_package = undefined;
       this.toastr.showSuccess('Marked as Not Interested');
@@ -241,7 +251,11 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
     if (!this.lead?.key) return;
     // Back to the FIRST step of this lead's own pipeline — not 'new' for a v2 lead.
     const first = salesPipelineFor(this.lead.source)[0];
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, first).then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, first, undefined, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead!.sales_status = first;
       this.lead!.sales_package = undefined;
       this.toastr.showSuccess(`Status reset to ${SALES_STATUS_LABELS[first]}`);
@@ -282,8 +296,8 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
     return this.lead?.fullName ? this.lead.fullName.trim().charAt(0).toUpperCase() : '?';
   }
 
-  getAnswers(): { label: string; value: string }[] {
-    const a = this.lead?.answers;
+  private buildQuestionnaireAnswers(lead: Lead): { label: string; value: string }[] {
+    const a = lead.answers;
     if (!a) return [];
     return [
       { label: 'كم عمرك؟', value: a.age || '' },
@@ -293,8 +307,14 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
       { label: 'أكبر مشكلة مالية؟', value: a.financialProblem || '' },
       { label: 'كم تقدر تخصص؟', value: a.investBudget || '' },
       { label: 'هدفك الأساسي؟', value: a.systemGoal || '' },
-    ].filter(x => !!x.value?.trim());
+    ]
+      .map(item => ({ ...item, value: String(item.value ?? '').trim() }))
+      .filter(item => item.value.length > 0);
   }
+
+  trackByAnswer(index: number): number { return index; }
+  trackBySalesStep(_index: number, step: { key: SalesStatus }): SalesStatus { return step.key; }
+  trackByCallLog(index: number, log: CallLog): string | number { return log.key || index; }
 
   goBack(): void { this.router.navigate(['/dashboard/leads']); }
 }

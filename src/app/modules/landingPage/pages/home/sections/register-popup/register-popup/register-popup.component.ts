@@ -7,6 +7,7 @@ import { GtmService } from '../../../../../../services/gtm.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
 import { take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { isValidPhoneNumber, CountryCode } from 'libphonenumber-js';
 
 interface FormData {
   fullName: string;
@@ -354,6 +355,17 @@ export class RegisterPopupComponent implements OnInit {
     // التحقق من صحة البيانات
     if (!this.formData.fullName || !this.formData.email || !this.formData.whatsapp) {
       alert('الرجاء ملء جميع الحقول');
+      return;
+    }
+
+    // رقم الواتساب لازم يتطابق مع صيغة الدولة المختارة (طول ونمط الرقم)، مش أي أرقام
+    const whatsappDigits = this.formData.whatsapp.replace(/\D/g, '');
+    const selectedIso = this.countryCodes.find(c => c.code === this.selectedCountryCode)?.country as CountryCode | undefined;
+    const isPhoneValid = selectedIso
+      ? isValidPhoneNumber(whatsappDigits, selectedIso)
+      : whatsappDigits.length >= 6 && whatsappDigits.length <= 15;
+    if (!isPhoneValid) {
+      alert('رقم الواتساب لا يتطابق مع صيغة الدولة المختارة، الرجاء التأكد منه.');
       return;
     }
 

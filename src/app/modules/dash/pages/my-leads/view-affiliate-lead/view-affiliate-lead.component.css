@@ -1,8 +1,8 @@
 .lead-avatar {
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(207,174,88,0.15); border: 1px solid rgba(207,174,88,0.4);
+  background: rgba(154, 43, 62,0.15); border: 1px solid rgba(154, 43, 62,0.4);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 700; color: #cfae58; font-size: 1rem; flex-shrink: 0;
+  font-weight: 700; color: #9a2b3e; font-size: 1rem; flex-shrink: 0;
 }
 
 .section-card {
@@ -25,8 +25,8 @@
 }
 
 .call-dot {
-  width: 16px; height: 16px; border-radius: 50%; background: #cfae58;
-  border: 2px solid white; box-shadow: 0 0 0 2px #cfae58; flex-shrink: 0; margin-top: 2px;
+  width: 16px; height: 16px; border-radius: 50%; background: #9a2b3e;
+  border: 2px solid white; box-shadow: 0 0 0 2px #9a2b3e; flex-shrink: 0; margin-top: 2px;
 }
 
 .call-content {
@@ -42,7 +42,7 @@
 .badge-busy { background: rgba(239,68,68,0.1); color: #ef4444; }
 .renewal-package-selector {
   padding: 14px;
-  border: 1px solid rgba(207, 174, 88, 0.4);
+  border: 1px solid rgba(154, 43, 62, 0.4);
   border-radius: 10px;
   background: #fffdf7;
 }
@@ -58,8 +58,8 @@
   align-items: center;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(207, 174, 88, 0.15);
-  color: #9a761d;
+  background: rgba(154, 43, 62, 0.15);
+  color: #762233;
   font-size: 0.75rem;
   font-weight: 700;
 }

@@ -1,5 +1,18 @@
 <div class="mobile-overlay" *ngIf="isMobile && !isCollapsed" (click)="toggleSidebar()"></div>
 <nav [ngClass]="{ sidebar: true, collapsed: isCollapsed }" (click)="onSidebarClick($event)">
+  <div class="sidebar-atmosphere" aria-hidden="true">
+    <div class="sidebar-atmosphere__grid"></div>
+    <div class="sidebar-atmosphere__beam"></div>
+    <svg class="sidebar-atmosphere__graph" viewBox="0 0 250 900" preserveAspectRatio="xMidYMid slice">
+      <path class="sidebar-atmosphere__foundation" d="M-15 270 C50 253 49 290 105 232 S184 268 265 174 M-15 775 C30 756 55 760 83 725 S138 744 165 660 S215 655 265 555" />
+      <path class="sidebar-atmosphere__trace sidebar-atmosphere__trace--back" d="M-15 765 C28 745 37 784 78 737 S130 703 155 674 S207 692 265 595" />
+      <path class="sidebar-atmosphere__trace sidebar-atmosphere__trace--front" d="M-15 775 C30 756 55 760 83 725 S138 744 165 660 S215 655 265 555" />
+      <path class="sidebar-atmosphere__trace sidebar-atmosphere__trace--upper" d="M-15 270 C50 253 49 290 105 232 S184 268 265 174" />
+      <circle cx="165" cy="660" r="3" />
+      <circle cx="235" cy="604" r="3" />
+    </svg>
+    <div class="sidebar-atmosphere__columns"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
   <div class="sidebar-header d-flex align-items-center justify-content-between ps-2 mt-4 mb-4">
     <div class="brand-text" *ngIf="!isCollapsed">
       Elev8 <span>Club</span>

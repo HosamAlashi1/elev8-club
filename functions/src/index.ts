@@ -551,6 +551,14 @@ export const deleteDashboardUser = publicHttps.onCall(async (
  */
 export {sendCampaignEmail} from "./send-campaign";
 
+/** V2-only welcome email, rendered with the dashboard's shared email shell. */
+export {sendV2Email} from "./send-v2-email";
+export {
+  queueV2QuestionReminder,
+  sendV2QuestionReminder,
+} from "./v2-question-reminder";
+export {sendV2QualificationEmail} from "./v2-qualification-email";
+
 /**
  * Registration with de-duplication by email — see register-lead.ts.
  *
@@ -559,3 +567,8 @@ export {sendCampaignEmail} from "./send-campaign";
  * both things the security rules rightly refuse to an anonymous browser.
  */
 export {registerLead} from "./register-lead";
+
+/**
+ * A sales member adding a lead from the dashboard — see add-dashboard-lead.ts.
+ */
+export {addDashboardLead} from "./add-dashboard-lead";

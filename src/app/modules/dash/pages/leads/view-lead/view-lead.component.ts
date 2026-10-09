@@ -215,7 +215,11 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   private persistStatus(status: SalesStatus, salesPackage?: SalesPackage): void {
     if (!this.lead.key) return;
     this.isSavingStatus = true;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage).then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead.sales_status = status;
       this.lead.sales_package = status === 'closed' ? salesPackage : undefined;
       this.showPackageSelector = false;
@@ -228,7 +232,11 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   markNotInterested(): void {
     if (!this.lead.key) return;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested').then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested', undefined, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead.sales_status = 'not_interested';
       this.lead.sales_package = undefined;
       this.toastr.showSuccess('Marked as Not Interested');

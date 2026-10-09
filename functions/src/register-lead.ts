@@ -38,6 +38,8 @@ import * as admin from "firebase-admin";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const OFFER_PLANS = ["starter", "pro", "ai"];
+
 const CODE_MIN = 10000;
 const CODE_MAX = 99999;
 const MAX_CODE_ATTEMPTS = 12;
@@ -47,8 +49,15 @@ export interface RegisterLeadRequest {
   fullName: string;
   email: string;
   phone: string;
-  /** 'v1' | 'v2'. Anything else is refused rather than guessed at. */
+  /** 'v1' | 'v2' | 'offer'. Anything else is refused rather than guessed at. */
   source: string;
+  /**
+   * 'offer' only: the plan the visitor picked ('starter' | 'pro' | 'ai').
+   * Required for that source, ignored for the others. It is a choice, not a
+   * price: what is charged is decided when the payment is created, never from
+   * this field.
+   */
+  plan?: string;
   affiliateKey?: string;
   affiliateCode?: string;
 }
@@ -63,7 +72,7 @@ export interface RegisterLeadRequest {
  * is readable by key.
  * @return {Promise<string|null>} The code, or null if none could be reserved.
  */
-async function reserveCode(): Promise<string | null> {
+export async function reserveCode(): Promise<string | null> {
   const db = admin.database();
   for (let i = 0; i < MAX_CODE_ATTEMPTS; i++) {
     const code = String(
@@ -84,7 +93,7 @@ async function reserveCode(): Promise<string | null> {
  * @param {string} subscriptionNumber The reserved code.
  * @return {object} The block to merge into a new lead.
  */
-function botFieldDefaults(subscriptionNumber: string) {
+export function botFieldDefaults(subscriptionNumber: string) {
   return {
     subscriptionNumber,
     type: "free",
@@ -99,8 +108,29 @@ function botFieldDefaults(subscriptionNumber: string) {
 }
 
 export const registerLead = functions
-  .runWith({invoker: "public", timeoutSeconds: 60})
-  .https.onCall(async (data: RegisterLeadRequest) => {
+  // minInstances keeps one instance warm, so a registration never pays the
+  // ~3-3.5s cold-start penalty this function otherwise takes after being
+  // idle — measured directly (2026-09-27): idle call ~3.7s, warm calls
+  // ~0.3-0.7s. Both v1 and v2 register through this same function. Costs
+  // roughly $2-3/month at this function's default 256MB/400MHz —
+  // client-approved trade for registration always being fast.
+  .runWith({invoker: "public", timeoutSeconds: 60, minInstances: 1})
+  .https.onCall(async (data: RegisterLeadRequest, context) => {
+    // Public landing-page visitors are intentionally unauthenticated. If the
+    // caller has a dashboard session, however, only an admin may use this
+    // endpoint. This stops other dashboard roles bypassing the admin-only UI
+    // and invoking the same callable manually.
+    if (context.auth) {
+      const dashboardUser = await admin.database()
+        .ref(`dashboard_users/${context.auth.uid}`)
+        .once("value");
+      if (dashboardUser.val()?.role !== "admin") {
+        throw new functions.https.HttpsError(
+          "permission-denied", "Only admins can add leads from the dashboard."
+        );
+      }
+    }
+
     // ── Validate ──────────────────────────────────────────────────────────
     const versionKey = String(data?.versionKey || "").trim();
     const fullName = String(data?.fullName || "").trim();
@@ -118,9 +148,16 @@ export const registerLead = functions
         "invalid-argument", "That email address is not valid."
       );
     }
-    if (source !== "v1" && source !== "v2") {
+    if (source !== "v1" && source !== "v2" && source !== "offer") {
       throw new functions.https.HttpsError(
         "invalid-argument", "Unknown source."
+      );
+    }
+    const isOffer = source === "offer";
+    const plan = String(data?.plan || "").trim();
+    if (isOffer && !OFFER_PLANS.includes(plan)) {
+      throw new functions.https.HttpsError(
+        "invalid-argument", "A valid plan is required."
       );
     }
     if (fullName.length > 120 || email.length > 200 || phone.length > 40) {
@@ -167,7 +204,11 @@ export const registerLead = functions
       // into the bot, and
       // issuing a second one would orphan whatever progress that conversation
       // has made.
-      const subscriptionNumber = prev.subscriptionNumber || await reserveCode();
+      //
+      // An offer lead gets no number at registration: it is issued when the
+      // payment succeeds (and the bot is only opened to people who paid).
+      const subscriptionNumber = prev.subscriptionNumber ||
+        (isOffer ? null : await reserveCode());
 
       const update: Record<string, unknown> = {
         // Their own details, corrected to whatever they just typed.
@@ -184,6 +225,15 @@ export const registerLead = functions
 
       if (data.affiliateKey) update.affiliateKey = data.affiliateKey;
       if (data.affiliateCode) update.affiliateCode = data.affiliateCode;
+
+      // An offer lead who has not paid yet may change their mind about the
+      // plan; one who has paid keeps the plan they paid for.
+      const alreadyPaid = isOffer && prev.payment_status === "paid";
+      if (isOffer && !alreadyPaid) {
+        update.offerPlan = plan;
+        // A failed attempt becomes pending again once they retry.
+        update.payment_status = "pending";
+      }
 
       // Backfill for a lead that predates the field, so the NEXT lookup
       // finds it too.
@@ -203,11 +253,15 @@ export const registerLead = functions
         subscriptionNumber: subscriptionNumber || null,
         isReturning: true,
         step: Number(prev.step) || 1,
+        paymentStatus: isOffer ?
+          (alreadyPaid ? "paid" : "pending") :
+          null,
       };
     }
 
     // ── New registrant ────────────────────────────────────────────────────
-    const subscriptionNumber = await reserveCode();
+    // (An offer lead is numbered after payment, not here.)
+    const subscriptionNumber = isOffer ? null : await reserveCode();
 
     const lead: Record<string, unknown> = {
       versionKey,
@@ -223,6 +277,9 @@ export const registerLead = functions
       createdAt: new Date().toISOString(),
       registrationCount: 1,
       ...(subscriptionNumber ? botFieldDefaults(subscriptionNumber) : {}),
+      // Offer leads start unpaid. `step` stays 1 ("pending") until the server
+      // confirms the payment, which is what moves it to 2 ("completed").
+      ...(isOffer ? {offerPlan: plan, payment_status: "pending"} : {}),
     };
 
     if (data.affiliateKey) lead.affiliateKey = data.affiliateKey;
@@ -237,5 +294,6 @@ export const registerLead = functions
       subscriptionNumber: subscriptionNumber || null,
       isReturning: false,
       step: 1,
+      paymentStatus: isOffer ? "pending" : null,
     };
   });

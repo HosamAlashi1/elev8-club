@@ -52,11 +52,11 @@
 }
 
 .tab-btn:hover {
-  color: #CFAE58;
+  color: #9a2b3e;
 }
 
 .tab-btn.active {
-  color: #CFAE58 !important;
+  color: #9a2b3e !important;
 }
 
 /* Underline المتحرك */
@@ -68,7 +68,7 @@
   border-radius: 2px 2px 0 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
-  box-shadow: 0 2px 6px rgba(207, 174, 88, 0.3);
+  box-shadow: 0 2px 6px rgba(154, 43, 62, 0.3);
   left: 0;
   width: 0;
 }

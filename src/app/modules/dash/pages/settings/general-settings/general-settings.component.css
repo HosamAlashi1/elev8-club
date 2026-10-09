@@ -23,8 +23,8 @@
 }
 
 .form-control:focus {
-  border-color: #CFAE58;
-  box-shadow: 0 0 0 0.2rem rgba(207, 174, 88, 0.15);
+  border-color: #9a2b3e;
+  box-shadow: 0 0 0 0.2rem rgba(154, 43, 62, 0.15);
 }
 
 small.text-muted {

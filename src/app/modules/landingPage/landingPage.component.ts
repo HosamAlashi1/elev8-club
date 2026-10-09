@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AnimationOptions } from 'ngx-lottie';
@@ -7,6 +7,8 @@ import { LandingService } from '../services/landing.service';
 import { GtmService } from '../services/gtm.service';
 
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { CampaignGateService } from '../services/campaign-gate.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -21,7 +23,8 @@ import { filter } from 'rxjs/operators';
     ])
   ]
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent implements OnInit, OnDestroy {
+  private gateSub?: Subscription;
   currentYear: number;
   lottieConfig: LottieOverlayConfig = { visible: false, options: { path: '' } };
 
@@ -36,6 +39,7 @@ export class LandingPageComponent implements OnInit {
     private landingService: LandingService,
     private router: Router,
     private gtm: GtmService,
+    private gate: CampaignGateService,
   ) {
     this.lottieService.state$.subscribe(config => this.lottieConfig = config);
     this.currentYear = new Date().getFullYear();
@@ -46,6 +50,15 @@ export class LandingPageComponent implements OnInit {
 
     // Check initial route
     this.checkRoute(this.router.url);
+
+    // The route guard decides on arrival; this keeps the decision current while the page stays open: the
+    // deadline arriving moves a visitor to the closed page, and a date moved later in the dashboard brings
+    // the landing page back. The video-questions page is never closed behind — it belongs to whoever registered in time.
+    this.gateSub = this.gate.closed$.subscribe((closed) => {
+      const path = this.router.url.split('?')[0].replace(/^\/#?/, '');
+      if (closed && /^(home)?$/.test(path)) { this.router.navigate(['/closed']); }
+      if (!closed && /^closed/.test(path)) { this.router.navigate(['/home']); }
+    });
 
     // تتبّع الصفحات داخل اللاندينج فقط
     this.router.events
@@ -76,6 +89,10 @@ export class LandingPageComponent implements OnInit {
   private checkRoute(url: string): void {
     // Show live registrations only on home page
     this.showLiveRegistrations = url.includes('/home');
+  }
+
+  ngOnDestroy(): void {
+    this.gateSub?.unsubscribe();
   }
 
   ngAfterViewInit(): void {

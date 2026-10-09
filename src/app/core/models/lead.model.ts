@@ -59,9 +59,13 @@ export const V1_SALES_PIPELINE: SalesStatus[] = ['new', 'pre_meeting', 'post_mee
 /** The three steps a v2 lead walks: chase them through the bot, then follow up, then close. */
 export const V2_SALES_PIPELINE: SalesStatus[] = ['bot_followup', 'follow_up', 'closed'];
 
+/** The two steps an offer lead walks: follow up (from the moment they register — pending or paid), then close. */
+export const OFFER_SALES_PIPELINE: SalesStatus[] = ['follow_up', 'closed'];
+
 /** Which pipeline a lead belongs to. A missing `source` predates the field and reads as v1. */
 export function salesPipelineFor(source?: LeadSource): SalesStatus[] {
-  return (source || 'v1') === 'v2' ? V2_SALES_PIPELINE : V1_SALES_PIPELINE;
+  const s = source || 'v1';
+  return s === 'offer' ? OFFER_SALES_PIPELINE : s === 'v2' ? V2_SALES_PIPELINE : V1_SALES_PIPELINE;
 }
 
 /**
@@ -74,6 +78,9 @@ export function effectiveSalesStatus(lead: Pick<Lead, 'source' | 'sales_status'>
   const status = lead.sales_status;
   if ((lead.source || 'v1') === 'v2') {
     return !status || status === 'new' ? 'bot_followup' : status;
+  }
+  if (lead.source === 'offer') {
+    return !status || status === 'new' ? 'follow_up' : status;
   }
   return status || 'new';
 }
@@ -97,12 +104,26 @@ export const AFFILIATE_STATUS_LABELS: Record<AffiliateStatus, string> = {
  * introduced. Read a missing `source` as 'v1' everywhere. Run
  * scripts/backfill-lead-source.mjs once to stamp `source: 'v1'` on old records explicitly.
  */
-export type LeadSource = 'v1' | 'v2';
+export type LeadSource = 'v1' | 'v2' | 'offer';
 
 /** Dashboard display labels, per product decision: v1 = "Webinar", v2 = "Free community". */
 export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
   v1: 'Webinar',
-  v2: 'Free community'
+  v2: 'Free community',
+  offer: 'Offer'
+};
+
+/**
+ * Offer leads only: where the payment stands. Created `pending` at registration, moved to `paid` /
+ * `failed` by the server when the payment result arrives — never by the browser. A `paid` lead is also
+ * `step: 2` (the old "completed"); anything else stays `step: 1`.
+ */
+export type LeadPaymentStatus = 'pending' | 'paid' | 'failed';
+
+export const LEAD_PAYMENT_STATUS_LABELS: Record<LeadPaymentStatus, string> = {
+  pending: 'Pending',
+  paid: 'Paid',
+  failed: 'Failed'
 };
 
 /** v2-only: outcome of elev8-club-v2's qualification engine, computed right after step-2 answers are saved. */
@@ -260,6 +281,14 @@ export interface Lead {
   salesMemberKey?: string;
   sales_status?: SalesStatus;
   sales_package?: SalesPackage;
+  // ── Offer (elev8-club-v3) only ─────────────────────────────────────────────
+  /** The plan the lead picked on the offer page. Their bot type and subscription number follow it once they pay. */
+  offerPlan?: SalesPackage;
+  payment_status?: LeadPaymentStatus;
+  /** ISO time the server confirmed the payment. */
+  paidAt?: string;
+  /** ISO time the post-payment email went out; set once, so a repeated payment notice never sends it twice. */
+  paymentEmailSentAt?: string;
   // Affiliate tracking fields
   affiliate_status?: AffiliateStatus;
   renewal_status?: RenewalStatus;

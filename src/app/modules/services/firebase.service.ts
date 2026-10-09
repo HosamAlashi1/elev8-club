@@ -6,7 +6,7 @@ import { combineLatest, firstValueFrom, map, Observable, take } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import {
   Version, Affiliate, Lead, SalesMember, CallLog, DashboardUser,
-  SalesPackage, SalesStatus, RenewalCycle, RenewalStatus
+  SalesPackage, SalesStatus, RenewalCycle, RenewalStatus, LeadActivity
 } from '../../core/models';
 
 @Injectable({
@@ -19,6 +19,19 @@ export class FirebaseService {
     private fns: AngularFireFunctions,
     private auth: AngularFireAuth
   ) { }
+
+  /** Dashboard mutations that are exclusively administrative must not rely on hidden UI alone. */
+  private async requireAdminUser(): Promise<void> {
+    const user = await this.auth.currentUser;
+    if (!user) throw new Error('You must be signed in as an admin');
+
+    const profile = await firstValueFrom(
+      this.db.object<DashboardUser>(`dashboard_users/${user.uid}`).valueChanges().pipe(take(1))
+    );
+    if (profile?.role !== 'admin') {
+      throw new Error('Only admins can add or edit leads');
+    }
+  }
 
   /** =======================
    *  LIST – جلب قائمة كاملة
@@ -290,6 +303,144 @@ export class FirebaseService {
     return this.db.list('leads').push(lead).then(ref => {
       const leadKey = ref.key || '';
       return this.db.object(`leads/${leadKey}`).update({ key: leadKey }).then(() => leadKey);
+    });
+  }
+
+  /**
+   * Creates a lead from the authenticated admin dashboard.
+   *
+   * This deliberately does not use `registerLead`: that public registration function may
+   * update an existing registration and owns the v2 subscription/bot bootstrap. An admin
+   * v1 is an explicit dashboard insert, while v2 intentionally uses `registerLead` so its
+   * subscription code and bot defaults are identical to a website registration. The modal
+   * performs the duplicate check before calling this method.
+   */
+  public async addAdminLead(data: {
+    versionKey: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    source: 'v1' | 'v2';
+    country?: string;
+    city?: string;
+    affiliateKey?: string;
+    affiliateCode?: string;
+    salesMemberKey?: string;
+  }): Promise<{ leadKey: string; subscriptionNumber: string | null }> {
+    await this.requireAdminUser();
+
+    // v2 must go through the same backend path as its landing page. That path atomically
+    // reserves the subscription code and creates the bot-owned fields at their defaults.
+    if (data.source === 'v2') {
+      const result = await this.registerLead({
+        versionKey: data.versionKey,
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        source: data.source,
+        affiliateKey: data.affiliateKey,
+        affiliateCode: data.affiliateCode
+      });
+
+      if (!result.isReturning) {
+        const profileFields: Record<string, unknown> = {};
+        if (data.country) profileFields['country'] = data.country;
+        if (data.city) profileFields['city'] = data.city;
+        if (data.salesMemberKey) {
+          Object.assign(profileFields, {
+            salesMemberKey: data.salesMemberKey,
+            sales_status: 'bot_followup'
+          });
+        }
+        if (Object.keys(profileFields).length) {
+          await this.db.object(`leads/${result.leadKey}`).update(profileFields);
+        }
+        if (!data.salesMemberKey) {
+          await this.assignSalesMemberIfUnassigned(result.leadKey, data.versionKey);
+        }
+      }
+
+      return {
+        leadKey: result.leadKey,
+        subscriptionNumber: result.subscriptionNumber
+      };
+    }
+
+    const leadKey = this.db.createPushId();
+
+    const lead: Record<string, unknown> = {
+      key: leadKey,
+      versionKey: data.versionKey,
+      fullName: data.fullName,
+      email: data.email,
+      emailLower: data.email.toLowerCase(),
+      phone: data.phone,
+      step: 1,
+      consent: true,
+      source: data.source,
+      sales_status: 'new',
+      createdAt: new Date().toISOString(),
+      registrationCount: 1
+    };
+
+    if (data.country) lead['country'] = data.country;
+    if (data.city) lead['city'] = data.city;
+    if (data.affiliateKey) lead['affiliateKey'] = data.affiliateKey;
+    if (data.affiliateCode) lead['affiliateCode'] = data.affiliateCode;
+    if (data.salesMemberKey) lead['salesMemberKey'] = data.salesMemberKey;
+
+    await this.db.object(`leads/${leadKey}`).set(lead);
+
+    // Match landing-page registrations: every new lead should have an owner. If the admin did
+    // not choose one, use the existing round-robin assignment (which safely no-ops when there
+    // are no active members).
+    if (!data.salesMemberKey) {
+      await this.assignSalesMemberIfUnassigned(leadKey, data.versionKey);
+    }
+
+    return { leadKey, subscriptionNumber: null };
+  }
+
+  /**
+   * A sales member adding a lead. Sales cannot write to `leads` (the database rules allow only
+   * admins to create one), so this goes through the `addDashboardLead` function, which makes the
+   * lead theirs, refuses a duplicate instead of updating it, and shapes it like the admin path.
+   */
+  public async addSalesLead(data: {
+    versionKey: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    source: 'v1' | 'v2';
+    country?: string;
+    city?: string;
+  }): Promise<{ leadKey: string; subscriptionNumber: string | null }> {
+    const res: any = await firstValueFrom(this.fns.httpsCallable('addDashboardLead')(data));
+    if (!res?.leadKey) {
+      throw new Error('The lead could not be added');
+    }
+    return { leadKey: res.leadKey, subscriptionNumber: res.subscriptionNumber ?? null };
+  }
+
+  /** Updates only admin-editable identity and ownership fields, preserving funnel/bot state. */
+  public async updateAdminLead(
+    leadKey: string,
+    data: {
+      fullName: string;
+      email: string;
+      phone: string;
+      country: string | null;
+      city: string | null;
+      affiliateKey: string | null;
+      affiliateCode: string | null;
+      salesMemberKey: string | null;
+    }
+  ): Promise<void> {
+    await this.requireAdminUser();
+    await this.db.object(`leads/${leadKey}`).update({
+      ...data,
+      emailLower: data.email.toLowerCase(),
+      updatedAt: new Date().toISOString()
     });
   }
 
@@ -689,10 +840,18 @@ export class FirebaseService {
   // Lead Sales Status
   // ==========================================
 
+  /**
+   * `activity` is optional only so nothing breaks if a caller is ever added without it — every
+   * current call site passes it, because without `versionKey` + `changedBy` this status change
+   * would be invisible to the sales-performance page's activity timeline (see
+   * `getAllActivity`/`lead_activity`), the whole reason that timeline exists rather than
+   * showing calls alone.
+   */
   public updateLeadSalesStatus(
     leadKey: string,
     status: SalesStatus,
-    salesPackage?: SalesPackage
+    salesPackage?: SalesPackage,
+    activity?: { versionKey: string; fromStatus?: SalesStatus | null; changedBy: string }
   ): Promise<void> {
     if (status === 'closed' && !salesPackage) {
       return Promise.reject(new Error('A package is required when closing a lead'));
@@ -701,6 +860,17 @@ export class FirebaseService {
     return this.db.object(`leads/${leadKey}`).update({
       sales_status: status,
       sales_package: status === 'closed' ? salesPackage : null
+    }).then(() => {
+      if (!activity) return;
+      return this.logLeadActivity({
+        leadKey,
+        versionKey: activity.versionKey,
+        type: 'status_change',
+        fromStatus: activity.fromStatus ?? null,
+        toStatus: status,
+        package: status === 'closed' ? salesPackage : null,
+        createdBy: activity.changedBy
+      }).then(() => undefined);
     });
   }
 
@@ -911,6 +1081,62 @@ export class FirebaseService {
 
   public updateCallLog(leadKey: string, callKey: string, data: Partial<CallLog>): Promise<void> {
     return this.db.object(`lead_calls/${leadKey}/${callKey}`).update(data);
+  }
+
+  /**
+   * Every call log across every lead, flattened out of `lead_calls`'s per-lead nesting
+   * (`lead_calls/{leadKey}/{callKey}`). Used by the sales-performance page, which needs to
+   * group activity by `createdBy` rather than by lead — nothing else in the dashboard reads
+   * the whole node at once. `leadKey` is read off the stored record first (every log written by
+   * `addCallLog` already carries it) and only falls back to the outer key for anything older.
+   */
+  public getAllCallLogs(): Observable<CallLog[]> {
+    return this.db.object<Record<string, Record<string, CallLog>>>('lead_calls').valueChanges().pipe(
+      map(node => {
+        if (!node) return [];
+        const logs: CallLog[] = [];
+        Object.entries(node).forEach(([leadKey, calls]) => {
+          Object.entries(calls || {}).forEach(([callKey, log]) => {
+            logs.push({ ...log, key: callKey, leadKey: log.leadKey || leadKey });
+          });
+        });
+        return logs;
+      })
+    );
+  }
+
+  // ==========================================
+  // Lead Activity (pipeline status changes)
+  // ==========================================
+  //
+  // Parallel to lead_calls: a call is an attempt to reach someone, an activity is a change to
+  // where the lead sits in the pipeline (new -> pre_meeting -> ... -> closed). Kept as its own
+  // node rather than folded into CallLog because not every status change happens during a call
+  // (e.g. resetStatus), and conflating the two would make CallLog's `callType`/`status` fields
+  // (which describe a phone attempt) meaningless on rows that are not phone attempts.
+
+  public logLeadActivity(data: Omit<LeadActivity, 'key' | 'createdAt'>): Promise<string> {
+    const activityData = { ...data, createdAt: new Date().toISOString() };
+    return this.db.list(`lead_activity/${data.leadKey}`).push(activityData).then(ref => {
+      const key = ref.key || '';
+      return this.db.object(`lead_activity/${data.leadKey}/${key}`).update({ key }).then(() => key);
+    });
+  }
+
+  /** Every activity entry across every lead, flattened the same way `getAllCallLogs` is. */
+  public getAllActivity(): Observable<LeadActivity[]> {
+    return this.db.object<Record<string, Record<string, LeadActivity>>>('lead_activity').valueChanges().pipe(
+      map(node => {
+        if (!node) return [];
+        const entries: LeadActivity[] = [];
+        Object.entries(node).forEach(([leadKey, activities]) => {
+          Object.entries(activities || {}).forEach(([activityKey, entry]) => {
+            entries.push({ ...entry, key: activityKey, leadKey: entry.leadKey || leadKey });
+          });
+        });
+        return entries;
+      })
+    );
   }
 
 }

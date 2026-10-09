@@ -9,40 +9,40 @@
   <!-- Settings Form -->
   <div *ngIf="!isLoading" class="settings-form">
     <div class="row g-4">
-      <!-- Sender Email -->
-      <div class="col-md-6">
-        <label class="form-label">Sender Email <span class="text-danger">*</span></label>
-        <input 
-          type="email" 
-          class="form-control" 
-          [(ngModel)]="settings.sender_email">
-        <small class="text-muted d-block mt-1">Current: {{ settings.sender_email || 'Not set' }}</small>
+      <!-- Counter dates — one per landing page, each controls only its own timer -->
+      <div class="col-12">
+        <h6 class="mb-0">Countdown dates</h6>
+        <small class="text-muted">Each landing page counts down to its own date. Leave a field empty to hide that page's timer.</small>
       </div>
 
-      <!-- Sender Name -->
+      <!-- Webinar (v1) — key: start_counter_date -->
       <div class="col-md-6">
-        <label class="form-label">Sender Name <span class="text-danger">*</span></label>
-        <input 
-          type="text" 
-          class="form-control" 
-          [(ngModel)]="settings.sender_name">
-        <small class="text-muted d-block mt-1">Current: {{ settings.sender_name || 'Not set' }}</small>
-      </div>
-
-      <div class="col-md-12">
-        <div class="alert alert-info mb-0">
-          The SendGrid API key is stored securely in Firebase Secret Manager and is not exposed here.
-        </div>
-      </div>
-
-      <!-- Start Counter Date -->
-      <div class="col-md-6">
-        <label class="form-label">Start Counter Date</label>
+        <label class="form-label">Webinar (v1) Counter Date</label>
         <input 
           type="datetime-local" 
           class="form-control" 
           [(ngModel)]="startCounterDateLocal">
         <small class="text-muted d-block mt-1">Current: {{ startCounterDateLocal || 'Not set' }}</small>
+      </div>
+
+      <!-- Free community (v2) — key: v2_counter_date -->
+      <div class="col-md-6">
+        <label class="form-label">Free Community (v2) Counter Date</label>
+        <input 
+          type="datetime-local" 
+          class="form-control" 
+          [(ngModel)]="v2CounterDateLocal">
+        <small class="text-muted d-block mt-1">v2 landing countdown and the date shown in its sign-up popup. Current: {{ v2CounterDateLocal || 'Not set — timer hidden' }}</small>
+      </div>
+
+      <!-- Offer Counter Date (v3 landing — "the first batch closes in") -->
+      <div class="col-md-6">
+        <label class="form-label">Offer (v3) Counter Date</label>
+        <input 
+          type="datetime-local" 
+          class="form-control" 
+          [(ngModel)]="offerCounterDateLocal">
+        <small class="text-muted d-block mt-1">Offer landing countdown. Current: {{ offerCounterDateLocal || 'Not set — timer hidden' }}</small>
       </div>
 
       <!-- WhatsApp Link -->

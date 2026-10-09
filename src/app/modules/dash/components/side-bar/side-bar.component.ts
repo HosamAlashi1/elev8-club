@@ -43,6 +43,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { label: 'Affiliates', icon: 'users', route: '/dashboard/affiliates', roles: ['admin'] },
       { label: 'Leads', icon: 'user-check', route: '/dashboard/leads', roles: ['admin', 'sales'] },
       { label: 'My Leads', icon: 'briefcase', route: '/dashboard/my-leads', roles: ['admin', 'account_manager', 'affiliate'] },
+      { label: 'Sales Performance', icon: 'trending-up', route: '/dashboard/sales-performance', roles: ['admin'] },
       { label: 'Website Questions', icon: 'message-circle', route: '/dashboard/support-inbox', roles: ['admin'] },
       { label: 'Settings', icon: 'settings', route: '/dashboard/settings', roles: ['admin'] },
     ];

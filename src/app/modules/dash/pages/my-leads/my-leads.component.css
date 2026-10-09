@@ -2,13 +2,13 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(207, 174, 88, 0.15);
-  border: 1px solid rgba(207, 174, 88, 0.4);
+  background: rgba(154, 43, 62, 0.15);
+  border: 1px solid rgba(154, 43, 62, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #cfae58;
+  color: #9a2b3e;
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -20,7 +20,7 @@
   height: 30px;
   padding: 0 9px;
   border-radius: 999px;
-  background: rgba(207, 174, 88, 0.14);
-  color: #9a761d;
+  background: rgba(154, 43, 62, 0.14);
+  color: #762233;
   font-weight: 700;
 }

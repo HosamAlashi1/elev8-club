@@ -1,7 +1,7 @@
 /* Wrapper عام */
 .lead-wrapper {
   border-radius: 16px;
-  border: 1px solid rgba(228, 201, 138, 0.5);
+  border: 1px solid rgba(154, 43, 62, 0.5);
   background: linear-gradient(135deg, #ffffff 0%, #fdf8ed 100%);
   padding: 20px 22px;
 }
@@ -11,13 +11,13 @@
   width: 42px;
   height: 42px;
   border-radius: 999px;
-  background: rgba(228, 201, 138, 0.18);
-  border: 1px solid rgba(228, 201, 138, 0.6);
+  background: rgba(154, 43, 62, 0.18);
+  border: 1px solid rgba(154, 43, 62, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #cfae58;
+  color: #9a2b3e;
   font-size: 1.1rem;
 }
 
@@ -85,7 +85,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(228, 201, 138, 0.18);
+  background: rgba(154, 43, 62, 0.18);
   color: #b99338;
   font-size: 0.82rem;
   font-weight: 700;
@@ -101,8 +101,8 @@
 .code-pill {
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(228, 201, 138, 0.16);
-  color: #cfae58;
+  background: rgba(154, 43, 62, 0.16);
+  color: #9a2b3e;
   font-weight: 600;
   font-size: 0.85rem;
 }
@@ -242,7 +242,7 @@
 
 .stepper-step.step-done:not(:last-child)::after,
 .stepper-step.step-active:not(:last-child)::after {
-  background: #cfae58;
+  background: #9a2b3e;
 }
 
 .step-circle {
@@ -263,21 +263,21 @@
 }
 
 .stepper-step.step-done .step-circle {
-  background: #cfae58;
-  border-color: #cfae58;
+  background: #9a2b3e;
+  border-color: #9a2b3e;
   color: white;
 }
 
 .stepper-step.step-active .step-circle {
   background: white;
-  border-color: #cfae58;
-  color: #cfae58;
-  box-shadow: 0 0 0 4px rgba(207, 174, 88, 0.15);
+  border-color: #9a2b3e;
+  color: #9a2b3e;
+  box-shadow: 0 0 0 4px rgba(154, 43, 62, 0.15);
 }
 
 .stepper-step.clickable:hover .step-circle {
-  border-color: #cfae58;
-  color: #cfae58;
+  border-color: #9a2b3e;
+  color: #9a2b3e;
 }
 
 .step-label {
@@ -291,7 +291,7 @@
 
 .stepper-step.step-done .step-label,
 .stepper-step.step-active .step-label {
-  color: #cfae58;
+  color: #9a2b3e;
   font-weight: 600;
 }
 
@@ -309,7 +309,7 @@
 .sales-package-selector {
   margin-top: 18px;
   padding: 16px;
-  border: 1px solid rgba(207, 174, 88, 0.4);
+  border: 1px solid rgba(154, 43, 62, 0.4);
   border-radius: 12px;
   background: #fffdf7;
 }
@@ -325,7 +325,7 @@
   font-size: 0.8rem;
   font-weight: 700;
 }
-.sales-package-options button.active { border-color: #cfae58; background: rgba(207, 174, 88, 0.1); color: #9a761d; }
+.sales-package-options button.active { border-color: #9a2b3e; background: rgba(154, 43, 62, 0.1); color: #762233; }
 .sales-package-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
 /* ─── Call Log ──────────────────────────────────────── */
@@ -363,9 +363,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #cfae58;
+  background: #9a2b3e;
   border: 2px solid white;
-  box-shadow: 0 0 0 2px #cfae58;
+  box-shadow: 0 0 0 2px #9a2b3e;
   flex-shrink: 0;
   margin-top: 2px;
 }

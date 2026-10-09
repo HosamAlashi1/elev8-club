@@ -30,6 +30,7 @@ import { FaqSectionComponent } from './pages/home/sections/faq/faq-section/faq-s
 import { LeadsTickerComponent } from './pages/home/sections/leads-ticker/leads-ticker/leads-ticker.component';
 import { RegisterPopupComponent } from './pages/home/sections/register-popup/register-popup/register-popup.component';
 import { LiveRegistrationsComponent } from './pages/home/sections/live-registrations/live-registrations.component';
+import { ClosedComponent } from './pages/closed/closed.component';
 import { BigCtaSectionComponent } from './pages/home/sections/big-cta/big-cta-section/big-cta-section.component';
 import { ContactSectionComponent } from './pages/home/sections/contact/contact-section/contact-section.component';
 import { VideoQuestionsComponent } from './pages/video-questions/video-questions.component';
@@ -95,6 +96,7 @@ export function playerFactory() {
 @NgModule({
   declarations: [
     LandingPageComponent,
+    ClosedComponent,
     HomeComponent,
     FooterComponent,
     HeroSectionComponent,

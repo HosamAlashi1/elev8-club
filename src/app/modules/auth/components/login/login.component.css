@@ -1,56 +1,207 @@
-/* 🔘 خلفية صندوق تسجيل الدخول */
+:host {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  min-width: 0;
+}
+
 .bg-auth {
-  background-color: #ffffff;
-  border-radius: 16px;
-  color: #111827;
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #f1eee8;
+  background: transparent !important;
+  box-shadow: none;
+  animation: formEnter 800ms 100ms both;
+}
+
+.bg-auth::before {
+  content: none;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 64px;
+  color: #f1eee8;
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.auth-brand em { color: #d36e82; font-style: normal; }
+
+.brand-symbol {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #895265;
+  border-radius: 10px;
+  color: #f6f1eb;
+  background: #2c272c;
+  font-size: 14px;
+  letter-spacing: -.08em;
+}
+
+.auth-kicker {
+  margin-bottom: 12px;
+  color: #c67383;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .bg-auth h1 {
-  color: #111827;
-  font-weight: 700;
+  margin: 0 0 10px;
+  color: #f1eee8;
+  font-size: clamp(32px, 3vw, 42px);
+  font-weight: 650;
+  letter-spacing: -0.045em;
 }
 
-.bg-auth .text-muted {
-  color: #6b7280 !important;
+.auth-subtitle {
+  margin: 0 0 34px;
+  color: #a2a9aa;
+  font-size: 14px;
 }
+
+.bg-auth .form-group { margin-bottom: 20px !important; }
 
 .bg-auth .form-label {
-  color: #374151;
-  font-weight: 500;
+  margin-bottom: 8px;
+  color: #c6c9cc;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .bg-auth .form-control {
-  color: #111827;
-  background-color: #ffffff;
+  min-height: 54px;
+  border: 1px solid #3f494e;
+  border-radius: 8px;
+  color: #f1eee8;
+  background: #13191c;
+  box-shadow: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.bg-auth .form-control:-webkit-autofill,
+.bg-auth .form-control:-webkit-autofill:hover,
+.bg-auth .form-control:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f1eee8;
+  box-shadow: inset 0 0 0 1000px #13191c;
+  border-color: #485156;
+  transition: background-color 9999s ease-out;
+}
+
+.bg-auth .form-control:hover { border-color: #4a5056; }
+
+.bg-auth .form-control:focus {
+  border-color: #b3586b;
+  background: #111719;
+  box-shadow: 0 0 0 3px rgba(179, 88, 107, 0.14);
 }
 
 .bg-auth .form-control::placeholder {
-  color: #94a3b8;
+  color: #919c9f;
   opacity: 1;
 }
 
-.password-input-wrapper {
-  position: relative;
+.bg-auth .form-control.is-invalid { border-color: #bd4055; }
+.bg-auth .form-control.is-valid {
+  border-color: #596168;
+  background-image: none;
 }
 
-.password-input-wrapper .form-control {
-  padding-right: 3rem;
-}
+.password-input-wrapper { position: relative; }
+.password-input-wrapper .form-control { padding-right: 3rem; }
 
 .password-toggle {
   position: absolute;
+  z-index: 5;
   top: 50%;
-  right: 0.85rem;
+  right: 0.9rem;
+  padding: 0.25rem;
   transform: translateY(-50%);
   border: 0;
-  padding: 0.25rem;
+  color: #747c83;
   background: transparent;
-  color: #64748b;
   line-height: 1;
-  z-index: 5;
 }
 
 .password-toggle:hover,
-.password-toggle:focus {
-  color: #c59b32;
+.password-toggle:focus { color: #f1eee8; }
+
+.btn-custom {
+  min-height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 8px;
+  border: 1px solid #b34f64;
+  border-radius: 8px;
+  color: #fff;
+  background: #9b3a50;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+}
+
+.btn-custom:hover,
+.btn-custom:focus {
+  border-color: #d16d82;
+  color: #fff;
+  background: #b24a60;
+  box-shadow: 0 12px 28px rgba(111, 24, 40, 0.24);
+}
+
+.btn-custom i { transition: transform .2s ease; }
+.btn-custom:hover i { transform: translateX(4px); }
+
+.btn-custom:disabled {
+  border-color: #48242a;
+  color: #8b8586;
+  background: #48242a;
+}
+
+ngb-alert {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.auth-form-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #30383b;
+  color: #949fa3;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.auth-form-foot span {
+  width: 18px;
+  height: 1px;
+  background: #a04a5d;
+}
+
+@keyframes formEnter {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-auth { animation: none; }
+}
+
+@media (max-width: 520px) {
+  .auth-brand { margin-bottom: 62px; }
 }

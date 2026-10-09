@@ -46,7 +46,12 @@
                 </app-modern-select>
             </div>
 
-            <div data-aos="fade-left" data-aos-delay="500" class="lead-export">
+            <div data-aos="fade-left" data-aos-delay="500" class="lead-actions">
+                <button *ngIf="isAdmin || isSales" class="btn btn-custom d-flex align-items-center gap-2"
+                    (click)="addLead()" [disabled]="!currentVersion">
+                    <i class="fe fe-plus"></i>
+                    Add Lead
+                </button>
                 <button class="btn btn-custom d-flex align-items-center gap-2"
                     (click)="exportToExcel()" [disabled]="isExporting">
                     <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
@@ -54,6 +59,21 @@
                     {{ isExporting ? 'Exporting...' : 'Export Excel' }}
                 </button>
             </div>
+        </div>
+
+        <!-- Offer leads that registered but have not paid: someone should chase them. -->
+        <div class="payment-notice" role="status" *ngIf="unpaidOfferCount > 0" dir="rtl">
+            <span class="payment-notice__icon" aria-hidden="true"><i class="fe fe-clock"></i></span>
+            <div class="payment-notice__body">
+                <strong class="payment-notice__title">
+                    {{ unpaidOfferCount === 1 ? 'ليد واحد من العرض لم يدفع بعد' : unpaidOfferCount + ' ليدات من العرض لم يدفعوا بعد' }}
+                </strong>
+                <span class="payment-notice__text">سجّلوا بياناتهم لكن الدفع ما اكتمل (قيد الانتظار أو فشل). تابعهم قبل ما تبرد الفرصة.</span>
+            </div>
+            <span class="payment-notice__count" aria-hidden="true">{{ unpaidOfferCount }}</span>
+            <button type="button" class="payment-notice__link" (click)="showUnpaidOffers()">
+                اعرضهم <i class="fe fe-arrow-left"></i>
+            </button>
         </div>
 
         <!-- Actionable v2 accounts waiting for a manual verification decision. -->
@@ -91,6 +111,7 @@
                             <th class="w-10">Phone</th>
                             <th class="w-10">Location</th>
                             <th class="w-10">Source</th>
+                            <th class="w-10">Payment</th>
                             <th class="w-10" *ngIf="isAdmin">Affiliate</th>
                             <th class="w-10" *ngIf="isAdmin">Group</th>
                             <th class="w-10">Sales Member</th>
@@ -106,10 +127,10 @@
 
                      <tbody *ngIf="(isLoading$ | async)">
                         <tr *ngFor="let _ of [].constructor(size)">
-                            <!-- One skeleton cell per column: 13 with the two admin-only ones,
-                                 11 without. (The non-admin count was 9 before the Bot column
+                            <!-- One skeleton cell per column: 14 with the two admin-only ones,
+                                 12 without. (The non-admin count was 9 before the Bot column
                                  arrived, one short of the 10 columns actually rendered.) -->
-                            <td *ngFor="let __ of [].constructor(isAdmin ? 13 : 11)" style="padding:19.0198px 10px;">
+                            <td *ngFor="let __ of [].constructor(isAdmin ? 14 : 12)" style="padding:19.0198px 10px;">
                                 <ngx-skeleton-loader appearance="line" animation="progress-dark"
                                     [theme]="{ width: '60%', height: '24.01px', 'border-radius': '6px', margin: '0' }">
                                 </ngx-skeleton-loader>
@@ -146,6 +167,14 @@
                                 <span class="pill" [ngClass]="getSourceClass(lead.source)">
                                     {{ lead.sourceLabel }}
                                 </span>
+                            </td>
+
+                            <!-- Payment: only an Offer lead pays; the status is set by the server, never the browser. -->
+                            <td>
+                                <span *ngIf="lead.source === 'offer'; else noPayment" class="pill" [ngClass]="getPaymentClass(lead.payment_status)">
+                                    {{ paymentLabel(lead.payment_status) }}
+                                </span>
+                                <ng-template #noPayment><span class="text-muted">-</span></ng-template>
                             </td>
 
                             <!-- Affiliate (admin only) -->
@@ -215,7 +244,7 @@
                                     <span data-bs-toggle="dropdown" aria-expanded="false" role="button">
                                         <i class="fe fe-more-vertical black-menu fs-3"></i>
                                     </span>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu lead-actions-menu">
                                         <li>
                                             <a class="dropdown-item" (click)="view(lead)">
                                                 <i class="fe fe-eye me-2"></i>View Details
@@ -228,14 +257,20 @@
                                             </a>
                                         </li>
 
+                                        <li *ngIf="isAdmin">
+                                            <a class="dropdown-item" (click)="editLead(lead)">
+                                                <i class="fe fe-edit-2 me-2"></i>Edit Lead
+                                            </a>
+                                        </li>
+
                                         <li>
                                             <hr class="m-2" />
                                         </li>
 
                                         <li>
-                                            <a class="dropdown-item" (click)="delete(lead)">
-                                                <i class="fe fe-trash-2 text-danger me-2"></i>
-                                                <span class="text-danger">Delete</span>
+                                            <a class="dropdown-item lead-action-delete" (click)="delete(lead)">
+                                                <i class="fe fe-trash-2 me-2"></i>
+                                                <span>Delete</span>
                                             </a>
                                         </li>
                                     </ul>

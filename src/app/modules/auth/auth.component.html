@@ -1,60 +1,94 @@
-<div class="body d-flex align-items-center justify-content-center">
-  
-  <!--  عناصر متحركة متعلقة بالتداول -->
-  <div class="floating-trading-elements">
-    
-    <!-- شموع يابانية متحركة -->
-    <div class="candlestick candle-1"></div>
-    <div class="candlestick candle-2"></div>
-    <div class="candlestick candle-3"></div>
-    <div class="candlestick candle-4"></div>
-    
-    <!-- رموز العملات عائمة -->
-    <div class="floating-currency currency-1">$</div>
-    <div class="floating-currency currency-2">€</div>
-    <div class="floating-currency currency-3">¥</div>
-    
-    <!-- خطوط الرسم البياني -->
-    <div class="chart-line line-1"></div>
-    <div class="chart-line line-2"></div>
-    <div class="chart-line line-3"></div>
-    
-    <!-- نجوم لامعة صغيرة -->
-    <div class="twinkling-star star-small-1"></div>
-    <div class="twinkling-star star-small-2"></div>
-    <div class="twinkling-star star-small-3"></div>
-    <div class="twinkling-star star-small-4"></div>
-    <div class="twinkling-star star-small-5"></div>
-    
-    <!-- دوائر متموجة ناعمة -->
-    <div class="soft-circle circle-soft-1"></div>
-    <div class="soft-circle circle-soft-2"></div>
-    <div class="soft-circle circle-soft-3"></div>
-    
-    <!-- أسهم الاتجاه -->
-    <div class="trend-arrow arrow-up-1">↗</div>
-    <div class="trend-arrow arrow-up-2">↗</div>
-    <div class="trend-arrow arrow-down-1">↘</div>
-    
-    <!-- موجات السوق -->
-    <div class="market-wave wave-1"></div>
-    <div class="market-wave wave-2"></div>
-    
-  </div>
-
-  <div class="container position-relative z-2">
-    <div class="row">
-      <div class="col-12 col-md-6 order-md-2 d-flex align-items-center justify-content-center">
-        <div class="text-center mb-5 d-block d-md-none">
-          <ng-lottie [options]="options" width="250px" height="250px"></ng-lottie>
-        </div>
-        <div class="text-center d-none d-md-block">
-          <ng-lottie [options]="options" width="400px" height="400px"></ng-lottie>
-        </div>
-      </div>
-      <div class="col-12 offset-md-1 col-md-5 order-md-1">
-        <router-outlet></router-outlet>
-      </div>
+<main class="auth-shell" dir="ltr">
+  <section class="auth-layout">
+    <div class="auth-form-column">
+      <router-outlet></router-outlet>
     </div>
-  </div>
-</div>
+
+    <aside class="auth-art" aria-hidden="true">
+      <div class="art-topline">
+        <span class="art-edition">ELEV8 CLUB <span>/</span> PRIVATE WORKSPACE</span>
+        <span class="art-monogram">E8</span>
+      </div>
+      <div class="art-heading">
+        <span class="art-eyebrow">A HIGHER PERSPECTIVE</span>
+        <h2>See further.<br><span>Move forward.</span></h2>
+        <p>Your people. Your progress. All in view.</p>
+      </div>
+
+      <div class="art-scene">
+        <svg class="growth-sculpture" viewBox="0 0 720 500" fill="none" focusable="false">
+          <defs>
+            <linearGradient id="elev8-front" x1="0" y1="0" x2="0.9" y2="1">
+              <stop stop-color="#b15b6a"/><stop offset="1" stop-color="#652f3b"/>
+            </linearGradient>
+            <linearGradient id="elev8-side" x1="0" y1="0" x2="1" y2="0.8">
+              <stop stop-color="#5a3039"/><stop offset="1" stop-color="#2b2227"/>
+            </linearGradient>
+            <linearGradient id="elev8-cap" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#e3d9cf"/><stop offset="1" stop-color="#8d7c79"/>
+            </linearGradient>
+            <linearGradient id="elev8-cap-accent" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#e4a8b2"/><stop offset="1" stop-color="#ac5768"/>
+            </linearGradient>
+            <radialGradient id="elev8-floor">
+              <stop stop-color="#9d6268" stop-opacity=".18"/><stop offset="1" stop-color="#9d6268" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="365" cy="365" rx="345" ry="125" fill="url(#elev8-floor)"/>
+          <g stroke="#988b88" stroke-opacity=".12">
+            <path d="M0 343L510 88 M0 399L620 89 M0 455L720 95 M62 480L720 151 M174 480L720 207 M286 480L720 263"/>
+            <path d="M0 345L270 480 M0 289L382 480 M0 233L494 480 M0 177L606 480 M0 121L718 480"/>
+          </g>
+          <path d="M67 412L188 472 666 233 545 172Z" fill="#0d1011" fill-opacity=".38"/>
+            <g class="sculpture-column" style="--delay: -0s">
+              <path d="M64 325 l38 20 v65 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M102 345 l56 -28 v65 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M64 325 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap)" />
+              <path d="M64 325 l38 20 56 -28 M102 345 v65" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+            <g class="sculpture-column" style="--delay: -0.7s">
+              <path d="M141 276 l38 20 v95 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M179 296 l56 -28 v95 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M141 276 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap)" />
+              <path d="M141 276 l38 20 56 -28 M179 296 v95" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+            <g class="sculpture-column" style="--delay: -1.4s">
+              <path d="M218 227 l38 20 v125 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M256 247 l56 -28 v125 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M218 227 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap)" />
+              <path d="M218 227 l38 20 56 -28 M256 247 v125" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+            <g class="sculpture-column" style="--delay: -2.0999999999999996s">
+              <path d="M295 178 l38 20 v155 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M333 198 l56 -28 v155 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M295 178 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap)" />
+              <path d="M295 178 l38 20 56 -28 M333 198 v155" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+            <g class="sculpture-column" style="--delay: -2.8s">
+              <path d="M372 129 l38 20 v185 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M410 149 l56 -28 v185 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M372 129 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap)" />
+              <path d="M372 129 l38 20 56 -28 M410 149 v185" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+            <g class="sculpture-column" style="--delay: -3.5s">
+              <path d="M449 80 l38 20 v215 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M487 100 l56 -28 v215 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M449 80 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap)" />
+              <path d="M449 80 l38 20 56 -28 M487 100 v215" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+            <g class="sculpture-column" style="--delay: -4.199999999999999s">
+              <path d="M526 31 l38 20 v245 l-38 -20Z" fill="url(#elev8-front)" />
+              <path d="M564 51 l56 -28 v245 l-56 28Z" fill="url(#elev8-side)" />
+              <path d="M526 31 l56 -28 38 20 -56 28Z" fill="url(#elev8-cap-accent)" />
+              <path d="M526 31 l38 20 56 -28 M564 51 v245" fill="none" stroke="#d79b9e" stroke-opacity=".32" />
+            </g>
+        </svg>
+        <div class="art-caption"><span class="art-caption__line"></span> PROGRESS, BY DESIGN.</div>
+      </div>
+      <div class="art-footer">
+        <span>One place. Every next move.</span>
+        <span class="art-signature">Elev8<span>Club</span> <span class="art-arrow">↗</span></span>
+      </div>
+    </aside>
+  </section>
+</main>

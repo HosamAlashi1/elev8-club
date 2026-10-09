@@ -1,7 +1,8 @@
-<div class="bg-auth p-5 border rounded-4 shadow-sm">
-
-  <h1 class="display-4 text-center mb-3">Sign in</h1>
-  <p class="text-muted text-center mb-5">Please enter login information</p>
+<div class="bg-auth">
+  <div class="auth-brand"><span class="brand-symbol">E8</span><span>Elev8 <em>Club</em></span></div>
+  <div class="auth-kicker">Secure workspace</div>
+  <h1>Welcome back.</h1>
+  <p class="auth-subtitle">Sign in to your Elev8 Club workspace.</p>
 
   <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
 
@@ -15,9 +16,11 @@
 
     <!-- Email -->
     <div class="form-group mb-3">
-      <label class="form-label">E-mail :</label>
+      <label class="form-label" for="login-email">Email address</label>
       <input
+        id="login-email"
         type="email"
+        autocomplete="username"
         class="form-control"
         formControlName="email"
         placeholder="Enter your email"
@@ -30,9 +33,10 @@
 
     <!-- Password -->
     <div class="form-group mb-4">
-      <label class="form-label">Password :</label>
+      <label class="form-label" for="login-password">Password</label>
       <div class="password-input-wrapper">
         <input
+          id="login-password"
           [type]="showPassword ? 'text' : 'password'"
           class="form-control"
           formControlName="password"
@@ -62,9 +66,10 @@
       </ng-container>
 
       <ng-template #ready>
-        Sign in
+        <span>Sign in</span><i class="fe fe-arrow-right" aria-hidden="true"></i>
       </ng-template>
     </button>
 
   </form>
+  <div class="auth-form-foot"><span></span> AUTHORIZED ACCESS ONLY</div>
 </div>

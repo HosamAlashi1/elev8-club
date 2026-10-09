@@ -85,7 +85,7 @@ export class LineChartComponent implements OnInit, OnChanges {
           left: 0,
           blur: 4,
           opacity: 0.1,
-          color: '#E4C98A'
+          color: '#9a2b3e'
         },
         parentHeightOffset: 0
       },
@@ -120,7 +120,7 @@ export class LineChartComponent implements OnInit, OnChanges {
         labels: {
           rotate: 0,
           style: {
-            colors: '#64748b',
+            colors: '#8f969d',
             fontSize: '12px',
             fontWeight: 500
           }
@@ -131,7 +131,7 @@ export class LineChartComponent implements OnInit, OnChanges {
       yaxis: {
         labels: {
           style: {
-            colors: '#64748b',
+            colors: '#8f969d',
             fontSize: '12px',
             fontWeight: 500
           },
@@ -148,12 +148,12 @@ export class LineChartComponent implements OnInit, OnChanges {
         lineCap: 'round'
       },
 
-      colors: ['#E4C98A'],
+      colors: ['#9a2b3e'],
 
       fill: {
         type: 'gradient',
         gradient: {
-          shade: 'light',
+          shade: 'dark',
           shadeIntensity: 0.3,
           type: 'vertical',
           opacityFrom: 0.5,
@@ -165,8 +165,8 @@ export class LineChartComponent implements OnInit, OnChanges {
       markers: {
         size: 5,
         strokeWidth: 2,
-        strokeColors: '#ffffff',
-        colors: ['#E4C98A'],
+        strokeColors: '#15181b',
+        colors: ['#b13a4e'],
         hover: {
           size: 7,
           sizeOffset: 2
@@ -174,7 +174,7 @@ export class LineChartComponent implements OnInit, OnChanges {
       },
 
       tooltip: {
-        theme: 'light',
+        theme: 'dark',
         style: {
           fontSize: '13px',
           fontFamily: 'inherit'
@@ -189,7 +189,7 @@ export class LineChartComponent implements OnInit, OnChanges {
 
       grid: {
         strokeDashArray: 4,
-        borderColor: 'rgba(228,201,138,0.15)',
+        borderColor: 'rgba(143,150,157,0.14)',
         padding: {
           top: 10,
           bottom: 10,

@@ -229,7 +229,11 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
   private persistStatus(status: SalesStatus, salesPackage?: SalesPackage): void {
     if (!this.lead?.key) return;
     this.isSavingStatus = true;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage).then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, status, salesPackage, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead.sales_status = status;
       this.lead.sales_package = status === 'closed' ? salesPackage : undefined;
       this.showPackageSelector = false;
@@ -242,7 +246,11 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
 
   markNotInterested(): void {
     if (!this.lead?.key || !confirm('Mark as Not Interested?')) return;
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested').then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, 'not_interested', undefined, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead.sales_status = 'not_interested';
       this.lead.sales_package = undefined;
       this.toastr.showSuccess('Marked as Not Interested');
@@ -253,7 +261,11 @@ export class LeadSalesPanelComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.lead?.key) return;
     // Back to the FIRST step of this lead's own pipeline, which is not 'new' for a v2 lead.
     const first = salesPipelineFor(this.lead.source)[0];
-    this.firebaseService.updateLeadSalesStatus(this.lead.key, first).then(() => {
+    const fromStatus = this.lead.sales_status;
+    const changedBy = this.publicService.getCurrentUserUid() || '';
+    this.firebaseService.updateLeadSalesStatus(this.lead.key, first, undefined, {
+      versionKey: this.lead.versionKey, fromStatus, changedBy
+    }).then(() => {
       this.lead.sales_status = first;
       this.lead.sales_package = undefined;
       this.toastr.showSuccess('Status reset');

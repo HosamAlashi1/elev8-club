@@ -1,0 +1,135 @@
+<div class="page-container">
+
+    <button type="button" class="smd-back" (click)="goBack()">
+        <i class="fe fe-arrow-right"></i> Back to Sales Performance
+    </button>
+
+    <div *ngIf="isLoading" class="smd-loading">
+        <ngx-skeleton-loader count="1" [theme]="{ height: '120px', 'border-radius': '16px', 'margin-bottom': '18px' }"></ngx-skeleton-loader>
+        <ngx-skeleton-loader count="5" [theme]="{ height: '70px', 'border-radius': '12px', 'margin-bottom': '10px' }"></ngx-skeleton-loader>
+    </div>
+
+    <div *ngIf="!isLoading && notFound" class="smd-empty">
+        Sales member not found for the current version.
+    </div>
+
+    <ng-container *ngIf="!isLoading && !notFound && member as m">
+
+        <!-- ── Header ─────────────────────────────────────────── -->
+        <div class="smd-header">
+            <div class="smd-identity">
+                <div class="smd-avatar">{{ m.name.charAt(0).toUpperCase() }}</div>
+                <div>
+                    <h2 class="page-title smd-title">{{ m.name }}</h2>
+                    <div class="smd-email">{{ m.email }}</div>
+                </div>
+                <span class="pill" [ngClass]="m.isActive ? 'pill-success' : 'pill-muted'">
+                    {{ m.isActive ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+
+            <div class="smd-donut" *ngIf="donutChart">
+                <apx-chart [series]="donutChart.series" [chart]="donutChart.chart" [labels]="donutChart.labels"
+                    [colors]="donutChart.colors" [stroke]="donutChart.stroke" [dataLabels]="donutChart.dataLabels"
+                    [legend]="donutChart.legend" [tooltip]="donutChart.tooltip">
+                </apx-chart>
+            </div>
+        </div>
+
+        <!-- ── Filters ────────────────────────────────────────── -->
+        <div class="sp-filters">
+            <app-modern-select [(ngModel)]="selectedPeriod" [options]="periodOptions"
+                (selectionChange)="onFilterChange()" size="sm" [icon]="'fe fe-calendar'"
+                [minWidth]="'0'" [customWidth]="'170px'">
+            </app-modern-select>
+
+            <div class="sp-custom-range" *ngIf="selectedPeriod === 'custom'">
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="customStart" (change)="onFilterChange()">
+                <span>to</span>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="customEnd" (change)="onFilterChange()">
+            </div>
+
+            <app-modern-select [(ngModel)]="selectedCallType" [options]="callTypeOptions"
+                (selectionChange)="onFilterChange()" size="sm" [icon]="'fe fe-phone'"
+                [minWidth]="'0'" [customWidth]="'190px'">
+            </app-modern-select>
+
+            <app-modern-select [(ngModel)]="selectedCallStatus" [options]="callStatusOptions"
+                (selectionChange)="onFilterChange()" size="sm" [icon]="'fe fe-check-circle'"
+                [minWidth]="'0'" [customWidth]="'170px'">
+            </app-modern-select>
+        </div>
+
+        <!-- ── Stat strip ─────────────────────────────────────── -->
+        <div class="smd-stats">
+            <div class="smd-stat"><div class="smd-stat__value">{{ summary.total }}</div><div class="smd-stat__label">Calls</div></div>
+            <div class="smd-stat"><div class="smd-stat__value smd-stat__value--answered">{{ summary.answered }}</div><div class="smd-stat__label">Answered</div></div>
+            <div class="smd-stat"><div class="smd-stat__value smd-stat__value--no-answer">{{ summary.noAnswer }}</div><div class="smd-stat__label">No Answer</div></div>
+            <div class="smd-stat"><div class="smd-stat__value smd-stat__value--busy">{{ summary.busy }}</div><div class="smd-stat__label">Busy</div></div>
+            <div class="smd-stat"><div class="smd-stat__value">{{ summary.statusChanges }}</div><div class="smd-stat__label">Status Changes</div></div>
+            <div class="smd-stat"><div class="smd-stat__value">{{ assignedLeadsCount }}</div><div class="smd-stat__label">Assigned Leads</div></div>
+            <div class="smd-stat"><div class="smd-stat__value">{{ closedLeadsCount }}</div><div class="smd-stat__label">Closed</div></div>
+        </div>
+
+        <!-- ── Combined activity timeline ─────────────────────── -->
+        <div class="smd-timeline">
+            <div class="smd-timeline__empty" *ngIf="visibleTimeline.length === 0">
+                No activity for this filter.
+            </div>
+
+            <div class="smd-entry" *ngFor="let entry of visibleTimeline; trackBy: trackByKey">
+
+                <!-- Call entry -->
+                <ng-container *ngIf="entry.kind === 'call'">
+                    <span class="smd-entry__icon smd-entry__icon--call" [ngClass]="'smd-entry__icon--' + entry.status">
+                        <i class="fe fe-phone"></i>
+                    </span>
+                    <div class="smd-entry__body">
+                        <div class="smd-entry__top">
+                            <span class="smd-entry__lead">{{ entry.leadName }}</span>
+                            <span class="smd-entry__phone" dir="ltr">{{ entry.leadPhone }}</span>
+                            <a class="smd-entry__view" [routerLink]="['/dashboard/leads', entry.leadKey]">
+                                View Lead <i class="fe fe-external-link"></i>
+                            </a>
+                            <span class="smd-entry__time">{{ formatDateTime(entry.createdAt) }}</span>
+                        </div>
+                        <div class="smd-entry__bottom">
+                            <span>{{ callTypeLabels[entry.callType!] }}</span>
+                            <span class="smd-entry__result" [ngClass]="'smd-entry__result--' + entry.status">
+                                {{ callStatusLabels[entry.status!] }}
+                            </span>
+                            <span class="smd-entry__notes" *ngIf="entry.notes">— {{ entry.notes }}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <!-- Status-change entry -->
+                <ng-container *ngIf="entry.kind === 'status_change'">
+                    <span class="smd-entry__icon smd-entry__icon--status">
+                        <i class="fe fe-flag"></i>
+                    </span>
+                    <div class="smd-entry__body">
+                        <div class="smd-entry__top">
+                            <span class="smd-entry__lead">{{ entry.leadName }}</span>
+                            <span class="smd-entry__phone" dir="ltr">{{ entry.leadPhone }}</span>
+                            <a class="smd-entry__view" [routerLink]="['/dashboard/leads', entry.leadKey]">
+                                View Lead <i class="fe fe-external-link"></i>
+                            </a>
+                            <span class="smd-entry__time">{{ formatDateTime(entry.createdAt) }}</span>
+                        </div>
+                        <div class="smd-entry__bottom">
+                            <span class="smd-entry__status-change">
+                                Moved to <strong>{{ salesStatusLabels[entry.toStatus!] || entry.toStatus }}</strong>
+                                <ng-container *ngIf="entry.fromStatus"> (from {{ salesStatusLabels[entry.fromStatus] || entry.fromStatus }})</ng-container>
+                            </span>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <button type="button" class="smd-load-more" *ngIf="visibleTimeline.length < filteredTimelineLength()" (click)="loadMore()">
+                Load more
+            </button>
+        </div>
+    </ng-container>
+</div>

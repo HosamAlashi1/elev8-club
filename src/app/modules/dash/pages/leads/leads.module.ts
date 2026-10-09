@@ -12,6 +12,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { LeadDetailComponent } from './lead-detail/lead-detail.component';
 import { LeadSalesPanelComponent } from './lead-sales-panel/lead-sales-panel.component';
+import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { LeadSalesPanelComponent } from './lead-sales-panel/lead-sales-panel.com
     LeadsComponent,
     ViewLeadComponent,
     LeadDetailComponent,
-    LeadSalesPanelComponent
+    LeadSalesPanelComponent,
+    AddEditLeadComponent
   ],
   imports: [
     CommonModule,

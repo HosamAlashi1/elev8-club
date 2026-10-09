@@ -25,7 +25,8 @@ import {
   UserCheck,
   Briefcase,
   MessageCircle,
-  Bell
+  Bell,
+  TrendingUp
 } from 'lucide-angular';
 import { HeaderComponent } from './components/header/header.component';
 import { PublicSharedModule } from '../shared/public-shared.module';
@@ -63,7 +64,8 @@ import { PublicSharedModule } from '../shared/public-shared.module';
       UserCheck,
       Briefcase,
       MessageCircle,
-      Bell
+      Bell,
+      TrendingUp
     })
   ],
   providers: [

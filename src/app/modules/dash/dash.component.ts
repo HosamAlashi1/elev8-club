@@ -51,6 +51,7 @@ export class DashComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.supportChat.stopAdminMonitoring();
+    document.body.classList.remove('dashboard-theme');
   }
 
   prepareRoute(outlet: RouterOutlet) {
@@ -67,5 +68,6 @@ export class DashComponent implements OnInit, OnDestroy {
     htmlElement.dir = 'ltr';
     htmlElement.lang = 'en';
     bodyElement.classList.remove('rtl-mode', 'arabic-font');
+    bodyElement.classList.add('dashboard-theme');
   }
 }

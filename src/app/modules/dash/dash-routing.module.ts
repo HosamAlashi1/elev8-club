@@ -64,6 +64,14 @@ const routes: Routes = [
           import('./pages/my-leads/my-leads.module').then((m) => m.MyLeadsModule),
         title: 'My Leads | Elev8 Club',
       },
+      {
+        path: 'sales-performance',
+        canActivate: [RoleGuard],
+        data: { animation: 'salesPerformancePage', roles: ['admin'] },
+        loadChildren: () =>
+          import('./pages/sales-performance/sales-performance.module').then((m) => m.SalesPerformanceModule),
+        title: 'Sales Performance | Elev8 Club',
+      },
       { path: '', redirectTo: '', pathMatch: 'full' },
       { path: '**', redirectTo: '' },
     ],

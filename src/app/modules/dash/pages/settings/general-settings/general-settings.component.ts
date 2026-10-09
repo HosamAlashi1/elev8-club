@@ -7,7 +7,12 @@ interface GeneralSettings {
   id?: string;
   sender_email: string;
   sender_name: string;
+  /** Webinar (v1) landing's countdown. */
   start_counter_date: number;
+  /** Free community (v2) landing's countdown. */
+  v2_counter_date: number;
+  /** v3 (offer) landing's countdown — "the first batch closes in". Separate from v1/v2's date. */
+  offer_counter_date: number;
   whatsapp_link: string;
 }
 
@@ -24,6 +29,8 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
     sender_email: '',
     sender_name: '',
     start_counter_date: 0,
+    v2_counter_date: 0,
+    offer_counter_date: 0,
     whatsapp_link: ''
   };
   
@@ -32,6 +39,8 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
   
   // For datetime-local input
   startCounterDateLocal = '';
+  v2CounterDateLocal = '';
+  offerCounterDateLocal = '';
 
   constructor(
     private firebaseService: FirebaseService,
@@ -60,6 +69,8 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
               sender_email: settings.sender_email || '',
               sender_name: settings.sender_name || '',
               start_counter_date: this.parseDate(settings.start_counter_date),
+              v2_counter_date: this.parseDate(settings.v2_counter_date),
+              offer_counter_date: this.parseDate(settings.offer_counter_date),
               whatsapp_link: settings.whatsapp_link || ''
             };
 
@@ -68,6 +79,12 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
               this.startCounterDateLocal =
                 this.timestampToDatetimeLocal(this.settings.start_counter_date);
             }
+            this.v2CounterDateLocal = this.settings.v2_counter_date
+              ? this.timestampToDatetimeLocal(this.settings.v2_counter_date)
+              : '';
+            this.offerCounterDateLocal = this.settings.offer_counter_date
+              ? this.timestampToDatetimeLocal(this.settings.offer_counter_date)
+              : '';
           } else {
             this.toastr.warning('Settings not found');
           }
@@ -98,25 +115,26 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
   }
 
   saveSettings(): void {
-    // Validation
-    if (!this.settings.sender_email || !this.settings.sender_name) {
-      this.toastr.warning('Sender Email and Sender Name are required');
-      return;
-    }
-
     // Convert datetime-local to timestamp
     if (this.startCounterDateLocal) {
       this.settings.start_counter_date =
         this.datetimeLocalToTimestamp(this.startCounterDateLocal);
     }
+    // Cleared field → 0, which the v2 / offer landings read as "no countdown" and hide their timer.
+    this.settings.v2_counter_date = this.v2CounterDateLocal
+      ? this.datetimeLocalToTimestamp(this.v2CounterDateLocal)
+      : 0;
+    this.settings.offer_counter_date = this.offerCounterDateLocal
+      ? this.datetimeLocalToTimestamp(this.offerCounterDateLocal)
+      : 0;
 
     this.isSaving = true;
     
-    // Update the entire settings object
+    // Only the fields shown here are written: the sender email / name saved earlier stay as they are (the bulk-email function still reads them).
     const updateData = {
-      sender_email: this.settings.sender_email,
-      sender_name: this.settings.sender_name,
       start_counter_date: this.settings.start_counter_date || 0,
+      v2_counter_date: this.settings.v2_counter_date || 0,
+      offer_counter_date: this.settings.offer_counter_date || 0,
       whatsapp_link: this.settings.whatsapp_link || ''
     };
     

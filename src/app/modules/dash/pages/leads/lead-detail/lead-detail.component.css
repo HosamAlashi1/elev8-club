@@ -30,17 +30,17 @@
 
 .ld-avatar {
   width: 52px; height: 52px; border-radius: 50%;
-  background: rgba(207,174,88,0.15);
-  border: 2px solid rgba(207,174,88,0.4);
+  background: rgba(154, 43, 62,0.15);
+  border: 2px solid rgba(154, 43, 62,0.4);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; color: #cfae58; font-size: 1.25rem; flex-shrink: 0;
+  font-weight: 800; color: #9a2b3e; font-size: 1.25rem; flex-shrink: 0;
 }
 
 .ld-name { font-size: 1.25rem; font-weight: 800; color: #1a1a2e; margin: 0 0 3px; }
 
 .ld-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.82rem; color: #9ca3af; }
 .ld-dot { color: #d1d5db; }
-.ld-sales-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(207,174,88,0.1); color: #b8962e; border-radius: 20px; padding: 2px 9px; font-size: 0.75rem; font-weight: 600; }
+.ld-sales-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(154, 43, 62,0.1); color: #762233; border-radius: 20px; padding: 2px 9px; font-size: 0.75rem; font-weight: 600; }
 
 .ld-header-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 
@@ -85,7 +85,7 @@
 /* ── Q&A ─────────────────────────────────────────── */
 .ld-qa { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
 .ld-qa:last-child { margin-bottom: 0; }
-.ld-qa-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(207,174,88,0.15); color: #cfae58; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.ld-qa-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(154, 43, 62,0.15); color: #9a2b3e; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
 .ld-qa-q { font-size: 0.76rem; color: #9ca3af; margin-bottom: 2px; }
 .ld-qa-a { font-size: 0.87rem; color: #374151; font-weight: 500; }
 
@@ -133,21 +133,21 @@
 }
 
 .ld-step--done .ld-step-node {
-  background: #cfae58;
-  border-color: #cfae58;
+  background: #9a2b3e;
+  border-color: #9a2b3e;
   color: white;
 }
 
 .ld-step--active .ld-step-node {
   background: white;
-  border-color: #cfae58;
-  color: #cfae58;
-  box-shadow: 0 0 0 4px rgba(207,174,88,0.15);
+  border-color: #9a2b3e;
+  color: #9a2b3e;
+  box-shadow: 0 0 0 4px rgba(154, 43, 62,0.15);
 }
 
 .ld-step:hover .ld-step-node {
-  border-color: #cfae58;
-  color: #cfae58;
+  border-color: #9a2b3e;
+  color: #9a2b3e;
   transform: scale(1.08);
 }
 
@@ -163,7 +163,7 @@
 
 .ld-step--done .ld-step-connector,
 .ld-step--done + .ld-step .ld-step-connector {
-  background: #cfae58;
+  background: #9a2b3e;
 }
 
 .ld-step-label {
@@ -174,13 +174,13 @@
   text-align: center;
 }
 
-.ld-step--active .ld-step-label { color: #cfae58; }
+.ld-step--active .ld-step-label { color: #9a2b3e; }
 .ld-step--done .ld-step-label { color: #374151; }
 
 .ld-package-selector {
   margin-top: 18px;
   padding: 16px;
-  border: 1px solid rgba(207, 174, 88, 0.4);
+  border: 1px solid rgba(154, 43, 62, 0.4);
   border-radius: 12px;
   background: #fffdf7;
 }
@@ -196,7 +196,7 @@
   font-size: 0.8rem;
   font-weight: 700;
 }
-.ld-package-options button.active { border-color: #cfae58; background: rgba(207, 174, 88, 0.1); color: #9a761d; }
+.ld-package-options button.active { border-color: #9a2b3e; background: rgba(154, 43, 62, 0.1); color: #762233; }
 .ld-package-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 .ld-package-cancel,
 .ld-package-save { padding: 7px 13px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; }
@@ -218,8 +218,8 @@
 .ld-calls-count {
   display: inline-flex; align-items: center; justify-content: center;
   width: 22px; height: 22px;
-  background: rgba(207,174,88,0.15);
-  color: #cfae58;
+  background: rgba(154, 43, 62,0.15);
+  color: #9a2b3e;
   border-radius: 50%;
   font-size: 0.72rem;
   font-weight: 700;
@@ -228,12 +228,12 @@
 
 .ld-add-call-btn {
   display: flex; align-items: center; gap: 6px;
-  background: linear-gradient(135deg, #cfae58, #b8962e);
+  background: linear-gradient(135deg, #9a2b3e, #762233);
   color: white; border: none; border-radius: 8px;
   padding: 8px 16px; font-size: 0.82rem; font-weight: 600;
   transition: all 0.2s; cursor: pointer;
 }
-.ld-add-call-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(207,174,88,0.35); }
+.ld-add-call-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(154, 43, 62,0.35); }
 
 /* ── Call Form ───────────────────────────────────── */
 .ld-call-form {
@@ -262,8 +262,8 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .ld-input:focus, .ld-select:focus {
-  border-color: #cfae58;
-  box-shadow: 0 0 0 3px rgba(207,174,88,0.12);
+  border-color: #9a2b3e;
+  box-shadow: 0 0 0 3px rgba(154, 43, 62,0.12);
   outline: none;
 }
 

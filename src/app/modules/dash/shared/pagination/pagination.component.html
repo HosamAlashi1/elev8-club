@@ -1,4 +1,4 @@
-<nav class="m-3" aria-label="Page navigation" *ngIf="totalRecords > size">
+<nav class="pagination-nav" aria-label="Page navigation" *ngIf="totalRecords > size">
   <ul class="pagination" 
       [class.disabled]="disabled || (isLoading$ | async)">
 

@@ -57,7 +57,7 @@
       ],
       "$leadId": {
         ".read": true,
-        ".write": "auth != null || !data.exists() && newData.exists() && newData.child('versionKey').isString() && newData.child('fullName').isString() && newData.child('email').isString() && newData.child('phone').isString() && newData.child('step').val() == 1 || data.exists() && newData.exists() && newData.child('versionKey').val() == data.child('versionKey').val() && newData.child('fullName').val() == data.child('fullName').val() && newData.child('email').val() == data.child('email').val() && newData.child('phone').val() == data.child('phone').val() && newData.child('createdAt').val() == data.child('createdAt').val()"
+        ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin' || data.exists() && newData.exists() && newData.child('versionKey').val() == data.child('versionKey').val() && newData.child('fullName').val() == data.child('fullName').val() && newData.child('email').val() == data.child('email').val() && newData.child('phone').val() == data.child('phone').val() && newData.child('createdAt').val() == data.child('createdAt').val()"
       }
     },
     "dashboard_users": {
@@ -77,6 +77,10 @@
       }
     },
     "lead_calls": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "lead_activity": {
       ".read": "auth != null",
       ".write": "auth != null"
     },

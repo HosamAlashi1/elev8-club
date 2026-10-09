@@ -1,7 +1,7 @@
 /* Wrapper العام داخل المودال */
 .affiliate-wrapper {
   border-radius: 16px;
-  border: 1px solid rgba(228, 201, 138, 0.5);
+  border: 1px solid rgba(154, 43, 62, 0.5);
   background: linear-gradient(135deg, #ffffff 0%, #fdf8ed 100%);
   padding: 20px 22px;
 }
@@ -20,13 +20,13 @@
   width: 42px;
   height: 42px;
   border-radius: 999px;
-  background: rgba(228, 201, 138, 0.18);
-  border: 1px solid rgba(228, 201, 138, 0.6);
+  background: rgba(154, 43, 62, 0.18);
+  border: 1px solid rgba(154, 43, 62, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #cfae58;
+  color: #9a2b3e;
   font-size: 1.1rem;
 }
 
@@ -64,8 +64,8 @@
 .code-pill {
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(228, 201, 138, 0.16);
-  color: #cfae58;
+  background: rgba(154, 43, 62, 0.16);
+  color: #9a2b3e;
   font-weight: 600;
   font-size: 0.85rem;
 }
@@ -91,7 +91,7 @@
 .btn-copy-link {
   border-radius: 10px;
   border: none;
-  background: #cfae58;
+  background: #9a2b3e;
   color: #fff;
   font-size: 0.9rem;
   font-weight: 500;
@@ -101,7 +101,7 @@
   gap: 4px;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s;
-  box-shadow: 0 6px 14px rgba(207, 174, 88, 0.4);
+  box-shadow: 0 6px 14px rgba(154, 43, 62, 0.4);
 }
 
 .btn-copy-link:hover {
@@ -111,7 +111,7 @@
 
 .btn-copy-link:active {
   transform: translateY(0);
-  box-shadow: 0 3px 8px rgba(207, 174, 88, 0.5) inset;
+  box-shadow: 0 3px 8px rgba(154, 43, 62, 0.5) inset;
 }
 
 /* Copied state */

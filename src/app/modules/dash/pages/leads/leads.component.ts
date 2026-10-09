@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FirebaseService } from '../../../services/firebase.service';
 import {
   Version, Lead, Affiliate, SALES_STATUS_LABELS, SALES_PACKAGE_LABELS, SalesStatus, SalesMember,
-  LeadSource, LEAD_SOURCE_LABELS, effectiveSalesStatus,
+  LeadSource, LEAD_SOURCE_LABELS, LEAD_PAYMENT_STATUS_LABELS, LeadPaymentStatus, effectiveSalesStatus,
   AccountVerificationStatus, ACCOUNT_VERIFICATION_LABELS, BOT_TOTAL_STEPS
 } from '../../../../core/models';
 import { ToastrsService } from '../../../services/toater.service';
@@ -14,6 +14,7 @@ import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { DeleteComponent } from '../../shared/delete/delete.component';
 import { PublicService } from 'src/app/modules/services/public.service';
 import { ExcelExportService } from '../../../services/excel-export.service';
+import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
 
 interface LeadWithAffiliate extends Lead {
   affiliateName?: string;
@@ -72,6 +73,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
     { value: '', label: 'All Sources' },
     { value: 'v1', label: LEAD_SOURCE_LABELS.v1 },
     { value: 'v2', label: LEAD_SOURCE_LABELS.v2 },
+    { value: 'offer', label: LEAD_SOURCE_LABELS.offer },
   ];
 
   /**
@@ -432,6 +434,25 @@ export class LeadsComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.lead = lead;
   }
 
+  addLead(): void {
+    if (!(this.isAdmin || this.isSales) || !this.currentVersion) return;
+    const modalRef = this.modalService.open(AddEditLeadComponent, { centered: true, size: 'lg' });
+    modalRef.componentInstance.currentVersion = this.currentVersion;
+    modalRef.componentInstance.affiliates = this.affiliates;
+    modalRef.componentInstance.salesMembers = this.salesMembers;
+    modalRef.componentInstance.existingLeads = this.allLeads;
+  }
+
+  editLead(lead: LeadWithAffiliate): void {
+    if (!this.isAdmin) return;
+    const modalRef = this.modalService.open(AddEditLeadComponent, { centered: true, size: 'lg' });
+    modalRef.componentInstance.lead = lead;
+    modalRef.componentInstance.currentVersion = this.currentVersion;
+    modalRef.componentInstance.affiliates = this.affiliates;
+    modalRef.componentInstance.salesMembers = this.salesMembers;
+    modalRef.componentInstance.existingLeads = this.allLeads;
+  }
+
   salesPanelLead: LeadWithAffiliate | null = null;
 
   openSalesPanel(lead: LeadWithAffiliate): void {
@@ -536,7 +557,29 @@ export class LeadsComponent implements OnInit, OnDestroy {
   }
 
   getSourceClass(source?: string): string {
-    return (source || 'v1') === 'v2' ? 'pill-primary' : 'pill-secondary';
+    const s = source || 'v1';
+    return s === 'offer' ? 'pill-offer' : s === 'v2' ? 'pill-primary' : 'pill-secondary';
+  }
+
+  getPaymentClass(status?: LeadPaymentStatus): string {
+    return status === 'paid' ? 'pill-success' : status === 'failed' ? 'pill-danger' : 'pill-warning';
+  }
+
+  /** A lead with no status yet reads as pending, which is what registering creates. */
+  paymentLabel(status?: LeadPaymentStatus): string {
+    return LEAD_PAYMENT_STATUS_LABELS[status || 'pending'];
+  }
+
+  /** Offer leads that registered and are not paid (pending or failed) — the ones sales should follow up. */
+  get unpaidOfferCount(): number {
+    return this.allLeads.filter(lead => lead.source === 'offer' && lead.payment_status !== 'paid').length;
+  }
+
+  /** Narrow the table to the Offer source, clearing a search that could hide them. */
+  showUnpaidOffers(): void {
+    this.searchText = '';
+    this.selectedSource = 'offer';
+    this.applyFilters();
   }
 
   getCreatedDate(timestamp: string): string {

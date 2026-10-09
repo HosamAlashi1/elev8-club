@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #cfae58, #b8962e);
+  background: linear-gradient(135deg, #9a2b3e, #762233);
   color: white;
   border: none;
   border-radius: 10px;
@@ -25,12 +25,12 @@
   font-size: 0.88rem;
   font-weight: 600;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(207,174,88,0.3);
+  box-shadow: 0 2px 8px rgba(154, 43, 62,0.3);
 }
 
 .sm-btn-add:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(207,174,88,0.4);
+  box-shadow: 0 4px 14px rgba(154, 43, 62,0.4);
   color: white;
 }
 
@@ -85,8 +85,8 @@
 }
 
 .sm-input:focus {
-  border-color: #cfae58;
-  box-shadow: 0 0 0 3px rgba(207,174,88,0.12);
+  border-color: #9a2b3e;
+  box-shadow: 0 0 0 3px rgba(154, 43, 62,0.12);
   outline: none;
 }
 
@@ -234,8 +234,8 @@
 }
 
 .sm-member-card--editing {
-  border-color: #cfae58;
-  box-shadow: 0 0 0 3px rgba(207,174,88,0.12);
+  border-color: #9a2b3e;
+  box-shadow: 0 0 0 3px rgba(154, 43, 62,0.12);
 }
 
 .sm-card-row {
@@ -249,13 +249,13 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: rgba(207,174,88,0.15);
-  border: 1.5px solid rgba(207,174,88,0.4);
+  background: rgba(154, 43, 62,0.15);
+  border: 1.5px solid rgba(154, 43, 62,0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  color: #cfae58;
+  color: #9a2b3e;
   font-size: 1rem;
   flex-shrink: 0;
   transition: all 0.2s;
@@ -336,9 +336,9 @@
 }
 
 .sm-action-btn--edit:hover {
-  border-color: #cfae58;
-  color: #cfae58;
-  background: rgba(207,174,88,0.08);
+  border-color: #9a2b3e;
+  color: #9a2b3e;
+  background: rgba(154, 43, 62,0.08);
 }
 
 .sm-action-btn--toggle {

@@ -91,9 +91,9 @@
       </div>
 
       <!-- Questionnaire Card -->
-      <div class="ld-card" *ngIf="getAnswers().length > 0">
+      <div class="ld-card" *ngIf="questionnaireAnswers.length > 0">
         <div class="ld-card-title"><i class="fe fe-list me-2"></i>Questionnaire</div>
-        <div class="ld-qa" *ngFor="let a of getAnswers(); let i = index">
+        <div class="ld-qa" *ngFor="let a of questionnaireAnswers; let i = index; trackBy: trackByAnswer">
           <div class="ld-qa-num">{{ i + 1 }}</div>
           <div>
             <div class="ld-qa-q">{{ a.label }}</div>
@@ -119,7 +119,7 @@
         <div *ngIf="lead.sales_status !== 'not_interested'">
           <div class="ld-stepper">
             <div class="ld-step"
-              *ngFor="let step of salesSteps; let last = last"
+              *ngFor="let step of salesSteps; let last = last; trackBy: trackBySalesStep"
               [class.ld-step--done]="getStepState(step.key) === 'done'"
               [class.ld-step--active]="getStepState(step.key) === 'active'"
               [class.ld-step--pending]="getStepState(step.key) === 'pending'"
@@ -213,7 +213,7 @@
         </div>
 
         <div class="ld-timeline" *ngIf="!isLoadingLogs && callLogs.length > 0">
-          <div class="ld-timeline-item" *ngFor="let log of callLogs">
+          <div class="ld-timeline-item" *ngFor="let log of callLogs; trackBy: trackByCallLog">
             <div class="ld-tl-dot" [ngClass]="'ld-tl-dot--' + log.status"></div>
             <div class="ld-tl-body">
               <div class="ld-tl-top">

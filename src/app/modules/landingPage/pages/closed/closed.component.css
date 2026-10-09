@@ -1,0 +1,54 @@
+/*
+  "Registration is closed" — Figma "Closed": 420:1242 on the 1728 × 952 canvas, 420:1462 on a 393 × 852 phone.
+  Both are one fixed stage, centred in the viewport, with every piece at the design's coordinates:
+    desktop — glow 1068 × 362 at y 165, lettering 711 wide at y 301, headline at y 340, the stack at y 422 (530 wide, 24 apart)
+    phone   — glow 716 × 242 at y 74, lettering 477 wide at y 165, headline at y 193 (290 wide), the stack at y 302 (344 wide)
+*/
+:host { display: block; background: #000; }
+
+.cs-page { position: relative; display: grid; place-items: center; min-height: 100vh; overflow: hidden; color: #fff; font-family: "IBM Plex Sans Arabic", Tajawal, sans-serif; }
+.cs-stage { position: relative; width: 393px; height: 852px; max-width: 100%; text-align: center; }
+
+/* nodes 420:1245 / 420:1246 — the standard three-layer glow, in red: layers at 60 / 80 / 100%, each narrower than the last, all bottom-aligned and blurred. */
+.cs-glow { position: absolute; left: 50%; top: 74px; width: 716px; height: 242.47px; margin-left: -358px; pointer-events: none; }
+.cs-glow i { position: absolute; bottom: 0; background: radial-gradient(52.82% 104.1% at 50% 100%, #ff383c, rgb(255 56 60 / 0)); filter: blur(30px); }
+.cs-glow i:nth-child(1) { left: 0; width: 100%; height: 100%; opacity: 0.6; }
+.cs-glow i:nth-child(2) { left: 13.665%; width: 72.669%; height: 72.679%; opacity: 0.8; }
+.cs-glow i:nth-child(3) { left: 28.033%; width: 43.934%; height: 43.899%; }
+
+/* node 420:1419 / 420:1470 — overlay lettering (mix-blend-mode: overlay): nothing around it may carry a transform, z-index or isolation. */
+.cs-lettering { position: absolute; left: 50%; max-width: none; mix-blend-mode: overlay; pointer-events: none; }
+.cs-lettering--desktop { display: none; }
+.cs-lettering--mobile { top: 164.86px; width: 476.66px; height: auto; margin-left: -238px; }
+
+.cs-title { position: absolute; left: 50%; top: 193px; width: 290px; margin: 0; translate: -50% 0; font-size: 32px; font-weight: 700; line-height: normal; letter-spacing: -0.05em; }
+
+.cs-stack { position: absolute; left: 50%; top: 302px; display: flex; flex-direction: column; align-items: center; gap: 24px; width: 344px; translate: -50% 0; }
+.cs-chip { margin: 0; display: flex; align-items: center; justify-content: center; height: 32px; padding: 0 16px; border: 2px solid rgb(219 218 220 / 0.04); border-radius: 56px; background: rgb(219 218 220 / 0.12); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: inset 0 -6px 12px 0 rgb(219 218 220 / 0.5); font-size: 14px; font-weight: 500; line-height: 32px; letter-spacing: -0.03em; white-space: nowrap; }
+.cs-text, .cs-note { margin: 0; font-size: 12px; font-weight: 500; line-height: 21px; letter-spacing: -0.03em; }
+.cs-note { white-space: nowrap; }
+
+.cs-cta { width: 204px; padding: 8px; border: 2px solid rgb(219 218 220 / 0.04); border-radius: 24px; background: rgb(219 218 220 / 0.01); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 0 52px 0 rgb(219 218 220 / 0.06); }
+.cs-cta__btn { position: relative; display: flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px; border-radius: 16px; background: #ffcc00; color: #090909; font-size: 14px; font-weight: 500; letter-spacing: -0.03em; text-decoration: none; white-space: nowrap; overflow: hidden; transition: translate 0.2s ease, box-shadow 0.2s ease, scale 0.15s ease; }
+.cs-cta__btn:hover { translate: 0 -2px; box-shadow: 0 10px 28px rgb(255 204 0 / 0.35); }
+.cs-cta__btn:active { scale: 0.97; }
+.cs-cta__btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.cs-cta__btn[aria-disabled="true"] { opacity: 0.7; cursor: default; pointer-events: none; }
+.cs-cta__label { position: relative; z-index: 2; }
+.cs-cta__btn::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 45%; z-index: 1; pointer-events: none; background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.55), transparent); translate: -160% 0; animation: cs-sheen 5s ease-in-out 2.4s infinite; }
+@keyframes cs-sheen { 0%, 60% { translate: -160% 0; } 100% { translate: 360% 0; } }
+
+@media (min-width: 768px) {
+  .cs-stage { width: 1728px; height: 952px; max-width: none; }
+  .cs-glow { top: 165.37px; width: 1068px; height: 361.66px; margin-left: -534px; }
+  .cs-lettering--mobile { display: none; }
+  .cs-lettering--desktop { display: block; top: 301px; width: 711px; height: auto; margin-left: -355px; }
+  .cs-title { top: 340px; width: auto; font-size: 48px; white-space: nowrap; }
+  .cs-stack { top: 422px; width: 530px; }
+  .cs-chip { height: 40px; font-size: 18px; }
+  .cs-text, .cs-note { font-size: 16.4px; line-height: 32px; }   /* Figma's Arabic is ~6% narrower than Chrome's: keeps the design's two-line break */
+  .cs-cta { width: 260px; }
+  .cs-cta__btn { height: 64px; font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .cs-cta__btn::after { animation: none; } }

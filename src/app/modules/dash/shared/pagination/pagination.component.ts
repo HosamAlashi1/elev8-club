@@ -17,7 +17,7 @@ export class PaginationComponent implements OnInit, OnChanges {
   totalPages = 1;
 
   // يتغير حسب حجم الشاشة
-  maxVisiblePages = 7;
+  maxVisiblePages = 5;
   isMobile = false;
 
   ngOnInit(): void {
@@ -31,7 +31,7 @@ export class PaginationComponent implements OnInit, OnChanges {
 
   private updateResponsive() {
     this.isMobile = window.innerWidth <= 768;
-    this.maxVisiblePages = this.isMobile ? 3 : 7;
+    this.maxVisiblePages = this.isMobile ? 3 : 5;
   }
 
   ngOnChanges(changes: SimpleChanges): void {

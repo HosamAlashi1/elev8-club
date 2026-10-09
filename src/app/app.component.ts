@@ -28,6 +28,7 @@ import { filter } from 'rxjs/operators';
   ]
 })
 export class AppComponent implements OnInit, AfterViewInit {
+  private readonly dashboardCssHref = '/assets/css/dashboard.css?v=20260923-4';
   previousUrl: string | null = null;
   private lastTouchEnd = 0;
 
@@ -74,8 +75,8 @@ export class AppComponent implements OnInit, AfterViewInit {
           htmlTag.setAttribute('lang', 'en');
           htmlTag.setAttribute('dir', 'ltr');
 
-          this.loadCSS('/assets/css/dashboard.css');
           this.loadCSS('/assets/css/theme.bundle.css');
+          this.loadCSS(this.dashboardCssHref);
           this.removeCSS('/assets/css/landingPage.css');
         } else {
           // نرجعه عربي
@@ -83,7 +84,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           htmlTag.setAttribute('dir', 'rtl');
 
           this.loadCSS('/assets/css/landingPage.css');
-          this.removeCSS('/assets/css/dashboard.css');
+          this.removeCSS(this.dashboardCssHref);
           this.removeCSS('/assets/css/theme.bundle.css');
         }
       });
