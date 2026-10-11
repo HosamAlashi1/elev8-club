@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <div>
+    <h4 class="modal-title">Send message</h4>
+    <small class="text-muted">To {{ lead.fullName }} — delivered by the bot</small>
+  </div>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  <!-- The bot can only message someone who has opened it. -->
+  <div class="sm-warn" *ngIf="!hasChat">
+    <i class="fe fe-alert-circle"></i>
+    This lead has not opened the bot yet — the message may not be delivered.
+  </div>
+
+  <label class="form-label">Message</label>
+  <quill-editor class="sm-editor" [(ngModel)]="html" [modules]="quillModules" [styles]="{ height: '220px' }"
+                placeholder="Write the message"></quill-editor>
+  <div class="sm-error" *ngIf="submitted && isEmpty">Write a message first.</div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="activeModal.dismiss()" [disabled]="isSending">Cancel</button>
+  <button type="button" class="btn btn-custom" (click)="send()" [disabled]="isSending">
+    <i class="fe fe-send me-1"></i>{{ isSending ? 'Sending...' : 'Send' }}
+  </button>
+</div>

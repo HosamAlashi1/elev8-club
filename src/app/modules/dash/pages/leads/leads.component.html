@@ -257,6 +257,12 @@
                                             </a>
                                         </li>
 
+                                        <li *ngIf="canMessage(lead)">
+                                            <a class="dropdown-item" (click)="sendMessage(lead)">
+                                                <i class="fe fe-send me-2"></i>Send Message
+                                            </a>
+                                        </li>
+
                                         <li *ngIf="isAdmin">
                                             <a class="dropdown-item" (click)="editLead(lead)">
                                                 <i class="fe fe-edit-2 me-2"></i>Edit Lead

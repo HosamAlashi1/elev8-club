@@ -13,6 +13,8 @@ import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { LeadDetailComponent } from './lead-detail/lead-detail.component';
 import { LeadSalesPanelComponent } from './lead-sales-panel/lead-sales-panel.component';
 import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
+import { SendMessageComponent } from './send-message/send-message.component';
+import { QuillModule } from 'ngx-quill';
 
 
 @NgModule({
@@ -21,7 +23,8 @@ import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
     ViewLeadComponent,
     LeadDetailComponent,
     LeadSalesPanelComponent,
-    AddEditLeadComponent
+    AddEditLeadComponent,
+    SendMessageComponent
   ],
   imports: [
     CommonModule,
@@ -32,6 +35,7 @@ import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
     NgxSkeletonLoaderModule,
     NgbModule,
     SharedModule,
+    QuillModule.forRoot(),
     LucideAngularModule.pick({ Search, Eye, Filter, Download })
   ]
 })

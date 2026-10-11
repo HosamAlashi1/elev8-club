@@ -14,6 +14,7 @@ import { ViewLeadComponent } from './view-lead/view-lead.component';
 import { DeleteComponent } from '../../shared/delete/delete.component';
 import { PublicService } from 'src/app/modules/services/public.service';
 import { ExcelExportService } from '../../../services/excel-export.service';
+import { SendMessageComponent } from './send-message/send-message.component';
 import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
 
 interface LeadWithAffiliate extends Lead {
@@ -451,6 +452,18 @@ export class LeadsComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.affiliates = this.affiliates;
     modalRef.componentInstance.salesMembers = this.salesMembers;
     modalRef.componentInstance.existingLeads = this.allLeads;
+  }
+
+  /** Free-community (v2) and offer (v3) leads are the ones the bot can message. */
+  canMessage(lead: Lead): boolean {
+    const s = lead.source || 'v1';
+    return (this.isAdmin || this.isSales) && (s === 'v2' || s === 'offer');
+  }
+
+  sendMessage(lead: LeadWithAffiliate): void {
+    if (!this.canMessage(lead)) return;
+    const modalRef = this.modalService.open(SendMessageComponent, { centered: true, size: 'lg' });
+    modalRef.componentInstance.lead = lead;
   }
 
   salesPanelLead: LeadWithAffiliate | null = null;
