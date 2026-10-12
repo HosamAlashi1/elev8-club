@@ -1167,15 +1167,19 @@ body.dashboard-theme .ql-container.ql-snow {
   background: #171c20;
 }
 
-body.dashboard-theme .ec-editor .ql-editor {
+body.dashboard-theme .ec-editor .ql-editor,
+body.dashboard-theme .sm-editor .ql-editor {
   border-color: #424a50;
   color: #e9e8e3;
   background-color: #171c20;
   caret-color: #e9e8e3;
 }
-body.dashboard-theme .ec-editor .ql-editor:focus { border-color: #ad5a6c; }
-body.dashboard-theme .ec-editor .ql-editor.ql-blank::before { color: #929da2; }
-body.dashboard-theme .ec-editor .ql-editor a { color: #e19aaa; }
+body.dashboard-theme .ec-editor .ql-editor:focus,
+body.dashboard-theme .sm-editor .ql-editor:focus { border-color: #ad5a6c; }
+body.dashboard-theme .ec-editor .ql-editor.ql-blank::before,
+body.dashboard-theme .sm-editor .ql-editor.ql-blank::before { color: #929da2; }
+body.dashboard-theme .ec-editor .ql-editor a,
+body.dashboard-theme .sm-editor .ql-editor a { color: #e19aaa; }
 body.dashboard-theme .ql-snow .ql-stroke { stroke: #aeb8b9; }
 body.dashboard-theme .ql-snow .ql-fill { fill: #aeb8b9; }
 body.dashboard-theme .ql-snow .ql-picker { color: #aeb8b9; }

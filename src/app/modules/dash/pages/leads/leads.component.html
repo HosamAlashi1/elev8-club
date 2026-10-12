@@ -47,6 +47,11 @@
             </div>
 
             <div data-aos="fade-left" data-aos-delay="500" class="lead-actions">
+                <button *ngIf="selectedKeys.size" class="btn btn-custom d-flex align-items-center gap-2" (click)="sendMessageToSelected()">
+                    <i class="fe fe-send"></i>
+                    Message {{ selectedKeys.size }} selected
+                </button>
+                <button *ngIf="selectedKeys.size" class="btn btn-light" (click)="clearSelection()">Clear</button>
                 <button *ngIf="isAdmin || isSales" class="btn btn-custom d-flex align-items-center gap-2"
                     (click)="addLead()" [disabled]="!currentVersion">
                     <i class="fe fe-plus"></i>
@@ -106,6 +111,10 @@
                 <table class="table table-sm table-nowrap card-table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th style="width: 36px" *ngIf="isAdmin || isSales">
+                                <input type="checkbox" class="form-check-input" [checked]="allPageSelected" [disabled]="!messageablePage.length"
+                                    (change)="toggleSelectPage()" title="Select this page's free-community and offer leads">
+                            </th>
                             <th class="w-15">Name</th>
                             <th class="w-15">Email</th>
                             <th class="w-10">Phone</th>
@@ -141,6 +150,9 @@
                     <!-- Data -->
                     <tbody *ngIf="!(isLoading$ | async)">
                         <tr *ngFor="let lead of paginatedLeads">
+                            <td *ngIf="isAdmin || isSales">
+                                <input *ngIf="canMessage(lead)" type="checkbox" class="form-check-input" [checked]="isSelected(lead)" (change)="toggleSelect(lead)">
+                            </td>
                             <td>
                                 <div class="fw-semibold text-dark">{{ lead.fullName }}</div>
                             </td>

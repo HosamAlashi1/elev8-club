@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 interface SendMessageRequest {
-  lead_id: string;
+  lead_ids: string[];
   message_html: string;
 }
 
@@ -20,9 +20,9 @@ interface SendMessageRequest {
 export class BotMessageService {
   constructor(private http: HttpClient) { }
 
-  /** `leadId` is the lead's record key (leads/{key}) — the bot finds the lead (and its chat) by it. */
-  sendMessage(leadId: string, messageHtml: string): Promise<unknown> {
-    const body: SendMessageRequest = { lead_id: leadId, message_html: messageHtml };
+  /** `leadIds` are the leads' record keys (leads/{key}); the bot finds each lead (and its chat) by it. One call can carry many leads. */
+  sendMessage(leadIds: string[], messageHtml: string): Promise<unknown> {
+    const body: SendMessageRequest = { lead_ids: leadIds, message_html: messageHtml };
     return firstValueFrom(this.http.post(`${environment.botApiUrl}/FreeBot/send-message`, body));
   }
 }

@@ -1,16 +1,21 @@
 <div class="modal-header">
   <div>
     <h4 class="modal-title">Send message</h4>
-    <small class="text-muted">To {{ lead.fullName }} — delivered by the bot</small>
+    <small class="text-muted">
+      <ng-container *ngIf="single; else many">To {{ single.fullName }}</ng-container>
+      <ng-template #many>To {{ leads.length }} leads</ng-template>
+      — delivered by the bot
+    </small>
   </div>
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
 </div>
 
 <div class="modal-body">
   <!-- The bot can only message someone who has opened it. -->
-  <div class="sm-warn" *ngIf="!hasChat">
+  <div class="sm-warn" *ngIf="withoutChat">
     <i class="fe fe-alert-circle"></i>
-    This lead has not opened the bot yet — the message may not be delivered.
+    <ng-container *ngIf="leads.length === 1; else someNotOpened">This lead has not opened the bot yet — the message may not be delivered.</ng-container>
+    <ng-template #someNotOpened>{{ withoutChat }} of {{ leads.length }} leads have not opened the bot yet — their message may not be delivered.</ng-template>
   </div>
 
   <label class="form-label">Message</label>
@@ -22,6 +27,6 @@
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="activeModal.dismiss()" [disabled]="isSending">Cancel</button>
   <button type="button" class="btn btn-custom" (click)="send()" [disabled]="isSending">
-    <i class="fe fe-send me-1"></i>{{ isSending ? 'Sending...' : 'Send' }}
+    <i class="fe fe-send me-1"></i>{{ isSending ? 'Sending...' : (leads.length > 1 ? 'Send to ' + leads.length : 'Send') }}
   </button>
 </div>

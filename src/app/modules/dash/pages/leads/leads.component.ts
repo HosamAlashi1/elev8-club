@@ -462,8 +462,45 @@ export class LeadsComponent implements OnInit, OnDestroy {
 
   sendMessage(lead: LeadWithAffiliate): void {
     if (!this.canMessage(lead)) return;
+    this.openMessageModal([lead]);
+  }
+
+  /** Ticked leads (by record key), kept while paging and filtering. */
+  selectedKeys = new Set<string>();
+
+  isSelected(lead: Lead): boolean { return !!lead.key && this.selectedKeys.has(lead.key); }
+
+  toggleSelect(lead: Lead): void {
+    if (!lead.key || !this.canMessage(lead)) return;
+    if (this.selectedKeys.has(lead.key)) { this.selectedKeys.delete(lead.key); } else { this.selectedKeys.add(lead.key); }
+  }
+
+  /** The leads on this page that can be messaged. */
+  get messageablePage(): LeadWithAffiliate[] {
+    return this.paginatedLeads.filter(l => this.canMessage(l));
+  }
+
+  get allPageSelected(): boolean {
+    return this.messageablePage.length > 0 && this.messageablePage.every(l => this.isSelected(l));
+  }
+
+  toggleSelectPage(): void {
+    const all = this.allPageSelected;
+    this.messageablePage.forEach(l => { if (!l.key) return; if (all) { this.selectedKeys.delete(l.key); } else { this.selectedKeys.add(l.key); } });
+  }
+
+  clearSelection(): void { this.selectedKeys.clear(); }
+
+  sendMessageToSelected(): void {
+    const leads = this.allLeads.filter(l => this.isSelected(l) && this.canMessage(l));
+    if (!leads.length) return;
+    this.openMessageModal(leads);
+  }
+
+  private openMessageModal(leads: Lead[]): void {
     const modalRef = this.modalService.open(SendMessageComponent, { centered: true, size: 'lg' });
-    modalRef.componentInstance.lead = lead;
+    modalRef.componentInstance.leads = leads;
+    modalRef.result.then(sent => { if (sent) { leads.forEach(l => l.key && this.selectedKeys.delete(l.key)); } }, () => { });
   }
 
   salesPanelLead: LeadWithAffiliate | null = null;

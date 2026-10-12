@@ -14,7 +14,8 @@ import { ToastrsService } from '../../../../services/toater.service';
   styleUrls: ['./send-message.component.css']
 })
 export class SendMessageComponent {
-  @Input() lead!: Lead;
+  /** One or many: the row menu passes one, the table's selection passes all that are ticked. */
+  @Input() leads: Lead[] = [];
 
   html = '';
   isSending = false;
@@ -42,19 +43,23 @@ export class SendMessageComponent {
     return !text;
   }
 
-  get hasChat(): boolean {
-    return !!this.lead?.telegramChatId;
+  get single(): Lead | null { return this.leads.length === 1 ? this.leads[0] : null; }
+
+  /** Leads that have not opened the bot — it can only message someone who has. */
+  get withoutChat(): number {
+    return this.leads.filter(l => !l.telegramChatId).length;
   }
 
   send(): void {
     this.submitted = true;
-    if (this.isEmpty || this.isSending || !this.lead?.key) return;
-    if (!confirm(`Send this message to ${this.lead.fullName}?`)) return;
+    const keys = this.leads.map(l => l.key).filter((k): k is string => !!k);
+    if (this.isEmpty || this.isSending || !keys.length) return;
+    if (!confirm(keys.length === 1 ? `Send this message to ${this.leads[0].fullName}?` : `Send this message to ${keys.length} leads?`)) return;
 
     this.isSending = true;
-    this.botMessage.sendMessage(this.lead.key, this.html)
+    this.botMessage.sendMessage(keys, this.html)
       .then(() => {
-        this.toastr.showSuccess('Message sent');
+        this.toastr.showSuccess(keys.length === 1 ? 'Message sent' : `Message sent to ${keys.length} leads`);
         this.activeModal.close(true);
       })
       .catch(err => {
