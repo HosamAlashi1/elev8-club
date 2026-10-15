@@ -56,6 +56,14 @@
                     <div class="sp-summary__label">Active Reps</div>
                 </div>
             </div>
+            <button type="button" class="sp-summary__card sp-summary__card--link" (click)="openClosedLeads()"
+                title="Show the closed leads in the Leads page">
+                <div class="sp-summary__icon sp-summary__icon--closed"><i class="fe fe-award"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.closed }}</div>
+                    <div class="sp-summary__label">Closed</div>
+                </div>
+            </button>
         </div>
 
         <!-- Loading -->

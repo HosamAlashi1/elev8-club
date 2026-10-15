@@ -1,0 +1,133 @@
+<div class="ov" *ngIf="!loading; else loadingTpl">
+
+  <!-- ── Needs attention ─────────────────────────────────────── -->
+  <section class="ov-section">
+    <h2 class="ov-h">Needs your attention</h2>
+    <div class="ov-attn">
+      <button type="button" class="ov-attn__card" *ngFor="let a of attention; trackBy: trackByLabel"
+        [class.is-zero]="!a.count" [attr.data-tone]="a.tone" (click)="go(a.route, a.query)">
+        <span class="ov-icon"><i [class]="a.icon"></i></span>
+        <span class="ov-attn__text">
+          <span class="ov-attn__label">{{ a.label }}</span>
+          <span class="ov-attn__detail">{{ a.count ? a.detail : 'All clear' }}</span>
+        </span>
+        <span class="ov-attn__count">{{ a.count }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Headline numbers ────────────────────────────────────── -->
+  <section class="ov-section">
+    <div class="ov-kpis">
+      <button type="button" class="ov-kpi" *ngFor="let k of kpis; trackBy: trackByLabel" [attr.data-tone]="k.tone"
+        [class.is-link]="!!k.query" [disabled]="!k.query" (click)="goLeads(k.query)">
+        <span class="ov-icon"><i [class]="k.icon"></i></span>
+        <span class="ov-kpi__value">{{ k.value | number }}</span>
+        <span class="ov-kpi__label">{{ k.label }}</span>
+        <span class="ov-kpi__hint">{{ k.hint }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Chart + newest leads ────────────────────────────────── -->
+  <section class="ov-section ov-split">
+    <div class="ov-panel ov-panel--chart">
+      <h2 class="ov-h">New leads — last 14 days</h2>
+      <app-line-chart [revenueData]="leadsPerDay"></app-line-chart>
+    </div>
+
+    <div class="ov-panel">
+      <div class="ov-panel__head">
+        <h2 class="ov-h">Newest leads</h2>
+        <button type="button" class="ov-link" (click)="goLeads()">All leads <i class="fe fe-arrow-left"></i></button>
+      </div>
+      <div class="ov-empty" *ngIf="!recent.length">No leads yet.</div>
+      <button type="button" class="ov-recent" *ngFor="let r of recent" (click)="goLeads({ search: r.lead.email })">
+        <span class="ov-avatar">{{ (r.lead.fullName || '?').trim().charAt(0).toUpperCase() }}</span>
+        <span class="ov-recent__main">
+          <span class="ov-recent__name">{{ r.lead.fullName }}</span>
+          <span class="ov-recent__meta">{{ r.source }} &middot; {{ r.status }}</span>
+        </span>
+        <span class="ov-recent__when">{{ r.when }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── By product ──────────────────────────────────────────── -->
+  <section class="ov-section">
+    <h2 class="ov-h">By product</h2>
+    <div class="ov-products">
+      <article class="ov-panel ov-product" *ngFor="let p of products" [attr.data-tone]="p.tone">
+        <header class="ov-product__head">
+          <span class="ov-icon"><i [class]="p.icon"></i></span>
+          <div>
+            <div class="ov-product__name">{{ p.label }}</div>
+            <div class="ov-product__sub">{{ p.today }} new today</div>
+          </div>
+          <button type="button" class="ov-product__total" (click)="goLeads({ source: p.source })" title="Open these leads">
+            {{ p.total | number }}<small>leads</small>
+          </button>
+        </header>
+
+        <div class="ov-bar" [title]="p.completedPct + '% completed'">
+          <span class="ov-bar__fill" [style.width.%]="p.completedPct"></span>
+        </div>
+        <div class="ov-product__line">
+          <span>{{ p.completed | number }} completed ({{ p.completedPct }}%)</span>
+          <button type="button" class="ov-link" (click)="goLeads({ source: p.source, status: 'closed' })">{{ p.closed | number }} closed</button>
+        </div>
+
+        <div class="ov-stages">
+          <div class="ov-stage" *ngFor="let s of p.stages">
+            <span class="ov-stage__label">{{ s.label }}</span>
+            <span class="ov-stage__track"><span class="ov-stage__fill" [style.width.%]="s.pct"></span></span>
+            <span class="ov-stage__count">{{ s.count }}</span>
+          </div>
+        </div>
+
+        <div class="ov-extras">
+          <button type="button" class="ov-extra" *ngFor="let e of p.extras" [attr.data-tone]="e.tone"
+            [class.is-link]="!!e.query" [disabled]="!e.query" (click)="goLeads(e.query)">
+            <span class="ov-extra__value">{{ e.value | number }}</span>
+            <span class="ov-extra__label">{{ e.label }}</span>
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Sales team ──────────────────────────────────────────── -->
+  <section class="ov-section">
+    <div class="ov-panel">
+      <div class="ov-panel__head">
+        <h2 class="ov-h">Sales team</h2>
+        <button type="button" class="ov-link" (click)="go('/dashboard/sales-performance')">Sales performance <i class="fe fe-arrow-left"></i></button>
+      </div>
+      <div class="ov-empty" *ngIf="!reps.length">No active sales reps.</div>
+      <div class="ov-table-wrap" *ngIf="reps.length">
+        <table class="ov-table">
+          <thead>
+            <tr><th>Rep</th><th>Assigned</th><th>Closed</th><th>Close rate</th><th>Calls (7d)</th><th>Last call</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of reps">
+              <td><span class="ov-avatar ov-avatar--sm">{{ r.name.charAt(0).toUpperCase() }}</span>{{ r.name }}</td>
+              <td>{{ r.assigned | number }}</td>
+              <td><strong>{{ r.closed | number }}</strong></td>
+              <td>
+                <span class="ov-stage__track ov-rate"><span class="ov-stage__fill" [style.width.%]="r.rate"></span></span>
+                {{ r.rate }}%
+              </td>
+              <td>{{ r.calls7 | number }}</td>
+              <td class="ov-muted">{{ r.lastCall }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="ov-loading">Loading the overview…</div>
+</ng-template>

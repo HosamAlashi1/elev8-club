@@ -51,4 +51,10 @@
   .cs-cta__btn { height: 64px; font-size: 18px; }
 }
 
+/* Between a tablet and the 1728 canvas the fixed-size stage was wider than the window and got cut off at both sides:
+   scale it down proportionally (CSS zoom, like the home page) so the whole composition always fits. */
+@media (min-width: 768px) and (max-width: 1727px) {
+  .cs-stage { zoom: calc(100vw / 1728px); }
+}
+
 @media (prefers-reduced-motion: reduce) { .cs-cta__btn::after { animation: none; } }

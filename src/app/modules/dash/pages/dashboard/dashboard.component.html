@@ -1,4 +1,17 @@
-<div class="p-3">
+<div class="p-3" *ngIf="isAdmin">
+    <div class="header">
+        <div class="container-fluid">
+            <div class="header-body border-0">
+                <h1 class="header-title fw-bold">Dashboard Overview</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <app-admin-overview></app-admin-overview>
+    </div>
+</div>
+
+<div class="p-3" *ngIf="!isAdmin">
     <!-- Header -->
     <div class="header">
         <div class="container-fluid">

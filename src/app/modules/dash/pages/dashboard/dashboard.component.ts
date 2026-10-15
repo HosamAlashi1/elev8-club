@@ -20,6 +20,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   currentVersion: Version | null = null;
 
+  /** Admins get the full overview page instead of the four summary cards. */
+  isAdmin = false;
+
   // Chart data
   leadsPerDayData: { date: string; count: number }[] = [];
 
@@ -57,6 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.isAdmin = this.publicService.isAdmin();
     this.startTime = performance.now();
     this.loadCurrentVersion();
   }
@@ -67,6 +71,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   loadCurrentVersion(): void {
+    if (this.isAdmin) return;   // <app-admin-overview> loads its own data
     console.log('🔍 Fetching current version...');
     this.firebaseService.getCurrentVersion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (version: Version | null) => {

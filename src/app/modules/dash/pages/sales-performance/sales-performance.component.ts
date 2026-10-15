@@ -61,7 +61,7 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
   customStart = '';
   customEnd = '';
 
-  summary = { total: 0, answered: 0, noAnswer: 0, busy: 0, activeMembers: 0 };
+  summary = { total: 0, answered: 0, noAnswer: 0, busy: 0, activeMembers: 0, closed: 0 };
 
   constructor(private firebaseService: FirebaseService, private router: Router) {}
 
@@ -105,6 +105,11 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
 
   onFilterChange(): void {
     this.applyFilters();
+  }
+
+  /** The Leads page, filtered to the closed ones. */
+  openClosedLeads(): void {
+    this.router.navigate(['/dashboard/leads'], { queryParams: { status: 'closed' } });
   }
 
   openMember(row: SalesMemberRow): void {
@@ -182,7 +187,8 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
       answered: inRange.filter(c => c.status === 'answered').length,
       noAnswer: inRange.filter(c => c.status === 'no_answer').length,
       busy: inRange.filter(c => c.status === 'busy').length,
-      activeMembers: this.rows.filter(r => r.totalCalls > 0).length
+      activeMembers: this.rows.filter(r => r.totalCalls > 0).length,
+      closed: this.leads.filter(l => l.sales_status === 'closed').length
     };
   }
 

@@ -127,3 +127,77 @@
 @media (prefers-reduced-motion: reduce) {
   .live-indicator, .thread-skeletons span, .dashboard-message { animation: none; }
 }
+
+/* ── Dark dashboard theme ─────────────────────────────────────────────────────
+   Lives here rather than in dashboard.css: Angular puts an attribute on every part of these
+   selectors, so a plain `body.dashboard-theme .x` rule elsewhere loses to them (which is why the
+   heading, visitor names, the reply box on focus and the sent replies stayed light-theme). */
+:host-context(body.dashboard-theme) { color: #e2e4e3; }
+:host-context(body.dashboard-theme) .page-heading h1 { color: #f0eee9; }
+:host-context(body.dashboard-theme) .page-heading p { color: #a3adb1; }
+:host-context(body.dashboard-theme) .heading-stat { border-color: #343c41; background: #20262a; box-shadow: none; }
+:host-context(body.dashboard-theme) .heading-stat strong { color: #f0eee9; }
+:host-context(body.dashboard-theme) .heading-stat small { color: #a3adb1; }
+
+:host-context(body.dashboard-theme) .inbox-shell { border-color: #343c41; background: #1c2226; box-shadow: none; }
+:host-context(body.dashboard-theme) .thread-list-pane { border-right-color: #343c41; background: #171c20; }
+:host-context(body.dashboard-theme) .thread-tools { border-bottom-color: #343c41; background: #1c2226; }
+:host-context(body.dashboard-theme) .search-control { border-color: #343c41; background: #171c20; }
+:host-context(body.dashboard-theme) .search-control:focus-within { border-color: #b24258; background: #171c20; box-shadow: 0 0 0 3px rgba(178, 66, 88, 0.22); }
+:host-context(body.dashboard-theme) .search-control lucide-icon { color: #7d878b; }
+:host-context(body.dashboard-theme) .search-control input { color: #e9e8e3; }
+:host-context(body.dashboard-theme) .search-control input::placeholder { color: #7d878b; }
+:host-context(body.dashboard-theme) .filter-row button { color: #a3adb1; }
+:host-context(body.dashboard-theme) .filter-row button:hover { color: #edc379; background: #30271d; }
+:host-context(body.dashboard-theme) .filter-row button.active { color: #2a2008; background: #f0d58f; }
+
+:host-context(body.dashboard-theme) .thread-list { scrollbar-color: #3a444a transparent; }
+:host-context(body.dashboard-theme) .thread-card { color: #e2e4e3; }
+:host-context(body.dashboard-theme) .thread-card:hover { border-color: #343c41; background: #293137; }
+:host-context(body.dashboard-theme) .thread-card.active { border-color: #75505a; background: linear-gradient(135deg, #34252b, #2a2f33); box-shadow: none; }
+:host-context(body.dashboard-theme) .visitor-avatar { color: #e99aab; background: #3a2b32; }
+:host-context(body.dashboard-theme) .thread-title-row strong { color: #f0eee9; }
+:host-context(body.dashboard-theme) .thread-title-row time,
+:host-context(body.dashboard-theme) .thread-meta { color: #8d979b; }
+:host-context(body.dashboard-theme) .thread-preview { color: #a3adb1; }
+:host-context(body.dashboard-theme) .status-pill { color: #edc379; background: #3a2f1c; }
+:host-context(body.dashboard-theme) .status-pill[data-status="answered"] { color: #6fdcae; background: #17372c; }
+:host-context(body.dashboard-theme) .status-pill[data-status="open"] { color: #8dbcf0; background: #1c3249; }
+:host-context(body.dashboard-theme) .empty-list { color: #8d979b; }
+:host-context(body.dashboard-theme) .empty-list lucide-icon { color: #4a555b; }
+:host-context(body.dashboard-theme) .empty-list strong { color: #c4cbce; }
+
+:host-context(body.dashboard-theme) .conversation-pane { background: #1c2226; }
+:host-context(body.dashboard-theme) .conversation-header { border-bottom-color: #343c41; }
+:host-context(body.dashboard-theme) .conversation-person strong { color: #f0eee9; }
+:host-context(body.dashboard-theme) .conversation-person span { color: #a3adb1; }
+:host-context(body.dashboard-theme) .conversation-status { color: #edc379; background: #3a2f1c; }
+:host-context(body.dashboard-theme) .conversation-status[data-status="answered"] { color: #6fdcae; background: #17372c; }
+:host-context(body.dashboard-theme) .conversation-status[data-status="open"] { color: #8dbcf0; background: #1c3249; }
+:host-context(body.dashboard-theme) .mobile-back { border-color: #343c41; color: #c4cbce; background: #20262a; }
+
+:host-context(body.dashboard-theme) .conversation-messages { background: #171c20; scrollbar-color: #3a444a transparent; }
+:host-context(body.dashboard-theme) .conversation-messages::-webkit-scrollbar-thumb { background: #3a444a; background-clip: padding-box; }
+:host-context(body.dashboard-theme) .date-divider { color: #8d979b; }
+:host-context(body.dashboard-theme) .date-divider::before,
+:host-context(body.dashboard-theme) .date-divider::after { background: #343c41; }
+:host-context(body.dashboard-theme) .message-author { color: #a3adb1; }
+:host-context(body.dashboard-theme) .message-body { border-color: #343c41; color: #e2e4e3; background: #20262a; box-shadow: none; }
+:host-context(body.dashboard-theme) .message-body time { color: #8d979b; }
+:host-context(body.dashboard-theme) .dashboard-message--admin .message-body { border-color: #704456; color: #f0e8e6; background: #402b35; }
+:host-context(body.dashboard-theme) .dashboard-message--admin .message-body time { color: #b79aa3; }
+:host-context(body.dashboard-theme) .system-note { color: #6fdcae; background: #17372c; }
+
+:host-context(body.dashboard-theme) .reply-composer { border-top-color: #343c41; background: #1c2226; }
+:host-context(body.dashboard-theme) .reply-box { border-color: #343c41; background: #171c20; }
+:host-context(body.dashboard-theme) .reply-box:focus-within { border-color: #b24258; background: #171c20; box-shadow: 0 0 0 3px rgba(178, 66, 88, 0.22); }
+:host-context(body.dashboard-theme) .reply-box textarea { color: #e9e8e3; background: transparent; }
+:host-context(body.dashboard-theme) .reply-box textarea::placeholder { color: #7d878b; }
+:host-context(body.dashboard-theme) .reply-box button { color: #fff; background: #963b50; box-shadow: 0 7px 17px rgba(69, 21, 33, 0.2); }
+:host-context(body.dashboard-theme) .reply-footer { color: #8d979b; }
+
+:host-context(body.dashboard-theme) .conversation-empty { background: radial-gradient(circle at center, #2b2429, #1c2226 60%); color: #a3adb1; }
+:host-context(body.dashboard-theme) .empty-art { border-color: #684352; color: #e59aab; background: #3a2931; }
+:host-context(body.dashboard-theme) .conversation-empty h2 { color: #e9e8e3; }
+:host-context(body.dashboard-theme) .thread-skeletons span { background: linear-gradient(90deg, #283137, #3a454b, #283137); background-size: 200% 100%; }
+

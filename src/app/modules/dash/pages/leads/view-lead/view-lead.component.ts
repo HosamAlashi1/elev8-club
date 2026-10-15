@@ -120,7 +120,8 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.newQuestionnaireAnswers = this.buildNewQuestionnaireAnswers();
+    this.newQuestionnaireAnswers = this.buildV2QuestionnaireAnswers();
+    if (!this.newQuestionnaireAnswers.length) this.newQuestionnaireAnswers = this.buildNewQuestionnaireAnswers();
     this.legacyQuestionnaireAnswers = this.buildLegacyQuestionnaireAnswers();
     this.isAdmin = this.publicService.isAdmin();
     this.isSales = this.publicService.isSales();
@@ -322,6 +323,20 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   getExperienceLabel(level?: string): string {
     if (!level) return 'N/A';
     return level.charAt(0).toUpperCase() + level.slice(1);
+  }
+
+  /** v2 (free community) questions — same wording as elev8-club-v2's questions.config.ts. */
+  private buildV2QuestionnaireAnswers(): AnswerDisplay[] {
+    const a = this.lead?.answers;
+    if (!a) return [];
+    return [
+      { label: 'ما هو هدفك الأساسي من الانضمام إلى Elev8 Club؟', value: a.v2Goal || '' },
+      { label: 'هل سبق أن جربت التداول من قبل؟', value: a.v2TradingHistory || '' },
+      { label: 'كم تنوي أن يكون أول إيداع لك في حساب التداول؟', value: a.v2FirstDeposit || '' },
+      { label: 'متى تنوي البدء؟', value: a.v2StartTiming || '' },
+      { label: 'ما أكثر شيء قد يمنعك من البدء اليوم؟', value: a.v2Blocker || '' },
+      { label: 'هل سبق أن فتحت حساب تداول؟', value: a.v2HasTradingAccount || '' }
+    ].filter(x => !!String(x.value).trim());
   }
 
   private buildNewQuestionnaireAnswers(): AnswerDisplay[] {

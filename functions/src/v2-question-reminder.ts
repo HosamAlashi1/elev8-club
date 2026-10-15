@@ -4,6 +4,7 @@ import {getFunctions} from "firebase-admin/functions";
 import {onValueCreated} from "firebase-functions/v2/database";
 import {onTaskDispatched} from "firebase-functions/v2/tasks";
 import {button, renderEmail} from "./email-template";
+import {disableNotificationTracking} from "./notification-mailgun-options";
 
 const MAILGUN_DOMAIN = "elev8club.com";
 const MAILGUN_URL = `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`;
@@ -161,6 +162,7 @@ export const sendV2QuestionReminder = onTaskDispatched<ReminderTask>(
     form.append("text", v2QuestionReminderText(url));
     form.append("html", renderV2QuestionReminder(url));
     form.append("o:tag", "v2-incomplete-questions");
+    disableNotificationTracking(form);
 
     const authorization = Buffer.from(`api:${apiKey}`).toString("base64");
     const response = await fetch(MAILGUN_URL, {

@@ -299,6 +299,15 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
   private buildQuestionnaireAnswers(lead: Lead): { label: string; value: string }[] {
     const a = lead.answers;
     if (!a) return [];
+    const v2 = [
+      { label: 'ما هو هدفك الأساسي من الانضمام إلى Elev8 Club؟', value: a.v2Goal || '' },
+      { label: 'هل سبق أن جربت التداول من قبل؟', value: a.v2TradingHistory || '' },
+      { label: 'كم تنوي أن يكون أول إيداع لك في حساب التداول؟', value: a.v2FirstDeposit || '' },
+      { label: 'متى تنوي البدء؟', value: a.v2StartTiming || '' },
+      { label: 'ما أكثر شيء قد يمنعك من البدء اليوم؟', value: a.v2Blocker || '' },
+      { label: 'هل سبق أن فتحت حساب تداول؟', value: a.v2HasTradingAccount || '' }
+    ].filter(x => String(x.value).trim());
+    if (v2.length) return v2;
     return [
       { label: 'كم عمرك؟', value: a.age || '' },
       { label: 'وضعك الحالي شغل؟', value: a.workStatus || '' },

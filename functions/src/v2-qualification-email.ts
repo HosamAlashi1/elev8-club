@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import {onValueUpdated} from "firebase-functions/v2/database";
 import {button, escapeHtml, panel, renderEmail} from "./email-template";
+import {disableNotificationTracking} from "./notification-mailgun-options";
 
 const MAILGUN_DOMAIN = "elev8club.com";
 const MAILGUN_URL = `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`;
@@ -60,7 +61,7 @@ export function v2ResultEmail(
 ): ResultEmail {
   if (qualification === "qualified") {
     return {
-      subject: "Congratulation 🎉 أنت الان جاهز تبدأ بمجتمع elev8 club",
+      subject: "نتيجة تسجيلك ورقم اشتراكك في Elev8 Club",
       blocks: [
         {kind: "heading", text: `مبروك 🎉 ${firstName}`},
         {kind: "paragraph", text:
@@ -280,6 +281,7 @@ export const sendV2QualificationEmail = onValueUpdated(
     form.append("text", rendered.text);
     form.append("html", rendered.html);
     form.append("o:tag", `v2-result-${qualification}`);
+    disableNotificationTracking(form);
 
     const authorization = Buffer.from(`api:${apiKey}`).toString("base64");
     const response = await fetch(MAILGUN_URL, {

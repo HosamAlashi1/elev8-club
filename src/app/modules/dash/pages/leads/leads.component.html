@@ -96,6 +96,12 @@
 
         <!-- Read-only notice. Nothing is merged or deleted; this only reports what is already
              in the data, so it links to the filter rather than offering a "fix" button. -->
+        <div class="verification-notice" *ngIf="memberFilterKey">
+            <i class="fe fe-user"></i>
+            <span>Showing <strong>{{ memberFilterName }}</strong>'s leads<ng-container *ngIf="selectedStatus"> &middot; {{ selectedStatus === 'closed' ? 'Closed' : selectedStatus }}</ng-container></span>
+            <button type="button" class="verification-notice__link" (click)="clearMemberFilter()">Clear</button>
+        </div>
+
         <div class="dup-notice" *ngIf="duplicateEmailCount > 0 && selectedStatus !== 'duplicate'">
             <i class="fe fe-copy"></i>
             <span>

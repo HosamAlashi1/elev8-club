@@ -1,5 +1,5 @@
 ﻿import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -69,6 +69,19 @@ export class LeadsComponent implements OnInit, OnDestroy {
   selectedSource = '';
   selectedVerification = '';
 
+  /** Narrows the table to one sales rep's leads (set from the Sales Performance page). */
+  memberFilterKey = '';
+
+  get memberFilterName(): string {
+    return this.salesMembers.find(m => m.key === this.memberFilterKey)?.name || 'this sales rep';
+  }
+
+  clearMemberFilter(): void {
+    this.memberFilterKey = '';
+    this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+    this.applyFilters();
+  }
+
   // A lead with no `source` predates the field — it's a v1/Webinar lead.
   readonly sourceOptions: { value: string; label: string }[] = [
     { value: '', label: 'All Sources' },
@@ -126,6 +139,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
     private firebaseService: FirebaseService,
     private modalService: NgbModal,
     private router: Router,
+    private route: ActivatedRoute,
     private toastr: ToastrsService,
     private publicService: PublicService,
     private excelExport: ExcelExportService
@@ -146,6 +160,18 @@ export class LeadsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Deep link from Sales Performance: ?salesMember=<key>&status=closed
+    const params = this.route.snapshot.queryParamMap;
+    this.memberFilterKey = params.get('salesMember') || '';
+    const source = params.get('source') || '';
+    if (this.sourceOptions.some(o => o.value === source)) this.selectedSource = source;
+    const verification = params.get('verification') || '';
+    if (this.verificationOptions.some(o => o.value === verification)) this.selectedVerification = verification;
+    this.searchText = params.get('search') || '';
+    const status = params.get('status') || '';
+    if (this.statusOptions.some(o => o.value === status && !o.value.startsWith('__'))) {
+      this.selectedStatus = status;
+    }
     this.loadCurrentVersion();
   }
 
@@ -354,6 +380,10 @@ export class LeadsComponent implements OnInit, OnDestroy {
       // فلتر WhatsApp Group (admin only) — يُقارن بـ group_name
       if (this.selectedSalesId && this.isAdmin) {
         filtered = filtered.filter(l => (l.assigned_sales?.group_name || '') === this.selectedSalesId);
+      }
+
+      if (this.memberFilterKey) {
+        filtered = filtered.filter(l => l.salesMemberKey === this.memberFilterKey);
       }
 
       // فلتر المصدر (Webinar / Free community) — missing `source` = 'v1'
