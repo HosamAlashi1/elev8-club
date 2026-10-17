@@ -38,7 +38,7 @@ export class DeleteComponent {
 
   delete() {
     // Handle Firebase types
-    if (this.type === 'affiliate' || this.type === 'lead' || this.type === 'sales') {
+    if (this.type === 'affiliate' || this.type === 'lead' || this.type === 'sales' || this.type === 'coupon') {
       this.deleteFromFirebase();
       return;
     }
@@ -116,6 +116,9 @@ export class DeleteComponent {
         break;
       case 'sales':
         deletePromise = this.firebaseService.delete('sales', this.firebaseKey);
+        break;
+      case 'coupon':
+        deletePromise = this.firebaseService.delete('coupons', this.firebaseKey);
         break;
       default:
         this.showmessage(false, 'Invalid Firebase type');

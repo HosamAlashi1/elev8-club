@@ -1,0 +1,82 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ createdCodes.length ? 'Coupons created' : 'Create coupons' }}</h4>
+  <button type="button" class="btn-close" (click)="activeModal.close(createdCodes.length ? 'created' : undefined)"></button>
+</div>
+
+<!-- Result: the new codes, ready to copy -->
+<div class="modal-body" *ngIf="createdCodes.length">
+  <p class="cc-lead">
+    <strong>{{ createdCodes.length }}</strong> {{ createdCodes.length === 1 ? 'code is' : 'codes are' }} ready.
+    <span class="text-muted">Copy {{ createdCodes.length === 1 ? 'it' : 'them' }} now — you can always copy a code from the list too.</span>
+  </p>
+  <div class="cc-codes">
+    <code *ngFor="let c of createdCodes">{{ c }}</code>
+  </div>
+  <div class="alert alert-warning py-2 mt-3 mb-0" *ngIf="error">{{ error }}</div>
+</div>
+<div class="modal-footer" *ngIf="createdCodes.length">
+  <button type="button" class="btn btn-outline-secondary" (click)="copyAll()">
+    <i class="fe" [ngClass]="copiedAll ? 'fe-check' : 'fe-copy'"></i> {{ copiedAll ? 'Copied' : 'Copy all' }}
+  </button>
+  <button type="button" class="btn btn-custom" (click)="activeModal.close('created')">Done</button>
+</div>
+
+<!-- Form -->
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate *ngIf="!createdCodes.length">
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <label class="form-label">Discount (%) <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" min="1" max="100" formControlName="percent" placeholder="e.g. 20"
+          [ngClass]="{ 'is-invalid': submitted && f.percent.invalid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f.percent.invalid">Enter a percentage from 1 to 100</div>
+      </div>
+
+      <div class="col-sm-6">
+        <label class="form-label">Valid for <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="plan">
+          <option *ngFor="let p of planOptions" [value]="p.value">{{ p.label }}</option>
+        </select>
+        <small class="text-muted">One plan by default — pick "All plans" for every plan.</small>
+      </div>
+
+      <div class="col-sm-6">
+        <label class="form-label">Uses per code <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" min="1" formControlName="maxUses"
+          [ngClass]="{ 'is-invalid': submitted && f.maxUses.invalid }" />
+        <small class="text-muted">1 = single use. Counted only when a payment succeeds.</small>
+      </div>
+
+      <div class="col-sm-6">
+        <label class="form-label">How many codes <span class="text-danger">*</span></label>
+        <input class="form-control" type="number" min="1" [max]="maxBatch" formControlName="quantity"
+          [ngClass]="{ 'is-invalid': submitted && f.quantity.invalid }" />
+        <small class="text-muted">More than 1 generates random single-purpose codes (max {{ maxBatch }}).</small>
+      </div>
+
+      <div class="col-12" *ngIf="!isBatch">
+        <label class="form-label">Code <span class="text-muted">(optional)</span></label>
+        <input class="form-control cc-upper" formControlName="code" placeholder="Leave empty to generate one, or type e.g. RAMADAN20"
+          [ngClass]="{ 'is-invalid': submitted && f.code.invalid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f.code.invalid">Letters, numbers and hyphens only</div>
+      </div>
+
+      <div class="col-12" *ngIf="isBatch">
+        <label class="form-label">Prefix <span class="text-muted">(optional)</span></label>
+        <input class="form-control cc-upper" formControlName="prefix" placeholder="e.g. LAUNCH  →  LAUNCH-K7M2Q9XA"
+          [ngClass]="{ 'is-invalid': submitted && f.prefix.invalid }" />
+        <div class="invalid-feedback" *ngIf="submitted && f.prefix.invalid">Letters, numbers and hyphens only</div>
+      </div>
+    </div>
+
+    <div class="alert alert-danger py-2 mt-3 mb-0" *ngIf="error">{{ error }}</div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-custom" [disabled]="isSubmitting">
+      <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmitting"></span>
+      {{ isBatch ? 'Create ' + (f.quantity.value || 0) + ' codes' : 'Create coupon' }}
+    </button>
+  </div>
+</form>

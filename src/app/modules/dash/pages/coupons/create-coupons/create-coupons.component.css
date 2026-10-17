@@ -1,0 +1,20 @@
+.cc-upper { text-transform: uppercase; }
+.cc-lead { margin: 0 0 12px; }
+.cc-codes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.cc-codes code {
+  padding: 8px 10px;
+  border: 1px solid rgb(128 128 128 / 0.25);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  user-select: all;
+}

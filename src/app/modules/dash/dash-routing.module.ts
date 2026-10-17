@@ -41,6 +41,14 @@ const routes: Routes = [
         title: 'Website Questions | Elev8 Club',
       },
       {
+        path: 'coupons',
+        canActivate: [RoleGuard],
+        data: { animation: 'couponsPage', roles: ['admin'] },
+        loadChildren: () =>
+          import('./pages/coupons/coupons.module').then((m) => m.CouponsModule),
+        title: 'Coupons | Elev8 Club',
+      },
+      {
         path: 'affiliates',
         canActivate: [RoleGuard],
         data: { animation: 'affiliatesPage', roles: ['admin'] },

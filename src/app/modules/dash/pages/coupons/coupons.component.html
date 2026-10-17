@@ -1,0 +1,107 @@
+<div class="page-container">
+    <h2 class="page-title" data-aos="fade-right" data-aos-delay="100">Coupons</h2>
+
+    <div class="content" data-aos="fade-up" data-aos-delay="200">
+
+        <!-- Summary -->
+        <div class="cp-summary">
+            <div class="cp-stat"><span class="cp-stat__value">{{ summary.total }}</span><span class="cp-stat__label">Coupons</span></div>
+            <div class="cp-stat cp-stat--green"><span class="cp-stat__value">{{ summary.active }}</span><span class="cp-stat__label">Active</span></div>
+            <div class="cp-stat cp-stat--amber"><span class="cp-stat__value">{{ summary.usedUp }}</span><span class="cp-stat__label">Used up</span></div>
+            <div class="cp-stat cp-stat--blue"><span class="cp-stat__value">{{ summary.redemptions }}</span><span class="cp-stat__label">Times redeemed</span></div>
+        </div>
+
+        <div class="alert alert-warning" *ngIf="loadError">{{ loadError }}</div>
+
+        <!-- Toolbar -->
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3 border-0 my-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1">
+                <div class="search-wrap position-relative" style="max-width: 260px; flex: 1 1 200px;">
+                    <i class="fe fe-search text-muted position-absolute"></i>
+                    <input [(ngModel)]="searchText" class="form-control ps-5 cp-upper" placeholder="Search a code..."
+                        (ngModelChange)="applyFilters()" />
+                </div>
+
+                <app-modern-select [(ngModel)]="selectedPlan" [options]="planOptions" placeholder2="Plan" size="sm"
+                    (selectionChange)="applyFilters()" [minWidth]="'0'" [icon]="'fe fe-layers'" [customWidth]="'180px'"
+                    [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                </app-modern-select>
+
+                <app-modern-select [(ngModel)]="selectedStatus" [options]="statusOptions" placeholder2="Status" size="sm"
+                    (selectionChange)="applyFilters()" [minWidth]="'0'" [icon]="'fe fe-activity'" [customWidth]="'180px'"
+                    [backgroundColor]="'#f8f9fa'" [textColor]="'#495057'" [clearable]="true">
+                </app-modern-select>
+            </div>
+
+            <button class="btn btn-custom d-flex align-items-center gap-2" (click)="create()">
+                <i class="fe fe-plus"></i> Create coupons
+            </button>
+        </div>
+
+        <div class="card mb-0">
+            <div class="table-responsive mb-2">
+                <table class="table table-sm table-nowrap card-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Discount</th>
+                            <th>Plan</th>
+                            <th>Uses</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody *ngIf="(isLoading$ | async)">
+                        <tr *ngFor="let _ of [].constructor(size)">
+                            <td *ngFor="let __ of [].constructor(7)">
+                                <ngx-skeleton-loader appearance="line" animation="progress-dark"
+                                    [theme]="{ width: '60%', height: '20px', 'border-radius': '6px', margin: '0' }">
+                                </ngx-skeleton-loader>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tbody *ngIf="!(isLoading$ | async)">
+                        <tr *ngFor="let c of paginated; trackBy: trackByCode">
+                            <td>
+                                <div class="copy-container">
+                                    <code class="cp-code">{{ c.code }}</code>
+                                    <button class="copy-btn" *ngIf="!c.copied" (click)="copy(c)" aria-label="Copy code"><i class="fe fe-copy"></i></button>
+                                    <div class="copied-indicator" *ngIf="c.copied"><i class="fe fe-check"></i><span>Copied</span></div>
+                                </div>
+                            </td>
+                            <td><strong>{{ c.percent }}%</strong></td>
+                            <td><span class="cp-plan" [attr.data-plan]="c.plan">{{ c.planLabel }}</span></td>
+                            <td>
+                                <span class="cp-uses">{{ c.usedCount }} / {{ c.maxUses }}</span>
+                                <span class="cp-bar"><i [style.width.%]="c.maxUses ? (c.usedCount / c.maxUses * 100) : 0"></i></span>
+                            </td>
+                            <td><span class="cp-status" [attr.data-status]="c.status">{{ statusLabels[c.status] }}</span></td>
+                            <td class="text-muted">{{ c.createdAt | date:'mediumDate' }}</td>
+                            <td class="text-end">
+                                <button class="cp-btn" (click)="toggle(c)" [title]="c.isActive ? 'Disable' : 'Enable'">
+                                    <i class="fe" [ngClass]="c.isActive ? 'fe-pause-circle' : 'fe-play-circle'"></i>
+                                    {{ c.isActive ? 'Disable' : 'Enable' }}
+                                </button>
+                                <button class="cp-btn cp-btn--danger" (click)="delete(c)" title="Delete"><i class="fe fe-trash-2"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <app-no-results [isLoading$]="isLoading$" [totalRecords]="totalCount"></app-no-results>
+
+            <div class="card-footer border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <small class="text-muted">
+                    Showing {{ paginated.length ? ((page - 1) * size + 1) : 0 }} - {{ (page - 1) * size + paginated.length }}
+                    of {{ totalCount }} coupons
+                </small>
+                <app-pagination [isLoading$]="isLoading$" [totalRecords]="totalCount" [size]="size" (pageChange)="list($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

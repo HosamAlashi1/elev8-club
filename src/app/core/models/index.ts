@@ -6,3 +6,4 @@ export * from './sales-member.model';
 export * from './call-log.model';
 export * from './lead-activity.model';
 export * from './support-chat.model';
+export * from './coupon.model';

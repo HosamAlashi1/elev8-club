@@ -67,6 +67,13 @@
         ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'"
       }
     },
+    "coupons": {
+      ".read": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
+      ".write": "auth != null && root.child('dashboard_users').child(auth.uid).child('role').val() == 'admin'",
+      "$code": {
+        ".validate": "$code.matches(/^[A-Z0-9-]{3,24}$/) && newData.hasChildren(['percent', 'plan', 'maxUses', 'usedCount', 'isActive']) && newData.child('percent').isNumber() && newData.child('percent').val() >= 1 && newData.child('percent').val() <= 100 && newData.child('maxUses').isNumber() && newData.child('maxUses').val() >= 1 && newData.child('usedCount').isNumber() && newData.child('isActive').isBoolean() && newData.child('plan').isString() && (newData.child('plan').val() == 'all' || newData.child('plan').val() == 'starter' || newData.child('plan').val() == 'pro' || newData.child('plan').val() == 'ai')"
+      }
+    },
     "subscription_codes": {
       ".read": false,
       ".write": false,

@@ -1,0 +1,101 @@
+.cp-upper { text-transform: uppercase; }
+
+.cp-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 12px; }
+.cp-stat {
+  --c: #8b97a0;
+  display: flex; flex-direction: column; gap: 2px; padding: 14px 16px;
+  border: 1px solid rgb(128 128 128 / 0.22); border-radius: 14px; background: rgb(128 128 128 / 0.05);
+}
+.cp-stat--green { --c: #22c55e; }
+.cp-stat--amber { --c: #f5a524; }
+.cp-stat--blue { --c: #3b82f6; }
+.cp-stat__value { font-size: 1.6rem; font-weight: 800; line-height: 1.1; color: var(--c); }
+.cp-stat__label { font-size: 0.78rem; opacity: 0.7; }
+
+
+.cp-plan, .cp-status {
+  display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.74rem; font-weight: 700;
+  background: rgb(139 151 160 / 0.16); color: #8b97a0;
+}
+.cp-plan[data-plan='starter'] { background: rgb(139 151 160 / 0.18); color: #9aa6ae; }
+.cp-plan[data-plan='pro'] { background: rgb(139 92 246 / 0.16); color: #a78bfa; }
+.cp-plan[data-plan='ai'] { background: rgb(59 130 246 / 0.16); color: #60a5fa; }
+.cp-plan[data-plan='all'] { background: rgb(245 165 36 / 0.16); color: #f5a524; }
+.cp-status[data-status='active'] { background: rgb(34 197 94 / 0.16); color: #22c55e; }
+.cp-status[data-status='used_up'] { background: rgb(245 165 36 / 0.16); color: #f5a524; }
+.cp-status[data-status='disabled'] { background: rgb(229 72 77 / 0.16); color: #e5484d; }
+
+.cp-uses { font-variant-numeric: tabular-nums; font-weight: 600; margin-inline-end: 8px; }
+.cp-bar { display: inline-block; width: 54px; height: 5px; border-radius: 99px; vertical-align: middle; background: rgb(128 128 128 / 0.25); overflow: hidden; }
+.cp-bar i { display: block; height: 100%; background: #22c55e; }
+
+.cp-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin-inline-start: 6px; padding: 5px 10px;
+  border: 1px solid rgb(128 128 128 / 0.3); border-radius: 8px; background: transparent; color: inherit;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease;
+}
+.cp-btn:hover { background: rgb(128 128 128 / 0.12); }
+.cp-btn--danger { color: #e5484d; border-color: rgb(229 72 77 / 0.4); }
+.cp-btn--danger:hover { background: rgb(229 72 77 / 0.12); }
+
+@media (max-width: 767px) { .cp-summary { grid-template-columns: repeat(2, 1fr); } }
+.copy-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cp-code {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(151, 48, 70, 0.24);
+  color: #E5A0AE;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+}
+
+/* زر النسخ */
+.copy-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.copy-btn i {
+  font-size: 16px;
+  color: #9CA3AF; /* رمادي ناعم */
+  transition: 0.2s ease;
+}
+
+.copy-btn:hover i {
+  color: #E5A0AE;
+  transform: scale(1.15);
+}
+
+/* نص Copied */
+.copied-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #34C759;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: fadeInOut 1.4s ease forwards;
+}
+
+.copied-indicator i {
+  font-size: 16px;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(2px); }
+  15%, 85% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
