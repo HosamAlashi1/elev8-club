@@ -3,7 +3,7 @@
   direction: rtl;
   background:
     radial-gradient(circle at 20% 20%, rgb(var(--lp-cyan-rgb) / 0.09), transparent 24rem),
-    linear-gradient(180deg, #05070b 0%, #07111f 100%);
+    linear-gradient(180deg, #0b0506 0%, #1f070b 100%);
 }
 
 .screens-inner {
@@ -20,7 +20,7 @@
   background:
     radial-gradient(circle at 50% 0%, rgb(var(--lp-accent-rgb) / 0.05), transparent 16rem),
     linear-gradient(145deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0.015)),
-    rgb(7 14 24 / 0.84);
+    rgb(24 7 10 / 0.84);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.04),
     0 24px 60px rgb(0 0 0 / 0.28);
@@ -104,7 +104,7 @@
   overflow: hidden;
   border: 1px solid rgb(var(--lp-accent-rgb) / 0.18);
   box-shadow: 0 18px 42px rgb(0 0 0 / 0.26);
-  background: #05070b;
+  background: #0b0506;
   aspect-ratio: 9 / 16;
 }
 
@@ -144,7 +144,7 @@
   text-align: center;
   background:
     radial-gradient(ellipse 90% 64% at 50% 0%, rgb(255 255 255 / 0.18), transparent 62%),
-    linear-gradient(180deg, rgb(25 30 42 / 0.92) 0%, rgb(9 10 15 / 0.96) 78%);
+    linear-gradient(180deg, rgb(42 25 28 / 0.92) 0%, rgb(15 9 10 / 0.96) 78%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.18),
     inset 0 -1px 0 rgb(255 255 255 / 0.04),
@@ -162,7 +162,7 @@
   border-radius: inherit;
   background:
     linear-gradient(110deg, transparent 0 12%, rgb(255 255 255 / 0.12) 34%, transparent 58%),
-    radial-gradient(circle at 50% 0%, rgb(0 78 238 / 0.1), transparent 56%);
+    radial-gradient(circle at 50% 0%, rgb(201 22 49 / 0.1), transparent 56%);
   opacity: 0.75;
 }
 
@@ -268,6 +268,6 @@
   .promise-card {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: linear-gradient(180deg, rgb(25 30 42 / 0.98) 0%, rgb(9 10 15 / 0.99) 78%);
+    background: linear-gradient(180deg, rgb(42 25 28 / 0.98) 0%, rgb(15 9 10 / 0.99) 78%);
   }
 }

@@ -56,3 +56,5 @@ Thumbs.db
 
 # Encoded HLS ladder for the hero video (served from Firebase Hosting CDN, not from git)
 .video-build/
+
+.vercel

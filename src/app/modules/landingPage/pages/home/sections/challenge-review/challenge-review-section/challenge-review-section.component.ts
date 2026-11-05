@@ -39,39 +39,43 @@ export class ChallengeReviewSectionComponent implements OnInit, OnDestroy {
   private buildReviewItems() {
     return [
     {
-      title: 'ماذا ستحصل داخل التحدي؟',
+      title: 'ماذا سوف تحصل داخل التحدي ؟',
       icon: 'Sparkles',
-      text: 'تحدي مجاني مباشر راح أشرح فيه خطوة بخطوة كيف تبدأ تعمل فلوس أونلاين بالتداول باستخدام الذكاء الاصطناعي بطريقة بسيطة وعملية'
+      text: 'تحدي مجاني مباشر راح أشرح فيه خطوة بخطوة كيف تبدأ تعمل دخل أونلاين بالتداول باستخدام الذكاء الاصطناعي بطريقة بسيطة وعملية'
     },
     {
-      title: 'لمين هذا التحدي؟',
+      title: 'لمين هذا التحدي ؟',
       icon: 'Users',
-      text: 'لأي شخص يريد يبدأ يحقق دخل أونلاين من أي مكان بالعالم بدون ما يقضي سنوات حتى يصبح "خبير"وبرأس مال بسيط',
+      text: 'لأي شخص عنده رأس مال وحابب يتعلم كيف يبني مصدر دخل إضافي من خلال التداول قبل نهاية 2026',
     },
     {
-      title: 'متى التحدي؟',
+      title: 'متى التحدي ؟',
       icon: 'CalendarDays',
-      text: `يوم ${this.challengeDateTimeLabel} (بتوقيت مصر)، مدة الجلسة حوالي ساعة`
+      text: `يوم ${this.challengeDateTimeLabel} توقيت تركيا`
     },
     {
-      title: 'لماذا هذا التحدي؟',
+      title: 'لماذا هذا التحدي ؟',
       icon: 'Trophy',
-      text: 'لأن الذكاء الاصطناعي خلق فرصة جديدة بالكامل أصبح المبتدئين قادرين يبنوا دخل أونلاين ممكن يغير حياتهم بالكامل',
+      text: 'لأنه لسه قدامك فرصة تعمل تغيير بوضعك المالي قبل نهاية 2026. ومع الذكاء الاصطناعي ونظامنا المتكامل، رح تتعرف على طريقة جديدة للتداول ممكن تساعدك تبدأ تبني مصدر دخل إضافي بدل ما تدخل سنة جديدة بنفس الوضع.',
     }
     ];
   }
 
+  /** Formatted in Istanbul time, whatever the visitor's own timezone, because the card says "Turkey time". */
   private formatChallengeDateTime(timestamp: number): string {
-    const date = new Date(timestamp);
-    const weekdays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    const weekday = weekdays[date.getDay()];
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const hours24 = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Istanbul', weekday: 'long', day: 'numeric', month: 'numeric',
+      hour: 'numeric', minute: '2-digit', hour12: false
+    }).formatToParts(new Date(timestamp));
+    const get = (type: string) => parts.find(p => p.type === type)?.value || '';
+    const weekdays: Record<string, string> = {
+      Sunday: 'الأحد', Monday: 'الإثنين', Tuesday: 'الثلاثاء', Wednesday: 'الأربعاء',
+      Thursday: 'الخميس', Friday: 'الجمعة', Saturday: 'السبت'
+    };
+    const hours24 = parseInt(get('hour'), 10) % 24;   // some engines print midnight as 24
     const hour12 = hours24 % 12 || 12;
-    const period = hours24 >= 12 ? 'مساء' : 'صباحاً';
+    const period = hours24 >= 12 ? 'مساءً' : 'صباحاً';
 
-    return `${weekday} ${day}/${month} الساعة ${hour12}:${minutes} ${period}`;
+    return `${weekdays[get('weekday')] || ''} ${get('day')}/${get('month')} الساعة ${hour12}:${get('minute')} ${period}`;
   }
 }

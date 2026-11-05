@@ -1,5 +1,5 @@
 :host {
-  --blue: #004eee;
+  --blue: #c91631;
   --glass: rgba(255, 255, 255, 0.05);
   --line: rgba(255, 255, 255, 0.5);
   --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
@@ -29,8 +29,8 @@
   transform: translateX(-50%);
   pointer-events: none;
   background:
-    linear-gradient(180deg, var(--story-handoff) 0%, rgba(6, 20, 49, 0.82) 14%, rgba(5, 10, 23, 0.38) 34%, transparent 58%),
-    radial-gradient(ellipse 980px 420px at 52% 50%, rgba(0, 78, 238, 0.045), transparent 72%);
+    linear-gradient(180deg, var(--story-handoff) 0%, rgba(49, 6, 12, 0.82) 14%, rgba(23, 5, 8, 0.38) 34%, transparent 58%),
+    radial-gradient(ellipse 980px 420px at 52% 50%, rgba(201, 22, 49, 0.045), transparent 72%);
 }
 
 .resources-guides::after {
@@ -221,7 +221,7 @@ width: 100%;
   width: 0;
   height: 24px;
   border-right: 1px dashed var(--blue);
-  box-shadow: 0 0 12px rgba(0, 78, 238, 0.5);
+  box-shadow: 0 0 12px rgba(201, 22, 49, 0.5);
 }
 
 .resources-guides ul {
@@ -248,7 +248,7 @@ width: 100%;
   bottom: 0;
   z-index: 2;
   height: 1px;
-  background-image: repeating-linear-gradient(90deg, rgba(0, 78, 238, 0.75) 0 6px, transparent 6px 14px);
+  background-image: repeating-linear-gradient(90deg, rgba(201, 22, 49, 0.75) 0 6px, transparent 6px 14px);
   opacity: 0.75;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.16) 5%, #000 14%, #000 calc(53% - 18px), transparent calc(50% - 18px) calc(50% + 18px), #000 calc(50% + 18px), #000 86%, rgba(0, 0, 0, 0.16) 95%, transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.16) 5%, #000 14%, #000 calc(55% - 18px), transparent calc(50% - 18px) calc(50% + 18px), #000 calc(50% + 18px), #000 86%, rgba(0, 0, 0, 0.16) 95%, transparent 100%);
@@ -265,15 +265,15 @@ width: 100%;
   place-items: center;
   transform: translateX(-50%);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-bottom-color: rgba(0, 78, 238, 0.78);
+  border-bottom-color: rgba(201, 22, 49, 0.78);
   border-radius: 10px;
   background:
-    radial-gradient(ellipse 26px 18px at 50% 88%, rgba(0, 78, 238, 0), rgba(0, 78, 238, 0.22) 58%, transparent 82%),
-    linear-gradient(180deg, rgba(28, 29, 36, 0.96) 0%, rgba(14, 17, 28, 0.97) 52%, rgba(0, 48, 150, 0) 100%);
+    radial-gradient(ellipse 26px 18px at 50% 88%, rgba(201, 22, 49, 0), rgba(201, 22, 49, 0.22) 58%, transparent 82%),
+    linear-gradient(180deg, rgba(36, 28, 29, 0.96) 0%, rgba(28, 14, 16, 0.97) 52%, rgba(150, 0, 23, 0) 100%);
   box-shadow:
     inset 0 0 10px rgba(255, 255, 255, 0.03),
-    inset 0 -10px 16px rgba(0, 78, 238, 0.38),
-    0 0 28px rgba(0, 78, 238, 0.45);
+    inset 0 -10px 16px rgba(201, 22, 49, 0.38),
+    0 0 28px rgba(201, 22, 49, 0.45);
   backdrop-filter: blur(18px);
   animation: mouse-cue-pulse 2.2s ease-in-out infinite;
 }
@@ -291,15 +291,15 @@ width: 100%;
   100% {
     box-shadow:
       inset 0 0 10px rgba(255, 255, 255, 0.03),
-      inset 0 -10px 16px rgba(0, 78, 238, 0.38),
-      0 0 24px rgba(0, 78, 238, 0.34);
+      inset 0 -10px 16px rgba(201, 22, 49, 0.38),
+      0 0 24px rgba(201, 22, 49, 0.34);
   }
 
   50% {
     box-shadow:
       inset 0 0 12px rgba(255, 255, 255, 0.06),
-      inset 0 -12px 18px rgba(0, 78, 238, 0.54),
-      0 0 40px rgba(0, 78, 238, 0.62);
+      inset 0 -12px 18px rgba(201, 22, 49, 0.54),
+      0 0 40px rgba(201, 22, 49, 0.62);
   }
 }
 
@@ -424,8 +424,8 @@ width: 100%;
     top: 0;
     bottom: 0;
     background:
-      linear-gradient(180deg, var(--story-handoff) 0%, rgba(6, 20, 49, 0.76) 16%, rgba(5, 10, 23, 0.34) 34%, transparent 56%),
-      radial-gradient(ellipse 520px 280px at 50% 0, rgba(0, 78, 238, 0.08), transparent 72%);
+      linear-gradient(180deg, var(--story-handoff) 0%, rgba(49, 6, 12, 0.76) 16%, rgba(23, 5, 8, 0.34) 34%, transparent 56%),
+      radial-gradient(ellipse 520px 280px at 50% 0, rgba(201, 22, 49, 0.08), transparent 72%);
   }
 
   .resources-guides__shell {
@@ -572,4 +572,18 @@ width: 100%;
   .resources-guides__body {
     gap: 14px;
   }
+}
+
+/* Longer letter: on the wide layout the section grows with the text instead of keeping a fixed 650px. */
+@media (min-width: 1321px) {
+  .resources-guides__shell { height: auto; min-height: 650px; padding: 58px 0 64px; }
+  .resources-guides__copy { position: relative; top: auto; right: auto; margin: 0 530px 0 auto; }
+  .resources-guides__copy p { font-size: 17px; line-height: 1.85; }
+  .resources-guides__body { gap: 14px; }
+}
+
+/* Silver text instead of gold. */
+.resources-guides__highlight {
+  color: var(--lp-silver) !important;
+  -webkit-text-fill-color: var(--lp-silver);
 }

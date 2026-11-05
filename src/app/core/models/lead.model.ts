@@ -19,6 +19,14 @@ export interface LeadAnswers {
   financialProblem?: string;
   investBudget?: string;
   systemGoal?: string;
+  // Webinar (v1) challenge questionnaire, 2026 edition. New keys, so leads answered under the old seven questions
+  // (age, workStatus, …) keep showing under their own wording in the dashboard.
+  challengeIncome?: string;
+  challengeExperience?: string;
+  challengeGoal?: string;
+  challengeCapital?: string;
+  challengeReadiness?: string;
+  challengeAttendance?: string;
   // v2 (elev8-club-v2) question set — kept here too since both projects write to this same
   // `leads` node. See elev8-club-v2/docs/05-QUALIFICATION.md.
   v2Goal?: string;

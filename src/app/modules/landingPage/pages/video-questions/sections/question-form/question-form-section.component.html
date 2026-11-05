@@ -71,7 +71,7 @@
       <div class="question-copy" data-aos="fade-left" data-aos-duration="700">
         <p class="step-pill">الخطوة الثانية</p>
         <h2>جاوب على الأسئلة<span class="question-copy__below-word"> بالأسفل</span></h2>
-        <p>لتقدر تفتح حساب التداول داخل مجموعة الواتس</p>
+        <p>ليكتمل تسجيلك وتنضم لمجموعة الواتساب</p>
       </div>
 
       <div
@@ -121,14 +121,27 @@
           </div>
 
           <div class="question-footer question-animate-item">
-            <button
-              type="button"
-              class="gold-button next-button"
-              [disabled]="!canProceed || isSubmitting || isSlidingQuestion"
-              (click)="handleNext()">
-              {{ isLastQuestion ? 'إرسال الإجابات' : 'السؤال التالي' }}
-              <span aria-hidden="true">←</span>
-            </button>
+            <div class="question-actions">
+              <button
+                type="button"
+                class="gold-button next-button"
+                [disabled]="!canProceed || isSubmitting || isSlidingQuestion"
+                (click)="handleNext()">
+                {{ isLastQuestion ? 'إرسال الإجابات' : 'السؤال التالي' }}
+                <span aria-hidden="true">←</span>
+              </button>
+
+              <button
+                type="button"
+                class="prev-button"
+                *ngIf="currentQuestion > 0"
+                [disabled]="isSubmitting || isSlidingQuestion"
+                aria-label="السؤال السابق"
+                title="السؤال السابق"
+                (click)="handlePrevious()">
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
 
             <span class="question-count">السؤال {{ currentQuestion + 1 }} / {{ questions.length }}</span>
           </div>

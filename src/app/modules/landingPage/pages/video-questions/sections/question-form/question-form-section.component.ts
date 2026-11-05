@@ -5,6 +5,7 @@ import { take } from 'rxjs/operators';
 import * as AOS from 'aos';
 import { FirebaseService } from '../../../../../services/firebase.service';
 import { GtmService } from '../../../../../services/gtm.service';
+import { LandingSettingsService } from '../../../../../services/landing-settings.service';
 import { Lead, LeadAnswers, Affiliate } from '../../../../../../core/models';
 
 interface Question {
@@ -19,6 +20,9 @@ interface Question {
   validation?: 'age' | 'monthlyIncome';
   validationHint?: string;
 }
+
+/** Long enough to see the option fill in, short enough to feel automatic. */
+const AUTO_ADVANCE_DELAY_MS = 320;
 
 @Component({
   selector: 'app-question-form-section',
@@ -51,60 +55,47 @@ interface Question {
 export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   questions: Question[] = [
     {
-      id: 'age',
+      id: 'challengeIncome',
       number: 1,
-      text: 'قديش عمرك؟ دخل عمرك بالسنوات.',
-      type: 'text',
-      placeholder: 'مثال : 24',
-      inputMode: 'numeric',
-      validation: 'age',
-      validationHint: 'اكتب العمر بالأرقام فقط، بين 12 و 75 سنة.'
+      text: 'ما هو وضعك الحالي من ناحية الدخل؟',
+      type: 'radio',
+      options: ['موظف وراتبي ثابت', 'عندي بزنس خاص', 'فريلانسر', 'حالياً بدون عمل', 'عندي أكثر من مصدر دخل']
     },
     {
-      id: 'workStatus',
+      id: 'challengeExperience',
       number: 2,
-      text: 'شو وضعك الحالي شغل؟',
+      text: 'هل لديك خبرة سابقة بالتداول؟',
       type: 'radio',
-      options: ['عندي شغل براتب ثابت', 'شغلي فريلانس / مستقل', 'عندي مشروع خاص', 'ما عندي دخل حالي']
+      options: ['مبتدئ تماماً', 'عندي معرفة بسيطة', 'جربت التداول سابقاً', 'أتداول حالياً']
     },
     {
-      id: 'monthlyIncome',
+      id: 'challengeGoal',
       number: 3,
-      text: 'قديش دخلك الشهري بالدولار؟',
-      hint: 'معلوماتك سرية وما بنستخدمها إلا عشان نفهم وين ممكن نساعدك.',
-      type: 'text',
-      placeholder: 'مثال : 800',
-      inputMode: 'decimal',
-      validation: 'monthlyIncome',
-      validationHint: 'اكتب رقم تقريبي بالدولار، بدون رموز أو فواصل.'
+      text: 'ما هو هدفك من المشاركة بالتحدي؟',
+      type: 'radio',
+      options: ['أتعلم مهارة جديدة', 'أبني مصدر دخل إضافي', 'أستخدم الذكاء الاصطناعي في التداول', 'أطور مستواي بالتداول']
     },
     {
-      id: 'tradingExperience',
+      id: 'challengeCapital',
       number: 4,
-      text: 'هل جربت التداول قبل؟',
+      text: 'كم رأس المال المتاح لديك للبدء بالتداول ؟',
       type: 'radio',
-      options: ['لا ما جربت قبل', 'جربت وخسرت', 'جربت بس ما طلعت معي نتيجة', 'عندي شوية خبرة بس بسيطة']
+      options: ['أقل من 100 دولار', '100–300 دولار', '300–500 دولار', '500–1,000 دولار', 'أكثر من 1,000 دولار']
     },
     {
-      id: 'financialProblem',
+      id: 'challengeReadiness',
       number: 5,
-      text: 'شو أكبر مشكلة مالية عندك حالياً؟',
+      text: 'كم أنت جاد في البدء بتطبيق اللي رح تتعلمه؟',
       type: 'radio',
-      options: ['ما عندي مصدر دخل ثاني', 'دخلي قليل وكافي', 'عندي مدخرات بس مش عارف شو أعمل فيها', 'مش عارف وين أبدأ أستثمر']
+      options: ['جاهز أبدأ مباشرة', 'بدي أفهم النظام أولاً', 'حالياً ببحث عن الخيارات المتاحة']
     },
     {
-      id: 'investBudget',
+      id: 'challengeAttendance',
       number: 6,
-      text: 'قديش تقدر تخصص من دخلك؟',
+      // The date is filled in from the dashboard's start date (see ngOnInit); this is what shows until it loads.
+      text: 'هل تقدر تحضر التدريب المباشر بتوقيت تركيا ؟',
       type: 'radio',
-      options: ['أقل من $100', '$100 و $500', '$500 و $2,000', 'أكثر من $2000']
-    },
-    {
-      id: 'systemGoal',
-      number: 7,
-      text: 'شو هدفك الأساسي من دخولك السيستم اليوم؟',
-      type: 'radio',
-      options: ['أفهم كيف يشتغل التداول', 'أبني دخل إضافي', 'أخرج من الراتب الثابت', 'أبني مشروعي بطريقة صح']
+      options: ['نعم', 'لا']
     }
   ];
 
@@ -133,15 +124,23 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   private slideSwapTimer: ReturnType<typeof setTimeout> | null = null;
   private slideDoneTimer: ReturnType<typeof setTimeout> | null = null;
   private successTypeTimer: ReturnType<typeof setTimeout> | null = null;
+  private autoAdvanceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private firebaseService: FirebaseService,
     private route: ActivatedRoute,
     private router: Router,
-    private gtm: GtmService
+    private gtm: GtmService,
+    private landingSettings: LandingSettingsService
   ) { }
 
   ngOnInit(): void {
+    this.landingSettings.getStartCounterDate().pipe(take(1)).subscribe(startDate => {
+      if (!startDate) return;
+      const attendance = this.questions.find(item => item.id === 'challengeAttendance');
+      if (attendance) attendance.text = `هل تقدر تحضر التدريب المباشر يوم ${this.formatSessionDate(startDate)} بتوقيت تركيا ؟`;
+    });
+
     this.route.queryParams.subscribe(params => {
       this.leadKey = params['lead'] || null;
       this.affiliateCode = params['ref'] || null;
@@ -182,6 +181,7 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearAutoAdvanceTimer();
     this.clearSlideTimers();
     this.clearSuccessTypeTimer();
   }
@@ -207,12 +207,27 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
   }
 
   handleAnswer(value: string): void {
+    if (this.isSubmitting || this.isSlidingQuestion) return;
+
     this.answers[this.currentQ.id] = value;
     this.touchedAnswers[this.currentQ.id] = true;
     this.trackQuestionProgress();
+
+    // Move on by itself once the selected state has had a moment to register. Picking another
+    // option restarts the timer, so a quick correction still wins; the "next" button remains a
+    // full fallback. The last card keeps its explicit submit: choosing an option there must not
+    // send the whole questionnaire by accident.
+    this.clearAutoAdvanceTimer();
+    if (this.isLastQuestion) return;
+
+    this.autoAdvanceTimer = setTimeout(() => {
+      this.autoAdvanceTimer = null;
+      this.handleNext();
+    }, AUTO_ADVANCE_DELAY_MS);
   }
 
   handleNext(): void {
+    this.clearAutoAdvanceTimer();
     this.markQuestionTouched(this.currentQ.id);
     if (!this.canProceed || this.isSubmitting || this.isSlidingQuestion) return;
 
@@ -222,6 +237,12 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     }
 
     this.submitAnswers();
+  }
+
+  /** Back to the previous question; the answers already given stay selected. */
+  handlePrevious(): void {
+    if (this.currentQuestion === 0 || this.isSubmitting || this.isSlidingQuestion) return;
+    this.slideToQuestion(this.currentQuestion - 1);
   }
 
   onEnterKey(event: Event): void {
@@ -333,13 +354,12 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     this.isSubmitting = true;
 
     const answersData: LeadAnswers = {
-      age: this.answers['age'],
-      workStatus: this.answers['workStatus'],
-      monthlyIncome: this.answers['monthlyIncome'],
-      tradingExperience: this.answers['tradingExperience'],
-      financialProblem: this.answers['financialProblem'],
-      investBudget: this.answers['investBudget'],
-      systemGoal: this.answers['systemGoal']
+      challengeIncome: this.answers['challengeIncome'],
+      challengeExperience: this.answers['challengeExperience'],
+      challengeGoal: this.answers['challengeGoal'],
+      challengeCapital: this.answers['challengeCapital'],
+      challengeReadiness: this.answers['challengeReadiness'],
+      challengeAttendance: this.answers['challengeAttendance']
     };
 
     this.firebaseService.completeLead(this.leadKey, answersData)
@@ -350,8 +370,9 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
 
         this.gtm.trackCompleteRegistration(this.leadKey!, {
           questions_count: this.questions.length,
-          age: answersData.age || '',
-          system_goal: answersData.systemGoal || ''
+          goal: answersData.challengeGoal || '',
+          capital: answersData.challengeCapital || '',
+          readiness: answersData.challengeReadiness || ''
         });
 
         this.openSuccessPanel();
@@ -362,6 +383,18 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
         alert('حدث خطأ أثناء حفظ الإجابات، الرجاء المحاولة مرة أخرى');
         this.isSubmitting = false;
       });
+  }
+
+  /** "15/11 الساعة 9 مساءً", in Istanbul time whatever the visitor's own timezone. */
+  private formatSessionDate(timestamp: number): string {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Istanbul', day: 'numeric', month: 'numeric', hour: 'numeric', minute: '2-digit', hour12: false
+    }).formatToParts(new Date(timestamp));
+    const get = (type: string) => parts.find(p => p.type === type)?.value || '';
+    const hours24 = parseInt(get('hour'), 10) % 24;
+    const hour12 = hours24 % 12 || 12;
+    const minutes = get('minute') === '00' ? '' : `:${get('minute')}`;
+    return `${get('day')}/${get('month')} الساعة ${hour12}${minutes} ${hours24 >= 12 ? 'مساءً' : 'صباحاً'}`;
   }
 
   private slideToQuestion(nextIndex: number): void {
@@ -379,6 +412,13 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
       this.questionSlidePhase = 'idle';
       this.clearSlideTimers();
     }, 540);
+  }
+
+  private clearAutoAdvanceTimer(): void {
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
   }
 
   private clearSlideTimers(): void {
@@ -632,13 +672,12 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
       `مرحباً فريق Elev8 Club،\n\n` +
       `أنا ${userName}، خلصت مشاهدة الفيديو وجاوبت على أسئلة التسجيل.\n\n` +
       `بياناتي المختصرة:\n` +
-      `العمر: ${this.answers['age'] || ''}\n` +
-      `وضعي الحالي: ${this.answers['workStatus'] || ''}\n` +
-      `الدخل الشهري: ${this.answers['monthlyIncome'] || ''}\n` +
-      `تجربتي في التداول: ${this.answers['tradingExperience'] || ''}\n` +
-      `أكبر مشكلة مالية عندي: ${this.answers['financialProblem'] || ''}\n` +
-      `المبلغ اللي أقدر أخصصه: ${this.answers['investBudget'] || ''}\n` +
-      `هدفي من السيستم: ${this.answers['systemGoal'] || ''}\n` +
+      `وضعي الحالي: ${this.answers['challengeIncome'] || ''}\n` +
+      `خبرتي بالتداول: ${this.answers['challengeExperience'] || ''}\n` +
+      `هدفي من التحدي: ${this.answers['challengeGoal'] || ''}\n` +
+      `رأس المال المتاح: ${this.answers['challengeCapital'] || ''}\n` +
+      `جاهزيتي للتطبيق: ${this.answers['challengeReadiness'] || ''}\n` +
+      `حضور التدريب المباشر: ${this.answers['challengeAttendance'] || ''}\n` +
       `الإيميل: ${userEmail}\n\n` +
       `جاهز أعرف الخطوة التالية وأدخل مجموعة الواتساب.`;
 

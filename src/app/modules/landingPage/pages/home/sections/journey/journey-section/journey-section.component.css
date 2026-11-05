@@ -1,6 +1,6 @@
 .journey-section {
   padding: 90px 0;
-  background: linear-gradient(to bottom, #000, #0A1E3F);
+  background: linear-gradient(to bottom, #000, #3F0A12);
   position: relative;
   overflow: hidden;
   direction: rtl;
@@ -86,7 +86,7 @@
   flex: 1;
   padding: 28px;
   border-radius: 16px;
-  background: linear-gradient(145deg, rgba(10,30,63,0.9), rgba(2,2,3,0.75));
+  background: linear-gradient(145deg, rgba(63,10,18,0.9), rgba(3,2,2,0.75));
   border: 1px solid rgb(var(--lp-accent-rgb) / 0.3);
   position: relative;
   transition: 0.3s ease;

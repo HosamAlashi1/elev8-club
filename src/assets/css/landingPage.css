@@ -5,11 +5,11 @@
 :root {
   --lp-font-body: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   --lp-font-display: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
-  --lp-bg: #07091A;
-  --lp-bg-2: #0A0D24;
-  --lp-panel: #0E122A;
-  --lp-panel-soft: #131830;
-  --lp-text: #f8fafc;
+  --lp-bg: #1A070A;
+  --lp-bg-2: #240A0E;
+  --lp-panel: #2A0E12;
+  --lp-panel-soft: #301317;
+  --lp-text: #fcf9f9;
   --lp-muted: #9CA3AF;
   --lp-accent: #D4A017;
   --lp-accent-hot: #E8B52A;
@@ -17,12 +17,12 @@
   --lp-accent-muted: #C2920F;
   --lp-accent-deep: #966B0B;
   --lp-accent-ink: #0A0700;
-  --lp-cyan: #20e5f2;
+  --lp-cyan: #e61c3a;
   --lp-coral: #ff3b30;
   --lp-accent-rgb: 212 160 23;
   --lp-accent-hot-rgb: 232 181 42;
   --lp-accent-soft-rgb: 236 194 68;
-  --lp-cyan-rgb: 32 229 242;
+  --lp-cyan-rgb: 230 28 58;
   --lp-coral-rgb: 255 59 48;
   --lp-accent-gradient: linear-gradient(135deg, #F5D888 0%, #D4A017 48%, #B8890A 100%);
   --lp-accent-button: linear-gradient(135deg, #F0CA60 0%, #D4A017 52%, #ECC244 100%);
@@ -47,7 +47,7 @@ body {
   background:
     radial-gradient(circle at 8% 0%, rgb(var(--lp-accent-rgb) / 0.08), transparent 28rem),
     radial-gradient(circle at 92% 8%, rgb(var(--lp-accent-rgb) / 0.06), transparent 30rem),
-    linear-gradient(180deg, #05071A 0%, #07091E 38%, #05071A 100%);
+    linear-gradient(180deg, #1A0508 0%, #1E070A 38%, #1A0508 100%);
   overflow: hidden;
   --scroll-opacity: 0.15;
   --scroll-translate: 0px;
@@ -327,7 +327,7 @@ body {
   --section-bg:
     radial-gradient(circle at 85% 4%, rgb(var(--lp-cyan-rgb) / 0.08), transparent 24rem),
     radial-gradient(circle at 14% 8%, rgb(var(--lp-accent-rgb) / 0.055), transparent 20rem),
-    linear-gradient(180deg, rgb(8 18 31 / 0.96) 0%, rgb(3 8 14 / 0.98) 100%);
+    linear-gradient(180deg, rgb(31 8 11 / 0.96) 0%, rgb(14 3 5 / 0.98) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.18);
   --section-separator-b: rgb(var(--lp-accent-rgb) / 0.34);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.18);
@@ -384,7 +384,7 @@ body {
   --section-bg:
     radial-gradient(circle at 84% 6%, rgb(var(--lp-cyan-rgb) / 0.105), transparent 24rem),
     radial-gradient(circle at 10% 0%, rgb(var(--lp-accent-rgb) / 0.045), transparent 20rem),
-    linear-gradient(145deg, rgb(4 17 28 / 0.98) 0%, rgb(2 9 16 / 0.99) 100%);
+    linear-gradient(145deg, rgb(28 4 8 / 0.98) 0%, rgb(16 2 4 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.28);
   --section-separator-b: rgb(var(--lp-accent-rgb) / 0.24);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.18);
@@ -397,7 +397,7 @@ body {
   --section-bg:
     radial-gradient(circle at 14% 12%, rgb(var(--lp-accent-rgb) / 0.075), transparent 22rem),
     radial-gradient(circle at 90% 20%, rgb(var(--lp-cyan-rgb) / 0.075), transparent 24rem),
-    linear-gradient(160deg, rgb(7 15 25 / 0.98) 0%, rgb(4 9 15 / 0.99) 54%, rgb(9 15 22 / 0.98) 100%);
+    linear-gradient(160deg, rgb(25 7 10 / 0.98) 0%, rgb(15 4 6 / 0.99) 54%, rgb(22 9 11 / 0.98) 100%);
   --section-separator-a: rgb(var(--lp-accent-rgb) / 0.30);
   --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.30);
   --section-separator-c: rgb(var(--lp-accent-rgb) / 0.20);
@@ -410,7 +410,7 @@ body {
   --section-bg:
     radial-gradient(circle at 50% 0%, rgb(var(--lp-accent-rgb) / 0.12), transparent 24rem),
     radial-gradient(circle at 12% 80%, rgb(var(--lp-cyan-rgb) / 0.055), transparent 20rem),
-    linear-gradient(180deg, rgb(9 17 18 / 0.98) 0%, rgb(3 10 18 / 0.99) 100%);
+    linear-gradient(180deg, rgb(18 9 10 / 0.98) 0%, rgb(18 3 5 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-accent-rgb) / 0.34);
   --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.24);
   --section-separator-c: rgb(var(--lp-accent-rgb) / 0.28);
@@ -423,7 +423,7 @@ body {
   --section-bg:
     radial-gradient(circle at 18% 12%, rgb(var(--lp-coral-rgb) / 0.055), transparent 18rem),
     radial-gradient(circle at 88% 6%, rgb(var(--lp-cyan-rgb) / 0.095), transparent 25rem),
-    linear-gradient(145deg, rgb(4 12 20 / 0.99) 0%, rgb(9 13 18 / 0.98) 55%, rgb(3 8 14 / 0.99) 100%);
+    linear-gradient(145deg, rgb(20 4 6 / 0.99) 0%, rgb(18 9 10 / 0.98) 55%, rgb(14 3 5 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.30);
   --section-separator-b: rgb(var(--lp-coral-rgb) / 0.20);
   --section-separator-c: rgb(var(--lp-accent-rgb) / 0.26);
@@ -436,7 +436,7 @@ body {
   --section-bg:
     radial-gradient(circle at 12% 16%, rgb(var(--lp-cyan-rgb) / 0.08), transparent 22rem),
     radial-gradient(circle at 84% 78%, rgb(var(--lp-accent-rgb) / 0.065), transparent 22rem),
-    linear-gradient(180deg, rgb(5 18 26 / 0.98) 0%, rgb(2 8 14 / 0.99) 100%);
+    linear-gradient(180deg, rgb(26 5 8 / 0.98) 0%, rgb(14 2 4 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.28);
   --section-separator-b: rgb(var(--lp-accent-rgb) / 0.30);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.20);
@@ -446,7 +446,7 @@ body {
   --section-bg:
     radial-gradient(circle at 52% 0%, rgb(var(--lp-cyan-rgb) / 0.105), transparent 24rem),
     radial-gradient(circle at 4% 70%, rgb(var(--lp-accent-rgb) / 0.055), transparent 18rem),
-    linear-gradient(135deg, rgb(3 13 24 / 0.99) 0%, rgb(8 18 31 / 0.97) 48%, rgb(2 7 13 / 0.99) 100%);
+    linear-gradient(135deg, rgb(24 3 6 / 0.99) 0%, rgb(31 8 11 / 0.97) 48%, rgb(13 2 4 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.34);
   --section-separator-b: rgb(var(--lp-accent-rgb) / 0.22);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.24);
@@ -456,7 +456,7 @@ body {
   --section-bg:
     radial-gradient(circle at 84% 8%, rgb(var(--lp-accent-rgb) / 0.10), transparent 23rem),
     radial-gradient(circle at 16% 20%, rgb(var(--lp-cyan-rgb) / 0.065), transparent 21rem),
-    linear-gradient(150deg, rgb(8 17 23 / 0.98) 0%, rgb(3 8 14 / 0.99) 100%);
+    linear-gradient(150deg, rgb(23 8 10 / 0.98) 0%, rgb(14 3 5 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-accent-rgb) / 0.34);
   --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.25);
   --section-separator-c: rgb(var(--lp-accent-rgb) / 0.22);
@@ -466,7 +466,7 @@ body {
   --section-bg:
     radial-gradient(circle at 18% 0%, rgb(var(--lp-coral-rgb) / 0.05), transparent 18rem),
     radial-gradient(circle at 76% 12%, rgb(var(--lp-accent-rgb) / 0.085), transparent 24rem),
-    linear-gradient(180deg, rgb(9 14 18 / 0.99) 0%, rgb(3 9 15 / 0.99) 100%);
+    linear-gradient(180deg, rgb(18 9 10 / 0.99) 0%, rgb(15 3 5 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-accent-rgb) / 0.30);
   --section-separator-b: rgb(var(--lp-coral-rgb) / 0.18);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.24);
@@ -476,7 +476,7 @@ body {
   --section-bg:
     radial-gradient(circle at 16% 12%, rgb(var(--lp-cyan-rgb) / 0.11), transparent 28rem),
     radial-gradient(circle at 88% 30%, rgb(var(--lp-accent-rgb) / 0.09), transparent 26rem),
-    linear-gradient(180deg, rgb(3 8 14 / 0.99) 0%, rgb(6 18 30 / 0.98) 100%);
+    linear-gradient(180deg, rgb(14 3 5 / 0.99) 0%, rgb(30 6 10 / 0.98) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.28);
   --section-separator-b: rgb(var(--lp-accent-rgb) / 0.34);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.20);
@@ -486,7 +486,7 @@ body {
   --section-bg:
     radial-gradient(circle at 88% 8%, rgb(var(--lp-cyan-rgb) / 0.075), transparent 24rem),
     radial-gradient(circle at 18% 88%, rgb(var(--lp-accent-rgb) / 0.075), transparent 22rem),
-    linear-gradient(135deg, rgb(4 14 24 / 0.99) 0%, rgb(7 15 22 / 0.98) 50%, rgb(2 7 12 / 0.99) 100%);
+    linear-gradient(135deg, rgb(24 4 7 / 0.99) 0%, rgb(22 7 9 / 0.98) 50%, rgb(12 2 4 / 0.99) 100%);
   --section-separator-a: rgb(var(--lp-accent-rgb) / 0.26);
   --section-separator-b: rgb(var(--lp-cyan-rgb) / 0.34);
   --section-separator-c: rgb(var(--lp-accent-rgb) / 0.24);
@@ -496,7 +496,7 @@ body {
   --section-bg:
     radial-gradient(circle at 50% 0%, rgb(var(--lp-accent-rgb) / 0.105), transparent 26rem),
     radial-gradient(circle at 85% 68%, rgb(var(--lp-cyan-rgb) / 0.055), transparent 22rem),
-    linear-gradient(180deg, rgb(6 14 23 / 0.99) 0%, rgb(1 5 9 / 1) 100%);
+    linear-gradient(180deg, rgb(23 6 9 / 0.99) 0%, rgb(9 1 2 / 1) 100%);
   --section-separator-a: rgb(var(--lp-cyan-rgb) / 0.24);
   --section-separator-b: rgb(var(--lp-accent-rgb) / 0.38);
   --section-separator-c: rgb(var(--lp-cyan-rgb) / 0.18);
@@ -612,8 +612,8 @@ body {
 }
 
 html, body {
-  background-color: var(--lp-bg, #05070b);
-  color: var(--lp-text, #f8fafc);
+  background-color: var(--lp-bg, #0b0506);
+  color: var(--lp-text, #fcf9f9);
   font-family: var(--lp-font-body);
   margin: 0;
   padding: 0;

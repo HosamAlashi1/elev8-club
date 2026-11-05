@@ -2,11 +2,11 @@
 <div class="modal-wrapper" *ngIf="isOpen" [@fadeIn]>
 
   <!-- Backdrop -->
-  <div class="modal-backdrop" (click)="onBackdropClick($event)"></div>
+  <div class="modal-backdrop"></div>
 
   <!-- Modal Content -->
   <div class="modal-container" [@slideUp]>
-    <div class="modal-content" (click)="onClose()">
+    <div class="modal-content">
 
       <!-- Header -->
       <div class="modal-header">

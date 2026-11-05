@@ -9,7 +9,7 @@ export class StatsSectionComponent implements OnInit, OnDestroy {
   @Input() onOpenRegistration!: () => void;
 
   private readonly studentsTarget = 50;
-  private readonly profitsTarget = 600;
+  private readonly profitsTarget = 700;
   private readonly animationDuration = 1800;
   private readonly profitsDelay = 120;
 
@@ -78,11 +78,11 @@ export class StatsSectionComponent implements OnInit, OnDestroy {
   }
 
   get formattedStudents(): string {
-    return this.studentsCount + 'K';
+    return '+' + this.studentsCount + 'K';
   }
 
   get formattedProfits(): string {
-    return '$' + this.profitsCount + 'K';
+    return '+$' + this.profitsCount + 'K';
   }
 
   private startStatsAnimation(): void {

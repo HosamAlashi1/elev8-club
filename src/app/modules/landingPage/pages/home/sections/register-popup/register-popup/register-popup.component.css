@@ -30,7 +30,7 @@
 .modal-content {
   background:
     radial-gradient(circle at 85% 0%, rgb(var(--lp-cyan-rgb) / 0.10), transparent 18rem),
-    linear-gradient(135deg, rgb(7 20 34 / 0.98) 0%, rgb(2 6 11 / 0.98) 100%);
+    linear-gradient(135deg, rgb(34 7 11 / 0.98) 0%, rgb(11 2 3 / 0.98) 100%);
   border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
   border-radius: 18px;
   padding: 28px 24px 24px;
@@ -86,7 +86,7 @@
 
 .modal-subtitle {
   font-size: 0.92rem;
-  color: #E5E7EB;
+  color: #EBE5E6;
   margin: 0;
   font-weight: 400;
   line-height: 1.5;
@@ -116,7 +116,7 @@
 
 .form-label {
   font-size: 0.92rem;
-  color: #F3F4F6;
+  color: #F6F3F3;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
@@ -147,7 +147,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 10px;
-  background: #0F1F38;
+  background: #380F15;
   border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
   border-radius: 10px;
   color: white;
@@ -159,12 +159,12 @@
 
 .dropdown-selected:hover {
   border-color: var(--lp-accent);
-  background: #1A2F4A;
+  background: #4A1A21;
 }
 
 .custom-dropdown.open .dropdown-selected {
   border-color: var(--lp-accent);
-  background: #1A2F4A;
+  background: #4A1A21;
   box-shadow: 0 0 0 3px rgb(var(--lp-accent-rgb) / 0.12);
 }
 
@@ -196,7 +196,7 @@
   top: calc(100% + 4px);
   left: 0;
   min-width: 280px;
-  background: #0F1F38;
+  background: #380F15;
   border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
   border-radius: 12px;
   max-height: 300px;
@@ -338,7 +338,7 @@
 .country-code-select {
   height: 46px;
   padding: 12px 10px 12px 42px;
-  background: #0F1F38;
+  background: #380F15;
   border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
   border-radius: 10px;
   color: white;
@@ -356,12 +356,12 @@
 .country-code-select:focus {
   outline: none;
   border-color: var(--lp-accent);
-  background-color: #1A2F4A;
+  background-color: #4A1A21;
   box-shadow: 0 0 0 3px rgb(var(--lp-accent-rgb) / 0.12);
 }
 
 .country-code-select option {
-  background: #0F1F38;
+  background: #380F15;
   color: white;
   padding: 8px;
   font-size: 0.9rem;
@@ -376,7 +376,7 @@
   width: 100%;
   height: 46px;
   padding: 12px 14px;
-  background: #0F1F38;
+  background: #380F15;
   border: 1px solid rgb(var(--lp-cyan-rgb) / 0.22);
   border-radius: 10px;
   color: white;
@@ -392,7 +392,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--lp-accent);
-  background: #1A2F4A;
+  background: #4A1A21;
   box-shadow: 0 0 0 3px rgb(var(--lp-accent-rgb) / 0.12);
 }
 
@@ -409,7 +409,7 @@
 
 .info-text {
   font-size: 0.86rem;
-  color: #F3F4F6;
+  color: #F6F3F3;
   text-align: center;
   margin: 0;
   line-height: 1.7;
@@ -559,8 +559,8 @@
 
 .modal-backdrop {
   background:
-    radial-gradient(circle at 58% 4%, rgba(0, 83, 255, 0.24), transparent 24rem),
-    rgba(2, 4, 12, 0.74);
+    radial-gradient(circle at 58% 4%, rgba(216, 24, 53, 0.24), transparent 24rem),
+    rgba(12, 2, 4, 0.74);
   backdrop-filter: blur(10px) saturate(0.86);
 }
 
@@ -581,16 +581,7 @@
   direction: rtl;
 }
 
-.modal-content::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 42% 42%, rgba(0, 100, 255, 0.16), transparent 22rem),
-    linear-gradient(180deg, rgba(3, 8, 22, 0.16), rgba(2, 4, 10, 0.42));
-}
+/* (the extra full-screen tint that lived here was clipped to the modal box by its transform, which drew a visible rectangle behind the form; the backdrop below does that job) */
 
 .close-button {
   top: 10px;
@@ -647,18 +638,18 @@
   inset-inline: 0;
   top: 10px;
   z-index: 1;
-  color: rgba(190, 199, 219, 0.82);
+  color: rgba(219, 190, 194, 0.82);
   font-size: clamp(3.65rem, 5.25vw, 5rem);
   font-weight: 800;
   white-space: nowrap;
   transform: translateY(0);
-  background: linear-gradient(180deg, #f4f7ff 0%, #b9c2d4 48%, #5e687d 100%);
+  background: linear-gradient(180deg, #fbf8f8 0%, #d4b9bd 48%, #75585d 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow:
     0 13px 18px rgba(0, 0, 0, 0.5),
-    0 0 18px rgba(196, 211, 245, 0.08);
+    0 0 18px rgba(231, 210, 213, 0.08);
 }
 
 .modal-title-main {
@@ -710,16 +701,16 @@
   white-space: nowrap;
   flex: 0 0 auto;
   background:
-    linear-gradient(180deg, #1ec3ff 0%, #008eff 34%, #005ad8 64%, #002d91 100%);
+    linear-gradient(180deg, #e72542 0%, #d81835 34%, #b7142d 64%, #910016 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1.55px #00a2ff;
+  -webkit-text-stroke: 1.55px #d81835;
   paint-order: stroke fill;
   text-shadow:
-    0 0 1px rgba(102, 210, 255, 0.9),
-    0 0 5px rgba(0, 150, 255, 0.62),
-    0 0 13px rgba(0, 86, 255, 0.36),
+    0 0 1px rgba(238, 98, 119, 0.9),
+    0 0 5px rgba(216, 24, 53, 0.62),
+    0 0 13px rgba(216, 24, 53, 0.36),
     inset 0 0 0 rgba(0, 0, 0, 0),
     0 8px 18px rgba(0, 0, 0, 0.4);
 }
@@ -741,7 +732,7 @@
   border: 1px solid rgba(255, 255, 255, 0.09);
   background:
     radial-gradient(circle at 14% 8%, rgba(255, 255, 255, 0.08), transparent 13rem),
-    linear-gradient(135deg, rgba(34, 36, 45, 0.88), rgba(17, 18, 25, 0.92));
+    linear-gradient(135deg, rgba(45, 34, 36, 0.88), rgba(25, 17, 18, 0.92));
   box-shadow:
     0 20px 44px rgba(0, 0, 0, 0.38),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -788,7 +779,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
-    rgba(26, 28, 36, 0.86);
+    rgba(36, 26, 28, 0.86);
   color: #fff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
@@ -818,13 +809,13 @@
 }
 
 .form-input:focus {
-  border-color: #0077ff;
+  border-color: #d81835;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.025)),
-    rgba(29, 31, 40, 0.92);
+    rgba(40, 29, 31, 0.92);
   box-shadow:
-    0 0 0 1px rgba(0, 119, 255, 0.92),
-    0 0 18px rgba(0, 119, 255, 0.52),
+    0 0 0 1px rgba(216, 24, 53, 0.92),
+    0 0 18px rgba(216, 24, 53, 0.52),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
@@ -844,11 +835,11 @@
 
 .dropdown-selected:hover,
 .custom-dropdown.open .dropdown-selected {
-  border-color: rgba(0, 119, 255, 0.72);
-  background: rgba(29, 31, 40, 0.96);
+  border-color: rgba(216, 24, 53, 0.72);
+  background: rgba(40, 29, 31, 0.96);
   box-shadow:
-    0 0 0 1px rgba(0, 119, 255, 0.4),
-    0 0 18px rgba(0, 119, 255, 0.22);
+    0 0 0 1px rgba(216, 24, 53, 0.4),
+    0 0 18px rgba(216, 24, 53, 0.22);
 }
 
 .selected-code {
@@ -864,11 +855,11 @@
 .dropdown-list {
   left: 0;
   min-width: 300px;
-  background: rgba(17, 20, 31, 0.98);
-  border-color: rgba(0, 119, 255, 0.28);
+  background: rgba(31, 17, 19, 0.98);
+  border-color: rgba(216, 24, 53, 0.28);
   box-shadow:
     0 18px 44px rgba(0, 0, 0, 0.52),
-    0 0 24px rgba(0, 119, 255, 0.14);
+    0 0 24px rgba(216, 24, 53, 0.14);
 }
 
 .search-input {
@@ -903,7 +894,7 @@
   border-radius: 12px;
   background:
     linear-gradient(180deg, #fff2a2 0%, #f1cf50 45%, #d89f28 100%);
-  color: #03060c;
+  color: #0c0304;
   font-size: 1.16rem;
   font-weight: 900;
   letter-spacing: 0;
@@ -1061,7 +1052,7 @@
   display: block;
   width: 100%;
   padding-block: 0.08em 0.12em;
-  color: rgba(245, 248, 255, 0.94);
+  color: rgba(252, 249, 249, 0.94);
   background: none;
   -webkit-background-clip: initial;
   background-clip: initial;
@@ -1135,3 +1126,11 @@
     margin-top: 0.68em;
   }
 }
+
+/* Backdrop: one even, see-through tint over the page, no box. The modal closes only from its ✕ button. */
+.modal-backdrop {
+  background: radial-gradient(circle at 58% 4%, rgba(216, 24, 53, 0.16), transparent 26rem), rgba(12, 2, 4, 0.58);
+  backdrop-filter: blur(6px) saturate(0.9);
+  -webkit-backdrop-filter: blur(6px) saturate(0.9);
+}
+.modal-container { will-change: auto; }

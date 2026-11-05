@@ -1,6 +1,6 @@
 .big-cta-section {
   padding: 50px 0;
-  background: linear-gradient(180deg, #000000 0%, #0A1E3F 50%, #000000 100%);
+  background: linear-gradient(180deg, #000000 0%, #3F0A12 50%, #000000 100%);
   position: relative;
   overflow: hidden;
   direction: rtl;
@@ -168,7 +168,7 @@
 /* Subtitle */
 .subtitle {
   font-size: clamp(1.3rem, 3vw, 2rem);
-  color: #D1D5DB;
+  color: #DBD1D2;
   line-height: 1.6;
   margin-bottom: 48px;
   max-width: 800px;

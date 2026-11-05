@@ -1,8 +1,8 @@
 :host {
   --support-gold: #d4a017;
   --support-gold-light: #f5d888;
-  --support-ink: #061126;
-  --support-panel: #08162e;
+  --support-ink: #26060b;
+  --support-panel: #2e080e;
   display: contents;
   font-family: var(--lp-font-body, "Doran", sans-serif);
 }
@@ -26,7 +26,7 @@
   flex-direction: column;
   border: 1px solid rgba(245, 216, 136, 0.2);
   border-radius: 26px;
-  background: linear-gradient(180deg, #0a1a36 0%, #071225 100%);
+  background: linear-gradient(180deg, #360a11 0%, #25070c 100%);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.56), 0 0 38px rgba(212, 160, 23, 0.1);
   opacity: 0;
   visibility: hidden;
@@ -57,7 +57,7 @@
   overflow: hidden;
   background:
     radial-gradient(circle at 10% 20%, rgba(245, 216, 136, 0.22), transparent 34%),
-    linear-gradient(135deg, #0d2550, #071832 66%, #102242);
+    linear-gradient(135deg, #500d17, #32070d 66%, #421018);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -141,7 +141,7 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(212, 160, 23, 0.34) transparent;
   background:
-    radial-gradient(circle at 90% 10%, rgba(0, 78, 238, 0.12), transparent 32%),
+    radial-gradient(circle at 90% 10%, rgba(201, 22, 49, 0.12), transparent 32%),
     linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
   background-size: auto, 24px 24px, 24px 24px;
@@ -202,13 +202,13 @@
 
 .message-bubble { max-width: 78%; padding: 11px 13px 7px; border-radius: 17px; }
 .message-row--visitor .message-bubble {
-  color: #101828;
+  color: #281014;
   background: linear-gradient(145deg, #f9df99, #d4a017);
   border-bottom-right-radius: 5px;
 }
 .message-row--admin .message-bubble {
   direction: rtl;
-  color: #f6f8fc;
+  color: #fbf7f8;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom-left-radius: 5px;
@@ -233,8 +233,8 @@
 }
 .system-message lucide-icon { flex: 0 0 16px; width: 16px; height: 16px; color: #35e39c; margin-top: 2px; }
 
-.composer-error { padding: 8px 17px 0; color: #ff9d95; background: #071225; font-size: 11px; }
-.support-composer { padding: 13px 15px 14px; border-top: 1px solid rgba(255, 255, 255, 0.07); background: #071225; }
+.composer-error { padding: 8px 17px 0; color: #ff9d95; background: #25070c; font-size: 11px; }
+.support-composer { padding: 13px 15px 14px; border-top: 1px solid rgba(255, 255, 255, 0.07); background: #25070c; }
 .composer-box {
   display: grid;
   grid-template-columns: 1fr 43px;
@@ -297,7 +297,7 @@
   border: 1px solid rgba(245, 216, 136, 0.44);
   border-radius: 22px;
   color: #fff;
-  background: linear-gradient(135deg, rgba(13, 37, 80, 0.98), rgba(5, 14, 31, 0.98));
+  background: linear-gradient(135deg, rgba(80, 13, 23, 0.98), rgba(31, 5, 9, 0.98));
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.46), 0 0 24px rgba(212, 160, 23, 0.13);
   pointer-events: auto;
   cursor: pointer;
@@ -338,7 +338,7 @@
   display: grid;
   place-items: center;
   padding: 0 6px;
-  border: 3px solid #08162e;
+  border: 3px solid #2e080e;
   border-radius: 99px;
   color: #fff;
   background: linear-gradient(145deg, #ff675d, #df2f26);

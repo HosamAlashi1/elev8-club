@@ -1,6 +1,6 @@
 :host {
   display: block;
-  --blue: #004eee;
+  --blue: #c91631;
   --font-low-regular: "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   --font-high-extra: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
 }
@@ -29,13 +29,13 @@
     linear-gradient(
         180deg,
         var(--trust-review-handoff) 0%,
-        rgba(5, 11, 29, 0.98) 16%,
-        rgba(5, 11, 29, 0.74) 44%,
-        rgba(5, 11, 29, 0.28) 74%,
+        rgba(29, 5, 9, 0.98) 16%,
+        rgba(29, 5, 9, 0.74) 44%,
+        rgba(29, 5, 9, 0.28) 74%,
         transparent 100%
       )
       center 130px / 100% 340px no-repeat,
-    radial-gradient(ellipse 1120px 500px at 50% 38%, rgba(0, 78, 238, 0.09), rgba(0, 78, 238, 0.025) 48%, transparent 74%);
+    radial-gradient(ellipse 1120px 500px at 50% 38%, rgba(201, 22, 49, 0.09), rgba(201, 22, 49, 0.025) 48%, transparent 74%);
 }
 
 .review--challenge::after {
@@ -51,9 +51,9 @@
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(6, 20, 49, 0.3) 28%,
-    rgba(6, 20, 49, 0.74) 58%,
-    rgba(6, 20, 49, 0.96) 84%,
+    rgba(49, 6, 12, 0.3) 28%,
+    rgba(49, 6, 12, 0.74) 58%,
+    rgba(49, 6, 12, 0.96) 84%,
     var(--review-faq-handoff) 100%
   );
 }
@@ -70,7 +70,7 @@
 
 .review--challenge .side-line {
   height: 2px;
-  background-image: repeating-linear-gradient(90deg, rgba(0, 78, 238, 0.9) 0 6px, transparent 6px 14px);
+  background-image: repeating-linear-gradient(90deg, rgba(201, 22, 49, 0.9) 0 6px, transparent 6px 14px);
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 65%, transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 35%, #000 65%, transparent 100%);
 }
@@ -122,7 +122,7 @@
   left: -24px;
   width: 1px;
   height: 76px;
-  background-image: repeating-linear-gradient(180deg, rgba(0, 78, 238, 0.72) 0 4px, transparent 4px 9px);
+  background-image: repeating-linear-gradient(180deg, rgba(201, 22, 49, 0.72) 0 4px, transparent 4px 9px);
 }
 
 .review--challenge .review-grid article:last-child::before {
@@ -179,7 +179,7 @@
   .review--challenge .review-grid article {
     min-height: auto;
     padding: 0 0 28px;
-    border-bottom: 1px dashed rgba(0, 78, 238, 0.55);
+    border-bottom: 1px dashed rgba(201, 22, 49, 0.55);
     align-items: center;
   }
   .review--challenge .review-grid p {
@@ -195,4 +195,13 @@
     padding-bottom: 0;
     border-bottom: 0;
   }
+}
+
+/* Longer texts: cards keep their dotted dividers, text starts at the same height, and the longest one may take a wider measure. */
+.review--challenge .review-grid { align-items: start; }
+.review--challenge .review-grid p { width: min(100%, 290px); font-size: 14.5px; line-height: 1.8; }
+
+/* Silver text instead of gold (buttons stay gold). */
+.review--challenge .review-grid h3 {
+  background-image: var(--lp-silver-text);
 }

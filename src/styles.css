@@ -255,24 +255,24 @@
 :root {
   --lp-font-body:  "Doran", "IBM Plex Sans Arabic", "Tajawal", sans-serif;
   --lp-font-display: "Doran", "Changa", "Noto Kufi Arabic", sans-serif;
-  --lp-bg: #05070b;
-  --lp-bg-2: #07111f;
-  --lp-panel: #0d1522;
-  --lp-panel-soft: #121d2d;
-  --lp-text: #f8fafc;
-  --lp-muted: #aab3c3;
+  --lp-bg: #0b0506;
+  --lp-bg-2: #1f070b;
+  --lp-panel: #220d10;
+  --lp-panel-soft: #2d1216;
+  --lp-text: #fcf9f9;
+  --lp-muted: #c3aaae;
   --lp-accent: #D4A017;
   --lp-accent-hot: #E8B52A;
   --lp-accent-soft: #ECC244;
   --lp-accent-muted: #C2920F;
   --lp-accent-deep: #966B0B;
   --lp-accent-ink: #0A0700;
-  --lp-cyan: #20e5f2;
+  --lp-cyan: #e61c3a;
   --lp-coral: #ff3b30;
   --lp-accent-rgb: 212 160 23;
   --lp-accent-hot-rgb: 232 181 42;
   --lp-accent-soft-rgb: 236 194 68;
-  --lp-cyan-rgb: 32 229 242;
+  --lp-cyan-rgb: 230 28 58;
   --lp-coral-rgb: 255 59 48;
   --lp-accent-gradient: linear-gradient(135deg, #F5D888 0%, #D4A017 48%, #B8890A 100%);
   --lp-accent-button: linear-gradient(135deg, #F0CA60 0%, #D4A017 52%, #ECC244 100%);
@@ -378,3 +378,44 @@
     margin: 10px;
   }
 }
+
+/* ── Landing highlight: a crimson marker pill with a soft light sweeping over it (the "highlighted" phrases in the copy doc). ──
+   Wrap a phrase in <span class="lp-hl">…</span>. --hl-delay staggers the sweep between neighbours. */
+.lp-hl {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 10px 3px;
+  border-radius: 6px;
+  overflow: clip;           /* not hidden: hidden would move the pill's baseline to its bottom edge and lift the text */
+  vertical-align: baseline;
+  isolation: isolate;
+  background: linear-gradient(90deg, rgba(201, 22, 49, 0.95), rgba(160, 14, 38, 0.9));
+  box-shadow: 0 0 14px rgba(201, 22, 49, 0.28);
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  white-space: inherit;
+}
+.lp-hl::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 45%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.36), transparent);
+  translate: -160% 0;
+  animation: lp-hl-sweep 4.5s ease-in-out var(--hl-delay, 0s) infinite;
+}
+@keyframes lp-hl-sweep { 0%, 55% { translate: -160% 0; } 100% { translate: 360% 0; } }
+@media (prefers-reduced-motion: reduce) { .lp-hl::after { animation: none; } }
+
+/* ── Silver text (client request): gold-coloured TEXT becomes brushed silver; gold BUTTONS stay gold. ── */
+:root {
+  --lp-silver-text: linear-gradient(180deg, #ffffff 0%, #f6eef0 35%, #dcc9cd 62%, #f3e9eb 100%);
+  --lp-silver: #d9c4c8;
+}
+

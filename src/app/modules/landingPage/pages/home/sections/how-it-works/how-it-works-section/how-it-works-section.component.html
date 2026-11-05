@@ -8,12 +8,12 @@
     <span class="hiw-head-line hiw-head-line--right" aria-hidden="true"></span>
     <div class="hiw-head-copy">
       <h2 id="hiw-title" class="hiw-title">
-        كيف بيشتغل التداول
+        كيف بيشتغل التداول؟
         <!-- <span class="hiw-title-keyword">التداول</span> -->
       </h2>
-      <p class="hiw-sub">
-        التداول هو نفس التجارة الموجودة على أرض الواقع لكن بشكل أونلاين داخل
-        الأسواق المالية
+<p class="hiw-sub">
+        التداول هو نفس التجارة الموجودة على أرض الواقع، لكن الفرق إنه بدل ما تشتري وتبيع بالسوق العادي،
+        كل شيء بصير أونلاين من خلال تلفونك.
       </p>
     </div>
     <span class="hiw-head-line hiw-head-line--left" aria-hidden="true"></span>
@@ -29,17 +29,12 @@
       <div class="hiw-step-content">
         <div class="hiw-step-header">
           <span class="hiw-step-num">{{ step.num }}</span>
-          <h3 class="hiw-step-title">{{ step.title }}</h3>
+          <h3 class="hiw-step-title"><span class="lp-hl" [style.--hl-delay]="(i * 0.6) + 's'">{{ step.title }}</span></h3>
         </div>
 
         <div class="hiw-step-text">
           <p *ngFor="let paragraph of step.paragraphs">{{ paragraph }}</p>
 
-          <ul *ngIf="step.bullets?.length">
-            <li *ngFor="let bullet of step.bullets">{{ bullet }}</li>
-          </ul>
-
-          <p *ngIf="step.footer">{{ step.footer }}</p>
         </div>
       </div>
 
@@ -59,14 +54,17 @@
     </article>
   </div>
 
+  <p class="hiw-diff" data-aos="fade-up" data-aos-delay="460">
+    والفرق إنه بدل ما تنزل على السوق وتشتري وتخزّن وتبيع بشكل تقليدي، كل شيء بالتداول بصير أونلاين من خلال تلفونك.
+  </p>
+
   <div class="hiw-ai" data-aos="fade-up" data-aos-delay="520">
     <h3>الذكاء الاصطناعي غيّر كل شيء</h3>
 
     <div class="hiw-ai-panel">
       <p>
-        زمان كان التداول يحتاج شهور من التعلم حتى تبدأ تفهم السوق بس اليوم؟
-        الذكاء الاصطناعي اختصر الطريق بالكامل وصار الشخص المبتدئ يقدر يبدأ ويحقق
-        أول نتيجة إله خلال دقائق باستخدام نظامنا المتكامل
+        واليوم، وظّفنا الذكاء الاصطناعي داخل نظامنا، ودمجناه مع خبرة فريق من المحترفين، عشان يساعدك تحلل فرص السوق
+        وتتخذ قرارات أفضل، بدون ما تحتاج تقضي شهور تتعلم التحليل لحالك. وهذا جزء من النظام اللي رح أشرحلك إياه بالتحدي
       </p>
 
       <button

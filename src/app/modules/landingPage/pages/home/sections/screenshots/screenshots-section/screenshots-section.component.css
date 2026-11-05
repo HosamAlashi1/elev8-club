@@ -22,15 +22,15 @@
   background:
     radial-gradient(
       ellipse 66% 62% at 50% 38%,
-      rgba(0, 78, 238, 0.42) 0%,
-      rgba(0, 70, 218, 0.2) 38%,
-      rgba(0, 52, 166, 0.075) 62%,
+      rgba(201, 22, 49, 0.42) 0%,
+      rgba(184, 20, 45, 0.2) 38%,
+      rgba(140, 16, 34, 0.075) 62%,
       transparent 84%
     ),
     radial-gradient(
       ellipse 92% 52% at 50% 12%,
-      rgba(6, 20, 49, 0.72) 0%,
-      rgba(5, 18, 46, 0.26) 48%,
+      rgba(49, 6, 12, 0.72) 0%,
+      rgba(46, 5, 11, 0.26) 48%,
       transparent 80%
     );
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.28) 7%, #000 20%, #000 76%, transparent 100%);
@@ -49,9 +49,9 @@
   /* الشكل + الـ fade من صور الأنيما (mask)، واللون أزرق موحّد ناعم */
   background: linear-gradient(
     180deg,
-    rgba(24, 88, 225, 0.6) 0%,
-    rgba(14, 84, 228, 0.55) 50%,
-    rgba(8, 86, 245, 0) 100%
+    rgba(211, 23, 51, 0.6) 0%,
+    rgba(205, 23, 50, 0.55) 50%,
+    rgba(214, 24, 52, 0) 100%
   );
 }
 
@@ -76,7 +76,7 @@
   transform: translate(-50%, -50%);
   width: min(900px, 80%);
   height: 86%;
-  background: radial-gradient(closest-side, rgba(26, 110, 255, 0.7), rgba(12, 86, 240, 0.28) 55%, rgba(0, 78, 238, 0) 74%);
+  background: radial-gradient(closest-side, rgba(230, 34, 63, 0.7), rgba(213, 24, 52, 0.28) 55%, rgba(201, 22, 49, 0) 74%);
   filter: blur(46px);
   pointer-events: none;
   z-index: 0;
@@ -130,9 +130,9 @@
   height: 86%;
   background:
     /* القلب: شعاع مركّز ساطع يرتفع للنص */
-    radial-gradient(ellipse 36% 78% at 50% 100%, rgba(96, 162, 255, 0.85) 0%, rgba(40, 112, 250, 0.4) 42%, transparent 70%),
+    radial-gradient(ellipse 36% 78% at 50% 100%, rgba(237, 93, 115, 0.85) 0%, rgba(231, 41, 70, 0.4) 42%, transparent 70%),
     /* القاعدة: توهّج عريض تحت */
-    radial-gradient(ellipse 120% 38% at 50% 100%, rgba(8, 90, 245, 0.55) 0%, transparent 68%);
+    radial-gradient(ellipse 120% 38% at 50% 100%, rgba(214, 24, 52, 0.55) 0%, transparent 68%);
   filter: blur(2px);
   pointer-events: none;
   z-index: 6;
@@ -176,7 +176,7 @@
    - frame-37.svg: matrix skewX ≈ 10° على التلفونات الجانبية
    - rectangle-2: bg #ffffff0d | border 2px #ffffff80 | radius 24px | blur 38px
    - rectangle الصورة: 8px padding | radius 16px | stroke داخلي #ffffff1a
-   - blob أزرق: #004EEE blur عالي أسفل التلفون الأوسط
+   - blob أزرق: #C91631 blur عالي أسفل التلفون الأوسط
    ============================================================ */
 
 /* المركز */
@@ -240,7 +240,7 @@
   -webkit-backdrop-filter: blur(38px) brightness(100%);
   overflow: hidden;
   /* glow أزرق خارجي */
-  box-shadow: 0 0 26px rgba(13, 95, 255, 0.30);
+  box-shadow: 0 0 26px rgba(227, 25, 55, 0.30);
   transition: box-shadow 520ms ease;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -255,9 +255,9 @@
   padding: 1.6px;
   background: linear-gradient(
     180deg,
-    rgba(96, 160, 255, 0.95) 0%,
-    rgba(56, 122, 245, 0.65) 40%,
-    rgba(32, 92, 222, 0.45) 100%
+    rgba(237, 93, 115, 0.95) 0%,
+    rgba(232, 51, 78, 0.65) 40%,
+    rgba(209, 30, 57, 0.45) 100%
   );
   /* mask يخلّي بس إطار رفيع بسماكة الـ padding */
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -275,26 +275,26 @@
   border-radius: inherit;
   pointer-events: none;
   z-index: 6;
-  box-shadow: inset 0 0 26px rgba(50, 124, 255, 0.50);
+  box-shadow: inset 0 0 26px rgba(233, 54, 81, 0.50);
 }
 
 /* المركز: بوردر أنصع (أزرق ساطع) + glow أقوى + inner glow أقوى */
 .shots-phone.is-center .shots-phone__card {
   box-shadow:
-    0 0 64px rgba(13, 95, 255, 0.55),
+    0 0 64px rgba(227, 25, 55, 0.55),
     0 38px 90px rgba(0, 0, 0, 0.55);
 }
 .shots-phone.is-center .shots-phone__card::before {
   padding: 2px;
   background: linear-gradient(
     180deg,
-    rgba(120, 180, 255, 1) 0%,
-    rgba(72, 140, 250, 0.8) 40%,
-    rgba(40, 104, 235, 0.5) 100%
+    rgba(208, 167, 173, 1) 0%,
+    rgba(234, 68, 93, 0.8) 40%,
+    rgba(230, 29, 59, 0.5) 100%
   );
 }
 .shots-phone.is-center .shots-phone__inner-glow {
-  box-shadow: inset 0 0 38px rgba(64, 140, 255, 0.62);
+  box-shadow: inset 0 0 38px rgba(234, 66, 91, 0.62);
 }
 
 /* ---- Gradient overlay داخل الكارد للجانبية ----
@@ -307,9 +307,9 @@
   /* tint أزرق خفيف يبيّن المحتوى (مش أسود غامق) — نفس الفيجما */
   background: linear-gradient(
     180deg,
-    rgba(12, 32, 92, 0.28) 0%,
-    rgba(8, 22, 68, 0.44) 65%,
-    rgba(5, 15, 50, 0.56) 100%
+    rgba(92, 12, 24, 0.28) 0%,
+    rgba(68, 8, 17, 0.44) 65%,
+    rgba(50, 5, 12, 0.56) 100%
   );
   pointer-events: none;
   z-index: 5;
@@ -327,9 +327,9 @@
 .shots-phone[data-offset="-2"] .shots-phone__card::after {
   background: linear-gradient(
     180deg,
-    rgba(10, 28, 80, 0.44) 0%,
-    rgba(6, 18, 56, 0.60) 60%,
-    rgba(4, 12, 42, 0.72) 100%
+    rgba(80, 10, 21, 0.44) 0%,
+    rgba(56, 6, 14, 0.60) 60%,
+    rgba(42, 4, 10, 0.72) 100%
   );
 }
 
@@ -340,14 +340,14 @@
   width: calc(100% - 16px);
   height: calc(100% - 16px);
   object-fit: cover;
-  background: #05050a;
+  background: #0a0506;
   border-radius: 16px;
   display: block;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-/* ---- الـ blob الأزرق تحت التلفون الأوسط (#004EEE) ---- */
+/* ---- الـ blob الأزرق تحت التلفون الأوسط (#C91631) ---- */
 .shots-phone__accent {
   position: absolute;
   left: 50%;
@@ -355,7 +355,7 @@
   transform: translateX(-50%);
   width: 68%;
   height: 40%;
-  background: #004EEE;
+  background: #C91631;
   filter: blur(42px);
   border-radius: 50%;
   z-index: -1;
@@ -461,7 +461,7 @@
   border: 1px solid rgb(255 255 255 / 0.14);
   background:
     radial-gradient(ellipse 90% 64% at 50% 0%, rgb(255 255 255 / 0.18), transparent 62%),
-    linear-gradient(180deg, rgb(25 30 42 / 0.92) 0%, rgb(9 10 15 / 0.96) 78%);
+    linear-gradient(180deg, rgb(42 25 28 / 0.92) 0%, rgb(15 9 10 / 0.96) 78%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.18),
     inset 0 -1px 0 rgb(255 255 255 / 0.04),
@@ -478,7 +478,7 @@
   border-radius: inherit;
   background:
     linear-gradient(110deg, transparent 0 12%, rgb(255 255 255 / 0.12) 34%, transparent 58%),
-    radial-gradient(circle at 50% 0%, rgb(0 78 238 / 0.1), transparent 56%);
+    radial-gradient(circle at 50% 0%, rgb(201 22 49 / 0.1), transparent 56%);
   opacity: 0.75;
 }
 
@@ -506,13 +506,13 @@
   text-shadow: 0 0 18px rgb(240 197 76 / 0.34);
 }
 
-/* الفاصل: داش أزرق #004EEE (2px داش / 2px فراغ) — نفس line-4.svg بالأنيما */
+/* الفاصل: داش أزرق #C91631 (2px داش / 2px فراغ) — نفس line-4.svg بالأنيما */
 .shots-card-divider {
   flex: 0 0 auto;
   width: 1px;
   align-self: center;
   height: 64px;
-  background-image: linear-gradient(to bottom, #004EEE 50%, transparent 50%);
+  background-image: linear-gradient(to bottom, #C91631 50%, transparent 50%);
   background-size: 1px 4px;
   background-repeat: repeat-y;
 }
@@ -550,12 +550,12 @@
     background:
       radial-gradient(
         ellipse 72% 64% at 50% 39%,
-        rgba(0, 78, 238, 0.36) 0%,
-        rgba(0, 68, 212, 0.16) 42%,
-        rgba(0, 48, 154, 0.05) 66%,
+        rgba(201, 22, 49, 0.36) 0%,
+        rgba(179, 20, 44, 0.16) 42%,
+        rgba(130, 14, 32, 0.05) 66%,
         transparent 86%
       ),
-      radial-gradient(ellipse 96% 50% at 50% 10%, rgba(6, 20, 49, 0.68), transparent 80%);
+      radial-gradient(ellipse 96% 50% at 50% 10%, rgba(49, 6, 12, 0.68), transparent 80%);
     -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.24) 6%, #000 18%, #000 80%, transparent 100%);
             mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.24) 6%, #000 18%, #000 80%, transparent 100%);
   }
@@ -599,7 +599,7 @@
     height: 1px;
     align-self: stretch;
     /* داش أفقي أزرق */
-    background-image: linear-gradient(to right, #004EEE 50%, transparent 50%);
+    background-image: linear-gradient(to right, #C91631 50%, transparent 50%);
     background-size: 4px 1px;
     background-repeat: repeat-x;
   }
@@ -613,7 +613,7 @@
 .shots-phone__card {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  background-color: rgba(10, 18, 42, 0.88);
+  background-color: rgba(42, 10, 15, 0.88);
 }
 
 .shots-nav__btn {
@@ -633,7 +633,7 @@
 .shots-cards {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  background: linear-gradient(180deg, rgb(25 30 42 / 0.98) 0%, rgb(9 10 15 / 0.99) 78%);
+  background: linear-gradient(180deg, rgb(42 25 28 / 0.98) 0%, rgb(15 9 10 / 0.99) 78%);
 }
 
 .shots-preview {
@@ -643,7 +643,7 @@
   display: grid;
   place-items: center;
   padding: clamp(18px, 4vw, 44px);
-  background: rgba(2, 5, 16, 0.88);
+  background: rgba(16, 2, 4, 0.88);
   cursor: zoom-out;
 }
 
@@ -654,9 +654,9 @@
   max-height: 90vh;
   border-radius: 18px;
   object-fit: contain;
-  background: #05050a;
+  background: #0a0506;
   box-shadow:
-    0 0 0 1px rgba(96, 160, 255, 0.36),
+    0 0 0 1px rgba(237, 93, 115, 0.36),
     0 22px 80px rgba(0, 0, 0, 0.58);
   cursor: default;
 }

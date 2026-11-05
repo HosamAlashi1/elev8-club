@@ -120,7 +120,8 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.newQuestionnaireAnswers = this.buildV2QuestionnaireAnswers();
+    this.newQuestionnaireAnswers = this.buildChallengeQuestionnaireAnswers();
+    if (!this.newQuestionnaireAnswers.length) this.newQuestionnaireAnswers = this.buildV2QuestionnaireAnswers();
     if (!this.newQuestionnaireAnswers.length) this.newQuestionnaireAnswers = this.buildNewQuestionnaireAnswers();
     this.legacyQuestionnaireAnswers = this.buildLegacyQuestionnaireAnswers();
     this.isAdmin = this.publicService.isAdmin();
@@ -323,6 +324,20 @@ export class ViewLeadComponent implements OnInit, AfterViewInit, OnDestroy {
   getExperienceLabel(level?: string): string {
     if (!level) return 'N/A';
     return level.charAt(0).toUpperCase() + level.slice(1);
+  }
+
+  /** Webinar (v1) challenge questions, 2026 edition. */
+  private buildChallengeQuestionnaireAnswers(): AnswerDisplay[] {
+    const a = this.lead?.answers;
+    if (!a) return [];
+    return [
+      { label: 'ما هو وضعك الحالي من ناحية الدخل؟', value: a.challengeIncome || '' },
+      { label: 'هل لديك خبرة سابقة بالتداول؟', value: a.challengeExperience || '' },
+      { label: 'ما هو هدفك من المشاركة بالتحدي؟', value: a.challengeGoal || '' },
+      { label: 'كم رأس المال المتاح لديك للبدء بالتداول؟', value: a.challengeCapital || '' },
+      { label: 'كم أنت جاد في البدء بتطبيق اللي رح تتعلمه؟', value: a.challengeReadiness || '' },
+      { label: 'هل تقدر تحضر التدريب المباشر؟', value: a.challengeAttendance || '' }
+    ].filter(x => !!String(x.value).trim());
   }
 
   /** v2 (free community) questions — same wording as elev8-club-v2's questions.config.ts. */
