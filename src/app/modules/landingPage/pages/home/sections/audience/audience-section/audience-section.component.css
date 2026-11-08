@@ -90,7 +90,11 @@
   font-family: var(--font-brand);
   font-size: 48px;
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.4;
+}
+
+.section-heading h2 .lp-hl {
+  padding-block: 0.4em 0.15em;
 }
 
 .section-heading p {

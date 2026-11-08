@@ -49,7 +49,10 @@ export interface RegisterLeadRequest {
   fullName: string;
   email: string;
   phone: string;
-  /** 'v1' | 'v2' | 'offer'. Anything else is refused rather than guessed at. */
+  /**
+   * 'v1' | 'v2' | 'offer' | 'webinar2'.
+   * Anything else is refused rather than guessed at.
+   */
   source: string;
   /**
    * 'offer' only: the plan the visitor picked ('starter' | 'pro' | 'ai').
@@ -148,7 +151,8 @@ export const registerLead = functions
         "invalid-argument", "That email address is not valid."
       );
     }
-    if (source !== "v1" && source !== "v2" && source !== "offer") {
+    if (source !== "v1" && source !== "v2" && source !== "offer" &&
+      source !== "webinar2") {
       throw new functions.https.HttpsError(
         "invalid-argument", "Unknown source."
       );

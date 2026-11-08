@@ -2,6 +2,7 @@
  * Adaptive-bitrate HLS pipeline for the landing-page hero video.
  *
  *   node tools/video-hls.mjs encode "C:/path/to/source.MP4"   # build the ladder into .video-build/hls
+ *   node tools/video-hls.mjs encode "C:/path/new.mov" challenge-intro-2   # a further video on its own route (.video-build/hls-challenge-intro-2)
  *   node tools/video-hls.mjs bundle                           # add _headers, ready to publish
  *   node tools/video-hls.mjs deploy                           # publish to Cloudflare Pages
  *   node tools/video-hls.mjs ensure                           # create the dir so `ng serve` won't fail
@@ -19,9 +20,12 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const rootDir = process.cwd();
-const buildDir = path.join(rootDir, '.video-build', 'hls');
+const DEFAULT_ROUTE = 'challenge-intro';
+/** The first video keeps its original folder; every later one lives in .video-build/hls-<route>. */
+const dirFor = route => path.join(rootDir, '.video-build', route === DEFAULT_ROUTE ? 'hls' : `hls-${route}`);
+let ROUTE = DEFAULT_ROUTE;
+let buildDir = dirFor(ROUTE);
 const publishDir = path.join(rootDir, '.video-build', 'publish');
-const ROUTE = 'challenge-intro';
 const CF_PROJECT = 'elev8-video';
 const POSTER_TIMESTAMP = '10';
 
@@ -62,6 +66,8 @@ function run(cmd, args, opts = {}) {
   if (res.status !== 0) throw new Error(`${cmd} exited with code ${res.status}`);
 }
 
+const quoteForShell = value => (process.platform === 'win32' ? `"${value}"` : value);
+
 function buildFfmpegArgs(source) {
   const splitLabels = RENDITIONS.map((_, i) => `[s${i}]`).join('');
   const scaleChain = RENDITIONS
@@ -100,14 +106,17 @@ function buildFfmpegArgs(source) {
     '-hls_segment_type', 'mpegts',
     '-hls_segment_filename', path.join(buildDir, '%v', 'seg_%03d.ts'),
     '-master_pl_name', 'master.m3u8',
-    '-var_stream_map', RENDITIONS.map((r, i) => `v:${i},a:${i},name:${r.name}`).join(' '),
+    // The value contains spaces; on Windows the command goes through a shell, which would split it into pieces.
+    '-var_stream_map', quoteForShell(RENDITIONS.map((r, i) => `v:${i},a:${i},name:${r.name}`).join(' ')),
     path.join(buildDir, '%v', 'playlist.m3u8')
   );
 
   return args;
 }
 
-async function encode(source) {
+async function encode(source, route = DEFAULT_ROUTE) {
+  ROUTE = route;
+  buildDir = dirFor(ROUTE);
   if (!source) throw new Error('Usage: node tools/video-hls.mjs encode <source-video>');
   if (!existsSync(source)) throw new Error(`Source not found: ${source}`);
 
@@ -116,6 +125,14 @@ async function encode(source) {
 
   console.log(`Encoding ${RENDITIONS.length}-rendition ladder from ${source} ...`);
   run('ffmpeg', buildFfmpegArgs(source));
+
+  // ffmpeg on Windows writes the variant paths with backslashes (360p\playlist.m3u8). Browsers forgive that in a URL,
+  // but a playlist must use forward slashes to be portable (Safari's native HLS, other CDNs), so normalise it.
+  for (const playlist of ['master.m3u8', ...RENDITIONS.map(r => `${r.name}/playlist.m3u8`)]) {
+    const file = path.join(buildDir, playlist);
+    const text = readFileSync(file, 'utf8');
+    if (text.includes('\\')) writeFileSync(file, text.replace(/\\/g, '/'));
+  }
 
   console.log('Generating poster ...');
   run('ffmpeg', [
@@ -152,16 +169,28 @@ async function ensure() {
   await mkdir(buildDir, { recursive: true });
 }
 
+/**
+ * A Pages deploy REPLACES the whole site, so the publish folder must always hold every video that is
+ * still in use: the default route plus any `hls-<route>` folder that has been encoded.
+ */
 async function bundle() {
-  if (!existsSync(path.join(buildDir, 'master.m3u8'))) {
-    throw new Error(`No ladder at ${buildDir}. Run "encode" first.`);
+  const routes = [];
+  if (existsSync(path.join(dirFor(DEFAULT_ROUTE), 'master.m3u8'))) routes.push(DEFAULT_ROUTE);
+  for (const entry of readdirSync(path.join(rootDir, '.video-build'), { withFileTypes: true })) {
+    if (entry.isDirectory() && entry.name.startsWith('hls-') &&
+        existsSync(path.join(rootDir, '.video-build', entry.name, 'master.m3u8'))) {
+      routes.push(entry.name.slice(4));
+    }
   }
+  if (!routes.length) throw new Error('No ladder found in .video-build. Run "encode" first.');
   // Windows holds handles on freshly-copied files (indexer/AV), so a plain rm hits ENOTEMPTY.
   await rm(publishDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
-  await mkdir(path.join(publishDir, ROUTE), { recursive: true });
-  await cp(buildDir, path.join(publishDir, ROUTE), { recursive: true });
+  for (const route of routes) {
+    await mkdir(path.join(publishDir, route), { recursive: true });
+    await cp(dirFor(route), path.join(publishDir, route), { recursive: true });
+  }
   await writeFile(path.join(publishDir, '_headers'), HEADERS_FILE, 'utf8');
-  console.log(`Bundled ${mb(await dirSize(publishDir))} into .video-build/publish (route: /${ROUTE})`);
+  console.log(`Bundled ${mb(await dirSize(publishDir))} into .video-build/publish (routes: ${routes.map(r => '/' + r).join(', ')})`);
 }
 
 /**
@@ -173,10 +202,11 @@ async function bundle() {
  * to one request of 3 MB (~9 s each). Re-applied on every deploy because npx may re-fetch.
  */
 function patchUploaderLimits() {
-  const npxCache = path.join(
-    process.env.LOCALAPPDATA || path.join(process.env.HOME || '', '.npm'),
-    process.platform === 'win32' ? 'npm-cache/_npx' : '_npx'
-  );
+  // npm may keep its cache anywhere (on this PC it is on drive E:, not under %LOCALAPPDATA%), so ask it.
+  const asked = spawnSync('npm', ['config', 'get', 'cache'], { encoding: 'utf8', shell: process.platform === 'win32' });
+  const cacheRoot = (asked.stdout || '').trim() ||
+    path.join(process.env.LOCALAPPDATA || path.join(process.env.HOME || '', '.npm'), process.platform === 'win32' ? 'npm-cache' : '');
+  const npxCache = path.join(cacheRoot, '_npx');
   if (!existsSync(npxCache)) return false;
 
   let patched = 0;
@@ -201,10 +231,11 @@ async function deploy() {
   await bundle();
 
   // Ensure the pinned wrangler is cached, then throttle its uploader before it runs.
-  run('npx', ['--yes', 'wrangler@4.86.0', '--version'], { stdio: 'ignore' });
+  // stdout is silenced, stderr is not: a failure here (npx cannot fetch wrangler) must say why.
+  run('npx', ['--yes', 'wrangler@4.86.0', '--version'], { stdio: ['ignore', 'ignore', 'inherit'] });
   console.log(patchUploaderLimits()
     ? 'Throttled wrangler uploader to 1x3MB requests (slow-uplink safe).'
-    : 'Wrangler uploader already throttled.');
+    : 'Wrangler uploader already throttled (or its cache was not found: check the bucket size in the log).');
 
   console.log(`\nDeploying to Cloudflare Pages project "${CF_PROJECT}" ...`);
   // Pinned: wrangler >= 4.90 requires Node 22, and this project runs on Node 20.
@@ -219,12 +250,12 @@ async function deploy() {
 const [command, ...rest] = process.argv.slice(2);
 
 try {
-  if (command === 'encode') await encode(rest[0]);
+  if (command === 'encode') await encode(rest[0], rest[1]);
   else if (command === 'bundle') await bundle();
   else if (command === 'deploy') await deploy();
   else if (command === 'ensure') await ensure();
   else {
-    console.error('Usage: node tools/video-hls.mjs <encode <source> | bundle | deploy | ensure>');
+    console.error('Usage: node tools/video-hls.mjs <encode <source> [route] | bundle | deploy | ensure>');
     process.exit(1);
   }
 } catch (err) {

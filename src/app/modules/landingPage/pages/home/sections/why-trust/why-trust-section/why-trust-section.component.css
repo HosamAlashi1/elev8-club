@@ -536,3 +536,9 @@
 .wt-copy h3 {
   background-image: var(--lp-silver-text);
 }
+
+.wt-title .lp-hl,
+.wt-copy h3 .lp-hl {
+  padding-block: 0.35em 0.15em;
+  line-height: 1.5;
+}

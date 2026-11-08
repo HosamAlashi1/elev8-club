@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   // Stamped on every lead created from this landing page — see core/models/lead.model.ts's LeadSource.
-  leadSource: 'v1' as const,
+  leadSource: 'webinar2' as const,
   // The "registration is closed" page's "JOIN THE WAITLIST" button. Goes to the free community landing, the same link on every version.
   links: { waitlist: 'https://elev8-club-2.vercel.app/#/home' },
   apiUrl: 'https://Elev8 Club-new-backend.nstechs.net/api',
@@ -14,8 +14,8 @@ export const environment = {
   // ng serve serves .video-build/hls at this path (see angular.json development/local assets),
   // so dev needs no CDN and no CORS.
   video: {
-    challengeIntroHls: "/videos/challenge-intro/master.m3u8",
-    challengeIntroPoster: "/videos/challenge-intro/poster.jpg"
+    challengeIntroHls: "/videos/challenge-intro-2/master.m3u8",
+    challengeIntroPoster: "/videos/challenge-intro-2/poster.jpg"
   },
   firebase: {
     apiKey: 'AIzaSyDbwiL9Ia_imWqEufvi2g9DRd6T9rcr-zI',

@@ -100,6 +100,7 @@ export class EmailCampaignComponent implements OnInit, OnDestroy {
       title: 'النسخة',
       choices: [
         { value: 'v1', label: 'الأولى — Webinar' },
+        { value: 'webinar2', label: 'الأولى (الجديدة) — Webinar 2' },
         { value: 'v2', label: 'الثانية — Free community' },
       ],
     },

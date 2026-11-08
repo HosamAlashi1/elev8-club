@@ -167,9 +167,9 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
           }, {} as { [key: string]: string });
         }
 
-        if (lead.step === 2) {
-          this.openSuccessPanel();
-        }
+        // A lead who already finished is NOT sent straight to the group any more: they land on the questions
+        // with their answers filled in and can change them (the group screen follows the next submit). Their
+        // status stays completed either way.
 
         if (this.affiliateCode && lead.versionKey) {
           this.firebaseService.getAffiliateByCode(this.affiliateCode, lead.versionKey).subscribe(affiliate => {
@@ -362,10 +362,15 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
       challengeAttendance: this.answers['challengeAttendance']
     };
 
-    this.firebaseService.completeLead(this.leadKey, answersData)
+    const alreadyCompleted = this.currentLead?.step === 2;
+    const save = alreadyCompleted
+      ? this.firebaseService.updateLeadAnswers(this.leadKey, answersData)
+      : this.firebaseService.completeLead(this.leadKey, answersData);
+
+    save
       .then(() => {
         this.currentLead = this.currentLead
-          ? { ...this.currentLead, answers: answersData, step: 2, completedAt: new Date().toISOString() }
+          ? { ...this.currentLead, answers: answersData, step: 2, completedAt: this.currentLead.completedAt || new Date().toISOString() }
           : this.currentLead;
 
         this.gtm.trackCompleteRegistration(this.leadKey!, {

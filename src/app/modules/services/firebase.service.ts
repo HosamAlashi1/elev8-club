@@ -497,6 +497,14 @@ export class FirebaseService {
     return this.db.object(`leads/${leadKey}`).update(updateData);
   }
 
+  /**
+   * A lead who already finished the questions and comes back to change an answer: only the answers move.
+   * `step` stays 2 and `completedAt` keeps the date of the first completion.
+   */
+  public updateLeadAnswers(leadKey: string, answers: any): Promise<void> {
+    return this.db.object(`leads/${leadKey}`).update({ answers, answersUpdatedAt: new Date().toISOString() });
+  }
+
   /** جلب Lead بناءً على الـ key */
   public getLeadByKey(leadKey: string): Observable<Lead | null> {
     return this.db.object<Lead>(`leads/${leadKey}`)

@@ -121,7 +121,7 @@ export class AdminOverviewComponent implements OnInit, OnDestroy {
       { label: 'Offer paid', value: paid, hint: 'payments received', icon: 'fe fe-credit-card', tone: 'red', query: { source: 'offer' } },
     ];
 
-    this.products = (['v1', 'v2', 'offer'] as LeadSource[]).map(s => this.buildProduct(s, today));
+    this.products = (['v1', 'webinar2', 'v2', 'offer'] as LeadSource[]).map(s => this.buildProduct(s, today));
     this.leadsPerDay = this.buildPerDay(14);
     this.buildReps(now);
     this.buildAttention();
@@ -183,8 +183,8 @@ export class AdminOverviewComponent implements OnInit, OnDestroy {
 
     return {
       source, label: LEAD_SOURCE_LABELS[source],
-      tone: source === 'v1' ? 'blue' : source === 'v2' ? 'green' : 'red',
-      icon: source === 'v1' ? 'fe fe-video' : source === 'v2' ? 'fe fe-send' : 'fe fe-gift',
+      tone: source === 'v1' ? 'blue' : source === 'webinar2' ? 'violet' : source === 'v2' ? 'green' : 'red',
+      icon: source === 'v1' || source === 'webinar2' ? 'fe fe-video' : source === 'v2' ? 'fe fe-send' : 'fe fe-gift',
       total: own.length,
       today: own.filter(l => this.time(l) >= today).length,
       completed, completedPct: own.length ? Math.round(completed / own.length * 100) : 0,

@@ -15,8 +15,10 @@
       [attr.data-aos-delay]="120 + i * 70"
       data-aos-duration="700"
     >
-      <lucide-angular [name]="item.icon" [size]="24" aria-hidden="true"></lucide-angular>
-      <h3>{{ item.title }}</h3>
+      <div class="review-item-heading">
+        <lucide-angular [name]="item.icon" [size]="24" aria-hidden="true"></lucide-angular>
+        <h3>{{ item.title }}</h3>
+      </div>
       <p>{{ item.text }}</p>
     </article>
   </div>

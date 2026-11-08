@@ -108,7 +108,15 @@ export class ScreenshotsSectionComponent implements OnInit, OnDestroy {
 
   private formatShortDate(timestamp: number): string {
     const date = new Date(timestamp);
-    return `${date.getDate()}/${date.getMonth() + 1}`;
+    const weekday = new Intl.DateTimeFormat('ar', {
+      timeZone: 'Europe/Istanbul', weekday: 'long'
+    }).format(date);
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Istanbul', day: 'numeric', month: 'numeric'
+    }).formatToParts(date);
+    const day = parts.find(part => part.type === 'day')?.value;
+    const month = parts.find(part => part.type === 'month')?.value;
+    return `${weekday} ${day}/${month}`;
   }
 
   @HostListener('document:keydown.escape')

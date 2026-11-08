@@ -86,6 +86,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
   readonly sourceOptions: { value: string; label: string }[] = [
     { value: '', label: 'All Sources' },
     { value: 'v1', label: LEAD_SOURCE_LABELS.v1 },
+    { value: 'webinar2', label: LEAD_SOURCE_LABELS.webinar2 },
     { value: 'v2', label: LEAD_SOURCE_LABELS.v2 },
     { value: 'offer', label: LEAD_SOURCE_LABELS.offer },
   ];
@@ -638,7 +639,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
 
   getSourceClass(source?: string): string {
     const s = source || 'v1';
-    return s === 'offer' ? 'pill-offer' : s === 'v2' ? 'pill-primary' : 'pill-secondary';
+    return s === 'offer' ? 'pill-offer' : s === 'v2' ? 'pill-primary' : s === 'webinar2' ? 'pill-success' : 'pill-secondary';
   }
 
   getPaymentClass(status?: LeadPaymentStatus): string {

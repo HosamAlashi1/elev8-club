@@ -112,11 +112,13 @@ export const AFFILIATE_STATUS_LABELS: Record<AffiliateStatus, string> = {
  * introduced. Read a missing `source` as 'v1' everywhere. Run
  * scripts/backfill-lead-source.mjs once to stamp `source: 'v1'` on old records explicitly.
  */
-export type LeadSource = 'v1' | 'v2' | 'offer';
+export type LeadSource = 'v1' | 'v2' | 'offer' | 'webinar2';
 
 /** Dashboard display labels, per product decision: v1 = "Webinar", v2 = "Free community". */
 export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
   v1: 'Webinar',
+  /** The second webinar run (new questionnaire). Same funnel and pipeline as v1, but its own records. */
+  webinar2: 'Webinar 2',
   v2: 'Free community',
   offer: 'Offer'
 };

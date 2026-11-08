@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   // Stamped on every lead created from this landing page — see core/models/lead.model.ts's LeadSource.
-  leadSource: 'v1' as const,
+  leadSource: 'webinar2' as const,
   // The "registration is closed" page's "JOIN THE WAITLIST" button. Goes to the free community landing, the same link on every version.
   links: { waitlist: 'https://elev8-club-2.vercel.app/#/home' },
   apiUrl: 'https://Elev8 Club-new-backend.nstechs.net/api',
@@ -13,8 +13,8 @@ export const environment = {
   cryptoKey: 'Elev8 ClubSuperSecretKey123',
   // Hosted on Cloudflare Pages (free, unlimited bandwidth). Deploy with: npm run video:deploy
   video: {
-    challengeIntroHls: "https://elev8-video.pages.dev/challenge-intro/master.m3u8",
-    challengeIntroPoster: "https://elev8-video.pages.dev/challenge-intro/poster.jpg"
+    challengeIntroHls: "https://elev8-video.pages.dev/challenge-intro-2/master.m3u8",
+    challengeIntroPoster: "https://elev8-video.pages.dev/challenge-intro-2/poster.jpg"
   },
   firebase: {
     apiKey: 'AIzaSyDbwiL9Ia_imWqEufvi2g9DRd6T9rcr-zI',

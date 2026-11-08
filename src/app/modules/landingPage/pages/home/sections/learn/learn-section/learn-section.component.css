@@ -504,4 +504,5 @@
 @media (max-width: 760px) { .learn-card--cta .learn-cta-text { white-space: normal; } }
 
 .learn-title__tail { white-space: nowrap; }   /* keeps the colon with its word */
+.learn-title > .lp-hl { padding-block: 0.35em 0.15em; line-height: 1.5; }
 @media (max-width: 760px) { .learn-title { font-size: min(30px, 7.4vw); text-wrap: balance; } }

@@ -96,6 +96,11 @@
   margin-bottom: clamp(-20px, -1vw, 4px);
 }
 
+.shots-title .lp-hl {
+  padding-block: 0.35em 0.15em;
+  line-height: 1.5;
+}
+
 .shots-title {
   margin: 0 0 14px;
   font-size: clamp(1.6rem, 3.4vw, 3rem);

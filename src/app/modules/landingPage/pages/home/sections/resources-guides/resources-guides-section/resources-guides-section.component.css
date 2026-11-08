@@ -138,6 +138,10 @@
   text-align: right;
 }
 
+.resources-guides h2 .lp-hl {
+  padding-block: 0.35em 0.15em;
+}
+
 .resources-guides__body {
   width: 100%;
   display: flex;
@@ -483,11 +487,12 @@ width: 100%;
   .resources-guides__badge {
     width: auto;
     max-width: 100%;
+    align-self: flex-start;
     height: 32px;
     gap: 8px;
     padding-inline: 16px;
     font-size: 16px;
-    margin-inline: auto;
+    margin-inline: 0;
   }
 
   .resources-guides h2 {

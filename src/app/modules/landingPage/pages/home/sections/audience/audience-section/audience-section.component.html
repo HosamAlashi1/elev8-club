@@ -5,8 +5,8 @@
     <div class="section-heading">
       <span class="side-line"></span>
       <div>
-        <h2 id="audience-heading">هل هذا أنت؟</h2>
-        <p data-aos="fade-up" data-aos-duration="700"><span class="lp-hl" style="--hl-delay:0.4s">وهذه التحديات التي تمرّ فيها؟</span></p>
+        <h2 id="audience-heading"><span class="lp-hl" style="--hl-delay:0.4s">هل هذا أنت؟</span></h2>
+        <p data-aos="fade-up" data-aos-duration="700">وهذه التحديات التي تمرّ فيها؟</p>
       </div>
       <span class="side-line"></span>
     </div>
@@ -20,7 +20,7 @@
         [attr.data-aos-delay]="120 + i * 70"
       >
         <div class="card-head">
-          <h3>{{ card.title }}</h3>
+          <h3><bdi class="card-number" dir="rtl">{{ i + 1 }}.</bdi> {{ card.title }}</h3>
         </div>
         <p class="card-problem">{{ card.problem }}</p>
       </article>

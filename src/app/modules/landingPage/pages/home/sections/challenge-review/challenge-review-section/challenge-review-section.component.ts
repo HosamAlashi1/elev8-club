@@ -51,7 +51,7 @@ export class ChallengeReviewSectionComponent implements OnInit, OnDestroy {
     {
       title: 'متى التحدي ؟',
       icon: 'CalendarDays',
-      text: `يوم ${this.challengeDateTimeLabel} توقيت تركيا`
+      text: `يوم ${this.challengeDateTimeLabel} توقيت تركيا، لايف على برنامج الزوم`
     },
     {
       title: 'لماذا هذا التحدي ؟',
