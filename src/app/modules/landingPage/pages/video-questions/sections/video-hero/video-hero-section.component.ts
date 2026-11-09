@@ -6,6 +6,19 @@ import { environment } from 'src/environments/environment';
 // Type-only: erased at build time so hls.js stays out of the eager bundle.
 import type HlsJs from 'hls.js';
 
+/**
+ * What the box is showing right now (the "VSL" flow the client asked for, modelled on Monetise):
+ *  - loading : spinner until the first frame can play.
+ *  - muted   : the video already runs silently behind a red "click to listen" box. The click is the
+ *              signal that the visitor actually chose to watch (that is when the play is tracked),
+ *              and it restarts the video from 0:00 with sound.
+ *  - playing / paused : normal playback; the eased progress bar and the controls stay visible.
+ *  - resume  : the visitor watched part of it, then left (another tab/app, or a reload) — a full
+ *              cover asks "continue or start over?".
+ *  - ended   : same cover after the end, offering to watch again.
+ */
+type PlayerState = 'loading' | 'muted' | 'playing' | 'paused' | 'resume' | 'ended';
+
 @Component({
   selector: 'app-video-hero-section',
   templateUrl: './video-hero-section.component.html',
@@ -28,15 +41,16 @@ import type HlsJs from 'hls.js';
 export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
-  isPlaying = false;
-  showControls = false;
+  state: PlayerState = 'loading';
+  /** Mid-playback stall (network); shows the spinner over the running video. */
+  isBuffering = false;
   currentTime = 0;
   duration = 0;
-  volume = 1;
-  isMuted = false;
-  isFullscreen = false;
   progress = 0;
   isIOS = false;
+
+  readonly speeds = [1, 1.25, 1.5, 2];
+  speed = 1;
 
   readonly posterUrl = environment.video.challengeIntroPoster;
 
@@ -52,8 +66,14 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
   private leadKey: string | null = null;
   private hasTrackedPlay = false;
   private hasTrackedComplete = false;
-  private controlsTimeout: any;
+  private hasStarted = false;
+  private lastSavedSecond = -1;
   private detachListeners: Array<() => void> = [];
+
+  /** Where this visitor left off, per video (a new video URL starts fresh). */
+  private get storageKey(): string {
+    return `elev8:vq-video:${this.hlsSource}`;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -73,26 +93,18 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
 
   ngAfterViewInit(): void {
     const video = this.videoPlayer.nativeElement;
-
-    video.volume = this.volume;
-    video.muted = false;
-    this.isMuted = false;
+    // Muted from the very first frame: browsers only allow autoplay without sound.
+    video.muted = true;
 
     this.attachMediaListeners(video);
-    const onFullscreenChange = () => {
-      this.isFullscreen = !!document.fullscreenElement;
-      this.changeDetectorRef.detectChanges();
-    };
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    this.detachListeners.push(() => document.removeEventListener('fullscreenchange', onFullscreenChange));
+    this.attachPageListeners(video);
     this.playbackSetup = this.setupPlayback(video);
   }
 
   ngOnDestroy(): void {
+    this.saveProgress(true);
     this.detachListeners.forEach(off => off());
     this.detachListeners = [];
-
-    if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
 
     // Without this the hls.js worker, its buffers and its network loaders leak on navigation.
     this.hls?.destroy();
@@ -137,8 +149,7 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
         // Assume ~1.5 Mbps before the first real measurement so the opening seconds are
         // not stuck on the 360p rendition.
         abrEwmaDefaultEstimate: 1_500_000,
-        // Buffer enough for an instant start without pre-downloading the whole video
-        // for visitors who never press play.
+        // Buffer enough for an instant start without pre-downloading the whole video.
         maxBufferLength: 20,
         maxMaxBufferLength: 60,
         maxBufferSize: 30 * 1000 * 1000,
@@ -200,7 +211,7 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
     this.hls = null;
     this.ngZone.run(() => {
       this.hasFatalError = true;
-      this.isPlaying = false;
+      this.isBuffering = false;
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -210,7 +221,78 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
     this.hasFatalError = false;
     this.networkRecoveries = 0;
     this.mediaRecoveries = 0;
+    this.hasStarted = false;
+    this.state = 'loading';
     this.playbackSetup = this.setupPlayback(this.videoPlayer.nativeElement);
+  }
+
+  // -------------------------------
+  //         START-UP FLOW
+  // -------------------------------
+
+  /** First moment the video can play: decide between resume cover, end cover, or silent autoplay. */
+  private async onFirstPlayable(video: HTMLVideoElement): Promise<void> {
+    if (this.hasStarted) return;
+    this.hasStarted = true;
+
+    const saved = this.readSavedPosition();
+    const duration = video.duration || 0;
+
+    if (saved !== null && duration && saved >= duration - 3) {
+      this.setState('ended');
+      return;
+    }
+    if (saved !== null && saved > 3) {
+      video.currentTime = saved;
+      this.setState('resume');
+      return;
+    }
+
+    this.setState('muted');
+    video.muted = true;
+    try {
+      await video.play();
+    } catch {
+      // Autoplay refused (e.g. iOS Low Power Mode). The red box still shows; tapping it starts
+      // playback with sound, so nothing is lost.
+    }
+  }
+
+  /** The red box: the visitor chose to listen — start over from 0:00 with sound. */
+  async listen(): Promise<void> {
+    const video = this.videoPlayer.nativeElement;
+    video.currentTime = 0;
+    await this.playWithSound();
+    this.trackPlay('unmute');
+  }
+
+  /** Resume cover → carry on from where they left. */
+  async continueWatching(): Promise<void> {
+    await this.playWithSound();
+    this.trackPlay('resume');
+  }
+
+  /** Resume / end cover → from the beginning. */
+  async restart(): Promise<void> {
+    const video = this.videoPlayer.nativeElement;
+    video.currentTime = 0;
+    this.hasTrackedComplete = false;
+    await this.playWithSound();
+    this.trackPlay('restart');
+  }
+
+  private async playWithSound(): Promise<void> {
+    const video = this.videoPlayer.nativeElement;
+    video.muted = false;
+    video.playbackRate = this.speed;
+    this.setState('playing');
+    try {
+      // A quick tap can happen before the lazy hls.js chunk has attached its MediaSource.
+      await this.playbackSetup;
+      await video.play();
+    } catch {
+      this.setState('paused');
+    }
   }
 
   // -------------------------------
@@ -231,18 +313,37 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
         this.changeDetectorRef.detectChanges();
       });
 
+      on('canplay', () => {
+        this.hasFatalError = false;
+        this.isBuffering = false;
+        if (!this.hasStarted) void this.onFirstPlayable(video);
+        else this.changeDetectorRef.detectChanges();
+      });
+
+      on('waiting', () => {
+        if (this.state === 'playing' || this.state === 'muted') {
+          this.isBuffering = true;
+          this.changeDetectorRef.detectChanges();
+        }
+      });
+      on('playing', () => {
+        this.isBuffering = false;
+        this.changeDetectorRef.detectChanges();
+      });
+
       let lastRenderedSecond = -1;
       on('timeupdate', () => {
         this.currentTime = video.currentTime;
         this.progress = video.duration ? (video.currentTime / video.duration) * 100 : 0;
 
-        if (this.progress >= 95 && !this.hasTrackedComplete) {
+        if (!video.muted && this.progress >= 95 && !this.hasTrackedComplete) {
           this.gtm.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
           this.hasTrackedComplete = true;
         }
 
-        // Repaint at most once per second — the progress bar and the timer are the only
-        // things bound to this, and neither needs sub-second precision.
+        this.saveProgress();
+
+        // Repaint at most once per second — the progress bar is the only thing bound to this.
         const second = Math.floor(video.currentTime);
         if (second !== lastRenderedSecond) {
           lastRenderedSecond = second;
@@ -250,141 +351,96 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
         }
       });
 
-      on('ended', () => {
-        this.isPlaying = false;
-        this.showControls = false;
+      on('pause', () => {
+        if (this.state === 'playing') this.setState('paused');
+      });
 
+      on('ended', () => {
+        if (video.muted) {
+          // The silent preview ran out before anyone tapped it: loop it quietly.
+          video.currentTime = 0;
+          void video.play().catch(() => undefined);
+          return;
+        }
         if (!this.hasTrackedComplete) {
           this.gtm.trackVideoComplete('challenge_intro_video', this.leadKey || undefined);
           this.hasTrackedComplete = true;
         }
-        this.changeDetectorRef.detectChanges();
+        this.saveProgress(true);
+        this.setState('ended');
       });
-
     });
   }
 
-  async togglePlay(): Promise<void> {
-    const video = this.videoPlayer.nativeElement;
+  /** Leaving the page/app mid-video pauses it; coming back shows the "continue or restart" cover. */
+  private attachPageListeners(video: HTMLVideoElement): void {
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (this.state === 'playing' || this.state === 'paused') {
+          video.pause();
+          this.saveProgress(true);
+          this.setState('resume');
+        }
+      }
+    };
+    const onPageHide = () => this.saveProgress(true);
 
-    if (!video.paused) {
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', onPageHide);
+    this.detachListeners.push(() => document.removeEventListener('visibilitychange', onVisibility));
+    this.detachListeners.push(() => window.removeEventListener('pagehide', onPageHide));
+  }
+
+  // -------------------------------
+  //            CONTROLS
+  // -------------------------------
+
+  togglePlay(): void {
+    const video = this.videoPlayer.nativeElement;
+    if (this.state === 'muted') {
+      void this.listen();
+      return;
+    }
+    if (this.state === 'playing') {
       video.pause();
       return;
     }
-
-    try {
-      // A quick mobile tap can happen before the lazy hls.js chunk has attached its
-      // MediaSource. Waiting here prevents play() from failing silently.
-      await this.playbackSetup;
-      await video.play();
-    } catch {
-      this.isPlaying = false;
-      this.showControls = false;
-      this.changeDetectorRef.detectChanges();
-    }
+    if (this.state === 'paused') void this.playWithSound();
   }
 
+  /** Tapping the picture: in the silent preview it means "let me hear it", otherwise play/pause. */
   onVideoClick(): void {
-    const isTouchOnly = window.matchMedia('(hover: none)').matches;
-    if (isTouchOnly && this.isPlaying && !this.showControls) {
-      this.showControls = true;
-      this.resetControlsTimeout();
-      return;
-    }
-
-    void this.togglePlay();
+    this.togglePlay();
   }
 
-  seek(event: MouseEvent): void {
-    const video = this.videoPlayer.nativeElement;
-    if (!video.duration) return;
-
-    const progressBar = event.currentTarget as HTMLElement;
-    const rect = progressBar.getBoundingClientRect();
-    const pos = (rect.right - event.clientX) / rect.width;
-    video.currentTime = Math.min(Math.max(pos, 0), 1) * video.duration;
+  cycleSpeed(): void {
+    const next = this.speeds[(this.speeds.indexOf(this.speed) + 1) % this.speeds.length];
+    this.speed = next;
+    this.videoPlayer.nativeElement.playbackRate = next;
   }
 
-  toggleMute(): void {
-    const video = this.videoPlayer.nativeElement;
-    video.muted = !video.muted;
-    this.isMuted = video.muted;
+  formatSpeed(value: number): string {
+    return `${value}x`;
   }
 
-  changeVolume(event: Event): void {
-    const video = this.videoPlayer.nativeElement;
-    const input = event.target as HTMLInputElement;
-    const value = parseFloat(input.value);
-    video.volume = value;
-    this.volume = value;
-    this.isMuted = value === 0;
+  /** Eased fill (same curve as the v2 page): races ahead early, crawls near the end, hits 100 with the video. */
+  private static readonly EASE_POWER = 6;
+
+  get displayProgress(): number {
+    // The silent preview is not "watching" yet — keep the bar at the start until they tap to listen.
+    if (this.state === 'muted' || this.state === 'loading') return 0;
+    if (this.state === 'ended') return 100;
+    if (!this.duration) return this.progress;
+    const t = Math.min(1, Math.max(0, this.currentTime / this.duration));
+    return (1 - Math.pow(1 - t, VideoHeroSectionComponent.EASE_POWER)) * 100;
   }
 
-  async toggleFullscreen(): Promise<void> {
-    const container = this.videoPlayer.nativeElement.parentElement;
-    if (!container) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await container.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch {
-      // Some mobile browsers only support fullscreen directly on the video element.
-      const mobileVideo = this.videoPlayer.nativeElement as HTMLVideoElement & {
-        webkitEnterFullscreen?: () => void;
-      };
-      mobileVideo.webkitEnterFullscreen?.();
-    }
+  get showCover(): boolean {
+    return this.state === 'resume' || this.state === 'ended';
   }
 
-  formatTime(seconds: number): string {
-    if (!seconds || isNaN(seconds)) return '0:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  onTouchControls(event: TouchEvent): void {
-    this.showControls = true;
-    if (this.isPlaying) this.resetControlsTimeout();
-  }
-
-  onClickControls(event: MouseEvent): void {
-    event.stopPropagation();
-  }
-
-  private resetControlsTimeout(): void {
-    if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
-
-    this.controlsTimeout = setTimeout(() => {
-      if (this.isPlaying) this.showControls = false;
-    }, 3000);
-  }
-
-  onVideoLoaded(): void {
-    const video = this.videoPlayer.nativeElement;
-    video.volume = this.volume;
-  }
-
-  onVideoCanPlay(): void {
-    this.hasFatalError = false;
-  }
-
-  onVideoPlay(): void {
-    this.isPlaying = true;
-    this.showControls = true;
-    this.resetControlsTimeout();
-    if (!this.hasTrackedPlay) {
-      this.gtm.trackVideoPlay('challenge_intro_video', this.leadKey || undefined);
-      this.hasTrackedPlay = true;
-    }
-  }
-
-  onVideoPause(): void {
-    this.isPlaying = false;
-    this.showControls = false;
+  get showSpinner(): boolean {
+    return !this.hasFatalError && (this.state === 'loading' || this.isBuffering);
   }
 
   onVideoError(event: Event): void {
@@ -393,6 +449,48 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
     // recovery path. Only surface the overlay when nothing is left to recover with.
     if (!this.hls && video.error) {
       this.reportFatal();
+    }
+  }
+
+  // -------------------------------
+  //            HELPERS
+  // -------------------------------
+
+  private setState(next: PlayerState): void {
+    this.ngZone.run(() => {
+      this.state = next;
+      if (next !== 'playing' && next !== 'muted') this.isBuffering = false;
+      this.changeDetectorRef.detectChanges();
+    });
+  }
+
+  private trackPlay(action: string): void {
+    if (this.hasTrackedPlay) return;
+    this.hasTrackedPlay = true;
+    this.gtm.trackVideoPlay('challenge_intro_video', this.leadKey || undefined, { action });
+  }
+
+  /** Remembers the real (with-sound) position, at most every 2 s, or immediately when forced. */
+  private saveProgress(force = false): void {
+    const video = this.videoPlayer?.nativeElement;
+    if (!video || video.muted || !this.hasStarted) return;
+    const second = Math.floor(video.currentTime);
+    if (!force && Math.abs(second - this.lastSavedSecond) < 2) return;
+    this.lastSavedSecond = second;
+    try {
+      localStorage.setItem(this.storageKey, String(video.ended ? video.duration : video.currentTime));
+    } catch {
+      // Private mode / storage blocked: resuming is a nicety, playback is unaffected.
+    }
+  }
+
+  private readSavedPosition(): number | null {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      const value = raw === null ? NaN : parseFloat(raw);
+      return Number.isFinite(value) ? value : null;
+    } catch {
+      return null;
     }
   }
 }

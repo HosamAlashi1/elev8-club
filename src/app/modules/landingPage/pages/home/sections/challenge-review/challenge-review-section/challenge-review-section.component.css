@@ -234,3 +234,10 @@
   .review--challenge .review-grid p { width: 100%; max-width: 290px; margin-top: 12px; }
 }
 
+
+/* One-line card titles (type scales with the column) + highlighted section heading. */
+.review--challenge .review-grid article { container-type: inline-size; }
+.review--challenge .review-grid h3 { white-space: nowrap; font-size: clamp(10px, 6.4cqw, 18px); }
+.review--challenge .section-heading h2 .lp-hl { padding-inline: 0.5em; }
+.review--challenge .section-heading h2 { white-space: nowrap; }
+@media (max-width: 700px) { .review--challenge .section-heading h2 { font-size: clamp(15px, 5.4vw, 30px); } }

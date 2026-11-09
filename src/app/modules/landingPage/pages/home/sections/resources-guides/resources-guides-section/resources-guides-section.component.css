@@ -592,3 +592,25 @@ width: 100%;
   color: var(--lp-silver) !important;
   -webkit-text-fill-color: var(--lp-silver);
 }
+
+/* ── Letter portrait (Khalil at his desk) ──
+   A full photo, not a cut-out: fill the box (cover) framed from the head down to the hands writing,
+   no blend mode (lighten would wash the dark suit out). The old head ring was drawn for the previous
+   cut-out and no longer lines up, so it is hidden. The existing edge masks still melt it into the page. */
+.resources-guides__ring { display: none; }
+.resources-guides__portrait {
+  object-fit: cover;
+  object-position: center 62%;
+  mix-blend-mode: normal;
+}
+@media (max-width: 980px) {
+  .resources-guides__media {
+    width: min(calc(100% + (var(--rg-mobile-pad) * 2)), 520px);
+    aspect-ratio: 4 / 5;
+    margin-inline: auto;
+  }
+  .resources-guides__portrait { object-position: center 66%; }
+}
+@media (max-width: 560px) {
+  .resources-guides__media { margin-inline: calc(var(--rg-mobile-pad) * -1); }
+}

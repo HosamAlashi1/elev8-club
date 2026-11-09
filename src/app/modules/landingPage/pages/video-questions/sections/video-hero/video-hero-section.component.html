@@ -14,9 +14,7 @@
     <div
       [@scaleIn]
       class="video-container"
-      [class.is-playing]="isPlaying"
-      (mouseenter)="showControls = true"
-      (mouseleave)="showControls = false"
+      [class.is-playing]="state === 'playing'"
       data-aos="zoom-in"
       data-aos-duration="900"
       data-aos-delay="120">
@@ -24,81 +22,83 @@
       <video
         #videoPlayer
         class="video-player"
-        preload="metadata"
+        preload="auto"
+        muted
         playsinline
         webkit-playsinline
         [poster]="posterUrl"
-        [controls]="isIOS"
-        (click)="!isIOS && onVideoClick()"
-        (play)="onVideoPlay()"
-        (pause)="onVideoPause()"
-        (loadeddata)="onVideoLoaded()"
-        (canplay)="onVideoCanPlay()"
+        disablepictureinpicture
+        controlslist="nofullscreen noremoteplayback nodownload"
+        (click)="onVideoClick()"
         (error)="onVideoError($event)">
       </video>
 
-      <button type="button" class="play-overlay" *ngIf="!isPlaying && !isIOS && !hasFatalError" (click)="togglePlay()" aria-label="تشغيل الفيديو">
-        <span class="play-button">
-          <svg class="play-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+      <!-- 1. Loading / buffering -->
+      <div class="vsl-spinner" *ngIf="showSpinner" aria-label="جاري التحميل" role="status">
+        <span class="vsl-spinner__ring"></span>
+      </div>
+
+      <!-- 2. Silent preview: the video already runs; one tap to hear it from the start -->
+      <button
+        type="button"
+        class="vsl-listen"
+        *ngIf="state === 'muted' && !hasFatalError"
+        (click)="listen()"
+        aria-label="الفيديو بدأ — اضغط للاستماع">
+        <span class="vsl-listen__box">
+          <span class="vsl-listen__top">الفيديو بدأ بالفعل</span>
+          <svg class="vsl-listen__icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M8 18h7l10-8v28l-10-8H8z" fill="currentColor" />
+            <path d="M31 17c2.5 2 4 4.6 4 7s-1.5 5-4 7M35.5 12.5C40 16 42 20 42 24s-2 8-6.5 11.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <path d="M6 6l36 36" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M6 6l36 36" stroke="#c91631" stroke-width="1.6" stroke-linecap="round" />
           </svg>
+          <span class="vsl-listen__bottom">اضغط هنا لتسمع</span>
         </span>
       </button>
+
+      <!-- 3. Came back mid-video, or finished: continue / start over -->
+      <div class="vsl-cover" *ngIf="showCover && !hasFatalError" role="dialog" aria-modal="false" aria-labelledby="vsl-cover-title">
+        <p class="vsl-cover__title" id="vsl-cover-title">
+          {{ state === 'ended' ? 'خلّصت مشاهدة الفيديو' : 'إنت بدأت تشاهد هذا الفيديو' }}
+        </p>
+        <div class="vsl-cover__actions">
+          <button type="button" class="vsl-cover__btn" *ngIf="state === 'resume'" (click)="continueWatching()">
+            <span class="vsl-cover__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg>
+            </span>
+            كمّل المشاهدة
+          </button>
+          <button type="button" class="vsl-cover__btn" (click)="restart()">
+            <span class="vsl-cover__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4.5h4.5" /></svg>
+            </span>
+            ابدأ من البداية
+          </button>
+        </div>
+      </div>
 
       <div class="video-error" *ngIf="hasFatalError" role="alert">
         <p class="video-error-text">تعذّر تشغيل الفيديو. تأكد من اتصالك بالإنترنت.</p>
         <button type="button" class="video-error-retry" (click)="retryPlayback()">إعادة المحاولة</button>
       </div>
 
-      <div
-        class="video-controls"
-        *ngIf="!isIOS"
-        [class.visible]="showControls"
-        [class.mobile-hidden]="isPlaying && !showControls"
-        (touchstart)="onTouchControls($event)"
-        (click)="onClickControls($event)">
+      <!-- Always-on controls: play/pause, the eased progress line, playback speed -->
+      <div class="vsl-controls" *ngIf="!hasFatalError && !showCover" dir="ltr">
+        <div class="vsl-controls__row">
+          <button type="button" class="vsl-ctrl" (click)="togglePlay()" [attr.aria-label]="state === 'playing' ? 'إيقاف مؤقت' : 'تشغيل'">
+            <svg *ngIf="state !== 'playing'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+            <svg *ngIf="state === 'playing'" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="3.6" height="14" rx="1" /><rect x="13.9" y="5" width="3.6" height="14" rx="1" /></svg>
+          </button>
 
-        <div class="progress-container" (click)="seek($event)">
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="progress"></div>
-          </div>
+          <button type="button" class="vsl-ctrl vsl-ctrl--speed" (click)="cycleSpeed()" [attr.aria-label]="'سرعة التشغيل ' + formatSpeed(speed)">
+            <span class="vsl-speed-label" *ngIf="speed !== 1">{{ formatSpeed(speed) }}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4.5 17a8.5 8.5 0 1 1 15 0" /><path d="M12 13l4-4" /></svg>
+          </button>
         </div>
 
-        <div class="controls-row">
-          <div class="controls-group">
-            <button type="button" class="control-btn play-btn" (click)="togglePlay()" aria-label="تشغيل/إيقاف">
-              <svg *ngIf="!isPlaying" class="icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-              </svg>
-              <svg *ngIf="isPlaying" class="icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zM12.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z" />
-              </svg>
-            </button>
-            <span class="time-display">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
-          </div>
-
-          <div class="controls-group controls-secondary">
-            <button type="button" class="control-btn fullscreen-btn" (click)="toggleFullscreen()" aria-label="ملء الشاشة">
-              <svg *ngIf="!isFullscreen" class="icon" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-              </svg>
-              <svg *ngIf="isFullscreen" class="icon" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" />
-              </svg>
-            </button>
-
-            <div class="volume-control">
-              <button type="button" class="control-btn volume-btn" (click)="toggleMute()" aria-label="كتم الصوت">
-                <svg *ngIf="!isMuted && volume > 0" class="icon" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10.5 3.75a.75.75 0 00-1.264-.546L5.203 7H2.667a.75.75 0 00-.75.75v4.5c0 .414.336.75.75.75h2.536l4.033 3.796a.75.75 0 001.264-.546V3.75zM16.713 7.51a.75.75 0 10-1.026 1.094 3.75 3.75 0 010 2.812.75.75 0 101.026 1.094 5.25 5.25 0 000-4.999z" />
-                </svg>
-                <svg *ngIf="isMuted || volume === 0" class="icon" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10.5 3.75a.75.75 0 00-1.264-.546L5.203 7H2.667a.75.75 0 00-.75.75v4.5c0 .414.336.75.75.75h2.536l4.033 3.796a.75.75 0 001.264-.546V3.75zM14.97 5.47a.75.75 0 00-1.06 1.06L15.44 8l-1.53 1.47a.75.75 0 101.06 1.06l1.47-1.53 1.47 1.53a.75.75 0 101.06-1.06L16.44 8l1.53-1.47a.75.75 0 00-1.06-1.06l-1.47 1.53-1.47-1.53z" />
-                </svg>
-              </button>
-              <input type="range" class="volume-slider" min="0" max="1" step="0.1" [value]="volume" (input)="changeVolume($event)">
-            </div>
-          </div>
+        <div class="vsl-progress" aria-hidden="true">
+          <div class="vsl-progress__fill" [style.width.%]="displayProgress"></div>
         </div>
       </div>
     </div>

@@ -1459,3 +1459,60 @@
     var(--lp-silver-text);
 }
 .hero h1 b { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.18)); }
+
+/* ── Hero portrait (Khalil – Photo 02) ──
+   A tall transparent cut-out. The figure is drawn a bit taller than its box and anchored at the head,
+   so every width shows head → pocket watch and the legs fade out under the box's bottom edge.
+   No blend mode: the cut-out has real transparency, and `lighten` would wash the dark suit into the glow. */
+.hero__visual {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+}
+.hero__visual picture { height: 100%; }
+.hero__visual img {
+  width: 100%;
+  height: 122%;
+  object-fit: contain;
+  object-position: center top;
+  mix-blend-mode: normal;
+  -webkit-mask-image: none;
+  mask-image: none;
+  transform: none;
+}
+
+/* Phone / tablet: the date pill used to sit over the old photo's hand. Pull it down a little so the
+   watch stays visible, and give the head some air under the sticky bar. */
+@media (max-width: 980px) {
+  .hero__visual img { object-position: center 26px; }
+  .hero__copy { margin-top: -58px; }
+}
+/* Desktop: keep the figure on the outer side so the shoulder never reaches the copy card. */
+@media (min-width: 981px) { .hero__visual img { object-position: left top; } }
+
+/* Desktop: the box used to run past the hero's bottom, so the hero clipped the figure in a hard line.
+   End the box exactly at the hero's bottom and fade the last ~40% into the background. */
+@media (min-width: 981px) {
+  .hero__visual {
+    bottom: 0;
+    height: auto;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 56%, rgba(0,0,0,0.55) 76%, transparent 97%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 56%, rgba(0,0,0,0.55) 76%, transparent 97%);
+  }
+  .hero__visual img { height: 136%; }
+}
+/* Phone / tablet: same soft melt at the bottom of the box. */
+@media (max-width: 980px) {
+  .hero__visual {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0,0,0,0.5) 80%, transparent 98%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0,0,0,0.5) 80%, transparent 98%);
+  }
+}
+
+/* No added glow or shadow: the photo's own lighting only. */
+.hero__visual img { filter: none; }
+
+/* Breathing room between the sticky header and the head (measured: phones were 15px under the bar,
+   ~1500px desktops only 5px below it). */
+@media (max-width: 560px) { .hero__visual { margin-top: 44px; } }
+@media (min-width: 1281px) { .hero__visual { top: max(102px, clamp(72px, 5.4vw, 105px)); } }

@@ -451,3 +451,175 @@
     animation: none;
   }
 }
+
+/* ── Same player behaviour as the v2 page ──
+   16:9 frame filled edge to edge (no black side bars), bar fills left→right, no time / volume / fullscreen. */
+.video-container { aspect-ratio: 16 / 9; }
+.video-player { object-fit: cover; }
+.progress-fill { margin-left: 0; margin-right: auto; }
+.controls-row { justify-content: flex-start; direction: ltr; }
+.title-wrapper { margin-bottom: 40px; }
+.answer-prompt { margin-top: 20px; }
+@media (max-width: 640px) { .title-wrapper { margin-bottom: 26px; } .answer-prompt { margin-top: 14px; } }
+
+/* ════ VSL player (Monetise-style) ════ */
+
+/* 1. Spinner */
+.vsl-spinner {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: rgba(8, 3, 4, 0.35);
+}
+.vsl-spinner__ring {
+  width: clamp(38px, 7vw, 56px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.22);
+  border-top-color: #ffffff;
+  animation: vslSpin 0.8s linear infinite;
+}
+@keyframes vslSpin { to { transform: rotate(360deg); } }
+
+/* 2. "The video already started — tap to listen" */
+.vsl-listen {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.vsl-listen__box {
+  display: grid;
+  justify-items: center;
+  gap: clamp(4px, 1vw, 10px);
+  width: min(78%, 400px);
+  padding: clamp(12px, 2.4vw, 22px) clamp(14px, 3vw, 26px);
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  background: #d8122e;
+  color: #ffffff;
+  font-family: var(--lp-font-display, inherit);
+  font-weight: 800;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  animation: vslPulse 1.6s ease-in-out infinite;
+}
+.vsl-listen__top { font-size: clamp(15px, 2.4vw, 24px); line-height: 1.3; }
+.vsl-listen__bottom { font-size: clamp(14px, 2.1vw, 21px); line-height: 1.3; }
+.vsl-listen__icon { width: clamp(46px, 9vw, 84px); height: auto; }
+.vsl-listen:hover .vsl-listen__box { filter: brightness(1.08); }
+.vsl-listen:focus-visible .vsl-listen__box { outline: 3px solid #fff; outline-offset: 4px; }
+@keyframes vslPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+/* 3. Continue / start-over cover */
+.vsl-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(14px, 3vw, 30px);
+  padding: 20px;
+  background: linear-gradient(160deg, rgba(201, 22, 49, 0.94), rgba(120, 8, 26, 0.96));
+  text-align: center;
+  backdrop-filter: blur(3px);
+}
+.vsl-cover__title {
+  margin: 0;
+  color: #fff;
+  font-family: var(--lp-font-display, inherit);
+  font-size: clamp(18px, 3vw, 34px);
+  font-weight: 800;
+  line-height: 1.35;
+}
+.vsl-cover__actions { display: grid; gap: clamp(10px, 2vw, 18px); justify-items: start; }
+.vsl-cover__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-family: var(--lp-font-display, inherit);
+  font-size: clamp(16px, 2.3vw, 26px);
+  font-weight: 700;
+  cursor: pointer;
+}
+.vsl-cover__icon {
+  display: grid;
+  place-items: center;
+  width: clamp(36px, 5vw, 56px);
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  transition: background 160ms ease, transform 160ms ease;
+}
+.vsl-cover__icon svg { width: 50%; height: 50%; }
+.vsl-cover__btn:hover .vsl-cover__icon { background: rgba(255, 255, 255, 0.16); transform: scale(1.06); }
+.vsl-cover__btn:focus-visible { outline: 2px solid #fff; outline-offset: 6px; border-radius: 8px; }
+
+/* Always-visible controls: play/pause left, speed right, progress line under them */
+.vsl-controls {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 6;
+  padding: 26px 0 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  pointer-events: none;
+}
+.vsl-controls__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(8px, 1.6vw, 16px) clamp(4px, 1vw, 8px);
+}
+.vsl-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+.vsl-ctrl svg { width: 22px; height: 22px; }
+.vsl-speed-label { font-size: 13px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+.vsl-ctrl:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 6px; }
+.vsl-progress {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.vsl-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c91631, #ff3b57);
+  box-shadow: 0 0 10px rgba(255, 59, 87, 0.6);
+  transition: width 0.9s linear;
+}
+/* The old hover controls / play overlay are replaced by the above. */
+.video-controls, .play-overlay { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vsl-listen__box, .vsl-spinner__ring { animation: none; }
+  .vsl-progress__fill { transition: none; }
+}
+
+/* Title never breaks its "…" onto a line of its own on narrow phones. */
+.main-title { white-space: nowrap; }
+@media (max-width: 640px) { .main-title { font-size: min(40px, 9.6vw); } }

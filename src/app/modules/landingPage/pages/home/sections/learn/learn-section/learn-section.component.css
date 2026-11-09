@@ -506,3 +506,9 @@
 .learn-title__tail { white-space: nowrap; }   /* keeps the colon with its word */
 .learn-title > .lp-hl { padding-block: 0.35em 0.15em; line-height: 1.5; }
 @media (max-width: 760px) { .learn-title { font-size: min(30px, 7.4vw); text-wrap: balance; } }
+
+/* graduation-cap image removed: tighten the heading area */
+@media (min-width: 1281px) {
+  .learn-head { height: 150px; }
+  .learn-title { top: 20px; }
+}

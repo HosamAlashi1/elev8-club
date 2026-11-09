@@ -1,6 +1,19 @@
 <main class="video-questions-content">
-  <div class="reload-warning-bar" role="status">
-    لا تسكر الصفحة ولا تعمل اعادة تحميل
+  <div class="reload-warning-bar" role="status">لا تسكر الصفحة ولا تعمل إعادة تحميل</div>
+
+  <!-- Same as the v2 questions page: the signup is already well under way when the visitor lands here. -->
+  <div
+    class="vq-progress"
+    role="progressbar"
+    aria-label="تقدم إكمال التسجيل"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="80">
+    <span class="vq-progress__fill" aria-hidden="true"></span>
+    <span class="vq-progress__label" dir="ltr">
+      <span class="vq-progress__percent">80%</span>
+      <span class="vq-progress__caption">Completed</span>
+    </span>
   </div>
   <app-video-hero-section></app-video-hero-section>
   <app-question-form-section></app-question-form-section>

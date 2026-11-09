@@ -24,7 +24,7 @@
           </div>
 
           <div class="wt-copy">
-            <h3><span class="lp-hl">{{ story.title }}</span></h3>
+            <h3 [class.wt-h3--one]="story.oneLine"><span class="lp-hl">{{ story.title }}</span></h3>
             <div class="wt-body">
               <ng-container *ngFor="let line of story.bodyLines; let first = first">
                 <p class="wt-line">{{ line }}</p>

@@ -542,3 +542,8 @@
   padding-block: 0.35em 0.15em;
   line-height: 1.5;
 }
+
+/* one-line headline: shrinks with the card width instead of wrapping */
+.wt-copy { container-type: inline-size; }
+.wt-copy h3.wt-h3--one { white-space: nowrap; font-size: min(24px, 4.6cqw); }
+.wt-copy h3.wt-h3--one .lp-hl { white-space: nowrap; }

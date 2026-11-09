@@ -4,6 +4,7 @@ import { LandingSettingsService } from 'src/app/modules/services/landing-setting
 
 type TrustStory = {
   title: string;
+  oneLine?: boolean;
   bodyLines: string[];
   partners?: {
     name: string;
@@ -60,7 +61,8 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
       mediaPosition: 'left'
     },
     {
-      title: 'من الصفر لأول 10,000,000$ خلال أول سنتين بزنس',
+      title: 'من الصفر لأول 10 مليون$ خلال أول سنتين بزنس',
+      oneLine: true,
       bodyLines: [
         'بدأت الأونلاين بزنس في 2020 بدون خبرة خلال أول سنة وصلت لأول مليون مبيعات وبعدها اشتغلت مع أسماء قوية في المجال مثل',
         'وبنيت فريق عالمي فيه أكثر من 10,000 طالب وحققت أكثر من 10,000,000$ مبيعات في التجارة الإلكترونية خلال سنتين وتعلمت اهم مهارات البزنس بناء الأنظمة المبيعات التسويق الإدارة'
@@ -97,6 +99,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
     },
     {
       title: 'بنينا حاضنة أحلام وأهداف الشباب Elev8 Club',
+      oneLine: true,
       bodyLines: [
         'بعد ما طبّقت النظام وحققت نتائج قوية قررت أنقل هذا الشي لناس أكثر من خلال بيئة صحية ومنظمة اليوم قدرنا نساعد أكثر من 50,000 شاب وصبية من مختلف دول العالم يبدأوا أول دخل إلهم ويتعلموا التداول بالطريقة الصحيحة'
       ],
@@ -105,7 +108,7 @@ export class WhyTrustSectionComponent implements OnInit, OnDestroy {
       mediaPosition: 'right'
     },
     {
-      title: 'تحدي elev8 club',
+      title: 'Final countdown challenge',
       bodyLines: [
         'أطلقنا التحدي بثلاث نسخ سابقة، وشوفنا اشخاص بمختلف الدول والخلفيات قدروا يطبقوا النظام ويحققوا نتائج حقيقية.',
         `ويوم ${this.challengeDateLabel}، راجعين بالنسخة الأخيرة من التحدي، وهاي فرصتك الأخيرة خلال 2026 لتتعرف على النظام وتبدأ تطبّقه قبل نهاية السنة.`
