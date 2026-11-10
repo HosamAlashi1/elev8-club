@@ -67,6 +67,8 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
   private hasTrackedPlay = false;
   private hasTrackedComplete = false;
   private hasStarted = false;
+  private setupDone = false;
+  private startTimer: any;
   private lastSavedSecond = -1;
   private detachListeners: Array<() => void> = [];
 
@@ -98,10 +100,15 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
 
     this.attachMediaListeners(video);
     this.attachPageListeners(video);
-    this.playbackSetup = this.setupPlayback(video);
+    this.playbackSetup = this.setupPlayback(video).then(() => { this.setupDone = true; });
+
+    // iOS Safari ignores preload and often never fires canplay until the visitor taps, so the spinner
+    // must not wait for it forever: any sign of life (or 2.5 s) moves on to the "tap to listen" box.
+    this.startTimer = setTimeout(() => void this.onFirstPlayable(video), 2500);
   }
 
   ngOnDestroy(): void {
+    clearTimeout(this.startTimer);
     this.saveProgress(true);
     this.detachListeners.forEach(off => off());
     this.detachListeners = [];
@@ -223,7 +230,9 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
     this.mediaRecoveries = 0;
     this.hasStarted = false;
     this.state = 'loading';
-    this.playbackSetup = this.setupPlayback(this.videoPlayer.nativeElement);
+    this.setupDone = false;
+    this.playbackSetup = this.setupPlayback(this.videoPlayer.nativeElement).then(() => { this.setupDone = true; });
+    this.startTimer = setTimeout(() => void this.onFirstPlayable(this.videoPlayer.nativeElement), 2500);
   }
 
   // -------------------------------
@@ -287,8 +296,9 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
     video.playbackRate = this.speed;
     this.setState('playing');
     try {
-      // A quick tap can happen before the lazy hls.js chunk has attached its MediaSource.
-      await this.playbackSetup;
+      // iOS only honours play() made synchronously inside the tap, so skip the await once hls/native is ready.
+      // (A very quick tap can still come before the lazy hls.js chunk has attached its MediaSource.)
+      if (!this.setupDone) await this.playbackSetup;
       await video.play();
     } catch {
       this.setState('paused');
@@ -313,6 +323,8 @@ export class VideoHeroSectionComponent implements OnInit, AfterViewInit, OnDestr
         this.changeDetectorRef.detectChanges();
       });
 
+      on('loadedmetadata', () => { if (!this.hasStarted) void this.onFirstPlayable(video); });
+      on('loadeddata', () => { if (!this.hasStarted) void this.onFirstPlayable(video); });
       on('canplay', () => {
         this.hasFatalError = false;
         this.isBuffering = false;
