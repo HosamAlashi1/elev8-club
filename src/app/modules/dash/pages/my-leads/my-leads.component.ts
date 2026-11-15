@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +22,7 @@ const FILTER_ALL = '__all__';
   styleUrls: ['./my-leads.component.css']
 })
 export class MyLeadsComponent implements OnInit, OnDestroy {
+  @ViewChild('pager') pager?: PaginationComponent;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private destroy$ = new Subject<void>();
 
@@ -29,8 +31,9 @@ export class MyLeadsComponent implements OnInit, OnDestroy {
   searchText = '';
 
   page = 1;
-  size = 15;
+  size = 10;
   totalCount = 0;
+  sizeOptions: SelectOption[] = [];
 
   isAdmin = false;
   isAccountManager = false;
@@ -44,7 +47,16 @@ export class MyLeadsComponent implements OnInit, OnDestroy {
     private publicService: PublicService,
     private toastr: ToastrsService,
     private modalService: NgbModal
-  ) {}
+  ) {
+    // Rows that fit the screen, plus the same fixed choices as the Leads page.
+    this.size = this.publicService.getNumOfRows(450, 67.87);
+    this.sizeOptions = [
+      { value: this.size, label: `${this.size} rows` },
+      ...[10, 25, 50, 100, 250, 500]
+        .filter(n => n !== this.size)
+        .map(n => ({ value: n, label: `${n} rows` }))
+    ];
+  }
 
   ngOnInit(): void {
     this.isAdmin = this.publicService.isAdmin();
@@ -178,6 +190,8 @@ export class MyLeadsComponent implements OnInit, OnDestroy {
     this.leads = result;
     this.totalCount = result.length;
     this.page = 1;
+    // The pagination component keeps its own current page; send it back to 1 with the data.
+    if (this.pager) this.pager.currentPage = 1;
   }
 
   applySearch(): void { this.applyFilters(); }
@@ -185,6 +199,18 @@ export class MyLeadsComponent implements OnInit, OnDestroy {
   get paginatedLeads(): Lead[] {
     const start = (this.page - 1) * this.size;
     return this.leads.slice(start, start + this.size);
+  }
+
+  /** Page change: a brief table loader, like the Leads page. */
+  list(page: number): void {
+    this.isLoading$.next(true);
+    this.page = page;
+    setTimeout(() => this.isLoading$.next(false), 150);
+  }
+
+  onSizeChange(): void {
+    if (this.pager) this.pager.currentPage = 1;
+    this.list(1);
   }
 
   getAffiliateName(affiliateKey?: string): string {

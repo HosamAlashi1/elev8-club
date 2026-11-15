@@ -2,7 +2,32 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { combineLatest, firstValueFrom, map, Observable, take } from 'rxjs';
+import { combineLatest, firstValueFrom, map, Observable, of, ReplaySubject, share, switchMap, take, timer } from 'rxjs';
+
+// Last-known copy of the heavy dashboard reads, so a page refresh paints at once.
+const IDB_NAME = 'elev8-dash-cache';
+const idbOpen = (): Promise<IDBDatabase> => new Promise((resolve, reject) => {
+  const req = indexedDB.open(IDB_NAME, 1);
+  req.onupgradeneeded = () => req.result.createObjectStore('kv');
+  req.onsuccess = () => resolve(req.result);
+  req.onerror = () => reject(req.error);
+});
+const idbGet = async (key: string): Promise<any> => {
+  try {
+    const db = await idbOpen();
+    return await new Promise(res => {
+      const r = db.transaction('kv').objectStore('kv').get(key);
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => res(undefined);
+    });
+  } catch { return undefined; }
+};
+const idbSet = async (key: string, value: any): Promise<void> => {
+  try {
+    const db = await idbOpen();
+    db.transaction('kv', 'readwrite').objectStore('kv').put(value, key);
+  } catch { /* cache only */ }
+};
 import { DatePipe } from '@angular/common';
 import {
   Version, Affiliate, Lead, SalesMember, CallLog, DashboardUser,
@@ -19,6 +44,53 @@ export class FirebaseService {
     private fns: AngularFireFunctions,
     private auth: AngularFireAuth
   ) { }
+
+  /**
+   * The heavy dashboard reads (every lead of a version, every call log) used to be downloaded
+   * again on every page visit, so each page opened with a long skeleton. One live Firebase
+   * listener per read is now shared by all pages and kept for a minute after the last page
+   * leaves: moving between pages shows the data instantly, and it stays live (not a snapshot).
+   */
+  private sharedReads = new Map<string, Observable<any>>();
+  private shared<T>(key: string, factory: () => Observable<T>, persist = false): Observable<T> {
+    let obs = this.sharedReads.get(key);
+    if (!obs) {
+      const source = persist ? this.withStoredCopy(key, factory) : factory();
+      obs = source.pipe(share({
+        connector: () => new ReplaySubject<T>(1),
+        resetOnRefCountZero: () => timer(60000),
+        resetOnError: true,
+        resetOnComplete: true
+      }));
+      this.sharedReads.set(key, obs);
+    }
+    return obs as Observable<T>;
+  }
+
+  /**
+   * Emits the copy saved on this browser straight away (until the live read answers), then the
+   * live data, which is also saved. Keyed by the signed-in user so one account never sees
+   * another's saved leads; with nobody signed in nothing is read or stored.
+   */
+  private withStoredCopy<T>(key: string, factory: () => Observable<T>): Observable<T> {
+    return new Observable<T>(sub => {
+      let live = false;
+      let live$: any;
+      this.auth.currentUser.then(user => {
+        if (sub.closed) return;
+        const cacheKey = user ? `${user.uid}:${key}` : '';
+        if (cacheKey) {
+          idbGet(cacheKey).then(saved => { if (!live && !sub.closed && saved !== undefined) sub.next(saved); });
+        }
+        live$ = factory().subscribe({
+          next: v => { live = true; sub.next(v); if (cacheKey) idbSet(cacheKey, v); },
+          error: e => sub.error(e),
+          complete: () => sub.complete()
+        });
+      });
+      return () => live$?.unsubscribe();
+    });
+  }
 
   /** Dashboard mutations that are exclusively administrative must not rely on hidden UI alone. */
   private async requireAdminUser(): Promise<void> {
@@ -38,18 +110,28 @@ export class FirebaseService {
    *  Optional: فلترة بقيمة
    ======================== */
   public list(path: string, key?: string, value?: any): Observable<any[]> {
-    const ref = key
-      ? this.db.list(path, r => r.orderByChild(key).equalTo(value))
-      : this.db.list(path);
+    return this.liveList(path, key, value);
+  }
 
-    return ref.snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c => ({
-          key: c.payload.key,
-          ...(c.payload.val() as object)
-        }))
-      )
-    );
+  /**
+   * One `value` listener. AngularFire's `list().snapshotChanges()` first does a one-off read of
+   * the whole node, drops it, then opens child listeners, so the server sent every lead twice
+   * (measured: ~0.7MB x2 for the leads of one version). A single listener downloads it once and
+   * then only receives the changes.
+   */
+  private liveList(path: string, key?: string, value?: any): Observable<any[]> {
+    return new Observable<any[]>(subscriber => {
+      const base = this.db.database.ref(path);
+      const query = key ? base.orderByChild(key).equalTo(value) : base;
+      const handler = query.on('value',
+        snap => {
+          const items: any[] = [];
+          snap.forEach(child => { items.push({ key: child.key, ...(child.val() as object) }); });
+          subscriber.next(items);
+        },
+        err => subscriber.error(err));
+      return () => query.off('value', handler);
+    });
   }
 
   /** ===========================
@@ -145,6 +227,10 @@ export class FirebaseService {
 
   /** جلب النسخة الحالية النشطة */
   public getCurrentVersion(): Observable<Version | null> {
+    return this.shared('currentVersion', () => this.currentVersionQuery());
+  }
+
+  private currentVersionQuery(): Observable<Version | null> {
     return this.db.list<Version>('versions', ref => ref.orderByChild('isCurrent').equalTo(true))
       .snapshotChanges()
       .pipe(
@@ -524,7 +610,21 @@ export class FirebaseService {
 
   /** جلب جميع Leads لنسخة معينة */
   public getLeadsByVersion(versionKey: string): Observable<Lead[]> {
-    return this.list('leads', 'versionKey', versionKey);
+    return this.shared('leads:' + versionKey, () => this.list('leads', 'versionKey', versionKey), true);
+  }
+
+  /**
+   * The same leads, from `leads_index`: only the fields the dashboard lists use, a fraction of
+   * the size of `leads` (see functions/src/leads-index.ts). Falls back to the full leads while
+   * the index has nothing for this version, so a page never shows less than it used to.
+   * Not for pages that show a lead's answers or bot state: use `getLeadsByVersion` there.
+   */
+  public getLeadSummariesByVersion(versionKey: string): Observable<Lead[]> {
+    const index$ = this.shared('leadIndex:' + versionKey,
+      () => this.liveList('leads_index', 'versionKey', versionKey), true) as Observable<Lead[]>;
+    return index$.pipe(
+      switchMap(items => items.length ? of(items) : this.getLeadsByVersion(versionKey))
+    );
   }
 
   /** جلب Leads لأفلييت معين */
@@ -763,9 +863,9 @@ export class FirebaseService {
   }
 
   public getSalesMembersByVersion(versionKey: string): Observable<SalesMember[]> {
-    return this.list('sales_members').pipe(
+    return this.shared('salesMembers:' + versionKey, () => this.list('sales_members').pipe(
       map(members => members.filter((m: SalesMember) => m.versionKey === versionKey))
-    );
+    ), true);
   }
 
   public getActiveSalesMembersByVersion(versionKey: string): Observable<SalesMember[]> {
@@ -1099,6 +1199,10 @@ export class FirebaseService {
    * `addCallLog` already carries it) and only falls back to the outer key for anything older.
    */
   public getAllCallLogs(): Observable<CallLog[]> {
+    return this.shared('allCallLogs', () => this.allCallLogsQuery(), true);
+  }
+
+  private allCallLogsQuery(): Observable<CallLog[]> {
     return this.db.object<Record<string, Record<string, CallLog>>>('lead_calls').valueChanges().pipe(
       map(node => {
         if (!node) return [];

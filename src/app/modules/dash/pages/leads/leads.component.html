@@ -174,7 +174,7 @@
                                     <i class="fe fe-copy"></i>{{ duplicateLabel(lead) }}
                                 </span>
                             </td>
-                            <td class="text-muted">{{ lead.phone || '-' }}</td>
+                            <td class="text-muted"><app-copy-phone [value]="lead.phone"></app-copy-phone></td>
                             <td class="text-muted">
                                 <span *ngIf="lead.city">{{ lead.city }}</span>
                                 <span *ngIf="!lead.city && !lead.country">-</span>

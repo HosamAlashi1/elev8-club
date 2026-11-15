@@ -264,3 +264,25 @@
 .smd-load-more:hover {
   background: #f1f5f9;
 }
+
+/* ── Lead-level panels (Webinar breakdown, Leads called) ── */
+.smd-panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.smd-panel__title { font-weight: 700; color: #111827; margin-bottom: 10px; }
+.smd-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.smd-table th {
+  text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: .04em;
+  color: #6b7280; padding: 8px 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap;
+}
+.smd-table td { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; white-space: nowrap; }
+.smd-table tbody tr:hover { background: #f9fafb; }
+.smd-table__total td { font-weight: 700; background: #f9fafb; border-top: 2px solid #e5e7eb; }
+.smd-calls-badge {
+  display: inline-flex; min-width: 26px; height: 22px; padding: 0 8px; align-items: center; justify-content: center;
+  border-radius: 999px; background: #eef2ff; color: #4338ca; font-weight: 700; font-size: 0.78rem;
+}

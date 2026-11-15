@@ -68,7 +68,7 @@ export class AdminOverviewComponent implements OnInit, OnDestroy {
 
     this.firebase.getCurrentVersion().pipe(
       switchMap(version => version ? combineLatest({
-        leads: this.firebase.getLeadsByVersion(version.key),
+        leads: this.firebase.getLeadSummariesByVersion(version.key),
         members: this.firebase.getSalesMembersByVersion(version.key),
         calls: this.firebase.getAllCallLogs(),
       }) : of(null)),

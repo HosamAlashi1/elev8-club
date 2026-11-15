@@ -6,7 +6,7 @@
     <div>
       <h4 class="modal-title mb-1">Lead Details</h4>
       <p class="modal-subtitle mb-0 text-muted">
-        {{ lead.email }} <span *ngIf="lead.phone"> • {{ lead.phone }}</span>
+        {{ lead.email }} <span *ngIf="lead.phone"> • <app-copy-phone [value]="lead.phone"></app-copy-phone></span>
       </p>
     </div>
   </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="col-md-6">
               <label class="field-label">Phone</label>
-              <div class="field-value">{{ lead.phone || 'N/A' }}</div>
+              <div class="field-value"><app-copy-phone [value]="lead.phone" fallback="N/A"></app-copy-phone></div>
             </div>
             <div class="col-md-6">
               <label class="field-label">Location</label>

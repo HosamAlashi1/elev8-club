@@ -28,6 +28,13 @@
                     <div class="sp-summary__label">Total Calls</div>
                 </div>
             </div>
+            <div class="sp-summary__card" title="Different leads called, each counted once however many times">
+                <div class="sp-summary__icon sp-summary__icon--reps"><i class="fe fe-user-check"></i></div>
+                <div>
+                    <div class="sp-summary__value">{{ summary.uniqueLeadsCalled }}</div>
+                    <div class="sp-summary__label">Unique Leads Called</div>
+                </div>
+            </div>
             <div class="sp-summary__card">
                 <div class="sp-summary__icon sp-summary__icon--answered"><i class="fe fe-check-circle"></i></div>
                 <div>
@@ -117,7 +124,7 @@
                             <span class="sp-dot sp-dot--busy"></span> {{ row.busy }} Busy
                         </div>
                         <div class="sp-stat-row sp-stat-row--muted">
-                            {{ row.assignedLeadsCount }} assigned &middot; {{ row.closedLeadsCount }} closed
+                            {{ row.assignedLeadsCount }} assigned &middot; {{ row.uniqueLeadsCalled }} leads called &middot; {{ row.closedLeadsCount }} closed
                         </div>
                     </div>
                 </div>

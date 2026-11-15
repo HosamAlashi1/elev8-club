@@ -1,0 +1,277 @@
+- generic [ref=f2e5]:
+  - navigation [ref=f2e6]:
+    - generic [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - text: Elev8
+        - generic [ref=f2e9]: Club
+      - generic [ref=f2e10] [cursor=pointer]: 
+    - list [ref=f2e11]:
+      - listitem [ref=f2e12]:
+        - link "Dashboard" [ref=f2e13] [cursor=pointer]:
+          - /url: "#/dashboard"
+      - listitem [ref=f2e20]:
+        - link "Affiliates" [ref=f2e21] [cursor=pointer]:
+          - /url: "#/dashboard/affiliates"
+      - listitem [ref=f2e30]:
+        - link "Leads" [ref=f2e31] [cursor=pointer]:
+          - /url: "#/dashboard/leads"
+      - listitem [ref=f2e39]:
+        - link "My Leads" [ref=f2e40] [cursor=pointer]:
+          - /url: "#/dashboard/my-leads"
+      - listitem [ref=f2e47]:
+        - link "Coupons" [ref=f2e48] [cursor=pointer]:
+          - /url: "#/dashboard/coupons"
+      - listitem [ref=f2e55]:
+        - link "Sales Performance" [ref=f2e56] [cursor=pointer]:
+          - /url: "#/dashboard/sales-performance"
+      - listitem [ref=f2e63]:
+        - link "Website Questions" [ref=f2e64] [cursor=pointer]:
+          - /url: "#/dashboard/support-inbox"
+      - listitem [ref=f2e70]:
+        - link "Settings" [ref=f2e71] [cursor=pointer]:
+          - /url: "#/dashboard/settings"
+  - generic [ref=f2e78]:
+    - banner [ref=f2e79]:
+      - generic [ref=f2e80]:
+        - generic: 
+        - textbox "Search..." [ref=f2e81]
+      - generic [ref=f2e83]:
+        - button "User Avatar Admin Admin " [ref=f2e84] [cursor=pointer]:
+          - img "User Avatar" [ref=f2e86]
+          - generic [ref=f2e88]:
+            - generic [ref=f2e89]: Admin
+            - generic [ref=f2e90]: Admin
+          - generic [ref=f2e91]: 
+        - text: 
+    - generic [ref=f2e94]:
+      - heading "Leads" [level=2] [ref=f2e95]
+      - generic [ref=f2e96]:
+        - generic [ref=f2e97]:
+          - generic [ref=f2e98]:
+            - generic [ref=f2e99]:
+              - generic: 
+              - textbox "Search by name, email, phone or subscription no..." [ref=f2e100]
+            - generic [ref=f2e103] [cursor=pointer]:
+              - generic [ref=f2e104]: 
+              - generic [ref=f2e106]: All Groups
+              - generic [ref=f2e107]: 
+            - generic [ref=f2e111] [cursor=pointer]:
+              - generic [ref=f2e112]: 
+              - generic [ref=f2e114]: All Sources
+              - generic [ref=f2e115]: 
+            - generic [ref=f2e119] [cursor=pointer]:
+              - generic [ref=f2e120]: 
+              - generic [ref=f2e122]: All Statuses
+              - generic [ref=f2e123]: 
+            - generic [ref=f2e127] [cursor=pointer]:
+              - generic [ref=f2e128]: 
+              - generic [ref=f2e130]: All Verification
+              - generic [ref=f2e131]: 
+            - generic [ref=f2e135] [cursor=pointer]:
+              - generic [ref=f2e136]: 
+              - generic [ref=f2e138]: 6 rows
+              - generic [ref=f2e139]: 
+          - generic [ref=f2e141]:
+            - button " Add Lead" [ref=f2e142] [cursor=pointer]:
+              - generic [ref=f2e143]: 
+              - text: Add Lead
+            - button " Export Excel" [ref=f2e144] [cursor=pointer]:
+              - generic [ref=f2e145]: 
+              - text: Export Excel
+        - generic [ref=f2e146]:
+          - table [ref=f2e148]:
+            - rowgroup [ref=f2e149]:
+              - row [ref=f2e150]:
+                - columnheader "Select this page's free-community and offer leads" [ref=f2e151]:
+                  - checkbox "Select this page's free-community and offer leads" [disabled]
+                - columnheader "Name" [ref=f2e152]
+                - columnheader "Email" [ref=f2e153]
+                - columnheader "Phone" [ref=f2e154]
+                - columnheader "Location" [ref=f2e155]
+                - columnheader "Source" [ref=f2e156]
+                - columnheader "Payment" [ref=f2e157]
+                - columnheader "Affiliate" [ref=f2e158]
+                - columnheader "Group" [ref=f2e159]
+                - columnheader "Sales Member" [ref=f2e160]
+                - columnheader "Sales Status" [ref=f2e161]
+                - columnheader "Bot" [ref=f2e162]
+                - columnheader "Status" [ref=f2e163]
+                - columnheader "Created At" [ref=f2e164]
+                - columnheader "Actions" [ref=f2e165]
+            - rowgroup [ref=f2e166]:
+              - row [ref=f2e167]:
+                - cell [ref=f2e168]:
+                  - progressbar "loading" [ref=f2e170]
+                - cell [ref=f2e171]:
+                  - progressbar "loading" [ref=f2e173]
+                - cell [ref=f2e174]:
+                  - progressbar "loading" [ref=f2e176]
+                - cell [ref=f2e177]:
+                  - progressbar "loading" [ref=f2e179]
+                - cell [ref=f2e180]:
+                  - progressbar "loading" [ref=f2e182]
+                - cell [ref=f2e183]:
+                  - progressbar "loading" [ref=f2e185]
+                - cell [ref=f2e186]:
+                  - progressbar "loading" [ref=f2e188]
+                - cell [ref=f2e189]:
+                  - progressbar "loading" [ref=f2e191]
+                - cell [ref=f2e192]:
+                  - progressbar "loading" [ref=f2e194]
+                - cell [ref=f2e195]:
+                  - progressbar "loading" [ref=f2e197]
+                - cell [ref=f2e198]:
+                  - progressbar "loading" [ref=f2e200]
+                - cell [ref=f2e201]:
+                  - progressbar "loading" [ref=f2e203]
+                - cell [ref=f2e204]:
+                  - progressbar "loading" [ref=f2e206]
+                - cell [ref=f2e207]:
+                  - progressbar "loading" [ref=f2e209]
+              - row [ref=f2e210]:
+                - cell [ref=f2e211]:
+                  - progressbar "loading" [ref=f2e213]
+                - cell [ref=f2e214]:
+                  - progressbar "loading" [ref=f2e216]
+                - cell [ref=f2e217]:
+                  - progressbar "loading" [ref=f2e219]
+                - cell [ref=f2e220]:
+                  - progressbar "loading" [ref=f2e222]
+                - cell [ref=f2e223]:
+                  - progressbar "loading" [ref=f2e225]
+                - cell [ref=f2e226]:
+                  - progressbar "loading" [ref=f2e228]
+                - cell [ref=f2e229]:
+                  - progressbar "loading" [ref=f2e231]
+                - cell [ref=f2e232]:
+                  - progressbar "loading" [ref=f2e234]
+                - cell [ref=f2e235]:
+                  - progressbar "loading" [ref=f2e237]
+                - cell [ref=f2e238]:
+                  - progressbar "loading" [ref=f2e240]
+                - cell [ref=f2e241]:
+                  - progressbar "loading" [ref=f2e243]
+                - cell [ref=f2e244]:
+                  - progressbar "loading" [ref=f2e246]
+                - cell [ref=f2e247]:
+                  - progressbar "loading" [ref=f2e249]
+                - cell [ref=f2e250]:
+                  - progressbar "loading" [ref=f2e252]
+              - row [ref=f2e253]:
+                - cell [ref=f2e254]:
+                  - progressbar "loading" [ref=f2e256]
+                - cell [ref=f2e257]:
+                  - progressbar "loading" [ref=f2e259]
+                - cell [ref=f2e260]:
+                  - progressbar "loading" [ref=f2e262]
+                - cell [ref=f2e263]:
+                  - progressbar "loading" [ref=f2e265]
+                - cell [ref=f2e266]:
+                  - progressbar "loading" [ref=f2e268]
+                - cell [ref=f2e269]:
+                  - progressbar "loading" [ref=f2e271]
+                - cell [ref=f2e272]:
+                  - progressbar "loading" [ref=f2e274]
+                - cell [ref=f2e275]:
+                  - progressbar "loading" [ref=f2e277]
+                - cell [ref=f2e278]:
+                  - progressbar "loading" [ref=f2e280]
+                - cell [ref=f2e281]:
+                  - progressbar "loading" [ref=f2e283]
+                - cell [ref=f2e284]:
+                  - progressbar "loading" [ref=f2e286]
+                - cell [ref=f2e287]:
+                  - progressbar "loading" [ref=f2e289]
+                - cell [ref=f2e290]:
+                  - progressbar "loading" [ref=f2e292]
+                - cell [ref=f2e293]:
+                  - progressbar "loading" [ref=f2e295]
+              - row [ref=f2e296]:
+                - cell [ref=f2e297]:
+                  - progressbar "loading" [ref=f2e299]
+                - cell [ref=f2e300]:
+                  - progressbar "loading" [ref=f2e302]
+                - cell [ref=f2e303]:
+                  - progressbar "loading" [ref=f2e305]
+                - cell [ref=f2e306]:
+                  - progressbar "loading" [ref=f2e308]
+                - cell [ref=f2e309]:
+                  - progressbar "loading" [ref=f2e311]
+                - cell [ref=f2e312]:
+                  - progressbar "loading" [ref=f2e314]
+                - cell [ref=f2e315]:
+                  - progressbar "loading" [ref=f2e317]
+                - cell [ref=f2e318]:
+                  - progressbar "loading" [ref=f2e320]
+                - cell [ref=f2e321]:
+                  - progressbar "loading" [ref=f2e323]
+                - cell [ref=f2e324]:
+                  - progressbar "loading" [ref=f2e326]
+                - cell [ref=f2e327]:
+                  - progressbar "loading" [ref=f2e329]
+                - cell [ref=f2e330]:
+                  - progressbar "loading" [ref=f2e332]
+                - cell [ref=f2e333]:
+                  - progressbar "loading" [ref=f2e335]
+                - cell [ref=f2e336]:
+                  - progressbar "loading" [ref=f2e338]
+              - row [ref=f2e339]:
+                - cell [ref=f2e340]:
+                  - progressbar "loading" [ref=f2e342]
+                - cell [ref=f2e343]:
+                  - progressbar "loading" [ref=f2e345]
+                - cell [ref=f2e346]:
+                  - progressbar "loading" [ref=f2e348]
+                - cell [ref=f2e349]:
+                  - progressbar "loading" [ref=f2e351]
+                - cell [ref=f2e352]:
+                  - progressbar "loading" [ref=f2e354]
+                - cell [ref=f2e355]:
+                  - progressbar "loading" [ref=f2e357]
+                - cell [ref=f2e358]:
+                  - progressbar "loading" [ref=f2e360]
+                - cell [ref=f2e361]:
+                  - progressbar "loading" [ref=f2e363]
+                - cell [ref=f2e364]:
+                  - progressbar "loading" [ref=f2e366]
+                - cell [ref=f2e367]:
+                  - progressbar "loading" [ref=f2e369]
+                - cell [ref=f2e370]:
+                  - progressbar "loading" [ref=f2e372]
+                - cell [ref=f2e373]:
+                  - progressbar "loading" [ref=f2e375]
+                - cell [ref=f2e376]:
+                  - progressbar "loading" [ref=f2e378]
+                - cell [ref=f2e379]:
+                  - progressbar "loading" [ref=f2e381]
+              - row [ref=f2e382]:
+                - cell [ref=f2e383]:
+                  - progressbar "loading" [ref=f2e385]
+                - cell [ref=f2e386]:
+                  - progressbar "loading" [ref=f2e388]
+                - cell [ref=f2e389]:
+                  - progressbar "loading" [ref=f2e391]
+                - cell [ref=f2e392]:
+                  - progressbar "loading" [ref=f2e394]
+                - cell [ref=f2e395]:
+                  - progressbar "loading" [ref=f2e397]
+                - cell [ref=f2e398]:
+                  - progressbar "loading" [ref=f2e400]
+                - cell [ref=f2e401]:
+                  - progressbar "loading" [ref=f2e403]
+                - cell [ref=f2e404]:
+                  - progressbar "loading" [ref=f2e406]
+                - cell [ref=f2e407]:
+                  - progressbar "loading" [ref=f2e409]
+                - cell [ref=f2e410]:
+                  - progressbar "loading" [ref=f2e412]
+                - cell [ref=f2e413]:
+                  - progressbar "loading" [ref=f2e415]
+                - cell [ref=f2e416]:
+                  - progressbar "loading" [ref=f2e418]
+                - cell [ref=f2e419]:
+                  - progressbar "loading" [ref=f2e421]
+                - cell [ref=f2e422]:
+                  - progressbar "loading" [ref=f2e424]
+          - generic [ref=f2e425]: Showing 0 - 0 of 0 leads
+    - contentinfo [ref=f2e428]: Copyright © 2026 Elev8 Clubs. All Rights Reserved.

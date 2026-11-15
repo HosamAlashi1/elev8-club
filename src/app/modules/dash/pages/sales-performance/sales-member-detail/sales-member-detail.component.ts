@@ -10,6 +10,8 @@ import {
   Lead, LeadActivity, SalesMember, SalesStatus, SALES_STATUS_LABELS
 } from '../../../../../core/models';
 
+import { buildLeadCallRows, buildSegments, countUniqueLeads, LeadCallRow, SegmentRow } from '../lead-call-stats';
+
 type PeriodPreset = 'today' | 'yesterday' | 'week' | 'month' | 'custom';
 
 interface TimelineEntry {
@@ -29,6 +31,7 @@ interface TimelineEntry {
 }
 
 const PAGE_SIZE = 30;
+const LEAD_ROWS_PAGE = 15;
 
 /**
  * One sales rep's own activity — split out of the sales-performance list page on purpose.
@@ -58,7 +61,16 @@ export class SalesMemberDetailComponent implements OnInit, OnDestroy {
 
   assignedLeadsCount = 0;
   closedLeadsCount = 0;
-  summary = { total: 0, answered: 0, noAnswer: 0, busy: 0, statusChanges: 0 };
+  summary = { total: 0, answered: 0, noAnswer: 0, busy: 0, statusChanges: 0, uniqueLeadsCalled: 0 };
+
+  // Lead-level view: the same calls, grouped by distinct lead / by Webinar.
+  private assignedLeads: Lead[] = [];
+  segments: SegmentRow[] = [];
+  leadCallRows: LeadCallRow[] = [];
+  leadRowsVisible = LEAD_ROWS_PAGE;
+
+  get visibleLeadRows(): LeadCallRow[] { return this.leadCallRows.slice(0, this.leadRowsVisible); }
+  showMoreLeadRows(): void { this.leadRowsVisible += LEAD_ROWS_PAGE; }
   donutChart: any;
 
   readonly callTypeLabels = CALL_TYPE_LABELS;
@@ -107,7 +119,7 @@ export class SalesMemberDetailComponent implements OnInit, OnDestroy {
         if (!version) return of(null);
         return combineLatest({
           members: this.firebaseService.getSalesMembersByVersion(version.key),
-          leads: this.firebaseService.getLeadsByVersion(version.key),
+          leads: this.firebaseService.getLeadSummariesByVersion(version.key),
           calls: this.firebaseService.getAllCallLogs(),
           activity: this.firebaseService.getAllActivity()
         });
@@ -131,6 +143,7 @@ export class SalesMemberDetailComponent implements OnInit, OnDestroy {
       this.leadsByKey = new Map(data.leads.map(l => [l.key as string, l]));
 
       const memberLeads = data.leads.filter(l => l.salesMemberKey === member.key);
+      this.assignedLeads = memberLeads;
       this.assignedLeadsCount = memberLeads.length;
       this.closedLeadsCount = memberLeads.filter(l => l.sales_status === 'closed').length;
 
@@ -147,6 +160,8 @@ export class SalesMemberDetailComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  trackByLead(_i: number, r: LeadCallRow): string { return r.leadKey; }
 
   goBack(): void {
     this.router.navigate(['/dashboard/sales-performance']);
@@ -256,7 +271,13 @@ export class SalesMemberDetailComponent implements OnInit, OnDestroy {
     const noAnswer = calls.filter(c => c.status === 'no_answer').length;
     const busy = calls.filter(c => c.status === 'busy').length;
 
-    this.summary = { total: calls.length, answered, noAnswer, busy, statusChanges: activity.length };
+    this.summary = {
+      total: calls.length, answered, noAnswer, busy, statusChanges: activity.length,
+      uniqueLeadsCalled: countUniqueLeads(calls)
+    };
+    this.segments = buildSegments(this.assignedLeads, calls, this.leadsByKey);
+    this.leadCallRows = buildLeadCallRows(calls, this.leadsByKey);
+    this.leadRowsVisible = LEAD_ROWS_PAGE;
 
     const chart: ApexChart = { type: 'donut', height: 160 };
     this.donutChart = {

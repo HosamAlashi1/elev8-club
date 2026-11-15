@@ -11,6 +11,7 @@ import { DeleteComponent } from './delete/delete.component';
 import { MultiSelectComponent } from './multi-select/multi-select.component';
 import { SearchableSelectComponent } from './searchable-select/searchable-select.component';
 import { ModernSelectComponent } from './modern-select/modern-select.component';
+import { CopyPhoneComponent } from './copy-phone/copy-phone.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow, ListChecks, BookOpen, UserCheck, CreditCard, ShoppingCart, User, MapPin, Box, AlertCircle, X, List } from 'lucide-angular';
@@ -29,6 +30,7 @@ import { RouterModule } from '@angular/router';
         MultiSelectComponent,
         SearchableSelectComponent,
         ModernSelectComponent,
+        CopyPhoneComponent,
     ],
     imports: [
         CommonModule,
@@ -72,6 +74,7 @@ import { RouterModule } from '@angular/router';
         MultiSelectComponent,
         SearchableSelectComponent,
         ModernSelectComponent,
+        CopyPhoneComponent,
         ReactiveFormsModule,
         FormsModule,
         NgbModule,

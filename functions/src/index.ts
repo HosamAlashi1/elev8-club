@@ -572,3 +572,6 @@ export {registerLead} from "./register-lead";
  * A sales member adding a lead from the dashboard — see add-dashboard-lead.ts.
  */
 export {addDashboardLead} from "./add-dashboard-lead";
+
+// Read-only copy of each lead for the dashboard lists (never writes `leads`).
+export {syncLeadsIndex, rebuildLeadsIndex} from "./leads-index";

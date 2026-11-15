@@ -3,7 +3,7 @@
     <div class="lead-avatar">{{ getInitial(lead.fullName) }}</div>
     <div>
       <h5 class="modal-title mb-0">{{ lead.fullName }}</h5>
-      <small class="text-muted" *ngIf="!readOnly">{{ lead.email }} • {{ lead.phone }}</small>
+      <small class="text-muted" *ngIf="!readOnly">{{ lead.email }} • <app-copy-phone [value]="lead.phone"></app-copy-phone></small>
     </div>
   </div>
   <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>

@@ -26,7 +26,7 @@
         <div class="ld-sub">
           <span>{{ lead.email }}</span>
           <span *ngIf="lead.phone" class="ld-dot">•</span>
-          <span *ngIf="lead.phone">{{ lead.phone }}</span>
+          <app-copy-phone *ngIf="lead.phone" [value]="lead.phone"></app-copy-phone>
           <span *ngIf="lead.salesMemberName" class="ld-dot">•</span>
           <span *ngIf="lead.salesMemberName" class="ld-sales-chip">
             <i class="fe fe-user"></i> {{ lead.salesMemberName }}
@@ -65,7 +65,7 @@
         </div>
         <div class="ld-field" *ngIf="lead.phone">
           <i class="fe fe-phone ld-fi"></i>
-          <span>{{ lead.phone }}</span>
+          <app-copy-phone [value]="lead.phone"></app-copy-phone>
         </div>
         <div class="ld-field" *ngIf="lead.city || lead.country">
           <i class="fe fe-map-pin ld-fi"></i>

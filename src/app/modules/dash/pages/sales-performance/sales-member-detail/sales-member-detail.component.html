@@ -66,9 +66,73 @@
             <div class="smd-stat"><div class="smd-stat__value smd-stat__value--answered">{{ summary.answered }}</div><div class="smd-stat__label">Answered</div></div>
             <div class="smd-stat"><div class="smd-stat__value smd-stat__value--no-answer">{{ summary.noAnswer }}</div><div class="smd-stat__label">No Answer</div></div>
             <div class="smd-stat"><div class="smd-stat__value smd-stat__value--busy">{{ summary.busy }}</div><div class="smd-stat__label">Busy</div></div>
+            <div class="smd-stat"><div class="smd-stat__value">{{ summary.uniqueLeadsCalled }}</div><div class="smd-stat__label">Unique Leads Called</div></div>
             <div class="smd-stat"><div class="smd-stat__value">{{ summary.statusChanges }}</div><div class="smd-stat__label">Status Changes</div></div>
             <div class="smd-stat"><div class="smd-stat__value">{{ assignedLeadsCount }}</div><div class="smd-stat__label">Assigned Leads</div></div>
             <div class="smd-stat"><div class="smd-stat__value">{{ closedLeadsCount }}</div><div class="smd-stat__label">Closed</div></div>
+        </div>
+
+        <!-- ── Webinar breakdown ──────────────────────────────── -->
+        <div class="smd-panel" *ngIf="segments.length">
+            <div class="smd-panel__title">Webinar breakdown</div>
+            <div class="table-responsive">
+                <table class="smd-table">
+                    <thead>
+                        <tr>
+                            <th>Segment</th><th>Assigned</th><th>Called</th><th>Calls</th>
+                            <th>Answered</th><th>No Answer</th><th>Busy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of segments" [class.smd-table__total]="s.key === 'total'">
+                            <td>{{ s.label }}</td>
+                            <td>{{ s.assigned }}</td>
+                            <td>{{ s.called }}</td>
+                            <td>{{ s.calls }}</td>
+                            <td class="smd-stat__value--answered">{{ s.answered }}</td>
+                            <td class="smd-stat__value--no-answer">{{ s.noAnswer }}</td>
+                            <td class="smd-stat__value--busy">{{ s.busy }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <small class="text-muted">Called = distinct leads. Calls = every attempt.</small>
+        </div>
+
+        <!-- ── Leads called (one row per lead, with its call count) ── -->
+        <div class="smd-panel" *ngIf="leadCallRows.length">
+            <div class="smd-panel__title">Leads called <span class="text-muted">({{ leadCallRows.length }})</span></div>
+            <div class="table-responsive">
+                <table class="smd-table">
+                    <thead>
+                        <tr>
+                            <th>Lead</th><th>Phone</th><th>Segment</th><th>Calls</th>
+                            <th>Answered</th><th>No Answer</th><th>Busy</th><th>Reached</th><th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let r of visibleLeadRows; trackBy: trackByLead">
+                            <td class="fw-semibold">{{ r.name }}</td>
+                            <td><app-copy-phone [value]="r.phone"></app-copy-phone></td>
+                            <td>{{ r.segment }}</td>
+                            <td><span class="smd-calls-badge">{{ r.calls }}</span></td>
+                            <td>{{ r.answered }}</td>
+                            <td>{{ r.noAnswer }}</td>
+                            <td>{{ r.busy }}</td>
+                            <td>
+                                <span class="pill" [ngClass]="r.reached ? 'pill-success' : 'pill-muted'">
+                                    {{ r.reached ? 'Yes' : 'Not yet' }}
+                                </span>
+                            </td>
+                            <td><a class="smd-entry__view" [routerLink]="['/dashboard/leads', r.leadKey]">View</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" class="smd-load-more" *ngIf="leadRowsVisible < leadCallRows.length" (click)="showMoreLeadRows()">
+                Show more ({{ leadCallRows.length - leadRowsVisible }} left)
+            </button>
+            <small class="text-muted">Reached = at least one answered call; every call result is kept as logged.</small>
         </div>
 
         <!-- ── Combined activity timeline ─────────────────────── -->
@@ -87,7 +151,7 @@
                     <div class="smd-entry__body">
                         <div class="smd-entry__top">
                             <span class="smd-entry__lead">{{ entry.leadName }}</span>
-                            <span class="smd-entry__phone" dir="ltr">{{ entry.leadPhone }}</span>
+                            <span class="smd-entry__phone" dir="ltr"><app-copy-phone [value]="entry.leadPhone"></app-copy-phone></span>
                             <a class="smd-entry__view" [routerLink]="['/dashboard/leads', entry.leadKey]">
                                 View Lead <i class="fe fe-external-link"></i>
                             </a>
@@ -111,7 +175,7 @@
                     <div class="smd-entry__body">
                         <div class="smd-entry__top">
                             <span class="smd-entry__lead">{{ entry.leadName }}</span>
-                            <span class="smd-entry__phone" dir="ltr">{{ entry.leadPhone }}</span>
+                            <span class="smd-entry__phone" dir="ltr"><app-copy-phone [value]="entry.leadPhone"></app-copy-phone></span>
                             <a class="smd-entry__view" [routerLink]="['/dashboard/leads', entry.leadKey]">
                                 View Lead <i class="fe fe-external-link"></i>
                             </a>

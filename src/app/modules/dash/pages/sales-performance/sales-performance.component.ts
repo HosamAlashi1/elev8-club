@@ -6,6 +6,7 @@ import { ApexChart } from 'ng-apexcharts';
 import { FirebaseService } from '../../../services/firebase.service';
 import { SelectOption } from '../../shared/modern-select/modern-select.component';
 import { CallLog, Lead, SalesMember } from '../../../../core/models';
+import { countUniqueLeads } from './lead-call-stats';
 
 type PeriodPreset = 'today' | 'yesterday' | 'week' | 'month' | 'custom';
 
@@ -24,6 +25,8 @@ interface SalesMemberRow extends SalesMember {
   answered: number;
   noAnswer: number;
   busy: number;
+  /** Distinct leads this rep called in the period (a lead called 3 times counts once). */
+  uniqueLeadsCalled: number;
   assignedLeadsCount: number;
   closedLeadsCount: number;
   donutChart: DonutChart;
@@ -61,7 +64,7 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
   customStart = '';
   customEnd = '';
 
-  summary = { total: 0, answered: 0, noAnswer: 0, busy: 0, activeMembers: 0, closed: 0 };
+  summary = { total: 0, answered: 0, noAnswer: 0, busy: 0, uniqueLeadsCalled: 0, activeMembers: 0, closed: 0 };
 
   constructor(private firebaseService: FirebaseService, private router: Router) {}
 
@@ -71,7 +74,7 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
         if (!version) return of(null);
         return combineLatest({
           members: this.firebaseService.getSalesMembersByVersion(version.key),
-          leads: this.firebaseService.getLeadsByVersion(version.key),
+          leads: this.firebaseService.getLeadSummariesByVersion(version.key),
           calls: this.firebaseService.getAllCallLogs()
         });
       }),
@@ -176,6 +179,7 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
         answered,
         noAnswer,
         busy,
+        uniqueLeadsCalled: countUniqueLeads(memberCalls),
         assignedLeadsCount: memberLeads.length,
         closedLeadsCount: memberLeads.filter(l => l.sales_status === 'closed').length,
         donutChart: this.buildDonutChart(memberCalls.length, answered, noAnswer, busy)
@@ -187,6 +191,7 @@ export class SalesPerformanceComponent implements OnInit, OnDestroy {
       answered: inRange.filter(c => c.status === 'answered').length,
       noAnswer: inRange.filter(c => c.status === 'no_answer').length,
       busy: inRange.filter(c => c.status === 'busy').length,
+      uniqueLeadsCalled: countUniqueLeads(inRange),
       activeMembers: this.rows.filter(r => r.totalCalls > 0).length,
       closed: this.leads.filter(l => l.sales_status === 'closed').length
     };
