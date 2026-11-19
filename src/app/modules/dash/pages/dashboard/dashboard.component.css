@@ -133,3 +133,70 @@
 .icon-orders { color: #7f9a86; }
 .icon-books { color: #a9a195; }
 .icon-customers { color: #87929b; }
+
+.sales-arrivals {
+  padding: clamp(14px, 2vw, 24px);
+  border: 1px solid #2a2e32;
+  border-radius: 6px;
+  background: #15181b;
+  color: #f1eee8;
+}
+
+.arrivals-header,
+.arrivals-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.arrivals-header h2 { margin: 0 0 4px; font-size: 1.25rem; }
+.arrivals-header p,
+.arrivals-note { margin: 0; color: #aab2bb; font-size: .875rem; }
+.arrivals-note { margin-top: 14px; }
+
+.arrivals-summary {
+  padding: 12px 0;
+  margin-top: 10px;
+  border-bottom: 1px solid #2a2e32;
+}
+
+.arrivals-summary strong {
+  margin-inline-end: 8px;
+  font-size: 1.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.arrivals-summary span { color: #aab2bb; }
+.arrivals-link { color: #e5a8b5; }
+.arrivals-link:hover { color: #f4c9d2; text-decoration: underline; }
+
+.arrivals-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 18px 28px;
+  margin-top: 18px;
+}
+
+.arrivals-details h3 { margin: 0 0 8px; font-size: 1rem; }
+.arrivals-sources { list-style: none; margin: 0; padding: 0; }
+.arrivals-sources li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid #2a2e32;
+}
+
+.arrivals-table { width: 100%; font-size: .875rem; }
+.arrivals-table th, .arrivals-table td {
+  padding: 7px 10px 7px 0;
+  border-bottom: 1px solid #2a2e32;
+}
+.arrivals-table th { color: #aab2bb; font-weight: 600; }
+.arrivals-table td:last-child { white-space: nowrap; }
+
+@media (max-width: 767px) {
+  .arrivals-details { grid-template-columns: minmax(0, 1fr); }
+}

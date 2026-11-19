@@ -48,7 +48,7 @@ export class LineChartComponent implements OnInit, OnChanges {
 
   formatDate(dateStr: string): string {
     const date = new Date(dateStr);
-    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = { timeZone: 'UTC', month: 'short', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   }
 

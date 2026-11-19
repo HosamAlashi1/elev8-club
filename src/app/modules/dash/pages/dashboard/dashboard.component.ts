@@ -1,9 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FirebaseService } from '../../../services/firebase.service';
 import { PublicService } from '../../../services/public.service';
-import { Version, Lead } from '../../../../core/models';
+import { Version, Lead, LeadSource, LEAD_SOURCE_LABELS } from '../../../../core/models';
 import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import {
+  filterLeadsByDate, formatLeadDate, LeadDateFilter, leadDayKey, localDayKey, readLeadDateFilter
+} from '../../shared/lead-date-filter/lead-date-range';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,6 +25,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   /** Admins get the full overview page instead of the four summary cards. */
   isAdmin = false;
+  isSales = false;
+  salesLeadsLoading = true;
+  salesLeadsError = '';
+  salesDateFilter: LeadDateFilter = readLeadDateFilter('today');
+  arrivalsCount = 0;
+  arrivalsBySource: { source: LeadSource | null; label: string; count: number }[] = [];
+  recentArrivals: { key: string; name: string; source: string; date: string }[] = [];
+  salesLeadParams: { date: string; from: string | null; to: string | null } = {
+    date: 'today', from: null, to: null,
+  };
+  private assignedLeads: Lead[] = [];
 
   // Chart data
   leadsPerDayData: { date: string; count: number }[] = [];
@@ -61,8 +75,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isAdmin = this.publicService.isAdmin();
+    this.isSales = this.publicService.isSales();
     this.startTime = performance.now();
-    this.loadCurrentVersion();
+    if (this.isSales) {
+      this.loadSalesDashboard(this.publicService.getSalesMemberKey());
+    } else if (!this.isAdmin) {
+      this.loadCurrentVersion();
+    }
   }
 
   ngOnDestroy(): void {
@@ -71,7 +90,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   loadCurrentVersion(): void {
-    if (this.isAdmin) return;   // <app-admin-overview> loads its own data
     console.log('🔍 Fetching current version...');
     this.firebaseService.getCurrentVersion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (version: Version | null) => {
@@ -94,12 +112,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.currentVersion) return;
 
     const role = this.publicService.getUserRole();
-    const salesMemberKey = this.publicService.getSalesMemberKey();
     const affiliateKey = this.publicService.getAffiliateKey();
 
-    if (role === 'sales' && salesMemberKey) {
-      this.loadSalesDashboard(salesMemberKey);
-    } else if (role === 'affiliate' && affiliateKey) {
+    if (role === 'affiliate' && affiliateKey) {
       this.loadAffiliateDashboard(affiliateKey);
     } else if (role === 'account_manager') {
       const accountManagerKey = this.publicService.getCurrentUserUid();
@@ -135,13 +150,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadSalesDashboard(salesMemberKey: string): void {
+  private loadSalesDashboard(salesMemberKey: string | null): void {
     this.dashboardCards = [
       { label: 'My Leads', icon: 'fe fe-users', iconClass: 'icon-sales', prefix: '' },
       { label: 'Closed', icon: 'fe fe-check-circle', iconClass: 'icon-orders', prefix: '' },
       { label: 'Follow-up', icon: 'fe fe-clock', iconClass: 'icon-books', prefix: '' },
       { label: 'Not Interested', icon: 'fe fe-x-circle', iconClass: 'icon-customers', prefix: '' }
     ];
+
+    if (!salesMemberKey) {
+      this.salesLeadsError = 'Your account is missing a sales assignment.';
+      this.salesLeadsLoading = false;
+      return;
+    }
 
     this.firebaseService.getLeadsBySalesMember(salesMemberKey).pipe(takeUntil(this.destroy$)).subscribe({
       next: (leads) => {
@@ -150,11 +171,58 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const followUp = leads.filter(l => l.sales_status === 'follow_up').length;
         const notInterested = leads.filter(l => l.sales_status === 'not_interested').length;
         this.targetNumbers = [total, closed, followUp, notInterested];
+        this.assignedLeads = leads;
+        this.changeSalesDateFilter(this.salesDateFilter);
+        this.salesLeadsLoading = false;
         this.leadsPerDayData = this.buildLeadsPerDayChart(leads);
         this.animateNumbers();
       },
-      error: (err: any) => console.error('Sales dashboard error:', err)
+      error: (error: unknown) => {
+        console.error('Sales dashboard error:', error);
+        this.salesLeadsError = 'Could not load your leads.';
+        this.salesLeadsLoading = false;
+      }
     });
+  }
+
+  changeSalesDateFilter(filter: LeadDateFilter): void {
+    this.salesDateFilter = filter;
+    this.salesLeadParams = {
+      date: filter.preset,
+      from: filter.preset === 'custom' && filter.from ? filter.from : null,
+      to: filter.preset === 'custom' && filter.to ? filter.to : null,
+    };
+
+    const arrivals = filterLeadsByDate(this.assignedLeads, filter);
+    this.arrivalsCount = arrivals.length;
+    const sources = new Map<LeadSource | null, number>();
+    for (const lead of arrivals) {
+      const source = this.arrivalSource(lead);
+      sources.set(source, (sources.get(source) ?? 0) + 1);
+    }
+    this.arrivalsBySource = Array.from(sources, ([source, count]) => ({
+      source,
+      label: source ? LEAD_SOURCE_LABELS[source] : 'Other',
+      count,
+    })).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+    this.recentArrivals = [...arrivals]
+      .sort((a, b) => (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0))
+      .slice(0, 5)
+      .map(lead => {
+        const source = this.arrivalSource(lead);
+        return {
+          key: lead.key || '',
+          name: lead.fullName,
+          source: source ? LEAD_SOURCE_LABELS[source] : 'Other',
+          date: formatLeadDate(lead.createdAt),
+        };
+      });
+  }
+
+  private arrivalSource(lead: Lead): LeadSource | null {
+    const source = lead.source || 'v1';
+    return Object.prototype.hasOwnProperty.call(LEAD_SOURCE_LABELS, source) ? source : null;
   }
 
   private loadAffiliateDashboard(affiliateKey: string): void {
@@ -216,14 +284,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = localDayKey(date);
       dateMap[dateStr] = 0;
     }
 
     // Count leads per day (only for last 7 days)
     leads.forEach((lead: Lead) => {
       if (lead.createdAt) {
-        const dateStr = lead.createdAt.split('T')[0];
+        const dateStr = leadDayKey(lead.createdAt);
         if (dateMap.hasOwnProperty(dateStr)) {
           dateMap[dateStr]++;
         }

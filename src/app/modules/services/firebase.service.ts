@@ -22,6 +22,24 @@ const idbGet = async (key: string): Promise<any> => {
     });
   } catch { return undefined; }
 };
+/** The uid Firebase Auth saved on this browser, or '' when nobody is signed in. Local only. */
+const storedAuthUid = (): Promise<string> => new Promise(resolve => {
+  try {
+    const req = indexedDB.open('firebaseLocalStorageDb');
+    req.onerror = () => resolve('');
+    req.onupgradeneeded = () => { req.transaction?.abort(); resolve(''); };
+    req.onsuccess = () => {
+      try {
+        const all = req.result.transaction('firebaseLocalStorage').objectStore('firebaseLocalStorage').getAll();
+        all.onsuccess = () => {
+          const row = (all.result || []).find((r: any) => String(r?.fbase_key || '').startsWith('firebase:authUser:'));
+          resolve(row?.value?.uid || '');
+        };
+        all.onerror = () => resolve('');
+      } catch { resolve(''); }
+    };
+  } catch { resolve(''); }
+});
 const idbSet = async (key: string, value: any): Promise<void> => {
   try {
     const db = await idbOpen();
@@ -76,9 +94,12 @@ export class FirebaseService {
     return new Observable<T>(sub => {
       let live = false;
       let live$: any;
-      this.auth.currentUser.then(user => {
+      // The signed-in uid straight from Firebase Auth's own browser storage: `auth.currentUser`
+      // only resolves after Auth has checked the account with Google over the network, which on
+      // a slow connection held the saved copy back for seconds.
+      storedAuthUid().then(uid => uid || this.auth.currentUser.then(u => u?.uid || '')).then(uid => {
         if (sub.closed) return;
-        const cacheKey = user ? `${user.uid}:${key}` : '';
+        const cacheKey = uid ? `${uid}:${key}` : '';
         if (cacheKey) {
           idbGet(cacheKey).then(saved => { if (!live && !sub.closed && saved !== undefined) sub.next(saved); });
         }
@@ -226,8 +247,18 @@ export class FirebaseService {
   // ==========================================
 
   /** جلب النسخة الحالية النشطة */
+  /**
+   * Saved on this browser too: every dashboard page waits on the version before it asks for
+   * anything else, so without a saved copy a refresh could not show the saved leads until a
+   * full round trip to Firebase had come back.
+   */
   public getCurrentVersion(): Observable<Version | null> {
-    return this.shared('currentVersion', () => this.currentVersionQuery());
+    return this.shared('currentVersion', () => this.currentVersionQuery(), true);
+  }
+
+  /** Straight from Firebase, never a saved copy. For writes (registration) that must not use a stale version. */
+  public getCurrentVersionLive(): Observable<Version | null> {
+    return this.currentVersionQuery();
   }
 
   private currentVersionQuery(): Observable<Version | null> {
@@ -316,9 +347,9 @@ export class FirebaseService {
 
   /** جلب جميع الأفلييتس لنسخة معينة */
   public getAffiliatesByVersion(versionKey: string): Observable<Affiliate[]> {
-    return this.getAllAffiliates().pipe(
+    return this.shared('affiliates:' + versionKey, () => this.getAllAffiliates().pipe(
       map(affiliates => affiliates.filter(affiliate => affiliate.versionKey === versionKey))
-    );
+    ), true);
   }
 
   // ==========================================
@@ -330,9 +361,9 @@ export class FirebaseService {
   }
 
   public getSalesByVersion(versionKey: string): Observable<any[]> {
-    return this.getAllSales().pipe(
+    return this.shared('sales:' + versionKey, () => this.getAllSales().pipe(
       map(sales => sales.filter(item => item.versionKey === versionKey))
-    );
+    ), true);
   }
 
   public incrementSalesCounter(salesKey: string, assignedAt: number, limit: number = 1000): Promise<void> {

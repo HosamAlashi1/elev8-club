@@ -16,6 +16,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { LucideAngularModule, Home, ShieldCheck, Building2, Layers, Package, Folder, Users, MessageSquare, Mail, Inbox, Settings, MonitorSmartphone, Workflow, ListChecks, BookOpen, UserCheck, CreditCard, ShoppingCart, User, MapPin, Box, AlertCircle, X, List } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
+import { LeadDateFilterComponent } from './lead-date-filter/lead-date-filter.component';
 
 
 
@@ -38,6 +39,7 @@ import { RouterModule } from '@angular/router';
         NgxPaginationModule,
         ReactiveFormsModule,
         FormsModule,
+        LeadDateFilterComponent,
         NgbModule,
         NgxSkeletonLoaderModule,
         LucideAngularModule.pick({
@@ -75,6 +77,7 @@ import { RouterModule } from '@angular/router';
         SearchableSelectComponent,
         ModernSelectComponent,
         CopyPhoneComponent,
+        LeadDateFilterComponent,
         ReactiveFormsModule,
         FormsModule,
         NgbModule,

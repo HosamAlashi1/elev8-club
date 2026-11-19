@@ -194,7 +194,7 @@ export class RegisterPopupComponent implements OnInit {
       this.currentAffiliate = null;
 
       // جلب النسخة الحالية
-      this.firebaseService.getCurrentVersion().pipe(take(1)).subscribe(version => {
+      this.firebaseService.getCurrentVersionLive().pipe(take(1)).subscribe(version => {
         this.currentVersion = version;
 
         if (this.affiliateCode && version?.key) {

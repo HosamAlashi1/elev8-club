@@ -116,9 +116,13 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
     this.buildCallForm();
 
     const key = this.route.snapshot.paramMap.get('key');
-    if (!key) { this.router.navigate(['/dashboard/leads']); return; }
+    const salesMemberKey = this.publicService.getSalesMemberKey();
+    if (!key || (this.isSales && !salesMemberKey)) {
+      this.router.navigate(['/dashboard/leads']);
+      return;
+    }
 
-    this.loadLead(key);
+    this.loadLead(key, salesMemberKey);
   }
 
   ngOnDestroy(): void {
@@ -126,11 +130,15 @@ export class LeadDetailComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private loadLead(key: string): void {
+  private loadLead(key: string, salesMemberKey: string | null): void {
     this.isLoading = true;
     this.firebaseService.getLeadByKey(key).pipe(takeUntil(this.destroy$)).subscribe({
       next: (lead) => {
-        if (!lead) { this.router.navigate(['/dashboard/leads']); return; }
+        if (!lead || (this.isSales && lead.salesMemberKey !== salesMemberKey)) {
+          this.lead = null;
+          this.router.navigate(['/dashboard/leads']);
+          return;
+        }
         this.lead = lead;
         this.questionnaireAnswers = this.buildQuestionnaireAnswers(lead);
         // ngOnInit builds the form before the lead resolves, so its default call type was

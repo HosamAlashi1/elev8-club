@@ -16,6 +16,9 @@ import { PublicService } from 'src/app/modules/services/public.service';
 import { ExcelExportService } from '../../../services/excel-export.service';
 import { SendMessageComponent } from './send-message/send-message.component';
 import { AddEditLeadComponent } from './add-edit-lead/add-edit-lead.component';
+import {
+  filterLeadsByDate, formatLeadDate, LeadDateFilter, readLeadDateFilter
+} from '../../shared/lead-date-filter/lead-date-range';
 
 interface LeadWithAffiliate extends Lead {
   affiliateName?: string;
@@ -68,6 +71,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
   selectedStatus = '';
   selectedSource = '';
   selectedVerification = '';
+  dateFilter: LeadDateFilter = readLeadDateFilter('all');
 
   /** Narrows the table to one sales rep's leads (set from the Sales Performance page). */
   memberFilterKey = '';
@@ -78,7 +82,12 @@ export class LeadsComponent implements OnInit, OnDestroy {
 
   clearMemberFilter(): void {
     this.memberFilterKey = '';
-    this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { salesMember: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
     this.applyFilters();
   }
 
@@ -163,7 +172,8 @@ export class LeadsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Deep link from Sales Performance: ?salesMember=<key>&status=closed
     const params = this.route.snapshot.queryParamMap;
-    this.memberFilterKey = params.get('salesMember') || '';
+    this.memberFilterKey = this.isAdmin ? params.get('salesMember') || '' : '';
+    this.dateFilter = readLeadDateFilter(params.get('date'), params.get('from'), params.get('to'));
     const source = params.get('source') || '';
     if (this.sourceOptions.some(o => o.value === source)) this.selectedSource = source;
     const verification = params.get('verification') || '';
@@ -193,16 +203,16 @@ export class LeadsComponent implements OnInit, OnDestroy {
     this.firebaseService.getCurrentVersion().pipe(
       switchMap(version => {
         this.currentVersion = version;
-        if (!version) return of(null);
+        if (!version && !this.isSales) return of(null);
 
-        const leads$ = (this.isSales && this.salesMemberKey)
-          ? this.firebaseService.getLeadsBySalesMember(this.salesMemberKey)
-          : this.firebaseService.getLeadsByVersion(version.key);
+        const leads$ = this.isSales
+          ? (this.salesMemberKey ? this.firebaseService.getLeadsBySalesMember(this.salesMemberKey) : of([]))
+          : (version ? this.firebaseService.getLeadsByVersion(version.key) : of([]));
 
         return combineLatest({
-          affiliates: this.firebaseService.getAffiliatesByVersion(version.key),
-          sales: this.firebaseService.getSalesByVersion(version.key),
-          salesMembers: this.firebaseService.getSalesMembersByVersion(version.key),
+          affiliates: version ? this.firebaseService.getAffiliatesByVersion(version.key) : of([]),
+          sales: version ? this.firebaseService.getSalesByVersion(version.key) : of([]),
+          salesMembers: version ? this.firebaseService.getSalesMembersByVersion(version.key) : of([]),
           leads: leads$
         });
       }),
@@ -353,13 +363,18 @@ export class LeadsComponent implements OnInit, OnDestroy {
     // The live Firebase subscription refreshes this table automatically.
   }
 
+  changeDateFilter(filter: LeadDateFilter): void {
+    this.dateFilter = filter;
+    this.applyFilters();
+  }
+
   /**
    * applyFilters
    * لما نبحث أو نفلتر، نفعّل لودر بسيط
    */
   applyFilters(withLoading: boolean = true, resetPage: boolean = true): void {
     const run = () => {
-      let filtered = [...this.allLeads];
+      let filtered = filterLeadsByDate(this.allLeads, this.dateFilter);
 
       // فلتر البحث
       if (this.searchText.trim()) {
@@ -664,11 +679,7 @@ export class LeadsComponent implements OnInit, OnDestroy {
   }
 
   getCreatedDate(timestamp: string): string {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatLeadDate(timestamp);
   }
 
   delete(lead: LeadWithAffiliate): void {

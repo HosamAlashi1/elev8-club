@@ -66,6 +66,9 @@
             </div>
         </div>
 
+        <app-lead-date-filter class="mb-3" [filter]="dateFilter"
+            (filterChange)="changeDateFilter($event)"></app-lead-date-filter>
+
         <!-- Offer leads that registered but have not paid: someone should chase them. -->
         <div class="payment-notice" role="status" *ngIf="unpaidOfferCount > 0" dir="rtl">
             <span class="payment-notice__icon" aria-hidden="true"><i class="fe fe-clock"></i></span>

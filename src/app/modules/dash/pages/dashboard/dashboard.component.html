@@ -30,7 +30,7 @@
         <ng-container>
             <!-- Stat Cards Row -->
             <div class="row g-4 mb-4">
-                <div class="col-md-3" *ngFor="let card of dashboardCards; let i = index">
+                <div class="col-6 col-lg-3" *ngFor="let card of dashboardCards; let i = index">
                     <div class="stat-card">
                         <!-- Icon -->
                         <div class="stat-icon mb-3" [ngClass]="card.iconClass">
@@ -45,6 +45,73 @@
                     </div>
                 </div>
             </div>
+
+            <section *ngIf="isSales" class="sales-arrivals mb-4" aria-labelledby="sales-arrivals-heading">
+                <div class="arrivals-header">
+                    <div>
+                        <h2 id="sales-arrivals-heading">New Leads</h2>
+                        <p>Registrations assigned to you</p>
+                    </div>
+                    <app-lead-date-filter [filter]="salesDateFilter"
+                        (filterChange)="changeSalesDateFilter($event)"></app-lead-date-filter>
+                </div>
+
+                <p *ngIf="salesLeadsLoading" class="arrivals-note" role="status">Loading your leads…</p>
+                <p *ngIf="salesLeadsError" class="arrivals-note" role="alert">{{ salesLeadsError }}</p>
+
+                <ng-container *ngIf="!salesLeadsLoading && !salesLeadsError">
+                    <div class="arrivals-summary">
+                        <div aria-live="polite">
+                            <strong>{{ arrivalsCount | number }}</strong>
+                            <span>{{ arrivalsCount === 1 ? 'registration' : 'registrations' }}</span>
+                        </div>
+                        <a *ngIf="arrivalsCount" class="arrivals-link" routerLink="/dashboard/leads"
+                            [queryParams]="salesLeadParams">
+                            View matching leads <i class="fe fe-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+
+                    <div *ngIf="arrivalsCount; else noArrivals" class="arrivals-details">
+                        <div>
+                            <h3>By Source</h3>
+                            <ul class="arrivals-sources">
+                                <li *ngFor="let item of arrivalsBySource">
+                                    <a *ngIf="item.source; else otherSource" class="arrivals-link"
+                                        routerLink="/dashboard/leads"
+                                        [queryParams]="{ date: salesLeadParams.date, from: salesLeadParams.from,
+                                                         to: salesLeadParams.to, source: item.source }">
+                                        {{ item.label }}
+                                    </a>
+                                    <ng-template #otherSource>{{ item.label }}</ng-template>
+                                    <strong>{{ item.count | number }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Latest Registrations</h3>
+                            <div class="table-responsive">
+                                <table class="arrivals-table">
+                                    <thead><tr><th scope="col">Name</th><th scope="col">Source</th><th scope="col">Created</th></tr></thead>
+                                    <tbody>
+                                        <tr *ngFor="let lead of recentArrivals">
+                                            <td>
+                                                <a *ngIf="lead.key; else noLeadLink" class="arrivals-link"
+                                                    [routerLink]="['/dashboard/leads', lead.key]">{{ lead.name }}</a>
+                                                <ng-template #noLeadLink>{{ lead.name }}</ng-template>
+                                            </td>
+                                            <td>{{ lead.source }}</td>
+                                            <td>{{ lead.date }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template #noArrivals>
+                        <p class="arrivals-note">No registrations match the selected dates.</p>
+                    </ng-template>
+                </ng-container>
+            </section>
 
             <!-- Leads Per Day Chart -->
             <div class="row mt-4">

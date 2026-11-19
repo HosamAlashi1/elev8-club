@@ -19,7 +19,7 @@ import * as admin from "firebase-admin";
  * (`rebuildLeadsIndex`), and the browser cannot write to it (see the rules).
  */
 
-/** The fields the dashboard lists use. Add one here and rebuild to expose it. */
+/** The fields the dashboard lists use. Add one, then rebuild, to expose it. */
 const INDEX_FIELDS = [
   "versionKey", "fullName", "email", "phone", "source", "step",
   "sales_status", "sales_package", "salesMemberKey", "affiliateKey",
