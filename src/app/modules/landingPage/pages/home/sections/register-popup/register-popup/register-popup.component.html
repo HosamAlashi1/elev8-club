@@ -39,7 +39,8 @@
             </svg>
             الاسم الكامل <span class="required-star">*</span>
           </label>
-          <input id="fullName" type="text" required [(ngModel)]="formData.fullName" name="fullName" class="form-input"
+          <input id="fullName" type="text" required [(ngModel)]="formData.fullName" name="fullName"
+            [class.input-error]="errorField === 'fullName'" (ngModelChange)="clearError('fullName')" class="form-input"
             placeholder="الاسم الكامل" dir="rtl"
             (keydown.enter)="$event.preventDefault(); focusNextField('email')" />
         </div>
@@ -53,7 +54,8 @@
             </svg>
             البريد الإلكتروني <span class="required-star">*</span>
           </label>
-          <input id="email" type="email" required [(ngModel)]="formData.email" name="email" class="form-input"
+          <input id="email" type="email" required [(ngModel)]="formData.email" name="email"
+            [class.input-error]="errorField === 'email'" (ngModelChange)="clearError('email')" class="form-input"
             placeholder="البريد الإلكتروني" dir="ltr"
             (keydown.enter)="$event.preventDefault(); focusNextField('whatsapp')" />
         </div>
@@ -87,7 +89,7 @@
                 <!-- Countries List -->
                 <div class="dropdown-items-wrapper">
                   <div *ngFor="let country of filteredCountries" class="dropdown-item"
-                    [class.selected]="country.code === selectedCountryCode" (click)="selectCountry(country.code)">
+                    [class.selected]="country.country === selectedCountryIso" (click)="selectCountry(country.code, country.country)">
                     <img [src]="country.flag" alt="flag" class="flag-img" loading="lazy" decoding="async">
                     <span class="country-code">{{ country.code }}</span>
                     <span class="country-name">{{ country.countryAr || country.country }}</span>
@@ -99,6 +101,7 @@
               </div>
             </div>
             <input id="whatsapp" type="tel" required [(ngModel)]="formData.whatsapp" name="whatsapp"
+            [class.input-error]="errorField === 'whatsapp'" (ngModelChange)="clearError('whatsapp')"
               class="form-input phone-input" placeholder="رقم الواتساب" dir="ltr" pattern="[0-9]*"
               inputmode="numeric" (keydown.enter)="$event.preventDefault(); onSubmit($event)" />
           </div>
@@ -110,6 +113,12 @@
           <p class="info-text">
             سنتواصل معك خلال 72 ساعة لتأكيد التسجيل وإرسال تفاصيل البدء
           </p>
+        </div>
+
+        <!-- What went wrong, in words the visitor can act on -->
+        <div class="form-error" *ngIf="errorMessage" role="alert" aria-live="assertive">
+          <span class="form-error__icon" aria-hidden="true">!</span>
+          <span class="form-error__text">{{ errorMessage }}</span>
         </div>
 
         <!-- Submit Button -->

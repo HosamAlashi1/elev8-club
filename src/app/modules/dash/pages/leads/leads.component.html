@@ -158,7 +158,7 @@
 
                     <!-- Data -->
                     <tbody *ngIf="!(isLoading$ | async)">
-                        <tr *ngFor="let lead of paginatedLeads">
+                        <tr *ngFor="let lead of paginatedLeads; trackBy: trackByLeadKey" [attr.data-lead-key]="lead.key">
                             <td *ngIf="isAdmin || isSales">
                                 <input *ngIf="canMessage(lead)" type="checkbox" class="form-check-input" [checked]="isSelected(lead)" (change)="toggleSelect(lead)">
                             </td>

@@ -5,7 +5,8 @@ import { FirebaseService } from '../../../../../../services/firebase.service';
 import { LandingSettingsService } from '../../../../../../services/landing-settings.service';
 import { GtmService } from '../../../../../../services/gtm.service';
 import { Version, Affiliate, Lead } from '../../../../../../../core/models';
-import { take } from 'rxjs/operators';
+import { take, timeout } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { isValidPhoneNumber, CountryCode } from 'libphonenumber-js';
 
@@ -14,6 +15,21 @@ interface FormData {
   email: string;
   whatsapp: string;
 }
+
+/** Time zone -> country, for the audience's region. A zone missing here keeps the default. */
+const TIMEZONE_COUNTRY: Record<string, string> = {
+  'Asia/Gaza': 'PS', 'Asia/Hebron': 'PS', 'Asia/Jerusalem': 'PS', 'Asia/Amman': 'JO',
+  'Asia/Beirut': 'LB', 'Asia/Damascus': 'SY', 'Asia/Baghdad': 'IQ', 'Asia/Riyadh': 'SA',
+  'Asia/Dubai': 'AE', 'Asia/Kuwait': 'KW', 'Asia/Qatar': 'QA', 'Asia/Bahrain': 'BH',
+  'Asia/Muscat': 'OM', 'Asia/Aden': 'YE', 'Africa/Cairo': 'EG', 'Africa/Khartoum': 'SD',
+  'Africa/Tripoli': 'LY', 'Africa/Tunis': 'TN', 'Africa/Algiers': 'DZ', 'Africa/Casablanca': 'MA',
+  'Africa/El_Aaiun': 'MA', 'Africa/Nouakchott': 'MR', 'Europe/Istanbul': 'TR', 'Asia/Istanbul': 'TR',
+  'Europe/London': 'GB', 'Europe/Berlin': 'DE', 'Europe/Paris': 'FR', 'Europe/Amsterdam': 'NL',
+  'Europe/Brussels': 'BE', 'Europe/Stockholm': 'SE', 'Europe/Oslo': 'NO', 'Europe/Copenhagen': 'DK',
+  'Europe/Madrid': 'ES', 'Europe/Rome': 'IT', 'Europe/Vienna': 'AT', 'Europe/Zurich': 'CH',
+  'America/Toronto': 'CA', 'America/Vancouver': 'CA', 'America/New_York': 'US', 'America/Chicago': 'US',
+  'America/Denver': 'US', 'America/Los_Angeles': 'US', 'Australia/Sydney': 'AU', 'Australia/Melbourne': 'AU',
+};
 
 @Component({
   selector: 'app-register-popup',
@@ -163,6 +179,16 @@ export class RegisterPopupComponent implements OnInit {
 
   countryCodes: { code: string; country: string; countryAr: string; flag: string }[] = [];
   selectedCountryCode = '+971';
+  /**
+   * The chosen country itself. The dial code alone is ambiguous (+1 is the US, Canada and a
+   * dozen islands), which showed a Canadian flag to a visitor matched to +1.
+   */
+  selectedCountryIso = 'AE';
+
+  private get selectedCountry() {
+    return this.countryCodes.find(c => c.country === this.selectedCountryIso && c.code === this.selectedCountryCode)
+      || this.countryCodes.find(c => c.code === this.selectedCountryCode);
+  }
   isDropdownOpen = false;
   searchQuery = '';
 
@@ -171,6 +197,53 @@ export class RegisterPopupComponent implements OnInit {
   private affiliateCode: string | null = null;
   private startCounterDate = 0;
   isSubmitting = false;
+  /** True once the visitor chose a country themselves; the automatic one then never overrides it. */
+  private countryTouched = false;
+
+  /** Shown inside the form (never a browser alert), and says exactly what went wrong. */
+  errorMessage = '';
+  errorField: '' | 'fullName' | 'email' | 'whatsapp' = '';
+
+  clearError(field?: string): void {
+    if (!field || field === this.errorField || !this.errorField) {
+      this.errorMessage = '';
+      this.errorField = '';
+    }
+  }
+
+  private showError(message: string, field: '' | 'fullName' | 'email' | 'whatsapp' = ''): void {
+    this.errorMessage = message;
+    this.errorField = field;
+    if (field) this.focusNextField(field);
+  }
+
+  /**
+   * The number the visitor typed, without what they should not have typed: a leading 0 (local
+   * format, e.g. 0712...) or the country code itself (212712...). Both are common and both made
+   * a correct number fail.
+   */
+  private normalizeLocalNumber(raw: string): string {
+    let digits = (raw || '').replace(/\D/g, '');
+    const dial = (this.selectedCountryCode || '').replace(/\D/g, '');
+    if (dial && digits.startsWith('00' + dial)) digits = digits.slice(2 + dial.length);
+    else if (dial && digits.startsWith(dial) && digits.length > dial.length + 6) digits = digits.slice(dial.length);
+    return digits.replace(/^0+/, '');
+  }
+
+  /** Arabic, specific text for a failed registerLead call. */
+  private registrationErrorText(error: any): string {
+    const code = String(error?.code || '').replace(/^functions\//, '');
+    const message = String(error?.message || '');
+    if (!navigator.onLine || code === 'unavailable' || code === 'deadline-exceeded') {
+      return 'تعذّر الاتصال بالخادم. تأكد من اتصالك بالإنترنت ثم اضغط تأكيد التسجيل مرة أخرى.';
+    }
+    if (code === 'invalid-argument') {
+      if (/email/i.test(message)) return 'البريد الإلكتروني غير صحيح، تأكد من كتابته بالشكل الصحيح (مثال: name@gmail.com).';
+      if (/too long/i.test(message)) return 'أحد الحقول طويل جداً، الرجاء اختصاره.';
+      if (/required/i.test(message)) return 'الرجاء تعبئة الاسم والبريد الإلكتروني ورقم الواتساب.';
+    }
+    return `لم يكتمل التسجيل بسبب خطأ في الخادم، الرجاء المحاولة بعد لحظات.${code ? ` (رمز الخطأ: ${code})` : ''}`;
+  }
   
   @ViewChild('dropdownTrigger') dropdownTrigger!: ElementRef;
 
@@ -185,6 +258,7 @@ export class RegisterPopupComponent implements OnInit {
   ngOnInit(): void {
     // تحميل مقدمات الدول محلياً
     this.loadCountryCodes();
+    this.preselectCountryFromVisitor();
     this.loadTrainingDate();
 
     // قراءة ref code من الـ URL أو localStorage
@@ -205,6 +279,39 @@ export class RegisterPopupComponent implements OnInit {
       });
 
     });
+  }
+
+  /**
+   * Pre-selects the visitor's country. First the country Vercel derives from their IP
+   * (/api/geo: first-party, no external lookup; it only exists on the deployed site), then the
+   * device's time zone (Asia/Gaza -> PS). The browser language is NOT used: many Arabic
+   * speakers run an en-US browser, which turned a visitor in Palestine into "+1".
+   * Never overrides a country the visitor picked themselves.
+   */
+  private async preselectCountryFromVisitor(): Promise<void> {
+    const apply = (iso: string | null | undefined): boolean => {
+      if (!iso || this.countryTouched) return false;
+      const match = this.countryCodes.find(c => c.country === iso.toUpperCase());
+      if (!match) return false;
+      this.selectedCountryCode = match.code;
+      this.selectedCountryIso = match.country;
+      return true;
+    };
+
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 3000);
+      const res = await fetch('/api/geo', { signal: ctrl.signal, cache: 'no-store' });
+      clearTimeout(timer);
+      // Locally (and on any host without the function) this path falls through to index.html.
+      const isJson = (res.headers.get('content-type') || '').includes('application/json');
+      if (res.ok && isJson && apply((await res.json())?.country)) return;
+    } catch { /* fall through to the time zone */ }
+
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      apply(TIMEZONE_COUNTRY[tz]);
+    } catch { /* keep the default */ }
   }
 
   private loadTrainingDate(): void {
@@ -298,7 +405,7 @@ export class RegisterPopupComponent implements OnInit {
   }
 
   getSelectedCountryFlag(): string {
-    const selectedCountry = this.countryCodes.find(c => c.code === this.selectedCountryCode);
+    const selectedCountry = this.selectedCountry;
     return selectedCountry?.flag || 'https://flagcdn.com/w40/ae.png';
   }
 
@@ -309,8 +416,10 @@ export class RegisterPopupComponent implements OnInit {
     }
   }
 
-  selectCountry(code: string): void {
+  selectCountry(code: string, iso?: string): void {
+    this.countryTouched = true;
     this.selectedCountryCode = code;
+    this.selectedCountryIso = iso || this.countryCodes.find(c => c.code === code)?.country || '';
     this.isDropdownOpen = false;
     this.searchQuery = '';
   }
@@ -347,34 +456,53 @@ export class RegisterPopupComponent implements OnInit {
     return String.fromCodePoint(...codePoints);
   }
 
-  onSubmit(event: Event): void {
+  async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
     if (this.isSubmitting) return;
+    this.clearError();
 
-    // التحقق من صحة البيانات
-    if (!this.formData.fullName || !this.formData.email || !this.formData.whatsapp) {
-      alert('الرجاء ملء جميع الحقول');
+    const fullName = (this.formData.fullName || '').trim();
+    const email = (this.formData.email || '').trim();
+    if (!fullName) { this.showError('الرجاء كتابة الاسم الكامل.', 'fullName'); return; }
+    if (!email) { this.showError('الرجاء كتابة البريد الإلكتروني.', 'email'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.showError('البريد الإلكتروني غير صحيح، تأكد من كتابته بالشكل الصحيح (مثال: name@gmail.com).', 'email');
       return;
     }
+    if (!this.formData.whatsapp) { this.showError('الرجاء كتابة رقم الواتساب.', 'whatsapp'); return; }
 
     // رقم الواتساب لازم يتطابق مع صيغة الدولة المختارة (طول ونمط الرقم)، مش أي أرقام
-    const whatsappDigits = this.formData.whatsapp.replace(/\D/g, '');
-    const selectedIso = this.countryCodes.find(c => c.code === this.selectedCountryCode)?.country as CountryCode | undefined;
+    const whatsappDigits = this.normalizeLocalNumber(this.formData.whatsapp);
+    const selected = this.selectedCountry;
+    const selectedIso = selected?.country as CountryCode | undefined;
     const isPhoneValid = selectedIso
       ? isValidPhoneNumber(whatsappDigits, selectedIso)
       : whatsappDigits.length >= 6 && whatsappDigits.length <= 15;
     if (!isPhoneValid) {
-      alert('رقم الواتساب لا يتطابق مع صيغة الدولة المختارة، الرجاء التأكد منه.');
+      const where = selected ? `${selected.countryAr || selected.country} (${selected.code})` : 'الدولة المختارة';
+      this.showError(`رقم الواتساب غير صحيح لـ ${where}. تأكد من اختيار الدولة الصحيحة، واكتب الرقم بدون مقدمة الدولة.`, 'whatsapp');
       return;
     }
-
-    if (!this.currentVersion) {
-      alert('حدث خطأ، الرجاء المحاولة مرة أخرى');
-      return;
-    }
+    this.formData.whatsapp = whatsappDigits;
 
     this.isSubmitting = true;
+
+    // On a slow connection the version may not have arrived yet when the visitor presses the
+    // button. That used to end in "an error occurred" with nothing they could do about it; wait
+    // for it instead, and only fail with a clear connection message.
+    if (!this.currentVersion) {
+      try {
+        this.currentVersion = await firstValueFrom(
+          this.firebaseService.getCurrentVersionLive().pipe(take(1), timeout(20000))
+        );
+      } catch { /* handled below */ }
+    }
+    if (!this.currentVersion) {
+      this.isSubmitting = false;
+      this.showError('تعذّر الاتصال بالخادم. تأكد من اتصالك بالإنترنت ثم اضغط تأكيد التسجيل مرة أخرى.');
+      return;
+    }
 
     // دمج مقدمة الدولة مع رقم الجوال
     const fullPhoneNumber = this.selectedCountryCode + this.formData.whatsapp;
@@ -445,7 +573,7 @@ export class RegisterPopupComponent implements OnInit {
       })
       .catch(error => {
         console.error('Error creating lead:', error);
-        alert('حدث خطأ أثناء التسجيل، الرجاء المحاولة مرة أخرى');
+        this.showError(this.registrationErrorText(error));
         this.isSubmitting = false;
       });
   }

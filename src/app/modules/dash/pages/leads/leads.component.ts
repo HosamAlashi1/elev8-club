@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, AfterViewChecked, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
@@ -48,7 +48,7 @@ interface LeadWithAffiliate extends Lead {
   templateUrl: './leads.component.html',
   styleUrls: ['./leads.component.css']
 })
-export class LeadsComponent implements OnInit, OnDestroy {
+export class LeadsComponent implements OnInit, OnDestroy, AfterViewChecked {
   isLoading$ = new BehaviorSubject<boolean>(true);
   private destroy$ = new Subject<void>();
   private leadsLoaded = false;
@@ -152,7 +152,8 @@ export class LeadsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private toastr: ToastrsService,
     private publicService: PublicService,
-    private excelExport: ExcelExportService
+    private excelExport: ExcelExportService,
+    private host: ElementRef<HTMLElement>
   ) {
     this.size = this.publicService.getNumOfRows(450, 67.87);
     this.sizeOptions = [
@@ -184,6 +185,64 @@ export class LeadsComponent implements OnInit, OnDestroy {
       this.selectedStatus = status;
     }
     this.loadCurrentVersion();
+  }
+
+  // ── Keeping the reading position across live updates ──────────────────────────────────────
+  //
+  // Firebase pushes a fresh copy of the leads after every edit (a stage, a status, a call...).
+  // Every lead in it is a new object, and the rows were keyed by object identity, so Angular
+  // tore down and rebuilt every row of the table. The page scrolls inside `.main-content`, and
+  // a rebuild can briefly shorten it, which clamps the scroll position. `trackByLeadKey` keeps
+  // the row elements; on top of that the first visible row is used as an anchor and put back
+  // at the same height once the view has updated, so rows changing or leaving a filter above it
+  // do not shift the user's place either.
+
+  private pendingScrollRestore: { top: number; anchorKey: string | null; anchorOffset: number } | null = null;
+
+  private get scrollContainer(): HTMLElement | null {
+    return (this.host.nativeElement.closest('.main-content') as HTMLElement | null)
+      || document.querySelector<HTMLElement>('.main-content');
+  }
+
+  trackByLeadKey(_index: number, lead: LeadWithAffiliate): string {
+    return lead.key || '';
+  }
+
+  private captureScrollPosition(): void {
+    const container = this.scrollContainer;
+    if (!container) return;
+    const containerTop = container.getBoundingClientRect().top;
+    let anchorKey: string | null = null;
+    let anchorOffset = 0;
+    const rows = this.host.nativeElement.querySelectorAll<HTMLElement>('tr[data-lead-key]');
+    for (const row of Array.from(rows)) {
+      const rect = row.getBoundingClientRect();
+      if (rect.bottom > containerTop) {
+        anchorKey = row.getAttribute('data-lead-key');
+        anchorOffset = rect.top - containerTop;
+        break;
+      }
+    }
+    this.pendingScrollRestore = { top: container.scrollTop, anchorKey, anchorOffset };
+  }
+
+  ngAfterViewChecked(): void {
+    const saved = this.pendingScrollRestore;
+    if (!saved) return;
+    this.pendingScrollRestore = null;
+    const container = this.scrollContainer;
+    if (!container) return;
+
+    const anchor = saved.anchorKey
+      ? this.host.nativeElement.querySelector<HTMLElement>(`tr[data-lead-key="${CSS.escape(saved.anchorKey)}"]`)
+      : null;
+    if (anchor) {
+      const drift = anchor.getBoundingClientRect().top - container.getBoundingClientRect().top - saved.anchorOffset;
+      if (Math.abs(drift) > 1) container.scrollTop += drift;
+    } else if (Math.abs(container.scrollTop - saved.top) > 1) {
+      // The anchor row left the current filter: stay at the same distance down the page.
+      container.scrollTop = saved.top;
+    }
   }
 
   ngOnDestroy(): void {
@@ -247,6 +306,10 @@ export class LeadsComponent implements OnInit, OnDestroy {
             sourceLabel: LEAD_SOURCE_LABELS[(lead.source as LeadSource) || 'v1']
           };
         }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        // A live update (any edit to any lead, from this user or anyone else) rebuilds the rows.
+        // Keep the user where they were reading instead of letting the list move under them.
+        if (this.leadsLoaded) this.captureScrollPosition();
 
         this.markDuplicates();
         this.buildGroupOptions();

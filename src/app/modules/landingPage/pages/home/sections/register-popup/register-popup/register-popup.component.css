@@ -1153,3 +1153,49 @@
   .modal-title-brand { font-size: min(2.6rem, 5.9vw); }
   .modal-title-challenge { font-size: min(2.9rem, 8.2vw); }
 }
+
+/* ── Inline form error (replaces the browser alert) ── */
+.form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fecaca;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  text-align: right;
+  direction: rtl;
+  animation: form-error-in 0.35s cubic-bezier(.34, 1.56, .64, 1), form-error-shake 0.4s 0.05s ease-in-out;
+}
+.form-error__icon {
+  flex: 0 0 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.form-error__text { flex: 1; }
+.input-error,
+.input-error:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18) !important;
+}
+@keyframes form-error-in {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes form-error-shake {
+  0%, 100% { translate: 0; }
+  25% { translate: -5px 0; }
+  75% { translate: 5px 0; }
+}
