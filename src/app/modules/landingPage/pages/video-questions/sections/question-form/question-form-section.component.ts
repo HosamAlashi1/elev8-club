@@ -513,29 +513,17 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     const pendingWindow = this.openPendingWhatsAppWindow();
 
     try {
+      const leadKey = this.leadKey;
+      if (!leadKey) throw new Error('No registration found for WhatsApp group assignment');
+      const assignment = await this.firebaseService.getRegistrationWhatsApp(leadKey);
+      if (!assignment.group_link) throw new Error('No WhatsApp link found for this registration');
+
+      this.openWhatsAppGroup(assignment.group_link, assignment, pendingWindow);
       const versionKey = this.currentLead?.versionKey;
-
-      if (!versionKey) {
-        throw new Error('No lead version found for WhatsApp group assignment');
+      if (versionKey) {
+        void this.firebaseService.assignSalesMemberIfUnassigned(leadKey, versionKey)
+          .catch(err => console.warn('Could not assign a sales member:', err));
       }
-
-      const groups = await this.firebaseService.getSalesByVersion(versionKey).pipe(take(1)).toPromise();
-
-      if (!groups || groups.length === 0) {
-        throw new Error('No WhatsApp groups found for current version');
-      }
-
-      const assignment = await this.reserveNextWhatsAppGroup(groups, 1000);
-
-      if (!assignment) {
-        throw new Error('All WhatsApp groups are full or missing links');
-      }
-
-      const { group: selectedGroup, groupUrl, groupKey, assignedAt } = assignment;
-
-      this.openWhatsAppGroup(groupUrl, selectedGroup, pendingWindow);
-      void this.persistWhatsAppAssignment(selectedGroup, groupUrl, groupKey, assignedAt, versionKey)
-        .catch(err => console.warn('Could not persist WhatsApp assignment:', err));
     } catch (err) {
       console.error('Error in completeRegistration:', err);
       this.closePendingWindow(pendingWindow);
@@ -563,41 +551,16 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async persistWhatsAppAssignment(
-    selectedGroup: any,
+  private openWhatsAppGroup(
     groupUrl: string,
-    groupKey: string,
-    assignedAt: number,
-    versionKey: string
-  ): Promise<void> {
-    if (!this.leadKey || !groupKey) return;
-
-    await this.firebaseService.update('leads', this.leadKey, {
-      assigned_sales: {
-        sales_id: groupKey,
-        group_id: groupKey,
-        group_name: selectedGroup.group_name || selectedGroup.name || `WhatsApp Group ${selectedGroup.group_order || ''}`.trim(),
-        group_link: groupUrl,
-        group_order: Number(selectedGroup.group_order) || null,
-        whatsapp_number: selectedGroup.whatsapp_number || '',
-        assigned_at: assignedAt,
-        assigned_via: 'whatsapp_group',
-        versionKey
-      }
-    });
-
-    // The owner is normally set back at registration (register-popup). This is the safety net for
-    // a lead whose assignment failed there — it reads first and does nothing if one is already
-    // set, so finishing the questions never moves a lead to a second sales member.
-    await this.firebaseService.assignSalesMemberIfUnassigned(this.leadKey, versionKey);
-  }
-
-  private openWhatsAppGroup(groupUrl: string, group: any, pendingWindow: Window | null = null): void {
+    group: NonNullable<Lead['assigned_sales']>,
+    pendingWindow: Window | null
+  ): void {
     if (this.leadKey) {
       this.gtm.trackWhatsAppContact(this.leadKey, groupUrl, {
         user_name: this.currentLead?.fullName || 'new lead',
-        group_id: group.key || 'none',
-        group_name: group.group_name || group.name || 'WhatsApp Group',
+        group_id: group.group_id || group.sales_id || 'none',
+        group_name: group.group_name || 'WhatsApp Group',
         group_order: group.group_order || 'none',
         affiliate_code: this.affiliateCode || 'none',
         affiliate_key: this.currentAffiliate?.key || 'none'
@@ -616,57 +579,6 @@ export class QuestionFormSectionComponent implements OnInit, OnDestroy {
         window.location.href = groupUrl;
       }
     }, 100);
-  }
-
-  private async reserveNextWhatsAppGroup(
-    groups: any[],
-    capacity: number
-  ): Promise<{ group: any; groupUrl: string; groupKey: string; assignedAt: number } | null> {
-    const orderedGroups = groups
-      .map((group, index) => ({
-        ...group,
-        group_order: Number(group.group_order) || index + 1
-      }))
-      .filter(group => this.getWhatsAppGroupUrl(group))
-      .sort((a, b) => a.group_order - b.group_order);
-
-    for (const group of orderedGroups) {
-      const groupKey = group.key;
-      const currentCount = Number(group.counter) || 0;
-
-      if (!groupKey || currentCount >= capacity) {
-        continue;
-      }
-
-      const assignedAt = Date.now();
-
-      try {
-        await this.firebaseService.incrementSalesCounter(groupKey, assignedAt, capacity);
-
-        return {
-          group,
-          groupUrl: this.getWhatsAppGroupUrl(group),
-          groupKey,
-          assignedAt
-        };
-      } catch {
-        continue;
-      }
-    }
-
-    return null;
-  }
-
-  private getWhatsAppGroupUrl(group: any): string {
-    const rawLink = (group?.group_link || group?.whatsapp_link || '').trim();
-
-    if (rawLink) {
-      if (/^https?:\/\//i.test(rawLink)) return rawLink;
-      return `https://${rawLink}`;
-    }
-
-    const legacyNumber = (group?.whatsapp_number || '').replace(/[^0-9]/g, '');
-    return legacyNumber ? `https://wa.me/${legacyNumber}` : '';
   }
 
   private openWhatsApp(whatsappNumber: string): void {

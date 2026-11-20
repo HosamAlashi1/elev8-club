@@ -600,6 +600,13 @@ export class FirebaseService {
     });
   }
 
+  public getRegistrationWhatsApp(leadId: string): Promise<NonNullable<Lead['assigned_sales']>> {
+    const assign = this.fns.httpsCallable<{ leadId: string }, NonNullable<Lead['assigned_sales']>>(
+      'assignRegistrationWhatsApp'
+    );
+    return firstValueFrom(assign({ leadId }));
+  }
+
   /** تحديث Lead بإجابات الأسئلة (الخطوة الثانية) */
   public completeLead(leadKey: string, answers: any, country?: string, city?: string): Promise<void> {
     const updateData: any = {

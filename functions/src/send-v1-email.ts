@@ -3,6 +3,7 @@ import {onValueCreated} from "firebase-functions/v2/database";
 import {isValidRecipientEmail} from "./campaign";
 import {BRAND, button, escapeHtml, panel, renderEmail, warn} from
   "./email-template";
+import {getOrAssignRegistrationWhatsApp} from "./registration-whatsapp";
 
 const CHALLENGE = "FINAL COUNTDOWN CHALLENGE";
 const MAILGUN_DOMAIN = "elev8club.com";
@@ -102,15 +103,15 @@ export const sendV1Email = onValueCreated(
     const db = admin.database();
     const leadRef = db.ref(`leads/${leadId}`);
     const currentLead = (await leadRef.get()).val();
-    if (currentLead?.welcomeOrCatchupSent === true) return;
-
-    const whatsappLink = String(
-      (await db.ref("settings/whatsapp_link").get()).val() || ""
-    ).trim();
-    if (!/^https:\/\/chat\.whatsapp\.com\//i.test(whatsappLink)) {
-      console.error("settings/whatsapp_link must be a WhatsApp group link.");
+    if (!currentLead || currentLead.welcomeOrCatchupSent === true) return;
+    const assignment = await getOrAssignRegistrationWhatsApp(
+      leadRef, currentLead
+    );
+    if (!assignment) {
+      console.error("No WhatsApp group is available for the registration.");
       return;
     }
+    const whatsappLink = assignment.group_link;
 
     const apiKey = process.env.MAILGUN_API_KEY;
     if (!apiKey) throw new Error("MAILGUN_API_KEY is not configured.");
@@ -121,6 +122,7 @@ export const sendV1Email = onValueCreated(
     form.append("subject", `${CHALLENGE} CONFIRMATION`);
     form.append("text", renderPlainText(fullName, whatsappLink));
     form.append("html", renderV1WelcomeEmail(fullName, whatsappLink));
+    form.append("o:tracking-clicks", "no");
     const authorization = Buffer.from(`api:${apiKey}`).toString("base64");
 
     const response = await fetch(MAILGUN_URL, {

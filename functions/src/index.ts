@@ -552,6 +552,7 @@ export const deleteDashboardUser = publicHttps.onCall(async (
 export {sendCampaignEmail} from "./send-campaign";
 
 export {sendV1Email} from "./send-v1-email";
+export {assignRegistrationWhatsApp} from "./registration-whatsapp";
 
 /** V2-only welcome email, rendered with the dashboard's shared email shell. */
 export {sendV2Email} from "./send-v2-email";
